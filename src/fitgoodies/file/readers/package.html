@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<!-- $Id: package.html 133 2009-08-04 10:31:51Z jwierum $ -->
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+<p>
+Readers are used to process files which contains any kind of record sets.
+A reader must be able to read a record and to retrieve the fields of this record.
+Readers are used by {@link fitgoodies.file.AbstractFileRecordReaderFixture}s to
+compare a file's content with a HTML table.
+</p>
+
+<p>
+This package already contains reader for fixed length value files (
+{@link fitgoodies.file.readers.FixedLengthRecordReader}), for example:
+<code><pre>this    is  lineone
+and     thislinetwo</pre></code>
+The field length are 8, 4, 4, 3.<br /><br />
+
+It also contains two readers for delimited files. The simple
+{@link fitgoodies.file.readers.DelimiterRecordReader} process delimited records:
+<code><pre>this|is|line|one
+and|this|line|two</pre></code><br /><br />
+
+The more sophisticated {@link fitgoodies.file.readers.CSVRecordReader} processes
+CSV files which may also use the delimiter char in their fields. 
+</p>
+
+<p>
+@since 1.0.0
+</p>
+
+</body>
+</html>

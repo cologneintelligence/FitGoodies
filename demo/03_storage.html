@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="style.css" />
+<title>Storage</title>
+</head>
+<body>
+
+<h1>Saving and retrieving shelfs</h1>
+
+<p>There are multiple ways of storing a bookshelf. The system
+provides a JDBC-connection to javadb, XML, and a flat file format.</p>
+
+<table>
+	<tr>
+		<td>fitgoodies.ActionFixture</td>
+	</tr>
+	<tr>
+		<td>start</td>
+		<td>com.mycompany.bookstore.fittests.SaveTest</td>
+	</tr>
+	<tr>
+		<td>press</td>
+		<td>savedb</td>
+	</tr>
+	<!-- tr>
+		<td>waitFor</td>
+		<td>is saved</td>
+		<td>100</td>		
+	</tr -->
+	<tr>
+		<td>waitFor</td>
+		<td>is saved</td>
+		<td>12000</td>
+		<td>1000</td>
+	</tr>
+</table>
+
+<p>The databases must contain all saved books.</p>
+
+<table>
+	<tr>
+		<td>TableFixture</td>
+		<td>table=STORE</td>
+	</tr>
+	<tr>
+		<td>ISBN</td>
+		<td>AUTHOR</td>
+		<td>TITLE</td>
+		<td>PRICE</td>
+	</tr>
+	<tr>
+		<td>1930110995</td>
+		<td>Vincent Massol, Ted Husted</td>
+		<td>JUnit in Action</td>
+		<td>26.37</td>
+	</tr>
+	<tr>
+		<td>193239480X</td>
+		<td>Steve Loughran, Erik Hatcher</td>
+		<td>Ant in Action</td>
+		<td>31.49</td>
+	</tr>
+</table>
+<br />
+<table>
+	<tr>
+		<td>FileRecords</td>
+		<td>file=demo-output/bookshelf.txt</td>
+		<td>skipEOL=false</td>
+	</tr>
+	<tr>
+		<td>5</td>
+		<td>15</td>
+		<td>80</td>
+		<td>50</td>
+		<td>9</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>1930110995</td>
+		<td>JUnit in Action</td>
+		<td>Vincent Massol, Ted Husted</td>
+		<td>26.37</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>193239480X</td>
+		<td>Ant in Action</td>
+		<td>Steve Loughran, Erik Hatcher</td>
+		<td>31.49</td>
+	</tr>
+</table>
+<p>It is also possible to store a shelf data in an XML file.</p>
+<table>
+	<tr>
+		<td>fitgoodies.file.XMLFileFixture</td>
+		<td>file=demo-output/bookshelf.xml</td>
+	</tr>
+	<tr>
+		<td>/shelf/book[@id=1]/author</td>
+		<td>Steve Loughran, Erik Hatcher</td>
+	</tr>
+	<tr>
+		<td>/shelf/book[1]/isbn</td>
+		<td>1930110995</td>
+	</tr>
+</table>
+</body>
+</html>

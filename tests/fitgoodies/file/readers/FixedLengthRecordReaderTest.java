@@ -1,0 +1,101 @@
+/*
+ * Copyright (c) 2009  Cologne Intelligence GmbH
+ * This file is part of FitGoodies.
+ *
+ * FitGoodies is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FitGoodies is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+package fitgoodies.file.readers;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+
+import junit.framework.TestCase;
+
+/**
+ * $Id: FixedLengthRecordReaderTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * @author jwierum
+ */
+public class FixedLengthRecordReaderTest extends TestCase {
+	public final BufferedReader mkReader(final String content) {
+		StringReader sr = new StringReader(content);
+		return new BufferedReader(sr);
+	}
+
+	public final void testReadingWithoutNewlines() throws IOException {
+		FileRecordReader reader = new FixedLengthRecordReader(
+				//        1       8    12      18
+				mkReader("this    is   record  1"
+					   + "and     this record  2"
+					   + "and     a    record  3"),
+				new int[]{8, 5, 8, 1}, false);
+
+		assertTrue(reader.canRead());
+		assertEquals("this    ", reader.nextField());
+		assertEquals("is   ", reader.nextField());
+		assertEquals("record  ", reader.nextField());
+		assertEquals("1", reader.nextField());
+		assertNull(reader.nextField());
+		assertNull(reader.nextField());
+
+		assertTrue(reader.nextRecord());
+		assertTrue(reader.canRead());
+		assertEquals("and     ", reader.nextField());
+		assertEquals("this ", reader.nextField());
+		assertEquals("record  ", reader.nextField());
+		assertEquals("2", reader.nextField());
+		assertNull(reader.nextField());
+
+		assertTrue(reader.nextRecord());
+		assertTrue(reader.canRead());
+		assertEquals("and     ", reader.nextField());
+		assertEquals("a    ", reader.nextField());
+		assertEquals("record  ", reader.nextField());
+		assertEquals("3", reader.nextField());
+		assertNull(reader.nextField());
+		assertFalse(reader.nextRecord());
+		assertFalse(reader.canRead());
+
+		reader.close();
+	}
+
+	public final void testReadingWithNewlines() throws IOException {
+		FileRecordReader reader = new FixedLengthRecordReader(
+				mkReader("x y\n2 4\nj w"),
+				new int[]{2, 1}, true);
+
+		assertTrue(reader.canRead());
+		assertEquals("x ", reader.nextField());
+		assertEquals("y", reader.nextField());
+		assertNull(reader.nextField());
+
+		assertTrue(reader.nextRecord());
+		assertTrue(reader.canRead());
+		assertEquals("2 ", reader.nextField());
+		assertEquals("4", reader.nextField());
+		assertNull(reader.nextField());
+
+		assertTrue(reader.nextRecord());
+		assertTrue(reader.canRead());
+		assertEquals("j ", reader.nextField());
+		assertEquals("w", reader.nextField());
+		assertNull(reader.nextField());
+		assertFalse(reader.nextRecord());
+		assertFalse(reader.canRead());
+
+		reader.close();
+	}
+}
