@@ -1,46 +1,32 @@
-To compile and test FitGoodies, you must have several libraries in lib/
+You must have several additional libraries in lib/ directory of the project which are not checked in.
 
-From http://fit.c2.com
-fit.jar
+To compile add:
+--------------------------------------------------------------------
+fit.jar                      | http://fit.c2.com
+log4j.jar (version 1.2)      | http://logging.apache.org/log4j
+bcel-5.2.jar                 | http://jakarta.apache.org/bcel
+mailapi.jar (version 1.4.2)  | http://java.sun.com/products/javamail
 
-From http://logging.apache.org/log4j
-log4j.jar (version 1.2)
-
-From http://jakarta.apache.org/bcel
-bcel-5.2.jar
-
-From http://java.sun.com/products/javamail/index.jsp
-mailapi.jar (version 1.4.2)
-
-
-
-For testing, you also need:
-
-From http://www.junit.org
-junit-3.8.2.jar
-
-From http://jmock.org
-jmock-2.5.1.jar
-jmock-junit3-2.5.1.jar
-jmock-legacy-2.5.1.jar
-
-From http://code.google.com/p/hamcrest
-hamcrest-core-1.1.jar
-hamcrest-library-1.1.jar
-
-From http://cglib.sourceforge.net
-cglib-nodep-2.2.jar
-
-From http://code.google.com/p/objenesis/
-objenesis-1.0.jar
-
-
+For junit-tests, you also need:
+--------------------------------------------------------------------
+junit-3.8.2.jar              | http://www.junit.org
+jmock-2.5.1.jar              | http://jmock.org
+jmock-junit3-2.5.1.jar       | http://jmock.org
+jmock-legacy-2.5.1.jar       | http://jmock.org
+hamcrest-core-1.1.jar        | http://code.google.com/p/hamcrest
+hamcrest-library-1.1.jar     | http://code.google.com/p/hamcrest
+cglib-nodep-2.2.jar          | http://cglib.sourceforge.net
+objenesis-1.0.jar            | http://code.google.com/p/objenesis
 
 For generating the docs, you need:
-From http://java.sun.com/j2se/javadoc/doccheck/
-doccheck.jar (version 1.2b2)
-
+--------------------------------------------------------------------
+doccheck.jar (version 1.2b2) | http://java.sun.com/j2se/javadoc/doccheck
 
 And finally, to run the demo, also you need:
-From http://developers.sun.com/javadb/
-derby.jar (tested with 10.5.1.1; note: this is included in java windows installations by default)
+--------------------------------------------------------------------
+derby.jar                    | http://developers.sun.com/javadb
+(tested with 10.5.1.1; note: this is included in java windows installations by default)
+
+
+last updated 2009-08-27
+ 
