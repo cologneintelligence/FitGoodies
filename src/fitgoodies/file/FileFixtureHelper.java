@@ -24,7 +24,7 @@ package fitgoodies.file;
  *
  * @see FileFixture FileFixture
  * @author jwierum
- * @version $Id: FileFixtureHelper.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public final class FileFixtureHelper {
 	private static FileFixtureHelper instance;

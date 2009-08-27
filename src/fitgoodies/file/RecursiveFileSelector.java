@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * Browses a directory recursively for files which match a given filter.
  *
  * @author jwierum
- * @version $Id: RecursiveFileSelector.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class RecursiveFileSelector implements Iterator<FileInformation> {
 	private final List<DirectoryProvider> dirs = new LinkedList<DirectoryProvider>();

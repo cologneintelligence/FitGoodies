@@ -29,7 +29,7 @@ import fit.TypeAdapter;
  * to call a method multiple times. So the first result is cached.
  *
  * @author jwierum
- * @version $Id: CachingTypeAdapter.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public final class CachingTypeAdapter extends TypeAdapter {
 	private final TypeAdapter parent;

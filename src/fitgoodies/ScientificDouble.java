@@ -31,7 +31,7 @@ package fitgoodies;
  * at least, it works.
  *
  * @author jwierum
- * @version $Id: ScientificDouble.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class ScientificDouble extends fit.ScientificDouble {
 	private static final long serialVersionUID = 516631298066483532L;

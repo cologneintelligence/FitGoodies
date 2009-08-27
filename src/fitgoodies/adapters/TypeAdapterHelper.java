@@ -28,7 +28,7 @@ import fit.TypeAdapter;
  * Singleton helper class which manages all registered <code>TypeAdapter</code>s.
  *
  * @author jwierum
- * @version $Id: TypeAdapterHelper.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public final class TypeAdapterHelper {
 	private final Map<Class<?>, Class<? extends AbstractTypeAdapter<?>>> adapters =

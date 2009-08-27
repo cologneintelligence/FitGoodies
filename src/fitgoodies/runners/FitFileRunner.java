@@ -38,7 +38,7 @@ import fitgoodies.file.FileSystemDirectoryHelper;
  * Runs a test file using most of fit's default component.
  *
  * @author jwierum
- * @version $Id: FitFileRunner.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FitFileRunner implements Runner {
 	private String encoding;

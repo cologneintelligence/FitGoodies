@@ -28,7 +28,7 @@ import fitgoodies.references.CrossReferenceHelper;
 import fitgoodies.references.processors.CrossReferenceProcessorMock;
 
 /**
- * $Id: ColumnFixtueTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class ColumnFixtueTest extends FitGoodiesTestCase {

@@ -26,7 +26,7 @@ import java.util.Iterator;
  * Interface which provides information about the content of a directory.
  *
  * @author jwierum
- * @version $Id: DirectoryProvider.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public interface DirectoryProvider {
 	/**

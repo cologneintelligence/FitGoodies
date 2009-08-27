@@ -47,7 +47,7 @@ import fitgoodies.util.FixtureTools;
  * {@link FileFixtureHelper} if they are missing.
  *
  * @author jwierum
- * @version $Id: AbstractFileReaderFixture.java 203 2009-08-24 12:03:16Z jwierum $
+ * @version $Id$
  */
 public abstract class AbstractFileReaderFixture extends Fixture {
 	private FileInformation file;

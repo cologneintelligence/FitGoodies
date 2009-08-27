@@ -41,7 +41,7 @@ import fitgoodies.Fixture;
  * </table>
  *
  * @author jwierum
- * @version $Id: SetupFixture.java 199 2009-08-21 15:19:47Z jwierum $
+ * @version $Id$
  */
 public class SetupFixture extends Fixture {
 	private final LoggerProvider loggerProvider;

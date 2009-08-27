@@ -30,7 +30,7 @@ import java.util.Enumeration;
  * To set the values with HTML, you can use a {@link SetupFixture}.
  *
  * @author jwierum
- * @version $Id: SetupHelper.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public final class SetupHelper {
 	private static SetupHelper instance;

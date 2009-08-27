@@ -31,7 +31,7 @@ import fit.Parse;
  * resolve aliases.
  *
  * @author jwierum
- * @version $Id: AliasEnabledFixture.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public final class AliasEnabledFixture extends Fixture {
 	/**

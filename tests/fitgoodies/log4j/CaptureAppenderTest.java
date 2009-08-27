@@ -34,7 +34,7 @@ import fitgoodies.FitGoodiesTestCase;
 
 /**
  * @author jwierum
- * @version $Id: CaptureAppenderTest.java 199 2009-08-21 15:19:47Z jwierum $
+ * @version $Id$
  */
 public final class CaptureAppenderTest extends FitGoodiesTestCase {
 	private static class TestFilter extends Filter {

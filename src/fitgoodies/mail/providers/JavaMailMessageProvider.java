@@ -32,7 +32,7 @@ import fitgoodies.mail.Mail;
  * Implementation of MessageProvider which uses the JavaMail libraries.
  *
  * @author jwierum
- * @version $Id: JavaMailMessageProvider.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class JavaMailMessageProvider implements MessageProvider {
 	private final Session session;

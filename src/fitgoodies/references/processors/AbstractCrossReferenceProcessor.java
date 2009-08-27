@@ -32,7 +32,7 @@ import fitgoodies.references.CrossReferenceProcessorShortcutException;
  * and give a small user output.
  *
  * @author jwierum
- * @version $Id: AbstractCrossReferenceProcessor.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public abstract class AbstractCrossReferenceProcessor {
 	private final String plainPattern;

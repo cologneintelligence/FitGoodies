@@ -22,7 +22,7 @@ import fitgoodies.FitGoodiesTestCase;
 import fitgoodies.references.processors.CrossReferenceProcessorMock;
 
 /**
- * $Id: CrossReferenceHelperTest.java 188 2009-08-18 11:29:00Z jwierum $
+ * $Id$
  * @author jwierum
  */
 

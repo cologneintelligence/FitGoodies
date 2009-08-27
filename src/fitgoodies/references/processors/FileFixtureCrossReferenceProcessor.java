@@ -31,7 +31,7 @@ import fitgoodies.references.CrossReference;
  * This class provide ${selectedFile()} and ${selectedEncoding()}.
  *
  * @author jwierum
- * @version $Id: FileFixtureCrossReferenceProcessor.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FileFixtureCrossReferenceProcessor extends
 		AbstractCrossReferenceProcessor {

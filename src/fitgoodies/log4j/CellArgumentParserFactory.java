@@ -24,7 +24,7 @@ import fit.Parse;
  * Factory interface which creates CellArgumentParsers.
  *
  * @author jwierum
- * @version $Id: CellArgumentParserFactory.java 197 2009-08-21 12:30:26Z jwierum $
+ * @version $Id$
  */
 public interface CellArgumentParserFactory {
 	/**

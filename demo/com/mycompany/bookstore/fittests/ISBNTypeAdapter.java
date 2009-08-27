@@ -25,7 +25,7 @@ import com.mycompany.bookstore.ISBN;
 import fit.TypeAdapter;
 import fitgoodies.adapters.AbstractTypeAdapter;
 
-/** $Id: ISBNTypeAdapter.java 185 2009-08-17 13:47:24Z jwierum $ */
+/** $Id$ */
 
 public final class ISBNTypeAdapter extends AbstractTypeAdapter<ISBN> {
 	public ISBNTypeAdapter(final TypeAdapter ta, final String parameter) {

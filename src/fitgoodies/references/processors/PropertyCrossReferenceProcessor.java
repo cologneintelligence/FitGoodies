@@ -31,7 +31,7 @@ import fitgoodies.references.CrossReference;
  * The namespace is interpreted as the filename without its extension.
  *
  * @author kmussawisade
- * @version $Id: PropertyCrossReferenceProcessor.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class PropertyCrossReferenceProcessor extends AbstractCrossReferenceProcessor {
 	private static final String PATTERN =

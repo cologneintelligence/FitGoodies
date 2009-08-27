@@ -25,7 +25,7 @@ import fitgoodies.references.processors.AbstractCrossReferenceProcessor;
  * Represents a cross reference match.
  *
  * @author jwierum
- * @version $Id: CrossReference.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 
 public class CrossReference {

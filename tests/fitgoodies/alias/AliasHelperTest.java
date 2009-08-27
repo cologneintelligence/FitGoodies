@@ -22,7 +22,7 @@ package fitgoodies.alias;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: AliasHelperTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class AliasHelperTest extends FitGoodiesTestCase {

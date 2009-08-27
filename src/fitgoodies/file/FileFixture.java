@@ -35,7 +35,7 @@ import fitgoodies.ActionFixture;
  *
  * @see FileFixtureHelper FileFixtureHelper
  * @author jwierum
- * @version $Id: FileFixture.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FileFixture extends ActionFixture {
 	/**

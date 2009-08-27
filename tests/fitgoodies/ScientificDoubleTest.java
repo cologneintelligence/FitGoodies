@@ -20,7 +20,7 @@
 package fitgoodies;
 
 /**
- * $Id: ScientificDoubleTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class ScientificDoubleTest extends FitGoodiesTestCase {

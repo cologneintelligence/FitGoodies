@@ -32,7 +32,7 @@ import fitgoodies.ScientificDouble;
  * These objects can be read from fit.
  *
  * @author jwierum
- * @version $Id: ResultSetWrapper.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class ResultSetWrapper {
 	private final List<String> names = new ArrayList<String>();

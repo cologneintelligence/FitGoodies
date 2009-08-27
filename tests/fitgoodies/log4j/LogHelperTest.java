@@ -28,7 +28,7 @@ import fitgoodies.FitGoodiesTestCase;
 
 /**
  * @author jwierum
- * @version $Id: LogHelperTest.java 199 2009-08-21 15:19:47Z jwierum $
+ * @version $Id$
  */
 public final class LogHelperTest extends FitGoodiesTestCase {
 	private static class DummyLogger implements AppenderAttachable {

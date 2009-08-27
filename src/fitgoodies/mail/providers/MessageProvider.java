@@ -27,7 +27,7 @@ import fitgoodies.mail.Mail;
  * Interface for a provider that can receive Mails.
  *
  * @author jwierum
- * @version $Id: MessageProvider.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public interface MessageProvider {
 	/**

@@ -50,7 +50,7 @@ import fitgoodies.file.RecursiveFileSelector;
  * file is generated.
  *
  * @author jwierum
- * @version $Id: DirectoryRunner.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class DirectoryRunner {
 	private final DirectoryProvider directoryProvider;

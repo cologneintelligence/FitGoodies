@@ -39,7 +39,7 @@ import fitgoodies.util.WaitForResult;
  * exceeded.
  *
  * @author jwierum
- * @version $Id: ActionFixture.java 203 2009-08-24 12:03:16Z jwierum $
+ * @version $Id$
  */
 public class ActionFixture extends fit.ActionFixture {
 

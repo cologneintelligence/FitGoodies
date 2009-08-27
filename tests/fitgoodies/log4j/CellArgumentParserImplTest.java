@@ -26,7 +26,7 @@ import fitgoodies.FitGoodiesTestCase;
 
 /**
  * @author jwierum
- * @version $Id: CellArgumentParserImplTest.java 197 2009-08-21 12:30:26Z jwierum $
+ * @version $Id$
  */
 public final class CellArgumentParserImplTest extends FitGoodiesTestCase {
 	private Parse makeCell(final String innerText) throws ParseException {

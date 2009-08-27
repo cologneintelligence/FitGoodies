@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- $Id: build.xml 192 2009-08-20 14:41:05Z jwierum $ -->
+<!-- $Id$ -->
 
 <project name="FitGoodies" basedir="." default="all">
 	<property name="src.dir" location="src"/>

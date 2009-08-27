@@ -35,7 +35,7 @@ import fitgoodies.ActionFixture;
  * </table>
  *
  * @author jwierum
- * @version $Id: SetupFixture.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class SetupFixture extends ActionFixture {
 	/**

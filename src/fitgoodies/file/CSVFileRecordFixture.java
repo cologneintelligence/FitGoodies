@@ -28,7 +28,7 @@ import fitgoodies.file.readers.CSVRecordReader;
  * defaults to comma, the mask defaults to the quotation mark.
  *
  * @author jwierum
- * @version $Id: CSVFileRecordFixture.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class CSVFileRecordFixture extends AbstractFileRecordReaderFixture {
 	@Override

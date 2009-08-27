@@ -39,7 +39,7 @@ import fit.TypeAdapter;
  * @param <T> type the <code>AbstractTypeAdapter</code> is responsible for.
  *
  * @author jwierum
- * @version $Id: AbstractTypeAdapter.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public abstract class AbstractTypeAdapter<T> extends TypeAdapter {
 	private final String parameter;

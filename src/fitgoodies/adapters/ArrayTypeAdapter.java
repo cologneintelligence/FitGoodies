@@ -30,7 +30,7 @@ import fit.TypeAdapter;
  * It splits the input at commas and converts each part into an array element.
  *
  * @author jwierum
- * @version $Id: ArrayTypeAdapter.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class ArrayTypeAdapter extends TypeAdapter {
 	private final String parameter;

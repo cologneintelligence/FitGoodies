@@ -26,7 +26,7 @@ import java.io.FilenameFilter;
  * Simple filter that checks, whether the filename matches a given regex.
  *
  * @author jwierum
- * @version $Id: SimpleRegexFilter.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class SimpleRegexFilter implements FilenameFilter {
 	private final String regex;

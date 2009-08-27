@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  * The method must have the signature <code>boolean method()</code>.
  *
  * @author kmussawisade
- * @version $Id: WaitForResult.java 202 2009-08-24 11:58:39Z jwierum $
+ * @version $Id$
  */
 public final class WaitForResult {
 	private final SystemTime systemTime;

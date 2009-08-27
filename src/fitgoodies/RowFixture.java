@@ -29,7 +29,7 @@ import fitgoodies.util.FixtureTools;
  * custom parsers and cross references).
  *
  * @author jwierum
- * @version $Id: RowFixture.java 203 2009-08-24 12:03:16Z jwierum $
+ * @version $Id$
  */
 public abstract class RowFixture extends fit.RowFixture {
 	private String[] parameters;

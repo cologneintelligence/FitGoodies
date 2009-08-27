@@ -31,7 +31,7 @@ package fitgoodies.references;
  * an example.
  *
  * @author jwierum
- * @version $Id: CrossReferenceProcessorShortcutException.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class CrossReferenceProcessorShortcutException extends Exception {
 	private static final long serialVersionUID = -8237888733374923655L;

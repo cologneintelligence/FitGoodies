@@ -26,7 +26,7 @@ import java.util.Locale;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: SetupHelperTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class SetupHelperTest extends FitGoodiesTestCase {

@@ -31,7 +31,7 @@ import fitgoodies.FitGoodiesTestCase;
 import fitgoodies.ScientificDouble;
 
 /**
- * $Id: ResultSetWrapperTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class ResultSetWrapperTest extends FitGoodiesTestCase {

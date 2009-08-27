@@ -32,7 +32,7 @@ import fitgoodies.references.processors.StorageCrossReferenceProcessor;
  *
  * @see SetupFixture SetupFixture
  * @author jwierum
- * @version $Id: CrossReferenceHelper.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 
 public final class CrossReferenceHelper {

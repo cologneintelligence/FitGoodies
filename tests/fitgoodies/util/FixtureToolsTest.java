@@ -34,7 +34,7 @@ import fitgoodies.references.CrossReferenceHelper;
 import fitgoodies.util.FixtureTools;
 
 /**
- * $Id: FixtureToolsTest.java 203 2009-08-24 12:03:16Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class FixtureToolsTest extends FitGoodiesTestCase {

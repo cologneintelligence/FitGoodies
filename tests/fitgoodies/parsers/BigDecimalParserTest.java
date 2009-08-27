@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: BigDecimalParserTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class BigDecimalParserTest extends FitGoodiesTestCase {

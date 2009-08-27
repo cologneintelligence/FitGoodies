@@ -24,7 +24,7 @@ import java.math.BigInteger;
 import fit.TypeAdapter;
 
 /**
- * $Id: DummyTypeAdapter.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class DummyTypeAdapter extends AbstractTypeAdapter<BigInteger> {

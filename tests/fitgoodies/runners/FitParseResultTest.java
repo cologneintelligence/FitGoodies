@@ -29,7 +29,7 @@ import fit.Parse;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: FitParseResultTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class FitParseResultTest extends FitGoodiesTestCase {

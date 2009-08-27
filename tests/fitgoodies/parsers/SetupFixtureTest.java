@@ -25,7 +25,7 @@ import fitgoodies.FitGoodiesTestCase;
 import fitgoodies.util.FixtureTools;
 
 /**
- * $Id: SetupFixtureTest.java 203 2009-08-24 12:03:16Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class SetupFixtureTest extends FitGoodiesTestCase {

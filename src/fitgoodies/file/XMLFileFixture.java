@@ -42,7 +42,7 @@ import fit.TypeAdapter;
  * </table>
  *
  * @author jwierum
- * @version $Id: XMLFileFixture.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class XMLFileFixture extends AbstractFileReaderFixture {
 	/** for internal use only - used to solve cross references. */

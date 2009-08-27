@@ -33,7 +33,7 @@ import fitgoodies.dynamic.ResultSetWrapper;
  * with the individual rows of the <code>ResultSet</code>.
  *
  * @author jwierum
- * @version $Id: ResultSetFixture.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class ResultSetFixture extends RowFixture {
 	private ResultSetWrapper table;

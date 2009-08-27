@@ -26,7 +26,7 @@ import fit.Parse;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: SetupFixtureTest.java 195 2009-08-21 09:58:17Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class SetupFixtureTest extends FitGoodiesTestCase {

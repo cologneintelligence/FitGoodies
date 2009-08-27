@@ -27,7 +27,7 @@ import fitgoodies.file.readers.DelimiterRecordReader;
  * The fixture has one more parameters: delimiter. The delimiter must be set.
  *
  * @author jwierum
- * @version $Id: DelimiterFileRecordFixture.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class DelimiterFileRecordFixture extends AbstractFileRecordReaderFixture {
 	/** for internal use - used to resolve cross references. */

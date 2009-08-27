@@ -27,7 +27,7 @@ import fit.Parse;
  * Factory interface to provide {@link LogEventAnalyzer}s.
  *
  * @author jwierum
- * @version $Id: LogEventAnalyzerFactory.java 197 2009-08-21 12:30:26Z jwierum $
+ * @version $Id$
  */
 public interface LogEventAnalyzerFactory {
 	/**

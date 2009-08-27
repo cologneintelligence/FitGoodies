@@ -25,7 +25,7 @@ package fitgoodies.parsers;
  * the type object, the parser compares their <code>toString()</code> value.
  *
  * @author jwierum
- * @version $Id: ObjectParser.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class ObjectParser implements Parser<Object> {
 	/**

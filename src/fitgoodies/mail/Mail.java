@@ -25,7 +25,7 @@ import javax.mail.MessagingException;
  * Interface to access mail information.
  *
  * @author jwierum
- * @version $Id: Mail.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public interface Mail {
 	/**

@@ -29,7 +29,7 @@ import java.util.List;
  * matching files.
  *
  * @author jwierum
- * @version $Id: FileSelector.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FileSelector {
 	private final SimpleRegexFilter filter;

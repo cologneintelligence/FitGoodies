@@ -26,7 +26,7 @@ import java.util.Properties;
  * Can be set via HTML using the {@link SetupFixture}.
  *
  * @author jwierum
- * @version $Id: SetupHelper.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public final class SetupHelper {
 	private static SetupHelper instance;

@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: DynamicObjectFactoryTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class DynamicObjectFactoryTest extends FitGoodiesTestCase {

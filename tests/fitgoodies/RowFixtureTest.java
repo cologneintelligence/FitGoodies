@@ -30,7 +30,7 @@ import fitgoodies.references.CrossReferenceHelper;
 import fitgoodies.references.processors.CrossReferenceProcessorMock;
 
 /**
- * $Id: RowFixtureTest.java 189 2009-08-18 12:41:38Z jwierum $
+ * $Id$
  * @author jwierum
  *
  */

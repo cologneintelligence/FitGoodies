@@ -30,7 +30,7 @@ import fitgoodies.file.readers.FileRecordReader;
  * the value of this reader with the content of the HTML table.
  *
  * @author jwierum
- * @version $Id: AbstractFileRecordReaderFixture.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public abstract class AbstractFileRecordReaderFixture extends
 		AbstractFileReaderFixture {

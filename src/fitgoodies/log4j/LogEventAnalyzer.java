@@ -26,7 +26,7 @@ import java.util.Map;
  * of log messages.
  *
  * @author jwierum
- * @version $Id: LogEventAnalyzer.java 197 2009-08-21 12:30:26Z jwierum $
+ * @version $Id$
  */
 public interface LogEventAnalyzer {
 

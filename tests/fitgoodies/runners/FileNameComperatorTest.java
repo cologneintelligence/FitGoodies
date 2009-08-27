@@ -24,7 +24,7 @@ import fitgoodies.file.FileInformation;
 import fitgoodies.file.FileInformationMock;
 
 /**
- * $Id: FileNameComperatorTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class FileNameComperatorTest extends FitGoodiesTestCase {

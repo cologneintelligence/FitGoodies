@@ -26,7 +26,7 @@ import java.util.Map;
  * Singleton class to manage aliases.
  *
  * @author jwierum
- * @version $Id: AliasHelper.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public final class AliasHelper {
 	private static AliasHelper instance;

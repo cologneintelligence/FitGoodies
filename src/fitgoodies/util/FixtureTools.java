@@ -38,7 +38,7 @@ import fitgoodies.references.CrossReferenceProcessorShortcutException;
  * Helper class with static methods which provides functions for all fixtures.
  *
  * @author jwierum
- * @version $Id: FixtureTools.java 203 2009-08-24 12:03:16Z jwierum $
+ * @version $Id$
  */
 public final class FixtureTools {
 	private static Pattern parameterPattern = Pattern.compile("^(.*)\\s*\\[\\s*(.*?)\\s*\\]\\s*$");

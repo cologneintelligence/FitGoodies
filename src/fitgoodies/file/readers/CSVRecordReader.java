@@ -28,7 +28,7 @@ import java.util.List;
  * Reader which is capable to process comma separated value files.
  *
  * @author jwierum
- * @version $Id: CSVRecordReader.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class CSVRecordReader implements FileRecordReader {
 	private static class ParserState {

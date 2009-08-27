@@ -4,7 +4,7 @@ package fitgoodies.util;
  * Implementation of {@link SystemTime} which uses the real underlying system.
  *
  * @author kmussawisade
- * @version $Id: SystemTimeImpl.java 202 2009-08-24 11:58:39Z jwierum $
+ * @version $Id$
  */
 public final class SystemTimeImpl implements SystemTime {
     @Override

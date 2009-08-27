@@ -26,7 +26,7 @@ import java.io.IOException;
  * one file matches the pattern.
  *
  * @author jwierum
- * @version $Id: FilenameNotUniqueException.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FilenameNotUniqueException extends IOException {
 	private static final long serialVersionUID = 6290009229751508492L;

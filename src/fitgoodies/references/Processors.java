@@ -29,7 +29,7 @@ import fitgoodies.references.processors.AbstractCrossReferenceProcessor;
  * Class to manage registered processors.
  *
  * @author jwierum
- * @version $Id: Processors.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class Processors {
 	private final List<AbstractCrossReferenceProcessor> processors =

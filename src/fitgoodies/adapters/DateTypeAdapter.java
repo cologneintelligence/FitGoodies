@@ -35,7 +35,7 @@ import fitgoodies.date.SetupHelper;
  * Example: &quot;<code>en_US, MM/dd/yyyy</code>&quot;.
  *
  * @author jwierum
- * @version $Id: DateTypeAdapter.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class DateTypeAdapter extends AbstractTypeAdapter<Date> {
 	/**

@@ -25,7 +25,7 @@ import java.io.IOException;
  * FileRecordReaders are used by {@link fitgoodies.file.AbstractFileRecordReaderFixture}
  * to process files with record sets.
  *
- * @version $Id: FileRecordReader.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  * @author jwierum
  */
 public interface FileRecordReader {

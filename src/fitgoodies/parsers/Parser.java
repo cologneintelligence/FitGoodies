@@ -24,7 +24,7 @@ package fitgoodies.parsers;
  * @param <T> data type which the parser is responsible for.
  *
  * @author jwierum
- * @version $Id: Parser.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public interface Parser<T> {
 	/**

@@ -24,7 +24,7 @@ import java.util.HashMap;
  * @param <T> value type of the HashMap
  *
  * @author jwierum
- * @version $Id: NamespaceHashMap.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 
 class NamespaceHashMap<T> {

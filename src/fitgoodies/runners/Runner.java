@@ -25,7 +25,7 @@ import fit.Counts;
  * Interface which is used to check a single test file.
  *
  * @author jwierum
- * @version $Id: Runner.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public interface Runner {
 	/**

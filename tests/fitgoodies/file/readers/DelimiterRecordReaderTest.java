@@ -26,7 +26,7 @@ import java.io.StringReader;
 import junit.framework.TestCase;
 
 /**
- * $Id: DelimiterRecordReaderTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class DelimiterRecordReaderTest extends TestCase {

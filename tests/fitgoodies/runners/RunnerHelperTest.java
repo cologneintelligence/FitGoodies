@@ -25,7 +25,7 @@ import fitgoodies.file.AbstractDirectoryHelper;
 import fitgoodies.file.DirectoryHelperMock;
 
 /**
- * $Id: RunnerHelperTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class RunnerHelperTest extends FitGoodiesTestCase {

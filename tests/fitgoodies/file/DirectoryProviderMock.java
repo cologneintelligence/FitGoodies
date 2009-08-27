@@ -22,7 +22,7 @@ package fitgoodies.file;
 import java.util.Iterator;
 
 /**
- * $Id: DirectoryProviderMock.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class DirectoryProviderMock implements DirectoryProvider {

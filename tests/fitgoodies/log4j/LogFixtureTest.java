@@ -35,7 +35,7 @@ import fitgoodies.references.CrossReferenceHelper;
 
 /**
  * @author jwierum
- * @version $Id: LogFixtureTest.java 198 2009-08-21 12:46:50Z jwierum $
+ * @version $Id$
  *
  */
 public final class LogFixtureTest extends FitGoodiesTestCase {

@@ -26,7 +26,7 @@ import java.io.IOException;
  * Reader which is capable to process files with fixed length records.
  *
  * @author jwierum
- * @version $Id: FixedLengthRecordReader.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FixedLengthRecordReader implements FileRecordReader {
 	private final BufferedReader reader;

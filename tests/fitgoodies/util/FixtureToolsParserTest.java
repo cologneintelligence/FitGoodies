@@ -29,7 +29,7 @@ import fitgoodies.adapters.CachingTypeAdapter;
 import fitgoodies.util.FixtureTools;
 
 /**
- * $Id: FixtureToolsParserTest.java 203 2009-08-24 12:03:16Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class FixtureToolsParserTest extends FitGoodiesTestCase {

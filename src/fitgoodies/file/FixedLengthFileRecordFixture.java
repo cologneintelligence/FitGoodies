@@ -47,7 +47,7 @@ import fitgoodies.util.FixtureTools;
  *
  *
  * @author jwierum
- * @version $Id: FixedLengthFileRecordFixture.java 203 2009-08-24 12:03:16Z jwierum $
+ * @version $Id$
  */
 public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixture {
 	private boolean noeol;

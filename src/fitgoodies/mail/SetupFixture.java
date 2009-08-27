@@ -49,7 +49,7 @@ import fitgoodies.util.FixtureTools;
  * </table>
  *
  * @author jwierum
- * @version $Id: SetupFixture.java 203 2009-08-24 12:03:16Z jwierum $
+ * @version $Id$
  */
 public class SetupFixture extends fitgoodies.ActionFixture {
 

@@ -24,7 +24,7 @@ import fitgoodies.references.CrossReference;
 import fitgoodies.references.CrossReferenceProcessorShortcutException;
 
 /**
- * $Id: AbstractCrossReferenceProcessorTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class AbstractCrossReferenceProcessorTest extends FitGoodiesTestCase {

@@ -22,7 +22,7 @@ package fitgoodies.file;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: AbstractDirectoryHelperTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class AbstractDirectoryHelperTest extends FitGoodiesTestCase {

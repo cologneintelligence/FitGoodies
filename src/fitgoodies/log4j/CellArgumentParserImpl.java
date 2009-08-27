@@ -27,7 +27,7 @@ import fitgoodies.util.FixtureTools;
 /**
  * Removes the parameters from a cell value and stores it in a <code>Map</code>.
  * @author jwierum
- * @version $Id: CellArgumentParserImpl.java 203 2009-08-24 12:03:16Z jwierum $
+ * @version $Id$
  *
  */
 public final class CellArgumentParserImpl implements CellArgumentParser {

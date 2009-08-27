@@ -29,7 +29,7 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 
 /*
- * $Id: ResultSetMockGenerator.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class ResultSetMockGenerator {

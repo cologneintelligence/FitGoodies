@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * Helper class which is used to process pathes and directories.
  *
  * @author jwierum
- * @version $Id: AbstractDirectoryHelper.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public abstract class AbstractDirectoryHelper {
 	/**

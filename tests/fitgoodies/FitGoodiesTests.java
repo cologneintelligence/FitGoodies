@@ -24,7 +24,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * $Id: FitGoodiesTests.java 203 2009-08-24 12:03:16Z jwierum $
+ * $Id$
  * @author jwierum
  */
 

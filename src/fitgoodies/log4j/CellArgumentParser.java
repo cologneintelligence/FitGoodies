@@ -25,7 +25,7 @@ import java.util.Map;
  * The parameter format must be &quot;[key1=value1, key2=value2, ...]&quot;
  *
  * @author jwierum
- * @version $Id: CellArgumentParser.java 197 2009-08-21 12:30:26Z jwierum $
+ * @version $Id$
  */
 public interface CellArgumentParser {
 	/**

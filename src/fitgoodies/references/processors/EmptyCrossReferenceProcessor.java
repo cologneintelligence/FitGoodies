@@ -27,7 +27,7 @@ import fitgoodies.references.CrossReferenceProcessorShortcutException;
  * It just checks whether the object contains any value.
  *
  * @author jwierum
- * @version $Id: EmptyCrossReferenceProcessor.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class EmptyCrossReferenceProcessor extends AbstractCrossReferenceProcessor {
 	private static final String PATTERN = "(nonEmpty|empty)\\(\\)";

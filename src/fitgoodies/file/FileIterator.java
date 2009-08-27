@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
  * Converts a list of {@link FileInformation}.
  *
  * @author jwierum
- * @version $Id: FileIterator.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FileIterator implements Iterator<FileInformation> {
 	private final FileInformation[] files;

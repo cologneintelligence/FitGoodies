@@ -37,7 +37,7 @@ import org.jmock.lib.legacy.ClassImposteriser;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: JavaMailMailTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class JavaMailMailTest extends FitGoodiesTestCase {

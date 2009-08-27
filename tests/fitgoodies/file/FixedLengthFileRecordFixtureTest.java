@@ -26,7 +26,7 @@ import fitgoodies.FitGoodiesTestCase;
 import fitgoodies.references.CrossReferenceHelper;
 
 /**
- * $Id: FixedLengthFileRecordFixtureTest.java 186 2009-08-17 14:12:49Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {

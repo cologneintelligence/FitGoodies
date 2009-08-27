@@ -27,7 +27,7 @@ import fitgoodies.file.AbstractDirectoryHelper;
  * Singleton helper class which holds information about the latest runner.
  *
  * @author jwierum
- * @version $Id: RunnerHelper.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public final class RunnerHelper {
 	private static RunnerHelper instance;

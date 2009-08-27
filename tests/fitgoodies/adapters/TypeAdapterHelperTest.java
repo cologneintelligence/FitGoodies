@@ -27,7 +27,7 @@ import fitgoodies.FitGoodiesTestCase;
 import fitgoodies.util.FixtureToolsTest.DummyValueFixture;
 
 /**
- * $Id: TypeAdapterHelperTest.java 203 2009-08-24 12:03:16Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class TypeAdapterHelperTest extends FitGoodiesTestCase {

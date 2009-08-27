@@ -21,7 +21,7 @@ package fitgoodies.references.processors;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: NamespaceHashMapTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 

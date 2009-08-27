@@ -26,7 +26,7 @@ import fitgoodies.FitGoodiesTestCase;
 import fitgoodies.mail.providers.MessageProvider;
 
 /**
- * $Id: MailFixtureTest.java 195 2009-08-21 09:58:17Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class MailFixtureTest extends FitGoodiesTestCase {

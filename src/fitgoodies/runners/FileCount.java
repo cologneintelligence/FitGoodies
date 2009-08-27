@@ -25,7 +25,7 @@ import fit.Counts;
  * Saves the result count of a specific file.
  *
  * @author jwierum
- * @version $Id: FileCount.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FileCount {
 	private final Counts result;

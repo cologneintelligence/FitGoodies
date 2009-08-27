@@ -27,7 +27,7 @@ import fitgoodies.file.readers.FileRecordReader;
 import fitgoodies.file.readers.FileRecordReaderMock;
 
 /**
- * $Id: AbstractFileRecordReaderFixtureTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {

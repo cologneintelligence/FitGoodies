@@ -35,7 +35,7 @@ import fit.TypeAdapter;
  * Example: &quot;<code>en_US, MM/dd/yyyy</code>&quot;.
  *
  * @author jwierum
- * @version $Id: SQLDateTypeAdapter.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class SQLDateTypeAdapter extends AbstractTypeAdapter<Date> {
 

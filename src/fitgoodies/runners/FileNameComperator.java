@@ -33,7 +33,7 @@ import fitgoodies.file.FileInformation;
  * the last item in a directory
  *
  * @author jwierum
- * @version $Id: FileNameComperator.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FileNameComperator implements Comparator<FileInformation>,
 	Serializable {

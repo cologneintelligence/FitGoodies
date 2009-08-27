@@ -25,7 +25,7 @@ import fitgoodies.references.processors.AbstractCrossReferenceProcessor;
 import fitgoodies.references.processors.CrossReferenceProcessorMock;
 
 /**
- * $Id: ProcessorsTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  *
  */

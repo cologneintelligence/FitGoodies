@@ -26,7 +26,7 @@ import fit.TypeAdapter;
  * handle StringBuilder.
  *
  * @author jwierum
- * @version $Id: StringBuilderTypeAdapter.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class StringBuilderTypeAdapter extends AbstractTypeAdapter<StringBuilder> {
 	/**

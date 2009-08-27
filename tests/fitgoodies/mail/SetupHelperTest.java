@@ -24,7 +24,7 @@ import java.util.Properties;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: SetupHelperTest.java 195 2009-08-21 09:58:17Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public final class SetupHelperTest extends FitGoodiesTestCase {

@@ -31,7 +31,7 @@ import org.apache.log4j.spi.LoggingEvent;
  * It copies the filters from a given parent Appender
  *
  * @author jwierum
- * @version $Id: CaptureAppender.java 199 2009-08-21 15:19:47Z jwierum $
+ * @version $Id$
  */
 public final class CaptureAppender extends AppenderSkeleton {
 	private final List<LoggingEvent> events = new LinkedList<LoggingEvent>();

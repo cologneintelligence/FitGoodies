@@ -34,7 +34,7 @@ import fitgoodies.file.AbstractDirectoryHelper;
  * Implementation of FitResult which generates a indented HTML table.
  *
  * @author jwierum
- * @version $Id: FitResultTable.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public final class FitResultTable implements FitResult {
 	private final List<FileCount> results = new LinkedList<FileCount>();

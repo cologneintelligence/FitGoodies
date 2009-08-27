@@ -34,7 +34,7 @@ import fitgoodies.references.CrossReference;
  * </ul>
  *
  * @author jwierum
- * @version $Id: StorageCrossReferenceProcessor.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 
 public class StorageCrossReferenceProcessor extends AbstractCrossReferenceProcessor {

@@ -28,7 +28,7 @@ import fitgoodies.util.FixtureTools;
  * Fixture to register aliases at runtime.
  *
  * @author jwierum
- * @version $Id: SetupFixture.java 203 2009-08-24 12:03:16Z jwierum $
+ * @version $Id$
  */
 public class SetupFixture extends Fixture {
 	/** alias name to use. */

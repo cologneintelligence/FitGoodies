@@ -34,7 +34,7 @@ import org.apache.log4j.spi.LoggingEvent;
  * the given thread are analyzed.
  *
  * @author jwierum
- * @version $Id: AbstractLoggingEventMatcher.java 197 2009-08-21 12:30:26Z jwierum $
+ * @version $Id$
  */
 public abstract class AbstractLoggingEventMatcher {
 	/**

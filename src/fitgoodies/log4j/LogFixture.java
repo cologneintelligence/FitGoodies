@@ -65,7 +65,7 @@ import fitgoodies.util.FixtureTools;
  * </table>
  *
  * @author jwierum
- * @version $Id: LogFixture.java 203 2009-08-24 12:03:16Z jwierum $
+ * @version $Id$
  */
 public class LogFixture extends Fixture {
 	private final LoggerProvider loggerProvider;

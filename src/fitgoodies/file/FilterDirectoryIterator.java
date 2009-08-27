@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * which do not match a given <code>FilenameFilter</code>.
  *
  * @author jwierum
- * @version $Id: FilterDirectoryIterator.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FilterDirectoryIterator implements Iterator<FileInformation> {
 	private final Iterator<FileInformation> provider;

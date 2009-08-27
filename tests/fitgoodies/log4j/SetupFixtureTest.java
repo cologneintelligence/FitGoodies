@@ -29,7 +29,7 @@ import fitgoodies.FitGoodiesTestCase;
 
 /**
  * @author jwierum
- * @version $Id: SetupFixtureTest.java 199 2009-08-21 15:19:47Z jwierum $
+ * @version $Id$
  */
 public final class SetupFixtureTest extends FitGoodiesTestCase {
 	public void testParse() throws Exception {

@@ -24,7 +24,7 @@ import java.io.FileNotFoundException;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: FileFixtureHelperTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class FileFixtureHelperTest extends FitGoodiesTestCase {

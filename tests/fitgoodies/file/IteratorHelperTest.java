@@ -25,7 +25,7 @@ import java.util.Iterator;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: IteratorHelperTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class IteratorHelperTest extends FitGoodiesTestCase {

@@ -36,14 +36,14 @@ import org.apache.bcel.generic.Type;
  * This class is primary written for internal use.
  *
  * @author jwierum
- * @version $Id: DynamicObjectFactory.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class DynamicObjectFactory {
 	/**
 	 * Class loader which is able to load the dynamic generated class.
 	 *
 	 * @author jwierum
-	 * @version $Id: DynamicObjectFactory.java 185 2009-08-17 13:47:24Z jwierum $
+	 * @version $Id$
 	 */
 	public static class JavaClassClassloader extends java.lang.ClassLoader {
 		/**

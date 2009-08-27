@@ -29,7 +29,7 @@ import fit.TypeAdapter;
  * and you don't want to type in all spaces into yout HTML table.
  *
  * @author jwierum
- * @version $Id: StringTypeAdapter.java 194 2009-08-21 09:57:44Z jwierum $
+ * @version $Id$
  */
 public class StringTypeAdapter extends AbstractTypeAdapter<String> {
 	/**

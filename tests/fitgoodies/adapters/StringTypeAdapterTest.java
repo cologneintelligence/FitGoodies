@@ -24,7 +24,7 @@ import fit.TypeAdapter;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: StringTypeAdapterTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author kmussawisade
  */
 public class StringTypeAdapterTest extends FitGoodiesTestCase {

@@ -25,7 +25,7 @@ import org.apache.log4j.spi.AppenderAttachable;
  * Sinlgeton class which helps to manage loggers.
  *
  * @author jwierum
- * @version $Id: LogHelper.java 199 2009-08-21 15:19:47Z jwierum $
+ * @version $Id$
  *
  */
 public final class LogHelper {

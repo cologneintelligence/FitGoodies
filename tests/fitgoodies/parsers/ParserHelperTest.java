@@ -25,7 +25,7 @@ import java.math.BigInteger;
 import fitgoodies.FitGoodiesTestCase;
 
 /**
- * $Id: ParserHelperTest.java 185 2009-08-17 13:47:24Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public class ParserHelperTest extends FitGoodiesTestCase {

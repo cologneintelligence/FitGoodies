@@ -28,7 +28,7 @@ import java.io.IOException;
  * Implementation of {@link FileInformation} which uses the file system.
  *
  * @author jwierum
- * @version $Id: FileSystemFileInformation.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FileSystemFileInformation extends FileInformation {
 	private final String dir;

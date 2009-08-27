@@ -27,7 +27,7 @@ import fit.Counts;
 import fitgoodies.adapters.TypeAdapterHelper;
 
 /**
- * $Id: FitGoodiesTestCase.java 189 2009-08-18 12:41:38Z jwierum $
+ * $Id$
  * @author jwierum
  */
 public abstract class FitGoodiesTestCase extends MockObjectTestCase {

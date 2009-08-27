@@ -30,7 +30,7 @@ import java.util.List;
  * Provides the content of a single directory in the file system.
  *
  * @author jwierum
- * @version $Id: FileSystemDirectoryProvider.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class FileSystemDirectoryProvider implements DirectoryProvider {
 	private final String path;

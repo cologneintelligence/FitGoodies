@@ -38,7 +38,7 @@ import fit.Parse;
  * a dummy cell. This dummy cell is preserved.
  *
  * @author jwierum
- * @version $Id: FitParseResult.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public final class FitParseResult implements FitResult {
 	private final List<FileCount> results = new LinkedList<FileCount>();

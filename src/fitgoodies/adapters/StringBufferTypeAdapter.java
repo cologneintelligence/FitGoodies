@@ -26,7 +26,7 @@ import fit.TypeAdapter;
  * handle StringBuffers.
  *
  * @author jwierum
- * @version $Id: StringBufferTypeAdapter.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class StringBufferTypeAdapter extends AbstractTypeAdapter<StringBuffer> {
 	/**

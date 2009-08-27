@@ -41,7 +41,7 @@ import fitgoodies.file.FileSystemDirectoryProvider;
  * </table>
  *
  * @author jwierum
- * @version $Id: RunFixture.java 185 2009-08-17 13:47:24Z jwierum $
+ * @version $Id$
  */
 public class RunFixture extends ActionFixture {
 	private Runner runner;

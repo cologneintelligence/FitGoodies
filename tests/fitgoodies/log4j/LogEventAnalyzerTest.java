@@ -36,7 +36,7 @@ import fitgoodies.FitGoodiesTestCase;
 
 /**
  * @author jwierum
- * @version $Id: LogEventAnalyzerTest.java 196 2009-08-21 09:58:46Z jwierum $
+ * @version $Id$
  *
  */
 public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
