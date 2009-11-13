@@ -19,9 +19,10 @@ package de.coin;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
-import fitgoodies.runners.DirectoryRunner;
-
 import java.io.File;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * @goal run
@@ -45,6 +46,7 @@ public class FitGoodiesRunnerMojo extends AbstractMojo {
 	 */
 	private String sourceDirectory;
 
+	File test;
 	/**
 	 * Encoding. default is set to utf-8.
 	 * @parameter default-value="utf-8"
@@ -62,10 +64,49 @@ public class FitGoodiesRunnerMojo extends AbstractMojo {
 
 	public void execute() throws MojoExecutionException {
 // todo: implement http://maven.apache.org/plugins/maven-surefire-plugin/xref/org/apache/maven/plugin/surefire/SurefirePlugin.html
-getLog().error(System.getProperty("java.class.path", "."));
-getLog().error(classesDirectory.toString());
+		// http://maven.apache.org/guides/mini/guide-maven-classloading.html
+	
+		ClassLoader loader = makeClassLoader();
+
+		Class directoryRunner = getDirectoryRunnerClass(loader);
+		
 		String[] args = new String[]{sourceDirectory, outputDirectory, fileEncoding};
-		getLog().info("starting the fitgoodies maven plugin run goal. " + sourceDirectory + "->" + outputDirectory + " " + fileEncoding);
-		DirectoryRunner.main(args);
+		getLog().info("starting the fitgoodies maven plugin run goal. " + 
+				sourceDirectory + "->" + outputDirectory + " " + fileEncoding);
+		invokeMain(directoryRunner, args);
+	}
+
+	private void invokeMain(Class directoryRunner, String[] args)
+			throws MojoExecutionException {
+		Method mainMethod;
+		try {
+			System.err.println(directoryRunner.getClassLoader());
+			mainMethod = directoryRunner.getMethod("main", new Class[]{String[].class});
+			mainMethod.invoke(directoryRunner, new Object[]{args});
+		} catch (Exception e) {
+			getLog().error("Could not invoke DirectoryRunner");
+			throw new MojoExecutionException("Could not load DirectoryRunner");
+		}
+	}
+
+	private Class getDirectoryRunnerClass(ClassLoader loader) throws MojoExecutionException {
+		try {
+			return loader.loadClass("fitgoodies.runners.DirectoryRunner");
+		} catch (ClassNotFoundException e1) {
+			getLog().error("Could not load DirectoryRunner");
+			throw new MojoExecutionException("Could not load DirectoryRunner");
+		}
+	}
+
+	private ClassLoader makeClassLoader()
+			throws MojoExecutionException {
+		try {
+			File oldJar = new File(System.getProperty("java.class.path"));
+			URL[] directories = new URL[] { classesDirectory.toURI().toURL(), oldJar.toURI().toURL() };
+			return new FitGoodiesPluginClassLoader(directories);
+		} catch (MalformedURLException e) {
+			getLog().error("Invalid class path: " + classesDirectory.toString());
+			throw new MojoExecutionException("Invalid class path");
+		}
 	}
 }
