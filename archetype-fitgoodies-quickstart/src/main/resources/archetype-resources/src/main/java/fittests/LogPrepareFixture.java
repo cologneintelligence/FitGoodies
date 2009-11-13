@@ -16,7 +16,7 @@
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.mycompany.bookstore.fittests;
+package ${groupId}.fittests;
 
 import java.io.PrintWriter;
 
@@ -26,11 +26,6 @@ import org.apache.log4j.PatternLayout;
 
 import fitgoodies.ActionFixture;
 
-/**
- * @author jwierum
- * @version $Id$
- *
- */
 public final class LogPrepareFixture extends ActionFixture {
 	public void initializeLogging() {
 		ConsoleAppender appender = new ConsoleAppender();

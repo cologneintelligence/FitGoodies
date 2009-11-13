@@ -17,7 +17,7 @@
  */
 
 
-package com.mycompany.bookstore;
+package ${groupId};
 
 import java.sql.Connection;
 import java.sql.DriverManager;

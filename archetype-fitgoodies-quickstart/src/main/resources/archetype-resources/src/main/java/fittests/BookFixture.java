@@ -17,10 +17,10 @@
  */
 
 
-package com.mycompany.bookstore.fittests;
+package ${groupId}.fittests;
 
-import com.mycompany.bookstore.Book;
-import com.mycompany.bookstore.ISBN;
+import ${groupId}.Book;
+import ${groupId}.ISBN;
 
 import fitgoodies.ColumnFixture;
 

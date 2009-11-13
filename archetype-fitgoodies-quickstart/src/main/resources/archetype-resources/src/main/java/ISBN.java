@@ -17,7 +17,7 @@
  */
 
 
-package com.mycompany.bookstore;
+package ${groupId};
 
 import org.apache.log4j.Logger;
 

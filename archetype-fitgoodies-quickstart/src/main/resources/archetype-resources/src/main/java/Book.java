@@ -17,7 +17,7 @@
  */
 
 
-package com.mycompany.bookstore;
+package ${groupId};
 
 public final class Book {
 	private StringBuffer title;

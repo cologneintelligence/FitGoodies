@@ -17,9 +17,9 @@
  */
 
 
-package com.mycompany.bookstore.fittests;
+package ${groupId}.fittests;
 
-import com.mycompany.bookstore.Bookshelf;
+import ${groupId}.Bookshelf;
 
 public final class FixtureObjects {
 	private FixtureObjects() { }

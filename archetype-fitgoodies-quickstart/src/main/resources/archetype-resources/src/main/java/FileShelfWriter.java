@@ -17,7 +17,7 @@
  */
 
 
-package com.mycompany.bookstore;
+package ${groupId};
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

@@ -17,13 +17,9 @@
  */
 
 
-package com.mycompany.bookstore.fittests;
+package ${groupId}.fittests;
 
-import com.mycompany.bookstore.DerbyShelfWriter;
-import com.mycompany.bookstore.FileShelfWriter;
-import com.mycompany.bookstore.ShelfWriter;
-import com.mycompany.bookstore.XMLShelfWriter;
-
+import ${groupId}.*;
 import fitgoodies.Fixture;
 
 public final class SaveTest extends Fixture {

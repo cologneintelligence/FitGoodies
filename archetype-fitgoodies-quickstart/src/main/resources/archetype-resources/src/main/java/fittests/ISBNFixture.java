@@ -17,33 +17,21 @@
  */
 
 
-package com.mycompany.bookstore.fittests;
+package ${groupId}.fittests;
 
 
-import com.mycompany.bookstore.ISBN;
+import ${groupId}.ISBN;
 
-import fit.TypeAdapter;
-import fitgoodies.adapters.AbstractTypeAdapter;
+import fitgoodies.ColumnFixture;
 
-/** $Id$ */
+public final class ISBNFixture extends ColumnFixture {
+	public ISBN isbn;
 
-public final class ISBNTypeAdapter extends AbstractTypeAdapter<ISBN> {
-	public ISBNTypeAdapter(final TypeAdapter ta, final String parameter) {
-		super(ta, parameter);
+	public boolean valid() {
+		return isbn.isValid();
 	}
 
-	@Override
-	public Object parse(final String s) throws Exception {
-		return new ISBN(s);
-	}
-
-	@Override
-	public Class<ISBN> getType() {
-		return ISBN.class;
-	}
-
-	@Override
-	public String toString(final Object o) {
-		return ((ISBN) o).stripped();
+	public String stripped() {
+		return isbn.stripped();
 	}
 }
