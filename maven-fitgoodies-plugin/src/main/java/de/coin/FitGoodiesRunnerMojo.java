@@ -21,12 +21,13 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import fitgoodies.runners.DirectoryRunner;
 
+import java.io.File;
+
 /**
- * Goal which touches a timestamp file.
- * 
  * @goal run
  * 
  * @phase process-sources
+ * @requiresDependencyResolution runtime
  */
 public class FitGoodiesRunnerMojo extends AbstractMojo {
 	/**
@@ -51,7 +52,18 @@ public class FitGoodiesRunnerMojo extends AbstractMojo {
 	 */
 	private String fileEncoding;
 
+	/**
+	* The directory containing generated test classes of the project being tested.
+	* 
+	* @parameter expression="${project.build.outputDirectory}"
+	* @required
+	*/
+	private File classesDirectory;
+
 	public void execute() throws MojoExecutionException {
+// todo: implement http://maven.apache.org/plugins/maven-surefire-plugin/xref/org/apache/maven/plugin/surefire/SurefirePlugin.html
+getLog().error(System.getProperty("java.class.path", "."));
+getLog().error(classesDirectory.toString());
 		String[] args = new String[]{sourceDirectory, outputDirectory, fileEncoding};
 		getLog().info("starting the fitgoodies maven plugin run goal. " + sourceDirectory + "->" + outputDirectory + " " + fileEncoding);
 		DirectoryRunner.main(args);
