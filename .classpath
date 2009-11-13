@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="tests"/>
-	<classpathentry kind="src" path="demo"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/fit.jar"/>
-	<classpathentry kind="lib" path="lib/junit-3.8.2.jar"/>
-	<classpathentry kind="lib" path="lib/bcel-5.2.jar"/>
-	<classpathentry kind="lib" path="lib/jmock-2.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/hamcrest-core-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/hamcrest-library-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jmock-junit3-2.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/mailapi.jar"/>
-	<classpathentry kind="lib" path="lib/cglib-nodep-2.2.jar"/>
-	<classpathentry kind="lib" path="lib/jmock-legacy-2.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/objenesis-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" output="target/classes" path="src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources"/>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

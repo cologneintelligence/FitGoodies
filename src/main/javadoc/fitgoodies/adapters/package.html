@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<!-- $Id$ -->
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+<p>
+TypeAdapters are used by fit to convert a String (which comes from your tables)
+into an Object (using {@link fitgoodies.adapters.AbstractTypeAdapter}'s parse method), convert an
+Object into its representing String (using
+{@link fitgoodies.adapters.AbstractTypeAdapter#toString(Object)}) and checking whether two Objects
+are equal (using {@link fitgoodies.adapters.AbstractTypeAdapter}'s equal method).
+</p>
+
+<p>
+TypeAdapters for classes which fit can't parse can be registered from Source
+using {@link fitgoodies.adapters.TypeAdapterHelper#register(Class)} or by
+your HTML input using the {@link fitgoodies.adapters.SetupFixture}. <br />
+The TypeAdapters which come with fitgoodies are automatically registered.
+</p>
+
+<p>
+If everything except parsing works fine, you do not need to implement a
+TypeAdapter. You can then register a parser. See {@link fitgoodies.parsers}
+for more information.
+</p>
+
+<p>
+	@since 1.0.0
+</p>
+</body>
+</html>
