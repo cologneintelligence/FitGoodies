@@ -1,9 +1,10 @@
+#set($dollar = '$')
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>${groupId}</groupId>
 	<artifactId>${artifactId}</artifactId>
-	<version>${version}</version>	
+	<version>${version}</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -39,16 +40,27 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 					<optimize>true</optimize>
 					<debug>true</debug>
 				</configuration>
-			</plugin>		
+			</plugin>
 			<plugin>
-				<groupId>de.coin</groupId>
-				<artifactId>fitgoodies-maven-plugin</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.derby</groupId>
+						<artifactId>derby</artifactId>
+						<version>10.1.3.1</version>
+					</dependency>
+					<dependency>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+						<version>1.2.14</version>
+					</dependency>
+				</dependencies>
 				<executions>
 					<execution>
 						<id>default</id>
@@ -58,7 +70,21 @@
 						</goals>
 						<inherited>true</inherited>
 						<configuration>
-							<sourceDirectory>src/test/fixtures</sourceDirectory>
+							<tasks>
+								<property name="tests" value="${dollar}{basedir}/src/test/fixtures" />
+								<property name="target" value="test/fixtures" />
+								
+								<java classname="fitgoodies.runners.DirectoryRunner" 
+										dir="${dollar}{project.build.directory}"
+										fork="true">
+									<classpath>
+										<path refid="maven.test.classpath" />
+									</classpath>
+									<arg value="${dollar}{tests}" />
+									<arg value="${dollar}{target}" />
+									<arg value="utf-8" />
+								</java>
+							</tasks>
 						</configuration>
 					</execution>
 				</executions>
