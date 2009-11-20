@@ -4,7 +4,7 @@
 	<groupId>de.coin</groupId>
 	<artifactId>fitgoodies</artifactId>
 	<name>FitGoodies</name>
-	<version>1.1</version>
+	<version>1.1.1-SNAPSHOT</version>
 	<description>Integration Test Framework extending Fit</description>
 	<build>
 		<plugins>
