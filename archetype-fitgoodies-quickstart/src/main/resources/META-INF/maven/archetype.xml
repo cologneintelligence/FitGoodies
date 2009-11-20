@@ -23,5 +23,6 @@
 		<resource filtered="false">src/test/fixtures/02_bookshelf.html</resource>
 		<resource>src/test/fixtures/04_logging.html</resource>
 		<resource>src/test/fixtures/03_storage.html</resource>
+		<resource>src/test/fixtures/style.css</resource>
 	</testResources>
 </archetype>
