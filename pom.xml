@@ -1,0 +1,13 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>de.coin</groupId>
+  <artifactId>fitgoodies-bundle</artifactId>
+  <version>1</version>
+  <name>FitGoodies bundle</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>fitgoodies</module>
+    <module>archetype-fitgoodies-quickstart</module>
+  </modules>
+</project>
