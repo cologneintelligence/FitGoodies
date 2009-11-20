@@ -188,4 +188,93 @@ public class DirectoryRunnerTest extends FitGoodiesTestCase {
 
 		runner.runFiles(fileRunner, fitResult, null);
 	}
+	
+	public final void testRunFilesReturnWhenRight() {
+		final Runner fileRunner = mock(Runner.class);
+		final FitResult fitResult = mock(FitResult.class);
+		final Counts counts = new Counts();
+		boolean result;
+		
+		counts.right = 4;
+		result = runWithSimpleResults(fileRunner, fitResult, counts);
+		assertTrue(result);
+	}
+	
+	public final void testRunFilesReturnWhenExceptions() {
+		final Runner fileRunner = mock(Runner.class);
+		final FitResult fitResult = mock(FitResult.class);
+		final Counts counts = new Counts();
+		boolean result;
+		
+		counts.right = 1;
+		counts.exceptions = 1;
+		result = runWithSimpleResults(fileRunner, fitResult, counts);
+		assertFalse(result);
+	}
+
+	public final void testRunFilesReturnWhenIgnored() {
+		final Runner fileRunner = mock(Runner.class);
+		final FitResult fitResult = mock(FitResult.class);
+		final Counts counts = new Counts();
+		boolean result;
+		
+		counts.right = 1;
+		counts.ignores = 1;
+		result = runWithSimpleResults(fileRunner, fitResult, counts);
+		assertTrue(result);
+	}
+	
+	public final void testRunFilesReturnWhenWrong() {
+		final Runner fileRunner = mock(Runner.class);
+		final FitResult fitResult = mock(FitResult.class);
+		final Counts counts = new Counts();
+		boolean result;
+		
+		counts.right = 1;
+		counts.wrong = 7;
+		result = runWithSimpleResults(fileRunner, fitResult, counts);
+		assertFalse(result);
+	}
+	
+	private boolean runWithSimpleResults(final Runner fileRunner,
+			final FitResult fitResult, final Counts counts) {
+		checking(new Expectations() {{
+			oneOf(fitResult).put("tests/01_setup.html", counts);
+			oneOf(fitResult).put("tests/02_tests/01_file1.html", counts);
+			oneOf(fitResult).put("tests/02_tests/03_file2.HTM", counts);
+			oneOf(fitResult).put("tests/02_tests/02_subtests/testcase.html", counts);
+			oneOf(fitResult).put("tests/02_tests/02_subtests/test.html", counts);
+			oneOf(fitResult).put("tests/03_tests/99_lasttest.html", counts);
+			oneOf(fitResult).put("tests/99_teardown.htm", counts);
+		}});
+		
+		checking(new Expectations() {{
+			oneOf(fileRunner).run("/src/tests/99_teardown.htm",
+					"/dest/tests/99_teardown.htm");
+				will(returnValue(counts));
+			oneOf(fileRunner).run("/src/tests/01_setup.html",
+					"/dest/tests/01_setup.html");
+				will(returnValue(counts));
+			oneOf(fileRunner).run("/src/tests/02_tests/01_file1.html",
+					"/dest/tests/02_tests/01_file1.html");
+				will(returnValue(counts));
+			oneOf(fileRunner).run("/src/tests/02_tests/03_file2.HTM",
+					"/dest/tests/02_tests/03_file2.HTM");
+				will(returnValue(counts));
+			oneOf(fileRunner).run("/src/tests/02_tests/02_subtests/testcase.html",
+					"/dest/tests/02_tests/02_subtests/testcase.html");
+				will(returnValue(counts));
+			oneOf(fileRunner).run("/src/tests/02_tests/02_subtests/test.html",
+					"/dest/tests/02_tests/02_subtests/test.html");
+				will(returnValue(counts));
+			oneOf(fileRunner).run("/src/tests/03_tests/99_lasttest.html",
+					"/dest/tests/03_tests/99_lasttest.html");
+				will(returnValue(counts));
+		}});
+		
+		boolean result = runner.runFiles(fileRunner, fitResult, null);
+		
+		
+		return result;
+	}
 }
