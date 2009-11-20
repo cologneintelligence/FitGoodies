@@ -119,10 +119,11 @@ public class DirectoryRunner {
 	 * @param log stream to print log messages to. If <code>log</code> is
 	 * 		<code>null</code>, nothing is logged.
 	 */
-	public final void runFiles(
+	public final boolean runFiles(
 			final Runner fileRunner,
 			final FitResult result,
 			final PrintStream log) {
+		boolean failed = false;
 		FileInformation[] files = getRelevantFiles();
 		prepareDirectories(files);
 
@@ -136,6 +137,10 @@ public class DirectoryRunner {
 			Counts counts = fileRunner.run(file.fullname(),
 					helper.join(destPath, relPath));
 
+			if (counts != null && (counts.exceptions > 0 || counts.wrong > 0)) {
+				failed = true;
+			}
+			
 			if (log != null) {
 				log.println(counts);
 			}
@@ -144,6 +149,8 @@ public class DirectoryRunner {
 				result.put(relPath, counts);
 			}
 		}
+		
+		return !failed;
 	}
 
 	/**
@@ -154,12 +161,12 @@ public class DirectoryRunner {
 	 * &quot;report.html&quot; in the output directory.
 	 * @throws IOException thrown if a file access went wrong
 	 */
-	public final void runStandAlone() throws IOException {
+	public final boolean runStandAlone() throws IOException {
 		FitResultTable result = new FitResultTable(helper);
 
 		Runner runner = new FitFileRunner();
 		runner.setEncoding(encoding);
-		runFiles(runner,
+		boolean results = runFiles(runner,
 				result, System.err);
 
 		FileOutputStream fos = new FileOutputStream(
@@ -175,6 +182,8 @@ public class DirectoryRunner {
 		pw.println("</body></html>");
 		pw.close();
 		fos.close();
+		
+		return results;
 	}
 
 	/**
@@ -209,7 +218,10 @@ public class DirectoryRunner {
 			DirectoryRunner runner = new DirectoryRunner(
 					new FileSystemDirectoryProvider(sourcePath),
 					destPath, encoding, directoryHelper);
-			runner.runStandAlone();
+			
+			if (!runner.runStandAlone()) {
+				System.exit(1);
+			}
 		} catch (Exception e) {
 			System.err.println("Error: " + e.getMessage());
 			e.printStackTrace();

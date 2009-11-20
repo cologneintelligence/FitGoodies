@@ -61,6 +61,10 @@ public final class FileRunner {
 			runner.setEncoding(encoding);
 			Counts result = runner.run(args[0], args[1]);
 			System.out.println(result);
+			
+			if (result != null && (result.exceptions > 0 || result.wrong > 0)) {
+				System.exit(1);
+			}
 		} catch (Exception e) {
 			System.err.println("Error: " + e.getMessage());
 			e.printStackTrace();
