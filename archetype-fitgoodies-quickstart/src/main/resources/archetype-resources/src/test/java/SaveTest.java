@@ -16,10 +16,8 @@
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package ${groupId};
 
-package ${groupId}.fittests;
-
-import ${groupId}.*;
 import fitgoodies.Fixture;
 
 public final class SaveTest extends Fixture {

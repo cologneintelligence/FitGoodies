@@ -8,18 +8,20 @@
 		<source>src/main/java/ISBN.java</source>
 		<source>src/main/java/Book.java</source>
 		<source>src/main/java/ShelfWriter.java</source>
-		<source>src/main/java/fittests/ISBNTypeAdapter.java</source>
-		<source>src/main/java/fittests/FixtureObjects.java</source>
-		<source>src/main/java/fittests/LogPrepareFixture.java</source>
-		<source>src/main/java/fittests/BookFixture.java</source>
-		<source>src/main/java/fittests/SaveTest.java</source>
-		<source>src/main/java/fittests/ISBNFixture.java</source>
 	</sources>
-	<resources>
+	<testSources>
+		<source>src/test/java/ISBNTypeAdapter.java</source>
+		<source>src/test/java/FixtureObjects.java</source>
+		<source>src/test/java/LogPrepareFixture.java</source>
+		<source>src/test/java/BookFixture.java</source>
+		<source>src/test/java/SaveTest.java</source>
+		<source>src/test/java/ISBNFixture.java</source>
+	</testSources>
+	<testResources>
 		<resource>src/test/fixtures/setup.html</resource>
 		<resource>src/test/fixtures/01_ISBN.html</resource>
 		<resource filtered="false">src/test/fixtures/02_bookshelf.html</resource>
 		<resource>src/test/fixtures/04_logging.html</resource>
 		<resource>src/test/fixtures/03_storage.html</resource>
-	</resources>
+	</testResources>
 </archetype>

@@ -16,32 +16,10 @@
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package ${groupId};
 
-package ${groupId}.fittests;
+public final class FixtureObjects {
+	private FixtureObjects() { }
 
-
-import ${groupId}.ISBN;
-
-import fit.TypeAdapter;
-import fitgoodies.adapters.AbstractTypeAdapter;
-
-public final class ISBNTypeAdapter extends AbstractTypeAdapter<ISBN> {
-	public ISBNTypeAdapter(final TypeAdapter ta, final String parameter) {
-		super(ta, parameter);
-	}
-
-	@Override
-	public Object parse(final String s) throws Exception {
-		return new ISBN(s);
-	}
-
-	@Override
-	public Class<ISBN> getType() {
-		return ISBN.class;
-	}
-
-	@Override
-	public String toString(final Object o) {
-		return ((ISBN) o).stripped();
-	}
+	public static final Bookshelf SHELF = new Bookshelf();
 }
