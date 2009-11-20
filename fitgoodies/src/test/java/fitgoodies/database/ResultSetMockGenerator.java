@@ -97,7 +97,7 @@ public final class ResultSetMockGenerator {
 			context.checking(new Expectations() {{
 				oneOf(connection).createStatement(); will(returnValue(statement));
 				oneOf(statement).executeQuery(
-						"SELECT * FROM \"" + table + "\"" + sqlWhere);
+						"SELECT * FROM " + table + sqlWhere);
 					will(returnValue(resultSet));
 				oneOf(statement).close();
 			}});

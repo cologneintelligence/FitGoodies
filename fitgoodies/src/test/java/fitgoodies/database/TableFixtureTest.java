@@ -56,7 +56,7 @@ public class TableFixtureTest extends FitGoodiesTestCase {
 
 		checking(new Expectations() {{
 			oneOf(conn).createStatement(); will(returnValue(statement));
-			oneOf(statement).executeQuery("SELECT * FROM \"table\"");
+			oneOf(statement).executeQuery("SELECT * FROM table");
 				will(returnValue(resultSet));
 		}});
 
@@ -73,7 +73,7 @@ public class TableFixtureTest extends FitGoodiesTestCase {
 
 		checking(new Expectations() {{
 			oneOf(conn).createStatement(); will(returnValue(statement));
-			oneOf(statement).executeQuery("SELECT * FROM \"tbl2\" WHERE x > 3");
+			oneOf(statement).executeQuery("SELECT * FROM tbl2 WHERE x > 3");
 				will(returnValue(resultSet));
 		}});
 

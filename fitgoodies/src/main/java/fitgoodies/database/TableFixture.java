@@ -143,12 +143,9 @@ public class TableFixture extends RowFixture {
 		try {
 			table = CrossReferenceHelper.instance().parseBody(tableName, "");
 
-			String maskedTable = '"'
-				+ table.replace("\\", "\\\\").replace("\"", "\\\"") + '"';
-
 			statement = connection.createStatement();
 			ResultSet rs = statement.executeQuery("SELECT * FROM "
-					+ maskedTable + whereClause);
+					+ table + whereClause);
 			return rs;
 
 		} catch (CrossReferenceProcessorShortcutException e) {
