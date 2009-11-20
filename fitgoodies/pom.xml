@@ -5,7 +5,24 @@
 	<artifactId>fitgoodies</artifactId>
 	<name>FitGoodies</name>
 	<version>1.1.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<description>Integration Test Framework extending Fit</description>
+	<url>http://fitgoodies.sourceforge.net</url>
+	<parent>
+		<artifactId>fitgoodies-bundle</artifactId>
+		<groupId>de.coin</groupId>
+		<version>1</version>
+	</parent>
+	<issueManagement>
+		<system>trac</system>
+		<url>http://sourceforge.net/apps/trac/fitgoodies</url>
+	</issueManagement>
+	<scm>
+		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/fitgoodies</connection>
+		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/fitgoodies</developerConnection>
+		<tag>HEAD</tag>
+		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk/fitgoodies</url>
+	</scm>
 	<build>
 		<plugins>
 			<plugin>
@@ -115,5 +132,10 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
+	<licenses>
+		<license>
+			<name>GPL</name>
+			<url>http://www.gnu.org/licenses/gpl.html</url>
+		</license>
+	</licenses>
 </project>

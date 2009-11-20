@@ -1,13 +1,32 @@
 <project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>de.coin</groupId>
-  <artifactId>fitgoodies-bundle</artifactId>
-  <version>1</version>
-  <name>FitGoodies bundle</name>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>fitgoodies</module>
-    <module>archetype-fitgoodies-quickstart</module>
-  </modules>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.coin</groupId>
+	<artifactId>fitgoodies-bundle</artifactId>
+	<version>1</version>
+	<name>FitGoodies bundle</name>
+	<packaging>pom</packaging>
+	<description>
+		Transistent pom which is used do install FitGoodies and its archetype
+	</description>
+	<url>http://fitgoodies.sourceforge.net</url>
+	<issueManagement>
+		<system>trac</system>
+		<url>http://sourceforge.net/apps/trac/fitgoodies</url>
+	</issueManagement>
+	<scm>
+		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk</connection>
+		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk</developerConnection>
+		<tag>HEAD</tag>
+		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk</url>
+	</scm>
+	<modules>
+		<module>fitgoodies</module>
+		<module>archetype-fitgoodies-quickstart</module>
+	</modules>
+	<licenses>
+		<license>
+			<name>GPL</name>
+			<url>http://www.gnu.org/licenses/gpl.html</url>
+		</license>
+	</licenses>
 </project>
