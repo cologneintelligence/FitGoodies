@@ -37,9 +37,9 @@ public class SQLDateTypeAdapterTest extends FitGoodiesTestCase {
 	public final void testParse() throws Exception {
 		TypeAdapter ta = new TypeAdapter();
 
-		Date d = Date.valueOf("1987-18-01");
+		Date d = Date.valueOf("1987-12-01");
 		SQLDateTypeAdapter p = new SQLDateTypeAdapter(ta, null);
-		assertEquals(d, p.parse("1987-18-01"));
+		assertEquals(d, p.parse("1987-12-01"));
 	}
 
 	public final void testDateFormat() throws Exception {
@@ -50,8 +50,8 @@ public class SQLDateTypeAdapterTest extends FitGoodiesTestCase {
 
 		SQLDateTypeAdapter p = new SQLDateTypeAdapter(ta, null);
 
-		Date d = Date.valueOf("1987-18-01");
-		assertEquals(d, p.parse("1987-18-01"));
+		Date d = Date.valueOf("1987-12-01");
+		assertEquals(d, p.parse("1987-12-01"));
 
 		d = Date.valueOf("1989-03-08");
 		assertEquals(d, p.parse("08.03.1989"));

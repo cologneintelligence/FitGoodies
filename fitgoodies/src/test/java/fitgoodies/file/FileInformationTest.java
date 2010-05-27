@@ -30,35 +30,35 @@ public class FileInformationTest extends FitGoodiesTestCase {
 		FileFixtureHelper.instance().setEncoding("iso-8859-1");
 
 		FileInformationMock file = new FileInformationMock("C:\\dir",
-				"test.txt", "line1\nline2\näöü".getBytes(Charset.forName("iso-8859-1")));
+				"test.txt", "line1\nline2\nÃ¤Ã¶Ã¼".getBytes(Charset.forName("iso-8859-1")));
 
 		BufferedReader br = file.openBufferedReader();
 		assertEquals("line1", br.readLine());
 		assertEquals("line2", br.readLine());
-		assertEquals("äöü", br.readLine());
+		assertEquals("Ã¤Ã¶Ã¼", br.readLine());
 		br.close();
 
 		FileFixtureHelper.instance().setEncoding("utf-16");
 		file = new FileInformationMock("C:\\dir",
-				"test.txt", "äöü".getBytes(Charset.forName("utf-16")));
+				"test.txt", "Ã¤Ã¶Ã¼".getBytes(Charset.forName("utf-16")));
 		br = file.openBufferedReader();
-		assertEquals("äöü", br.readLine());
+		assertEquals("Ã¤Ã¶Ã¼", br.readLine());
 		br.close();
 	}
 
 	public final void testOpenBufferedReaderString() throws IOException {
 		FileInformationMock file = new FileInformationMock("C:\\dir",
-				"test.txt", "line1\nüß".getBytes(Charset.forName("iso-8859-1")));
+				"test.txt", "line1\nÃ¼ÃŸ".getBytes(Charset.forName("iso-8859-1")));
 
 		BufferedReader br = file.openBufferedReader("iso-8859-1");
 		assertEquals("line1", br.readLine());
-		assertEquals("üß", br.readLine());
+		assertEquals("Ã¼ÃŸ", br.readLine());
 		br.close();
 
 		file = new FileInformationMock("C:\\dir",
-				"test.txt", "äöü".getBytes(Charset.forName("utf-16")));
+				"test.txt", "Ã¤Ã¶Ã¼".getBytes(Charset.forName("utf-16")));
 		br = file.openBufferedReader("utf-16");
-		assertEquals("äöü", br.readLine());
+		assertEquals("Ã¤Ã¶Ã¼", br.readLine());
 		br.close();
 	}
 
