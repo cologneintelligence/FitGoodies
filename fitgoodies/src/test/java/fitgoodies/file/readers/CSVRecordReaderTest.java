@@ -29,14 +29,14 @@ import junit.framework.TestCase;
  * $Id$
  * @author jwierum
  */
-public class CSVRecordReaderTest extends TestCase {
-	public final BufferedReader mkReader(final String content) {
-		StringReader sr = new StringReader(content);
+public final class CSVRecordReaderTest extends TestCase {
+	public BufferedReader mkReader(final String content) {
+		final StringReader sr = new StringReader(content);
 		return new BufferedReader(sr);
 	}
 
-	public final void testReading() throws IOException {
-		FileRecordReader reader = new CSVRecordReader(
+	public void testReading() throws IOException {
+		final FileRecordReader reader = new CSVRecordReader(
 				mkReader("this|is|a|test\n"
 						+ "with|\"some|special\"|cases\n"
 						+ "three|\"\"lines\"\""), '|', '"');
@@ -66,4 +66,52 @@ public class CSVRecordReaderTest extends TestCase {
 		assertFalse(reader.canRead());
 		reader.close();
 	}
+
+    public final void testReadingNoTrim() throws IOException {
+        final CSVRecordReader reader = new CSVRecordReader(
+                mkReader("this; is ;' a ';test\n"), ';', '\'');
+
+        assertTrue(reader.canRead());
+        assertEquals("this", reader.nextField());
+        assertEquals(" is ", reader.nextField());
+        assertEquals(" a ", reader.nextField());
+        assertEquals("test", reader.nextField());
+        assertNull(reader.nextField());
+        assertFalse(reader.nextRecord());
+        assertFalse(reader.canRead());
+        reader.close();
+    }
+
+    public final void testReadingNewlines() throws IOException {
+        final CSVRecordReader reader = new CSVRecordReader(
+                mkReader("this;is;\"more\ntricky\"\nthan;it;looks"), ';', '"');
+
+        assertTrue(reader.canRead());
+        assertEquals("this", reader.nextField());
+        assertEquals("is", reader.nextField());
+        assertEquals("more\ntricky", reader.nextField());
+        assertNull(reader.nextField());
+        assertTrue(reader.nextRecord());
+        assertEquals("than", reader.nextField());
+        reader.close();
+    }
+
+    public final void testReadingWithErrors() throws IOException {
+        try {
+            new CSVRecordReader(mkReader("this;is;\"more\ntricky\nthan;it;looks"),
+                    ';', '"');
+            fail("could read invalid csv");
+        } catch (final RuntimeException e) {
+        }
+
+        final CSVRecordReader reader = new CSVRecordReader(mkReader(
+                "x\nthis;is;\"more\ntricky\nthan;it;looks"), ';', '"');
+
+        reader.nextField();
+        try {
+            reader.nextRecord();
+            fail("could read invalid csv");
+        } catch (final RuntimeException e) {
+        }
+    }
 }

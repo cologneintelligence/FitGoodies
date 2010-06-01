@@ -33,20 +33,23 @@ import java.util.List;
 public class CSVRecordReader implements FileRecordReader {
 	private static class ParserState {
 		private boolean masked = false;
-		private boolean maskNext = false;
 		private boolean skip = false;
 
-		public boolean masked() { return masked; }
-		public boolean notMasked() { return !masked(); }
-		public void mask(final boolean doIt) { this.masked = doIt; }
+		public boolean masked() {
+			return masked;
+		}
 
-		public boolean nextMasked() { return maskNext; }
-		public boolean nextNotMasked() { return !nextMasked(); }
-		public void maskNext(final boolean doIt) { this.maskNext = doIt; }
+		public void toggleMasked() {
+			masked = !masked;
+		}
 
-		public boolean skipped() { return skip; }
-		public boolean notSkipped() { return !skipped(); }
-		public void skip(final boolean doIt) { skip = doIt; }
+		public boolean skipped() {
+			return skip;
+		}
+
+		public void skip(final boolean doIt) {
+			skip = doIt;
+		}
 	}
 
 	private final BufferedReader reader;
@@ -93,7 +96,7 @@ public class CSVRecordReader implements FileRecordReader {
 			return null;
 		}
 
-		String returnValue = parts[partIndex];
+		final String returnValue = parts[partIndex];
 		++partIndex;
 		return returnValue;
 	}
@@ -106,34 +109,36 @@ public class CSVRecordReader implements FileRecordReader {
 	 */
 	@Override
 	public final boolean nextRecord() throws IOException {
-		String line = reader.readLine();
+		final String line = reader.readLine();
 		if (line == null) {
 			parts = null;
 			return false;
 		}
 
-		List<String> newParts = splitLine(line);
+		final List<String> newParts = splitLine(line);
 		parts = newParts.toArray(new String[]{});
 		partIndex = 0;
 		return true;
 	}
 
-	private List<String> splitLine(final String line) {
-		List<String> newParts = new ArrayList<String>();
-		ParserState state = new ParserState();
+	private List<String> splitLine(final String line) throws IOException {
+		final List<String> newParts = new ArrayList<String>();
+		final ParserState state = new ParserState();
 
-		StringBuilder todo = new StringBuilder(line);
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder todo = new StringBuilder(line);
+		final StringBuilder builder = new StringBuilder();
 
 		while (todo.length() > 0) {
-			char character = todo.charAt(0);
+			final char character = todo.charAt(0);
 			todo.deleteCharAt(0);
 
 			changeState(state, character);
-			String result = processChar(state, builder, character);
+			final String result = processChar(state, builder, character);
 			if (result != null) {
 				newParts.add(result);
 			}
+
+			readNextLineIfNeeded(state, todo);
 		}
 
 		if (builder.length() > 0) {
@@ -143,28 +148,42 @@ public class CSVRecordReader implements FileRecordReader {
 		return newParts;
 	}
 
+	private void readNextLineIfNeeded(final ParserState state, final StringBuilder todo)
+			throws IOException {
+		if (todo.length() == 0 && state.masked() && !state.skipped()) {
+			final String newLine = reader.readLine();
+			if (newLine != null) {
+				todo.append("\n");
+				todo.append(newLine);
+			} else {
+				throw new RuntimeException("malformed csv");
+			}
+		}
+	}
+
 	private String processChar(final ParserState state,
 			final StringBuilder builder, final char character) {
 		String result = null;
-		if (character == delimiterChar && state.notMasked() && state.notSkipped()) {
-			result = builder.toString().trim();
+		if (character == delimiterChar && !state.masked()
+				&& !state.skipped()) {
+			result = builder.toString();
 			builder.delete(0, builder.length());
-		} else if (state.notSkipped()) {
+		} else if (!state.skipped()) {
 			builder.append(character);
 		}
 		return result;
 	}
 
 	private void changeState(final ParserState state, final char character) {
-		state.skip(false);
-		if (character == maskChar && state.nextNotMasked()) {
+		final boolean isMaskedChar = character == maskChar;
+
+		if (isMaskedChar && !state.skipped()) {
 			state.skip(true);
-			state.maskNext(true);
-		} else if (character == maskChar && state.nextMasked()) {
-			state.maskNext(false);
-		} else if (state.nextMasked()) {
-			state.mask(state.notMasked());
-			state.maskNext(false);
+		} else if (!isMaskedChar && state.skipped()) {
+			state.toggleMasked();
+			state.skip(false);
+		} else {
+			state.skip(false);
 		}
 	}
 
