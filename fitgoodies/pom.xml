@@ -97,6 +97,12 @@
 			<artifactId>fit</artifactId>
 			<version>1.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium.client-drivers</groupId>
+			<artifactId>selenium-java-client-driver</artifactId>
+			<version>1.0.2</version>
+			<scope>compile</scope>
+		</dependency>				
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
