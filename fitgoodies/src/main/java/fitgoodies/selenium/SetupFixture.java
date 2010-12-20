@@ -13,6 +13,7 @@ import fitgoodies.ActionFixture;
  * 		<tr><td>serverPort</td><td>4444</td></tr>
  * 		<tr><td>browserStartCommand</td><td>*firefox</td></tr>
  * 		<tr><td>browserURL</td><td>http://web-application-to-be-tested-by-selenium/</td></tr>
+ *      <tr><td>start</td><td>start config</td></tr>
  * </table>
  * @author kmussawisade
  *
@@ -36,6 +37,10 @@ public class SetupFixture extends ActionFixture {
 		transformAndEnter();
 	}
 
+	public void start() throws Exception {
+		transformAndEnter();
+	}
+
 	public void serverHost(String serverHost) {
 		SetupHelper.instance().setServerHost(serverHost);
 	}
@@ -51,5 +56,8 @@ public class SetupFixture extends ActionFixture {
 	public void browserURL(String browserURL) {
 		SetupHelper.instance().setBrowserURL(browserURL);
 	}
-	
+		
+	public void start(String startConfig) {
+		SetupHelper.instance().start(startConfig);
+	}
 }

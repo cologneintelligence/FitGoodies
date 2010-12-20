@@ -75,6 +75,9 @@ public class SetupHelper {
 		
 	}
 
+	public void start(String startConfig) {		
+		getCommandProcessor().start(startConfig);
+	}
 
 
 }

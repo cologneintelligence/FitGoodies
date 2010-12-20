@@ -36,7 +36,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 	
 	public void testInvokeSeleniumCommandReturnsNOK() throws Exception {
 		checking(new Expectations() {{
-			oneOf(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
+			atLeast(1).of(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
 			will(returnValue("NOK"));
 		}});
 		fixture.doTable(table);
@@ -57,7 +57,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 	public void testInvokeSeleniumCommandThrowsException() throws Exception {
 		checking(new Expectations() {{
 			oneOf(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
-			will(throwException(new Exception("Error")));
+			will(throwException(new RuntimeException("Error")));
 		}});
 		fixture.doTable(table);
 		assertEquals(0, fixture.counts.right);

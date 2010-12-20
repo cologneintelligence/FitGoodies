@@ -123,10 +123,14 @@ public class DirectoryRunner {
 			final Runner fileRunner,
 			final FitResult result,
 			final PrintStream log) {
-		boolean failed = false;
 		FileInformation[] files = getRelevantFiles();
 		prepareDirectories(files);
+		
+		return !runFiles(fileRunner, result, log, files);
+	}
 
+	public boolean runFiles(final Runner fileRunner, final FitResult result, final PrintStream log, FileInformation[] files) {
+		boolean failed = false;
 		for (FileInformation file : files) {
 			String relPath = helper.abs2rel(directoryProvider.getPath(), file.fullname());
 
@@ -149,8 +153,7 @@ public class DirectoryRunner {
 				result.put(relPath, counts);
 			}
 		}
-		
-		return !failed;
+		return failed;
 	}
 
 	/**

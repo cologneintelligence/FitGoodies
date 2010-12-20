@@ -19,6 +19,10 @@
 
 package fitgoodies.selenium;
 
+import org.jmock.Expectations;
+
+import com.thoughtworks.selenium.CommandProcessor;
+
 import fit.Parse;
 import fitgoodies.FitGoodiesTestCase;
 
@@ -33,17 +37,26 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 				+ "<tr><td>serverPort</td><td>4444</td></tr>"
 				+ "<tr><td>browserStartCommand</td><td>browser-Start-Command</td></tr>"
 				+ "<tr><td>browserURL</td><td>browser-URL</td></tr>"
+				+ "<tr><td>start</td><td>start config</td></tr>"
 				+ "</table>"
 				);
 
+		final CommandProcessor commandProcessor = mock(CommandProcessor.class);
+		
+		checking(new Expectations(){{
+			oneOf(commandProcessor).start("start config");
+		}});
+		
+		SetupHelper.instance().setCommandProcessor(commandProcessor );
+
 		SetupFixture fixture = new SetupFixture();
 		fixture.doTable(table);
-
+		
 		assertEquals(0, fixture.counts.exceptions);
 		assertEquals("server-host", SetupHelper.instance().getServerHost());
 		assertEquals(4444, SetupHelper.instance().getServerPort());
 		assertEquals("browser-Start-Command", SetupHelper.instance().getBrowserStartCommand());
-		assertEquals("browser-URL", SetupHelper.instance().getBrowserURL());
+		assertEquals("browser-URL", SetupHelper.instance().getBrowserURL());		
 		assertNotNull(SetupHelper.instance().getCommandProcessor());
 	}
 

@@ -14,7 +14,7 @@ import fitgoodies.ActionFixture;
  * 		<tr><td>fitgoodies.selenium.SeleniumFixture</td><td></td><td></td></tr>
  * 		<tr><td>open</td><td>/application/mainMenu.html</td><td></td></tr>
  * 		<tr><td>type</td><td>j_username</td><td>username</td></tr>
- * 		<tr><td>type</td><td>j_password</td><td>secrete</td></tr>
+ * 		<tr><td>type</td><td>j_password</td><td>secret</td></tr>
  * 		<tr><td>clickAndWait</td><td>//input[@name='login']</td><td></td></tr>
  * 		<tr><td>clickAndWait</td><td>link=Products</td><td></td></tr>
  * </table>

@@ -12,10 +12,4 @@ public class SetupHelperTest extends FitGoodiesTestCase {
 		assertSame(helper1, helper2);
 	}
 	
-	public void testPathToServlet() {
-		//CommandProcessor commandProcessor = new HttpCommandProcessor(pathToServlet, browserStartCommand, browserURL)
-		SetupHelper helper = SetupHelper.instance();
-		
-		
-	}
 }
