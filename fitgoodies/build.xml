@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="FitGoodies" default="help" basedir=".">
+	<property name="mvn" value="c:\Program Files\apache-maven-2.2.1\bin\mvn.bat" />
+	<property name="dist" value="dist" />
+	<property name="version" value="1.1.1" />
+
+	<target name="help">
+		<echo message="..." />
+	</target>
+
+	<target name="package-doc">
+
+	</target>
+
+	<target name="package-bin" description="Generates the main zip file" depends="prepare,mvn-package">
+		<move todir="target">
+			<fileset dir="target">
+				<include name="fitgoodies-*-sf-release.jar" />
+			</fileset>
+			<mapper type="glob" from="fitgoodies-*-sf-release.jar" to="fitgoodies-${version}.jar" />
+		</move>
+		<zip destfile="${dist}/fitgoodies-${version}.zip">
+			<fileset dir=".">
+				<filename name="LICENSE.txt" />
+			</fileset>
+			<fileset dir="src/main/assembly">
+				<filename name="*.txt" />
+			</fileset>
+			<fileset dir="target">
+				<filename name="fitgoodies-${version}.jar" />
+			</fileset>
+		</zip>
+		<delete file="target/fitgoodies-${version}.jar" />
+	</target>
+
+	<target name="prepare">
+		<mkdir dir="${dist}" />
+	</target>
+
+	<target name="mvn-package">
+		<exec executable="${mvn}">
+			<!--<arg value="clean" />
+			<arg value="package" />-->
+			<arg value="assembly:single" />
+		</exec>
+	</target>
+</project>
