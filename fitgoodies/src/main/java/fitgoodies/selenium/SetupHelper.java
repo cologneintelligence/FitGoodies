@@ -79,5 +79,9 @@ public class SetupHelper {
 		getCommandProcessor().start(startConfig);
 	}
 
+	public void stop() {		
+		getCommandProcessor().stop();
+		commandProcessor = null;
+	}
 
 }

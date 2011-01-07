@@ -60,5 +60,25 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 		assertNotNull(SetupHelper.instance().getCommandProcessor());
 	}
 
+	public final void testHelperInteractionStopProcessor() throws Exception {
+		Parse table = new Parse("<table><tr><td>ignore</td></tr>"
+				+ "<tr><td>stop</td><td></td></tr>"
+				+ "</table>"
+				);
+
+		final CommandProcessor commandProcessor = mock(CommandProcessor.class);
+		
+		checking(new Expectations(){{
+			oneOf(commandProcessor).stop();
+		}});
+		
+		SetupHelper.instance().setCommandProcessor(commandProcessor );
+
+		SetupFixture fixture = new SetupFixture();
+		fixture.doTable(table);
+		
+		assertEquals(0, fixture.counts.exceptions);
+		assertNotSame(commandProcessor, SetupHelper.instance().getCommandProcessor());
+	}
 
 }

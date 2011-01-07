@@ -41,6 +41,10 @@ public class SetupFixture extends ActionFixture {
 		transformAndEnter();
 	}
 
+	public void stop() throws Exception {
+		SetupHelper.instance().stop();
+	}
+
 	public void serverHost(String serverHost) {
 		SetupHelper.instance().setServerHost(serverHost);
 	}
