@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="FitGoodies" default="help" basedir=".">
+<project name="FitGoodies" default="all" basedir=".">
 	<property name="mvn" value="c:\Program Files\apache-maven-2.2.1\bin\mvn.bat" />
 	<property name="dist" value="dist" />
 	<property name="version" value="1.1.1" />
 
-	<target name="help">
-		<echo message="..." />
+	<target name="all" description="Generate all files" depends="package-src,package-bin,package-doc" />
+	
+	<target name="package-doc" description="Generate the doc zip file" depends="prepare,mvn-javadoc">
+        <zip destfile="${dist}/fitgoodies-doc-${version}.zip" basedir="target/site/apidocs" />
 	</target>
-
-	<target name="package-doc">
-
-	</target>
-
+	
+    <target name="package-src" description="Generate the doc zip file">
+        <zip destfile="${dist}/fitgoodies-src-${version}.zip">
+        	<fileset dir="..">
+        		<exclude name="**/target" />
+        		<exclude name="**/target/**" />
+        		<exclude name="**/dist" />
+        		<exclude name="**/dist/**" />
+            </fileset>
+        </zip>
+    </target>
+	
 	<target name="package-bin" description="Generates the main zip file" depends="prepare,mvn-package">
 		<move todir="target">
 			<fileset dir="target">
@@ -35,13 +44,21 @@
 
 	<target name="prepare">
 		<mkdir dir="${dist}" />
+	    <exec executable="${mvn}">
+	        <arg value="clean" />
+	        <arg value="package" />
+	    </exec>
 	</target>
 
 	<target name="mvn-package">
 		<exec executable="${mvn}">
-			<!--<arg value="clean" />
-			<arg value="package" />-->
 			<arg value="assembly:single" />
 		</exec>
 	</target>
+	
+   <target name="mvn-javadoc">
+        <exec executable="${mvn}">
+            <arg value="javadoc:javadoc" />
+        </exec>
+    </target>
 </project>
