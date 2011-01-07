@@ -139,6 +139,7 @@
 								<artifactId>doccheck</artifactId>
 								<version>1.2b2</version>
 							</docletArtifact>
+							<useStandardDocletOptions>false</useStandardDocletOptions>
 							<additionalparam>
 								-d ${project.build.directory}/site/doccheck
               				</additionalparam>
