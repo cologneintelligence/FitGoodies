@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="FitGoodies" default="all" basedir=".">
-	<property name="mvn" value="c:\Program Files\apache-maven-2.2.1\bin\mvn.bat" />
+	<property name="mvn" value="mvn" />
 	<property name="dist" value="dist" />
 	<property name="version" value="1.1.1" />
 
