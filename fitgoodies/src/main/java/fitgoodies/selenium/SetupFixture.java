@@ -37,6 +37,10 @@ public class SetupFixture extends ActionFixture {
 		transformAndEnter();
 	}
 
+	public void speed() throws Exception {
+		transformAndEnter();
+	}
+
 	public void start() throws Exception {
 		transformAndEnter();
 	}
@@ -59,6 +63,10 @@ public class SetupFixture extends ActionFixture {
 	
 	public void browserURL(String browserURL) {
 		SetupHelper.instance().setBrowserURL(browserURL);
+	}
+	
+	public void speed(String speed) {
+		SetupHelper.instance().setSpeed(speed);
 	}
 		
 	public void start(String startConfig) {

@@ -37,6 +37,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 				+ "<tr><td>serverPort</td><td>4444</td></tr>"
 				+ "<tr><td>browserStartCommand</td><td>browser-Start-Command</td></tr>"
 				+ "<tr><td>browserURL</td><td>browser-URL</td></tr>"
+				+ "<tr><td>speed</td><td>400</td></tr>"
 				+ "<tr><td>start</td><td>start config</td></tr>"
 				+ "</table>"
 				);
@@ -57,6 +58,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 		assertEquals(4444, SetupHelper.instance().getServerPort());
 		assertEquals("browser-Start-Command", SetupHelper.instance().getBrowserStartCommand());
 		assertEquals("browser-URL", SetupHelper.instance().getBrowserURL());		
+		assertEquals("400", SetupHelper.instance().getSpeed());		
 		assertNotNull(SetupHelper.instance().getCommandProcessor());
 	}
 
@@ -78,7 +80,6 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 		fixture.doTable(table);
 		
 		assertEquals(0, fixture.counts.exceptions);
-		assertNotSame(commandProcessor, SetupHelper.instance().getCommandProcessor());
 	}
 
 }

@@ -15,6 +15,7 @@ public class SetupHelper {
 	private String browserStartCommand;
 	private String browserURL;
 	private CommandProcessor commandProcessor;
+	private String speed;
 
 	
 	public static SetupHelper instance() {
@@ -66,6 +67,9 @@ public class SetupHelper {
 	public CommandProcessor getCommandProcessor() {
 		if ( commandProcessor == null) {
 			commandProcessor =  new HttpCommandProcessor(serverHost, serverPort, browserStartCommand, browserURL);
+			if ( getSpeed() != null ) {
+				commandProcessor.doCommand("setSpeed", new String[]{getSpeed()});
+			}
 		}
 		return commandProcessor; 
 	}
@@ -75,6 +79,10 @@ public class SetupHelper {
 		
 	}
 
+	public void setSpeed(String speed) {
+		this.speed = speed;
+	}
+
 	public void start(String startConfig) {		
 		getCommandProcessor().start(startConfig);
 	}
@@ -82,6 +90,10 @@ public class SetupHelper {
 	public void stop() {		
 		getCommandProcessor().stop();
 		commandProcessor = null;
+	}
+
+	public String getSpeed() {
+		return this.speed;
 	}
 
 }

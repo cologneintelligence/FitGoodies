@@ -23,6 +23,17 @@
 		<tag>HEAD</tag>
 		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk/fitgoodies</url>
 	</scm>
+	<distributionManagement>
+		<repository>
+			<id>coin-releases</id>
+			<url>http://maven/archiva/repository/coin-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>coin-snapshots</id>
+			<url>http://maven/archiva/repository/coin-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
 	<build>
 		<plugins>
 			<plugin>

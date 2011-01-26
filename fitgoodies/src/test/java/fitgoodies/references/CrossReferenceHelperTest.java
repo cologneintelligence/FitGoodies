@@ -72,6 +72,12 @@ public class CrossReferenceHelperTest extends FitGoodiesTestCase {
 		assertEquals("x", cr.getNamespace());
 		assertEquals("containsValue", cr.getCommand());
 		assertEquals("y", cr.getParameter());
+
+		actually = new StringBuilder("${System.getProperty(key)} b");
+		cr = CrossReferenceHelper.instance().getCrossReference(actually);
+		assertEquals("System", cr.getNamespace());
+		assertEquals("getProperty", cr.getCommand());
+		assertEquals("key", cr.getParameter());
 	}
 
 	private void checkParseBody(final String input, final Object param, final String expected)

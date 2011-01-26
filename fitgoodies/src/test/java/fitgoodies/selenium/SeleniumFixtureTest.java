@@ -4,6 +4,7 @@ import org.jmock.Expectations;
 
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.SeleniumException;
+import com.thoughtworks.selenium.Wait;
 
 import fit.Parse;
 import fitgoodies.FitGoodiesTestCase;
@@ -35,8 +36,9 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 	}
 	
 	public void testInvokeSeleniumCommandReturnsNOK() throws Exception {
+		fixture.setSeleniumTimeout(Wait.DEFAULT_INTERVAL );
 		checking(new Expectations() {{
-			atLeast(1).of(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
+			oneOf(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
 			will(returnValue("NOK"));
 		}});
 		fixture.doTable(table);
@@ -45,8 +47,9 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 	}
 
 	public void testInvokeSeleniumCommandThrowsSeleniumException() throws Exception {
+		fixture.setSeleniumTimeout(2000L);
 		checking(new Expectations() {{
-			oneOf(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
+			atLeast(1).of(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
 			will(throwException(new SeleniumException("Error")));
 		}});
 		fixture.doTable(table);
@@ -55,6 +58,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 	}
 	
 	public void testInvokeSeleniumCommandThrowsException() throws Exception {
+		assertEquals(0, fixture.counts.exceptions);
 		checking(new Expectations() {{
 			oneOf(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
 			will(throwException(new RuntimeException("Error")));

@@ -23,9 +23,11 @@ import java.util.regex.Matcher;
 
 import fitgoodies.references.processors.AbstractCrossReferenceProcessor;
 import fitgoodies.references.processors.EmptyCrossReferenceProcessor;
+import fitgoodies.references.processors.EnvironmentPropertyCrossReferenceProcessor;
 import fitgoodies.references.processors.FileFixtureCrossReferenceProcessor;
 import fitgoodies.references.processors.PropertyCrossReferenceProcessor;
 import fitgoodies.references.processors.StorageCrossReferenceProcessor;
+import fitgoodies.util.SystemPropertyProvider;
 
 /**
  * Singleton class to manage registered {@link AbstractCrossReferenceProcessor}s.
@@ -44,6 +46,7 @@ public final class CrossReferenceHelper {
 		processors.add(new StorageCrossReferenceProcessor());
 		processors.add(new FileFixtureCrossReferenceProcessor());
 		processors.add(new PropertyCrossReferenceProcessor());
+		processors.add(new EnvironmentPropertyCrossReferenceProcessor(new SystemPropertyProvider()));
 	};
 
 	/**
