@@ -1,6 +1,5 @@
 package fitgoodies.selenium;
 
-import fit.Parse;
 import fitgoodies.ActionFixture;
 
 /**

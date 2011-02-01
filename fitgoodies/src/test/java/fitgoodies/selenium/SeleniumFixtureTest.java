@@ -4,10 +4,12 @@ import org.jmock.Expectations;
 
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.SeleniumException;
-import com.thoughtworks.selenium.Wait;
 
 import fit.Parse;
 import fitgoodies.FitGoodiesTestCase;
+import fitgoodies.references.CrossReferenceHelper;
+import fitgoodies.references.processors.DateProvider;
+import fitgoodies.references.processors.DateProviderCrossReferenceProcessor;
 
 public class SeleniumFixtureTest extends FitGoodiesTestCase {
 
@@ -36,7 +38,6 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 	}
 	
 	public void testInvokeSeleniumCommandReturnsNOK() throws Exception {
-		fixture.setSeleniumTimeout(Wait.DEFAULT_INTERVAL );
 		checking(new Expectations() {{
 			oneOf(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
 			will(returnValue("NOK"));
@@ -47,7 +48,6 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 	}
 
 	public void testInvokeSeleniumCommandThrowsSeleniumException() throws Exception {
-		fixture.setSeleniumTimeout(2000L);
 		checking(new Expectations() {{
 			atLeast(1).of(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
 			will(throwException(new SeleniumException("Error")));
@@ -68,4 +68,28 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 		assertEquals(0, fixture.counts.wrong);
 		assertEquals(1, fixture.counts.exceptions);
 	}
+
+    public void testInvokeSeleniumWithCrossReference() throws Exception {
+        Parse table = new Parse(
+                "<table>"
+                + "<tr><td>ignore</td></tr>"
+                + "<tr><td>command</td><td>arg1</td><td>${dateProvider.getCurrentDate()}</td></tr>"
+                + "</table>");
+        final DateProvider dateProvider = mock(DateProvider.class);
+        final String date = "21.01.2009";
+        DateProviderCrossReferenceProcessor processor = new DateProviderCrossReferenceProcessor(dateProvider);
+        CrossReferenceHelper.instance().getProcessors().remove(processor);
+        CrossReferenceHelper.instance().getProcessors().add(processor);
+        checking(new Expectations() {{
+            oneOf(dateProvider).getCurrentDate();
+            will(returnValue(date));
+        }});
+
+        checking(new Expectations() {{
+            oneOf(commandProcessor).doCommand("command", new String[]{"arg1", date});
+            will(returnValue("OK"));
+        }});
+        fixture.doTable(table);
+        assertEquals(1, fixture.counts.right);  
+    }
 }

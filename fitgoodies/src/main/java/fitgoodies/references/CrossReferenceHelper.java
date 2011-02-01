@@ -22,11 +22,13 @@ package fitgoodies.references;
 import java.util.regex.Matcher;
 
 import fitgoodies.references.processors.AbstractCrossReferenceProcessor;
+import fitgoodies.references.processors.DateProviderCrossReferenceProcessor;
 import fitgoodies.references.processors.EmptyCrossReferenceProcessor;
 import fitgoodies.references.processors.EnvironmentPropertyCrossReferenceProcessor;
 import fitgoodies.references.processors.FileFixtureCrossReferenceProcessor;
 import fitgoodies.references.processors.PropertyCrossReferenceProcessor;
 import fitgoodies.references.processors.StorageCrossReferenceProcessor;
+import fitgoodies.util.DateProviderImpl;
 import fitgoodies.util.SystemPropertyProvider;
 
 /**
@@ -47,6 +49,7 @@ public final class CrossReferenceHelper {
 		processors.add(new FileFixtureCrossReferenceProcessor());
 		processors.add(new PropertyCrossReferenceProcessor());
 		processors.add(new EnvironmentPropertyCrossReferenceProcessor(new SystemPropertyProvider()));
+		processors.add(new DateProviderCrossReferenceProcessor(new DateProviderImpl()));
 	};
 
 	/**

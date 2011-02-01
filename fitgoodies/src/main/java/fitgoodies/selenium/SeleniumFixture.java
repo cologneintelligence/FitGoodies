@@ -2,11 +2,10 @@ package fitgoodies.selenium;
 
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.SeleniumException;
-import com.thoughtworks.selenium.Wait;
-import com.thoughtworks.selenium.Wait.WaitTimedOutException;
 
 import fit.Parse;
 import fitgoodies.ActionFixture;
+import fitgoodies.references.CrossReferenceHelper;
 
 /**
  * Run the selenium-IDE and record your test-case. Save the result as html and
@@ -52,55 +51,33 @@ public class SeleniumFixture extends ActionFixture {
 
 	private CommandProcessor commandProcessor = SetupHelper.instance().getCommandProcessor();
 	boolean result = false;
-	private long seleniumTimeout = Wait.DEFAULT_TIMEOUT;
-	private String message;	
 	private String returnValue;
 	
 	@Override
 	public void doCells(final Parse cells) {
 		 
 		final String command = cells.text();
-		final String[] args = new String[] { cells.more.text(), cells.more.more.text() };
-		Wait wait = new Wait() {						
-			@Override
-			public boolean until() {
-				try {
-					returnValue = doCommand(command, args);												
-					result = returnValue.startsWith("OK");					
-					return result;
-				} catch (SeleniumException e) {
-					result = false;
-					message = e.getMessage();									
-				} 			
-				return result;
-			}
-		};
-	
+		
 		try {
-			wait.wait(message + "\nTimeout " + seleniumTimeout + " exceeded for command " + command, seleniumTimeout);
-		} catch (WaitTimedOutException we) {
-			result = false;
-			message = we.getMessage();						
-		} catch (Exception e) {
-			result = false;
-			exception(cells.more.more, e);
-		}
-
-		checkResult(cells, result, message);
+		    final String[] args = new String[] { 
+		            CrossReferenceHelper.instance().parseBody(cells.more.text(), null), 
+		            CrossReferenceHelper.instance().parseBody(cells.more.more.text(),null) };
+			returnValue = doCommand(command, args);												
+			result = returnValue.startsWith("OK");
+			checkResult(cells, result);
+		} catch (SeleniumException e) {
+            wrong(cells.more.more, e.getMessage());
+        } catch (Exception e) {
+            exception(cells.more.more, e);
+        }			
 	}
 
-	private void checkResult(Parse cells, boolean result, String message) {
+	private void checkResult(Parse cells, boolean result) {
 		if (result) {
 			right(cells.more.more);
 		} else {
-			if ( message != null ) {
-				wrong(cells.more.more, message);
-			}
+            wrong(cells.more.more);
 		}
-	}
-
-	public void setSeleniumTimeout(long lseleniumTimeout) {
-		this.seleniumTimeout = lseleniumTimeout;
 	}
 
 	private String doCommand(final String command, final String[] args) {
@@ -111,10 +88,22 @@ public class SeleniumFixture extends ActionFixture {
 			} catch (SeleniumException e) {							
 				returnValue = commandProcessor.doCommand("waitForPageToLoad", new String[]{"50000",});								
 			}						
+		} else if (command.equals("pause")){
+	        returnValue = pause(args);
 		} else {
-			returnValue = commandProcessor.doCommand(command, args);
-		}
+            returnValue = commandProcessor.doCommand(command, args);
+        }
+		
 		return returnValue;
 	}
+
+    private String pause(final String[] args) throws NumberFormatException {
+        try {
+            Thread.sleep(new Long (args[0]));
+            return "OK";
+        } catch (InterruptedException e) {
+            return e.getMessage();
+        }
+    }
 
 }
