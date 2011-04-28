@@ -22,11 +22,17 @@
 			<directory>${project.basedir}</directory>
 			<outputDirectory>/</outputDirectory>
 			<includes>
-				<include>README*</include>
-				<include>LICENSE*</include>
-				<include>NOTICE*</include>
+				<include>LICENSE.txt</include>
 			</includes>
 		</fileSet>
+		<fileSet>
+            <directory>${project.basedir}/src/main/assembly</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>LICENSE-bcel.txt</include>
+                <include>NOTICE-bcel.txt</include>
+            </includes>
+        </fileSet>
 		<fileSet>
 			<directory>${project.build.outputDirectory}</directory>
 			<outputDirectory>/</outputDirectory>
