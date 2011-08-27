@@ -9,24 +9,94 @@
 		Transistent pom which is used do install FitGoodies and its archetype
 	</description>
 	<url>http://fitgoodies.sourceforge.net</url>
+
 	<issueManagement>
 		<system>trac</system>
 		<url>http://sourceforge.net/apps/trac/fitgoodies</url>
 	</issueManagement>
+
 	<scm>
 		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk</connection>
 		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk</developerConnection>
 		<tag>HEAD</tag>
 		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk</url>
 	</scm>
-	<modules>
-		<module>fitgoodies</module>
-		<module>archetype-fitgoodies-quickstart</module>
-	</modules>
+
 	<licenses>
 		<license>
 			<name>GPL</name>
 			<url>http://www.gnu.org/licenses/gpl.html</url>
 		</license>
 	</licenses>
+
+	<modules>
+		<module>fitgoodies</module>
+		<module>archetype-fitgoodies-quickstart</module>
+	</modules>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.2.1</version>
+				<configuration>
+					<tagBase>https://svn.apache.org/repos/asf/maven/components/releases</tagBase>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.0.2</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.4.3</version>
+					<configuration>
+						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

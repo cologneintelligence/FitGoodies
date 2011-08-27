@@ -8,60 +8,51 @@
 	<packaging>jar</packaging>
 	<description>Integration Test Framework extending Fit</description>
 	<url>http://fitgoodies.sourceforge.net</url>
+
 	<parent>
 		<artifactId>fitgoodies-bundle</artifactId>
 		<groupId>de.coin</groupId>
 		<version>1</version>
 	</parent>
+
 	<issueManagement>
 		<system>trac</system>
 		<url>http://sourceforge.net/apps/trac/fitgoodies</url>
 	</issueManagement>
+
 	<scm>
 		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/fitgoodies</connection>
 		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/fitgoodies</developerConnection>
 		<tag>HEAD</tag>
 		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk/fitgoodies</url>
 	</scm>
-	<distributionManagement>
-		<repository>
-			<id>coin-releases</id>
-			<url>http://maven/archiva/repository/coin-releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>coin-snapshots</id>
-			<url>http://maven/archiva/repository/coin-snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+
+	<licenses>
+		<license>
+			<name>GPL</name>
+			<url>http://www.gnu.org/licenses/gpl.html</url>
+		</license>
+	</licenses>
 	
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.0.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.4.3</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
 				<configuration>
-					<encoding>UTF-8</encoding>
+					<descriptors>
+						<descriptor>src/main/assembly/sf.xml</descriptor>
+					</descriptors>
 				</configuration>
 			</plugin>
-	        <plugin>
-	           <artifactId>maven-assembly-plugin</artifactId>
-	           <configuration>
-	               <descriptors>
-	                   <descriptor>src/main/assembly/sf.xml</descriptor>
-	               </descriptors>
-	           </configuration>
-	       </plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -123,10 +114,7 @@
 			<scope>compile</scope>
 		</dependency>				
 	</dependencies>
-	<dependencyManagement>
-		<dependencies>
-		</dependencies>
-	</dependencyManagement>
+
 	<reporting>
 		<plugins>
 			<plugin>
@@ -167,10 +155,4 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	<licenses>
-		<license>
-			<name>GPL</name>
-			<url>http://www.gnu.org/licenses/gpl.html</url>
-		</license>
-	</licenses>
 </project>
