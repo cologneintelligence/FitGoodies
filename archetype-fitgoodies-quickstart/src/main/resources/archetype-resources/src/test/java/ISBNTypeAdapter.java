@@ -19,7 +19,7 @@
 package ${groupId};
 
 import fit.TypeAdapter;
-import fitgoodies.adapters.AbstractTypeAdapter;
+import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
 
 public final class ISBNTypeAdapter extends AbstractTypeAdapter<ISBN> {
 	public ISBNTypeAdapter(final TypeAdapter ta, final String parameter) {

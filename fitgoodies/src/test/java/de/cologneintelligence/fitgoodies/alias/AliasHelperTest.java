@@ -20,7 +20,6 @@
 package de.cologneintelligence.fitgoodies.alias;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.alias.AliasHelper;
 
 /**
  * $Id$
@@ -28,7 +27,7 @@ import de.cologneintelligence.fitgoodies.alias.AliasHelper;
  */
 public final class AliasHelperTest extends FitGoodiesTestCase {
 	public void testSingleton() {
-		AliasHelper helper = AliasHelper.instance();
+		final AliasHelper helper = AliasHelper.instance();
 
 		assertNotNull(helper);
 		assertSame(helper, AliasHelper.instance());
@@ -46,7 +45,47 @@ public final class AliasHelperTest extends FitGoodiesTestCase {
 		assertEquals("java.lang.Integer", actual);
 	}
 
-	public void testAddAlias() throws ClassNotFoundException {
+	public void testGetFitgoodiesMapping() {
+	    assertMapping("fitgoodies.ActionFixture");
+	    assertMapping("fitgoodies.ColumnFixture");
+	    assertMapping("fitgoodies.RowFixture");
+
+	    assertMapping("fitgoodies.file.FileFixture");
+	    assertMapping("fitgoodies.runners.RunFixture");
+	    assertMapping("fitgoodies.selenium.SeleniumFixture");
+	    assertMapping("fitgoodies.selenium.SetupFixture");
+	    assertMapping("fitgoodies.references.SetupFixture");
+	    assertMapping("fitgoodies.parsers.SetupFixture");
+	    assertMapping("fitgoodies.mail.SetupFixture");
+	    assertMapping("fitgoodies.date.SetupFixture");
+	    assertMapping("fitgoodies.database.SetupFixture");
+	    assertMapping("fitgoodies.adapters.SetupFixture");
+
+	    assertMapping("fitgoodies.database.ResultSetFixture");
+	    assertMapping("fitgoodies.database.TableFixture");
+
+	    assertMapping("fitgoodies.file.CSVFileRecordFixture");
+	    assertMapping("fitgoodies.file.DelimiterFileRecordFixture");
+	    assertMapping("fitgoodies.file.FixedLengthFileRecordFixture");
+	    assertMapping("fitgoodies.file.XMLFileFixture");
+	    assertMapping("fitgoodies.log4j.LogFixture");
+	    assertMapping("fitgoodies.log4j.SetupFixture");
+	    assertMapping("fitgoodies.mail.MailFixture");
+	    assertMapping("fitgoodies.alias.SetupFixture");
+	}
+
+	private void assertMapping(final String className) {
+        final String actual = AliasHelper.instance().getClazz(className);
+        final String expected = "de.cologneintelligence." + className;
+        assertEquals(expected, actual);
+        try {
+            assertNotNull(Class.forName(actual));
+        } catch (final ClassNotFoundException e) {
+            fail("The referenced fixture " + actual + " does not exist");
+        }
+    }
+
+    public void testAddAlias() throws ClassNotFoundException {
 		assertEquals("test", AliasHelper.instance().getClazz("test"));
 
 		AliasHelper.instance().register("test", "fitgoodies.Fixture");

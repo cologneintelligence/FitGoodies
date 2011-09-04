@@ -18,7 +18,7 @@
 
 package ${groupId};
 
-import fitgoodies.ColumnFixture;
+import de.cologneintelligence.fitgoodies.ColumnFixture;
 
 public final class ISBNFixture extends ColumnFixture {
 	public ISBN isbn;

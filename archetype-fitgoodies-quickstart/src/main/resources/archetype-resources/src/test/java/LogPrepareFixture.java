@@ -24,7 +24,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import fitgoodies.ActionFixture;
+import de.cologneintelligence.fitgoodies.ActionFixture;
 
 public final class LogPrepareFixture extends ActionFixture {
 	public void initializeLogging() {

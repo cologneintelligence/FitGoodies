@@ -18,7 +18,7 @@
 
 package ${groupId};
 
-import fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.Fixture;
 
 public final class SaveTest extends Fixture {
 	private boolean written;

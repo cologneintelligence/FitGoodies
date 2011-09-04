@@ -18,7 +18,7 @@
 
 package ${groupId};
 
-import fitgoodies.ColumnFixture;
+import de.cologneintelligence.fitgoodies.ColumnFixture;
 
 public final class BookFixture extends ColumnFixture {
 	public String author;
