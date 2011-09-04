@@ -64,9 +64,9 @@ public class Fixture extends fit.Fixture {
      *
      *  @see fit.Fixture#parse(String, Class) {@link fit.Fixture#parse(String, Class)}
 	 */
-	@Override @SuppressWarnings("unchecked")
+	@Override @SuppressWarnings("rawtypes")
 	public Object parse(final String text, final Class type) throws Exception {
-		Object result = FixtureTools.parse(text, type, cellParameter);
+		final Object result = FixtureTools.parse(text, type, cellParameter);
 
 		if (result == null) {
 			return super.parse(text, type);
@@ -104,12 +104,12 @@ public class Fixture extends fit.Fixture {
 
     		try {
 	            super.doTable(table);
-	        } catch (Exception e) {
+	        } catch (final Exception e) {
 	            exception(table.parts.parts, e);
 	        }
 
         	tearDown();
-    	} catch (Exception e) {
+    	} catch (final Exception e) {
             exception(table.parts.parts, e);
         }
     }

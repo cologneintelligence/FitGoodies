@@ -45,7 +45,7 @@ public abstract class RowFixture extends fit.RowFixture {
      */
 	@Override
 	public void check(final Parse cell, final TypeAdapter a) {
-		TypeAdapter ta = FixtureTools.processCell(cell, a, this);
+		final TypeAdapter ta = FixtureTools.processCell(cell, a, this);
 		if (ta != null) {
 			super.check(cell, a);
 		}
@@ -63,9 +63,9 @@ public abstract class RowFixture extends fit.RowFixture {
      *
      *  @see fit.Fixture#parse(String, Class) {@link fit.Fixture#parse(String, Class)}
 	 */
-	@Override @SuppressWarnings("unchecked")
+	@Override @SuppressWarnings("rawtypes")
 	public Object parse(final String text, final Class type) throws Exception {
-		Object result = FixtureTools.parse(text, type, null);
+		final Object result = FixtureTools.parse(text, type, null);
 		if (result == null) {
 			return super.parse(text, type);
 		} else {
@@ -78,8 +78,8 @@ public abstract class RowFixture extends fit.RowFixture {
 		Parse head = heads;
         columnBindings = new TypeAdapter[head.size()];
         for (int i = 0; head != null; i++, head = head.more) {
-            String name = head.text();
-            String suffix = "()";
+            final String name = head.text();
+            final String suffix = "()";
             try {
             	String parameter = null;
             	if (i < parameters.length) {
@@ -94,7 +94,7 @@ public abstract class RowFixture extends fit.RowFixture {
                 } else {
                     columnBindings[i] = bindField(name, parameter);
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 exception(head, e);
             }
         }
@@ -168,12 +168,12 @@ public abstract class RowFixture extends fit.RowFixture {
 
 	        try {
 	            super.doTable(table);
-	        } catch (Exception e) {
+	        } catch (final Exception e) {
 	            exception(table.parts.parts, e);
 	        }
 
         	tearDown();
-    	} catch (Exception e) {
+    	} catch (final Exception e) {
             exception(table.parts.parts, e);
         }
 

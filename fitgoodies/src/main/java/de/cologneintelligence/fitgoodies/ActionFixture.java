@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import de.cologneintelligence.fitgoodies.util.WaitForResult;
-
 import fit.Fixture;
 import fit.Parse;
 import fit.TypeAdapter;
@@ -91,11 +90,11 @@ public class ActionFixture extends fit.ActionFixture {
 	 */
 	@Override
     public void enter() throws Exception {
-        Method method = method(1);
-        Class<?> type = method.getParameterTypes()[0];
-        TypeAdapter ta = getTypeAdapter(type);
+        final Method method = method(1);
+        final Class<?> type = method.getParameterTypes()[0];
+        final TypeAdapter ta = getTypeAdapter(type);
         if (ta != null) {
-        	Object[] args = {ta.parse(cells.more.more.text())};
+        	final Object[] args = {ta.parse(cells.more.more.text())};
             method.invoke(actor, args);
         }
 	}
@@ -134,11 +133,11 @@ public class ActionFixture extends fit.ActionFixture {
 	 * @throws Exception propagated to fit
 	 */
 	public void waitFor() throws Exception {
-		Method method = method(0);
-		TypeAdapter typeAdapter = getTypeAdapter(Long.class);
-		long maxTime = (Long) typeAdapter.parse(cells.more.more.text());
-		long sleepTime = getSleepTime(typeAdapter);
-		WaitForResult waitForResult = new WaitForResult(method, actor, maxTime);
+		final Method method = method(0);
+		final TypeAdapter typeAdapter = getTypeAdapter(Long.class);
+		final long maxTime = (Long) typeAdapter.parse(cells.more.more.text());
+		final long sleepTime = getSleepTime(typeAdapter);
+		final WaitForResult waitForResult = new WaitForResult(method, actor, maxTime);
 		waitForResult.setSleepTime(sleepTime);
 		waitForResult.repeatInvokeWithTimeout();
 		writeResultIntoCell(waitForResult);
@@ -164,13 +163,13 @@ public class ActionFixture extends fit.ActionFixture {
 	 * @throws Exception should be propagated to fit.
 	 */
 	protected final void transformAndEnter() throws Exception {
-		Parse oldmore = cells.more;
+		final Parse oldmore = cells.more;
 		cells.more = new Parse("<td></td>", new String[] { "td" });
 		cells.more.body = cells.body;
 		cells.more.more = oldmore;
 		cells.body = "enter";
 
-		Fixture oldActor = fit.ActionFixture.actor;
+		final Fixture oldActor = fit.ActionFixture.actor;
 		setActor(this);
 		enter();
 		setActor(oldActor);
@@ -190,9 +189,9 @@ public class ActionFixture extends fit.ActionFixture {
      *
      *  @see fit.Fixture#parse(String, Class) {@link fit.Fixture#parse(String, Class)}
 	 */
-	@Override @SuppressWarnings("unchecked")
+	@Override @SuppressWarnings("rawtypes")
 	public Object parse(final String text, final Class type) throws Exception {
-		Object result = FixtureTools.parse(text, type, parameter);
+		final Object result = FixtureTools.parse(text, type, parameter);
 
 		if (result == null) {
 			return super.parse(text, type);
@@ -230,12 +229,12 @@ public class ActionFixture extends fit.ActionFixture {
 
             try {
                 super.doTable(table);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 exception(table.parts.parts, e);
             }
 
             tearDown();
-    	} catch (Exception e) {
+    	} catch (final Exception e) {
             exception(table.parts.parts, e);
         }
 	}

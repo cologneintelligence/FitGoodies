@@ -65,7 +65,7 @@ public class ArrayTypeAdapter extends TypeAdapter {
      * @param target target fixture
      * @param type type of the fixture data
      */
-    @Override @SuppressWarnings("unchecked")
+    @Override @SuppressWarnings("rawtypes")
 	protected void init(final Fixture target, final Class type) {
         super.init(target, type);
 
@@ -82,8 +82,8 @@ public class ArrayTypeAdapter extends TypeAdapter {
 	 */
     @Override
 	public Object parse(final String s) throws Exception {
-        StringTokenizer t = new StringTokenizer(s, ",");
-        Object array = Array.newInstance(componentAdapter.type, t.countTokens());
+        final StringTokenizer t = new StringTokenizer(s, ",");
+        final Object array = Array.newInstance(componentAdapter.type, t.countTokens());
         for (int i = 0; t.hasMoreTokens(); i++) {
             Array.set(array, i, componentAdapter.parse(t.nextToken().trim()));
         }
@@ -104,8 +104,8 @@ public class ArrayTypeAdapter extends TypeAdapter {
         	return "";
         }
 
-        int length = Array.getLength(o);
-        StringBuffer b = new StringBuffer(5 * length);
+        final int length = Array.getLength(o);
+        final StringBuffer b = new StringBuffer(5 * length);
         for (int i = 0; i < length; i++) {
             b.append(componentAdapter.toString(Array.get(o, i)));
             if (i < length - 1) {
@@ -127,7 +127,7 @@ public class ArrayTypeAdapter extends TypeAdapter {
 	 */
     @Override
 	public boolean equals(final Object a, final Object b) {
-        int length = Array.getLength(a);
+        final int length = Array.getLength(a);
         if (length != Array.getLength(b)) {
         	return false;
         }

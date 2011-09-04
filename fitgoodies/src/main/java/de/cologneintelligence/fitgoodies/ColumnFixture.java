@@ -59,7 +59,7 @@ public class ColumnFixture extends fit.ColumnFixture {
 	        a = FixtureTools.processCell(cell, a, this);
 	        if (a != null) {
 		        try {
-		            String text = cell.text();
+		            final String text = cell.text();
 		            if (text.equals("")) {
 		                check(cell, a);
 		            } else if (a.field != null) {
@@ -67,7 +67,7 @@ public class ColumnFixture extends fit.ColumnFixture {
 		            } else if (a.method != null) {
 		                check(cell, a);
 		            }
-		        } catch (Exception e) {
+		        } catch (final Exception e) {
 		            exception(cell, e);
 		        }
 	        }
@@ -86,9 +86,9 @@ public class ColumnFixture extends fit.ColumnFixture {
      *
      *  @see fit.Fixture#parse(String, Class) {@link fit.Fixture#parse(String, Class)}
 	 */
-	@Override @SuppressWarnings("unchecked")
+	@Override @SuppressWarnings("rawtypes")
 	public Object parse(final String text, final Class type) throws Exception {
-		Object result = FixtureTools.parse(text, type, columnParameter);
+		final Object result = FixtureTools.parse(text, type, columnParameter);
 
 		if (result == null) {
 			return super.parse(text, type);
@@ -102,8 +102,8 @@ public class ColumnFixture extends fit.ColumnFixture {
 		Parse head = heads;
         columnBindings = new TypeAdapter[head.size()];
         for (int i = 0; head != null; i++, head = head.more) {
-            String name = head.text();
-            String suffix = "()";
+            final String name = head.text();
+            final String suffix = "()";
             try {
             	String parameter = null;
             	if (i < columnParameters.length) {
@@ -118,7 +118,7 @@ public class ColumnFixture extends fit.ColumnFixture {
                 } else {
                     columnBindings[i] = bindField(name, parameter);
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 exception(head, e);
             }
         }
@@ -210,12 +210,12 @@ public class ColumnFixture extends fit.ColumnFixture {
 
             try {
                 super.doTable(table);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 exception(table.parts.parts, e);
             }
 
             tearDown();
-    	} catch (Exception e) {
+    	} catch (final Exception e) {
             exception(table.parts.parts, e);
         }
     }
