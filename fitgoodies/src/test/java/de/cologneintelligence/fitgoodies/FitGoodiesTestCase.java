@@ -34,7 +34,7 @@ import fit.Counts;
 public abstract class FitGoodiesTestCase extends MockObjectTestCase {
 	protected static Counts mkCounts(final int r, final int w, final int i,
 			final int e) {
-				Counts c = new Counts();
+				final Counts c = new Counts();
 				c.right = r; c.wrong = w; c.ignores = i; c.exceptions = e;
 				return c;
 			}
@@ -52,6 +52,7 @@ public abstract class FitGoodiesTestCase extends MockObjectTestCase {
 		de.cologneintelligence.fitgoodies.runners.RunnerHelper.reset();
 		de.cologneintelligence.fitgoodies.mail.SetupHelper.reset();
 		de.cologneintelligence.fitgoodies.log4j.LogHelper.reset();
+		de.cologneintelligence.fitgoodies.selenium.SetupHelper.reset();
 	}
 
 	@Override
@@ -83,7 +84,7 @@ public abstract class FitGoodiesTestCase extends MockObjectTestCase {
 	}
 
 	public final void assertContains(final Object[] array, final Object element) {
-		for (Object a : array) {
+		for (final Object a : array) {
 			if (element.equals(a)) {
 				return;
 			}
@@ -95,7 +96,7 @@ public abstract class FitGoodiesTestCase extends MockObjectTestCase {
 			final Object[] expected, final Object[] actual) {
 		assertEquals(expected.length, actual.length);
 
-		for (Object e : expected) {
+		for (final Object e : expected) {
 			assertContains(actual, e);
 		}
 	}
@@ -110,7 +111,7 @@ public abstract class FitGoodiesTestCase extends MockObjectTestCase {
 	}
 
 	public final void assertNotContains(final Object[] array, final Object element) {
-		for (Object a : array) {
+		for (final Object a : array) {
 			if (element.equals(a)) {
 				fail("array contains " + element.toString());
 			}
@@ -128,7 +129,7 @@ public abstract class FitGoodiesTestCase extends MockObjectTestCase {
 				haystack.contains(needle));
 	}
 
-	public static void assertNull(Object o) {
+	public static void assertNull(final Object o) {
 		if (o != null) {
 			fail("Should be null, but is: " + o.toString());
 		}
