@@ -18,9 +18,9 @@
 			<version>1.2.14</version>
 		</dependency>
 		<dependency>
-			<groupId>de.coin</groupId>
+			<groupId>de.cologneintelligence</groupId>
 			<artifactId>fitgoodies</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
