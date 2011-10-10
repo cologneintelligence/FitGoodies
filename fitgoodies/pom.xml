@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>	
 	<artifactId>fitgoodies</artifactId>
 	<name>FitGoodies</name>
-	<version>1.2.0</version>
+	<version>1.2.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<description>Integration Test Framework extending Fit</description>
 	<url>http://fitgoodies.sourceforge.net</url>
@@ -10,7 +10,7 @@
 	<parent>
 		<artifactId>fitgoodies-bundle</artifactId>
 		<groupId>de.cologneintelligence</groupId>
-		<version>1.2.0</version>
+		<version>1.2.0-SNAPSHOT</version>
 	</parent>
 
 	<issueManagement>
@@ -19,10 +19,10 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/tags/fitgoodies-bundle-1.2.0/fitgoodies</connection>
-		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/tags/fitgoodies-bundle-1.2.0/fitgoodies</developerConnection>
+		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/fitgoodies</connection>
+		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/fitgoodies</developerConnection>
 		<tag>HEAD</tag>
-		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/tags/fitgoodies-bundle-1.2.0/fitgoodies</url>
+		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk/fitgoodies</url>
 	</scm>
 
 	<licenses>
