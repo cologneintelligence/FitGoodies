@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>	
 	<artifactId>fitgoodies</artifactId>
 	<name>FitGoodies</name>
-	<version>1.2.0-SNAPSHOT</version>
+	<version>1.2.0</version>
 	<packaging>jar</packaging>
 	<description>Integration Test Framework extending Fit</description>
 	<url>http://fitgoodies.sourceforge.net</url>
@@ -11,7 +10,7 @@
 	<parent>
 		<artifactId>fitgoodies-bundle</artifactId>
 		<groupId>de.cologneintelligence</groupId>
-		<version>1.2.0-SNAPSHOT</version>
+		<version>1.2.0</version>
 	</parent>
 
 	<issueManagement>
@@ -20,10 +19,10 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/fitgoodies</connection>
-		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/fitgoodies</developerConnection>
+		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/tags/fitgoodies-bundle-1.2.0/fitgoodies</connection>
+		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/tags/fitgoodies-bundle-1.2.0/fitgoodies</developerConnection>
 		<tag>HEAD</tag>
-		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk/fitgoodies</url>
+		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/tags/fitgoodies-bundle-1.2.0/fitgoodies</url>
 	</scm>
 
 	<licenses>
