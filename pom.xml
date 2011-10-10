@@ -23,6 +23,45 @@
 		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk</url>
 	</scm>
 
+	<developers>
+		<developer>
+			<id>jochen_wierum</id>
+			<name>Jochen Wierum</name>
+			<email>jochen.wierum@co-in.de</email>
+			<url>http://www.jowisoftware.de</url>
+			<organization>Cologne Intelligence</organization>
+			<organizationUrl>http://www.co-in.de</organizationUrl>
+			<timezone>+1</timezone>
+			<roles>
+				<role>developer</role>
+				<role>architect</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>kia69</id>
+			<name>Kiaresch Mussawisade</name>
+			<email>kiaresch.mussawisade@co-in.de</email>
+			<organization>Cologne Intelligence</organization>
+			<organizationUrl>http://www.co-in.de</organizationUrl>
+			<timezone>+1</timezone>
+			<roles>
+				<role>developer</role>
+				<role>architect</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>nerdmann</id>
+			<name>Natalie Erdmann</name>
+			<email>natalie.erdmann@co-in.de</email>
+			<organization>Cologne Intelligence</organization>
+			<organizationUrl>http://www.co-in.de</organizationUrl>
+			<timezone>+1</timezone>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
+    
 	<licenses>
 		<license>
 			<name>GPL</name>
