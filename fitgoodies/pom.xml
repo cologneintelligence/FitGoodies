@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>	
 	<artifactId>fitgoodies</artifactId>
 	<name>FitGoodies</name>
-	<version>1.2.0</version>
+	<version>1.2.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<description>Integration Test Framework extending Fit</description>
 	<url>http://fitgoodies.sourceforge.net</url>
@@ -10,7 +10,7 @@
 	<parent>
 		<artifactId>fitgoodies-bundle</artifactId>
 		<groupId>de.cologneintelligence</groupId>
-		<version>1.2.0</version>
+		<version>1.2.0-SNAPSHOT</version>
 	</parent>
 
 	<issueManagement>
