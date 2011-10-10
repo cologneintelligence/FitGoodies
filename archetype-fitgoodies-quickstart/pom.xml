@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.cologneintelligence</groupId>
 	<artifactId>archetype-fitgoodies-quickstart</artifactId>
-	<version>1.2.0</version>
+	<version>1.2.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Archetype - fitgoodies-quickstart</name>
 	<description>Archetype which generates an FitGoodies-enabled example project</description>
@@ -11,7 +11,7 @@
 	<parent>
 		<artifactId>fitgoodies-bundle</artifactId>
 		<groupId>de.cologneintelligence</groupId>
-		<version>1.2.0</version>
+		<version>1.2.1-SNAPSHOT</version>
 	</parent>
 
 	<issueManagement>
@@ -20,10 +20,9 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/tags/fitgoodies-bundle-1.2.0/archetype-fitgoodies-quickstart</connection>
-		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/tags/fitgoodies-bundle-1.2.0/archetype-fitgoodies-quickstart</developerConnection>
-		<tag>HEAD</tag>
-		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/tags/fitgoodies-bundle-1.2.0/archetype-fitgoodies-quickstart</url>
+		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/archetype-fitgoodies-quickstart</connection>
+		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/archetype-fitgoodies-quickstart</developerConnection>
+		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk/archetype-fitgoodies-quickstart</url>
 	</scm>
 
 	<licenses>
