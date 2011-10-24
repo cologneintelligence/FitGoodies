@@ -40,6 +40,14 @@ public class SetupFixture extends ActionFixture {
 		transformAndEnter();
 	}
 
+	public void timeout() throws Exception {
+		transformAndEnter();
+	}
+
+	public void interval() throws Exception {
+		transformAndEnter();
+	}
+
 	public void start() throws Exception {
 		transformAndEnter();
 	}
@@ -68,6 +76,14 @@ public class SetupFixture extends ActionFixture {
 		SetupHelper.instance().setSpeed(speed);
 	}
 		
+	public void timeout(String timeout) throws Exception {
+		SetupHelper.instance().setTimeout(timeout);
+	}
+
+	public void interval(String interval) throws Exception {
+		SetupHelper.instance().setInterval(interval);
+	}
+
 	public void start(String startConfig) {
 		SetupHelper.instance().start(startConfig);
 	}

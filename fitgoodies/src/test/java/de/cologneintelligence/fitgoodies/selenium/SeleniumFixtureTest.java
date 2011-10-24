@@ -1,6 +1,8 @@
 package de.cologneintelligence.fitgoodies.selenium;
 
 import org.jmock.Expectations;
+import org.jmock.Sequence;
+import org.jmock.internal.NamedSequence;
 
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.SeleniumException;
@@ -16,13 +18,17 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 	private CommandProcessor commandProcessor;
 	private SeleniumFixture fixture;
 	private Parse table;
+	private final String[] args = new String[]{"arg1", "arg2"};
+
 
 	@Override
     public void setUp() throws Exception {
 		commandProcessor = mock(CommandProcessor.class);
 		SetupHelper.instance().setCommandProcessor(commandProcessor);
+		SetupHelper.instance().setTimeout("200");
+		SetupHelper.instance().setInterval("50");
 		fixture = new SeleniumFixture();
-
+		
 		table = new Parse(
 				"<table>"
 				+ "<tr><td>ignore</td></tr>"
@@ -32,45 +38,89 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 
 	public void testInvokeSeleniumCommandReturnsOK() throws Exception {
 		checking(new Expectations() {{
-			oneOf(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
+			oneOf(commandProcessor).doCommand("command", args);
 			will(returnValue("OK"));
 		}});
 		fixture.doTable(table);
-		assertEquals(1, fixture.counts.right);
+		assertRightCell("arg2");
 	}
 
 	public void testInvokeSeleniumCommandReturnsNOK() throws Exception {
 		checking(new Expectations() {{
-			oneOf(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
+			oneOf(commandProcessor).doCommand("command", args);
 			will(returnValue("NOK"));
 		}});
 		fixture.doTable(table);
-		assertEquals(0, fixture.counts.right);
-		assertEquals(1, fixture.counts.wrong);
+		assertWrongCell("arg2");
 	}
 
 	public void testInvokeSeleniumCommandThrowsSeleniumException() throws Exception {
 		checking(new Expectations() {{
-			atLeast(1).of(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
+			oneOf(commandProcessor).doCommand("command", args);
+			will(throwException(new SeleniumException("Error: something is wrong!")));
+		}});
+		fixture.doTable(table);
+		assertWrongCell("Error: something is wrong!");
+	}
+
+	public void testInvokeSeleniumCommandReturnsNOKAndRetry() throws Exception {
+		table = new Parse(
+				"<table>"
+				+ "<tr><td>ignore</td></tr>"
+				+ "<tr><td>commandAndRetry</td><td>arg1</td><td>arg2</td></tr>"
+				+ "</table>");
+		checking(new Expectations() {{
+			exactly(4).of(commandProcessor).doCommand("command", args);
+			will(returnValue("NOK"));
+		}});
+		fixture.doTable(table);
+		assertWrongCell("arg2 expectedTimeout by commandAndRetry; attempts: 4/4 times");
+	}
+
+	public void testInvokeSeleniumCommandThrowsSeleniumExceptionAndRetry() throws Exception {
+		table = new Parse(
+				"<table>"
+				+ "<tr><td>ignore</td></tr>"
+				+ "<tr><td>commandAndRetry</td><td>arg1</td><td>arg2</td></tr>"
+				+ "</table>");
+		checking(new Expectations() {{
+			exactly(4).of(commandProcessor).doCommand("command", args);
 			will(throwException(new SeleniumException("Error")));
 		}});
 		fixture.doTable(table);
-		assertEquals(0, fixture.counts.right);
-		assertEquals(1, fixture.counts.wrong);
+		assertWrongCell("Timeout by commandAndRetry; attempts: 4/4 times");		
+	}
+
+
+	public void testInvokeSeleniumCommandThrowsSeleniumExceptionAndRetryWithSuccessAfterThree() throws Exception {
+		table = new Parse(
+				"<table>"
+				+ "<tr><td>ignore</td></tr>"
+				+ "<tr><td>commandAndRetry</td><td>arg1</td><td>arg2</td></tr>"
+				+ "</table>");
+		checking(new Expectations() {{			
+			Sequence sequence = new NamedSequence("trail");
+			oneOf(commandProcessor).doCommand("command", args); 
+			will(throwException(new SeleniumException("Error")));inSequence(sequence);
+			oneOf(commandProcessor).doCommand("command", args);
+			will(throwException(new SeleniumException("Error")));inSequence(sequence);
+			oneOf(commandProcessor).doCommand("command", args);
+            will(returnValue("OK"));inSequence(sequence);
+		}});
+		fixture.doTable(table);
+		assertRightCell("arg2 attempts: 3/4 times");
 	}
 
 	public void testInvokeSeleniumCommandThrowsException() throws Exception {
 		assertEquals(0, fixture.counts.exceptions);
+		final RuntimeException runtimeException = new RuntimeException("Error");
 		checking(new Expectations() {{
-			oneOf(commandProcessor).doCommand("command", new String[]{"arg1", "arg2"});
-			will(throwException(new RuntimeException("Error")));
+			oneOf(commandProcessor).doCommand("command", args);
+			will(throwException(runtimeException));
 		}});
 		fixture.doTable(table);
-		assertEquals(0, fixture.counts.right);
-		assertEquals(0, fixture.counts.wrong);
-		assertEquals(1, fixture.counts.exceptions);
+		assertExceptionCell("java.lang.RuntimeException: Error");
 	}
-
     public void testInvokeSeleniumWithCrossReference() throws Exception {
         final Parse table = new Parse(
                 "<table>"
@@ -92,7 +142,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
             will(returnValue("OK"));
         }});
         fixture.doTable(table);
-        assertEquals(1, fixture.counts.right);
+        assertRightCell();
     }
 
     public void testInvokeSeleniumWithoutParameters() throws Exception {
@@ -108,6 +158,38 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
                 + "</table>");
 
         fixture.doTable(table);
-        assertEquals(1, fixture.counts.right);
+        assertRightCell();
     }
+
+    private void assertRightCell(String text) {
+		assertRightCell();
+		thirdCellContains(text);
+	}
+
+	private void assertWrongCell(String text) {
+		assertCell(0,1,0);
+		thirdCellContains(text);
+	}
+
+	private void assertExceptionCell(String text) {
+		assertCell(0,0,1);
+		thirdCellContains(text);
+	}
+	
+	private void assertRightCell() {
+		assertCell(1,0,0);
+	}
+
+	private void assertCell(int right, int wrong, int exceptions) {
+		assertEquals(right, fixture.counts.right);
+		assertEquals(wrong, fixture.counts.wrong);
+		assertEquals(exceptions, fixture.counts.exceptions);
+	}
+
+	private void thirdCellContains(String text) {
+		Parse rows = table.parts;
+		Parse cells = rows.more.parts;
+		assertTrue("expected [" + text + "] but was [" + cells.more.more.text() + "]" , cells.more.more.text().contains(text));		
+	}
+
 }
