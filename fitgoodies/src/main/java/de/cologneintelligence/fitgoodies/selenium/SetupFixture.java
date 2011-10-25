@@ -53,7 +53,7 @@ public class SetupFixture extends ActionFixture {
 		transformAndEnter();
 	}
 
-	public void screenshotDir() throws Exception {
+	public void sleepBeforeScreenshot() throws Exception {
 		transformAndEnter();
 	}
 
@@ -95,6 +95,10 @@ public class SetupFixture extends ActionFixture {
 
 	public void takeScreenshots(String takeScreenshots) throws Exception {
 		SetupHelper.instance().setTakeScreenshots(Boolean.parseBoolean(takeScreenshots));
+	}
+
+	public void sleepBeforeScreenshot(String sleepBeforeScreenshot) throws Exception {
+		SetupHelper.instance().setSleepBeforeScreenshot(Long.parseLong(sleepBeforeScreenshot));
 	}
 
 	public void start(String startConfig) {

@@ -31,6 +31,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 		SetupHelper.instance().setTimeout("200");
 		SetupHelper.instance().setInterval("50");
 		SetupHelper.instance().setTakeScreenshots(false);
+		SetupHelper.instance().setSleepBeforeScreenshot(1L);
 		RunnerHelper.instance().setResultFilePath("fixture.html");
 		fixture = new SeleniumFixture();
 		
@@ -80,6 +81,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 		checkTakingScreenshot(0);
 		fixture.doTable(table);
 		assertWrongCell("Error: something is wrong!");
+		assertTrue(thirdCell().body, thirdCell().body.contains("<a href=\"file:///fixture.html.screenshot0.png\"</a>"));
 	}
 
 	public void testInvokeSeleniumCommandThrowsSeleniumException() throws Exception {
@@ -266,9 +268,14 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 	}
 
 	private void thirdCellContains(String text) {
-		Parse rows = table.parts;
-		Parse cells = rows.more.parts;
-		assertTrue("expected [" + text + "] but was [" + cells.more.more.text() + "]" , cells.more.more.text().contains(text));		
+		Parse cell = thirdCell();
+		assertTrue("expected [" + text + "] but was [" + cell.text() + "]" , cell.text().contains(text));		
 	}
+
+	private Parse thirdCell() {
+	    Parse rows = table.parts;
+		Parse cells = rows.more.parts;
+	    return cells.more.more;
+    }
 
 }

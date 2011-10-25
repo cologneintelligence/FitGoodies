@@ -58,9 +58,9 @@ import fit.Parse;
 public class SeleniumFixture extends ActionFixture {
 	private final Long timeout = SetupHelper.instance().getTimeout();
 	private final Long interval = SetupHelper.instance().getInterval();
-
+	private final Long sleepBeforeScreenshot = SetupHelper.instance().getSleepBeforeScreenshot(); 
 	private final CommandProcessor commandProcessor = SetupHelper.instance().getCommandProcessor();
-	
+
 	private int screenshotIndex = 0;
 
 	public SeleniumFixture() {
@@ -94,14 +94,33 @@ public class SeleniumFixture extends ActionFixture {
 	@Override
 	public void wrong(Parse cell) {
 		super.wrong(cell);
-		if(SetupHelper.instance().getTakeScreenshots()) {
-			commandProcessor.doCommand("captureEntirePageScreenshot", new String[] { createSnapshotFilename(), "" });
+		if (SetupHelper.instance().getTakeScreenshots()) {
+			String fileName = createSnapshotFilename(screenshotIndex++);
+			waitBeforeTakingScreenshot();
+			takeScreenShot(fileName);
+			addScreenshotLinkToReportPage(cell, fileName);
 		}
 	}
 
-	private String createSnapshotFilename() {
-	    return RunnerHelper.instance().getResultFilePath()+ ".screenshot"+screenshotIndex+++".png";
+	private void addScreenshotLinkToReportPage(Parse cell, String fileName) {
+		cell.addToBody(label("snapshot:") + "<a href=\"file:///" + fileName + "\"</a>");
+	}
+
+	private void takeScreenShot(String fileName) {
+		commandProcessor.doCommand("captureEntirePageScreenshot", new String[] { fileName, "" });
+	}
+
+	private void waitBeforeTakingScreenshot() {
+	    try {
+			Thread.sleep(sleepBeforeScreenshot);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
     }
+
+	private String createSnapshotFilename(int index ) {
+		return RunnerHelper.instance().getResultFilePath() + ".screenshot" + index + ".png";
+	}
 
 	private Retry doCommandAndRetry(final String command, final String[] args) {
 		String seleniumCommand = command.substring(0, command.indexOf("AndRetry"));

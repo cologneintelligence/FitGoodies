@@ -20,6 +20,8 @@ public class SetupHelper {
 	private Long interval = 500L;
 	private boolean takeScreenshots;
 
+	private Long sleepBeforeScreenshot=2000L;
+
 
 	public static SetupHelper instance() {
 		if(seleniumSetupHelper == null) {
@@ -99,6 +101,14 @@ public class SetupHelper {
     	this.takeScreenshots = takeScreenshots;
     }
 
+	public Long getSleepBeforeScreenshot() {
+    	return sleepBeforeScreenshot;
+    }
+
+	public void setSleepBeforeScreenshot(Long sleepBeforeScreenshot) {
+    	this.sleepBeforeScreenshot = sleepBeforeScreenshot;
+    }
+
 	public void start(final String startConfig) {
 		getCommandProcessor().start(startConfig);
 	}
@@ -122,6 +132,10 @@ public class SetupHelper {
 
 	public boolean getTakeScreenshots() {
 	    return takeScreenshots;
+    }
+
+	public Long sleepBeforeScreenshot() {
+	    return sleepBeforeScreenshot;
     }
 
 
