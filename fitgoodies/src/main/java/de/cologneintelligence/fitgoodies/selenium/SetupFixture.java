@@ -12,6 +12,7 @@ import de.cologneintelligence.fitgoodies.ActionFixture;
  * 		<tr><td>serverPort</td><td>4444</td></tr>
  * 		<tr><td>browserStartCommand</td><td>*firefox</td></tr>
  * 		<tr><td>browserURL</td><td>http://web-application-to-be-tested-by-selenium/</td></tr>
+ *      <tr><td>takeScreenshots</td><td>true</td></tr>
  *      <tr><td>start</td><td>start config</td></tr>
  * </table>
  * @author kmussawisade
@@ -45,6 +46,14 @@ public class SetupFixture extends ActionFixture {
 	}
 
 	public void interval() throws Exception {
+		transformAndEnter();
+	}
+
+	public void takeScreenshots() throws Exception {
+		transformAndEnter();
+	}
+
+	public void screenshotDir() throws Exception {
 		transformAndEnter();
 	}
 
@@ -82,6 +91,10 @@ public class SetupFixture extends ActionFixture {
 
 	public void interval(String interval) throws Exception {
 		SetupHelper.instance().setInterval(interval);
+	}
+
+	public void takeScreenshots(String takeScreenshots) throws Exception {
+		SetupHelper.instance().setTakeScreenshots(Boolean.parseBoolean(takeScreenshots));
 	}
 
 	public void start(String startConfig) {

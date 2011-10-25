@@ -7,6 +7,7 @@ import com.thoughtworks.selenium.Wait;
 import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
+import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
 import fit.Parse;
 
 /**
@@ -58,8 +59,9 @@ public class SeleniumFixture extends ActionFixture {
 	private final Long timeout = SetupHelper.instance().getTimeout();
 	private final Long interval = SetupHelper.instance().getInterval();
 
-	private final CommandProcessor commandProcessor = SetupHelper.instance()
-			.getCommandProcessor();
+	private final CommandProcessor commandProcessor = SetupHelper.instance().getCommandProcessor();
+	
+	private int screenshotIndex = 0;
 
 	public SeleniumFixture() {
 		super();
@@ -70,48 +72,54 @@ public class SeleniumFixture extends ActionFixture {
 
 		final String command = cells.text();
 		try {
-			final String[] args = new String[] {
-					getColumnOrEmptyString(cells, 1),
-					getColumnOrEmptyString(cells, 2) };
+			final String[] args = new String[] { getColumnOrEmptyString(cells, 1), getColumnOrEmptyString(cells, 2) };
 			if (command.endsWith("AndRetry")) {
-				try {
-					Retry retry = doCommandAndRetry(command, args);
-					checkResult(cells, retry.wasOk());
-					info(lastCell(cells), retry.attemptMessage());
-				} catch (final RetryException e) {
-					wrong(lastCell(cells), e.getMessage() );
-				}
+				Retry retry = doCommandAndRetry(command, args);
+				checkResult(cells, retry.wasOk());
+				info(lastCell(cells), retry.attemptMessage());
 			} else {
-				try {
-					checkResult(cells, doCommand(command, args));
-				} catch (final SeleniumException e) {
-					wrong(lastCell(cells), e.getMessage());
-				}
+				checkResult(cells, doCommand(command, args));
 			}
+		} catch (final SeleniumException e) {
+			wrong(cells, e);
 		} catch (final Exception e) {
 			exception(lastCell(cells), e);
 		}
 	}
 
+	private void wrong(final Parse cells, final Exception e) {
+		wrong(lastCell(cells), e.getMessage());
+	}
+
+	@Override
+	public void wrong(Parse cell) {
+		super.wrong(cell);
+		if(SetupHelper.instance().getTakeScreenshots()) {
+			commandProcessor.doCommand("captureEntirePageScreenshot", new String[] { createSnapshotFilename(), "" });
+		}
+	}
+
+	private String createSnapshotFilename() {
+	    return RunnerHelper.instance().getResultFilePath()+ ".screenshot"+screenshotIndex+++".png";
+    }
+
 	private Retry doCommandAndRetry(final String command, final String[] args) {
 		String seleniumCommand = command.substring(0, command.indexOf("AndRetry"));
 		Retry retry = new Retry(seleniumCommand, args, timeout, interval) {
 			@Override
-			public boolean command(String command, String[] args) {				
+			public boolean command(String command, String[] args) {
 				return doCommand(command, args);
 			}
 		};
 		try {
-			retry.start("Timeout by "+ command + ";");
+			retry.start("Timeout by " + command + ";");
 		} catch (final Wait.WaitTimedOutException e) {
 			throw new RetryException(e.getMessage() + retry.attemptMessage());
 		}
 		return retry;
 	}
 
-
-	private final String getColumnOrEmptyString(final Parse cells,
-			final int column) throws CrossReferenceProcessorShortcutException {
+	private final String getColumnOrEmptyString(final Parse cells, final int column) throws CrossReferenceProcessorShortcutException {
 
 		Parse parse = cells;
 		for (int i = 0; i < column; ++i) {
@@ -138,8 +146,7 @@ public class SeleniumFixture extends ActionFixture {
 			try {
 				returnValue = commandProcessor.doCommand(command, args);
 			} catch (final SeleniumException e) {
-				returnValue = commandProcessor.doCommand("waitForPageToLoad",
-						new String[] { "50000", });
+				returnValue = commandProcessor.doCommand("waitForPageToLoad", new String[] { "50000", });
 			}
 		} else if (command.equals("pause")) {
 			returnValue = pause(args);
@@ -169,6 +176,4 @@ public class SeleniumFixture extends ActionFixture {
 		return lastCell;
 	}
 
-	
-	
 }

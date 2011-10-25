@@ -1,5 +1,7 @@
 package de.cologneintelligence.fitgoodies.selenium;
 
+import java.text.ParseException;
+
 import org.jmock.Expectations;
 import org.jmock.Sequence;
 import org.jmock.internal.NamedSequence;
@@ -11,6 +13,7 @@ import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.processors.DateProvider;
 import de.cologneintelligence.fitgoodies.references.processors.DateProviderCrossReferenceProcessor;
+import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
 import fit.Parse;
 
 public class SeleniumFixtureTest extends FitGoodiesTestCase {
@@ -27,6 +30,8 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 		SetupHelper.instance().setCommandProcessor(commandProcessor);
 		SetupHelper.instance().setTimeout("200");
 		SetupHelper.instance().setInterval("50");
+		SetupHelper.instance().setTakeScreenshots(false);
+		RunnerHelper.instance().setResultFilePath("fixture.html");
 		fixture = new SeleniumFixture();
 		
 		table = new Parse(
@@ -37,91 +42,85 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 	}
 
 	public void testInvokeSeleniumCommandReturnsOK() throws Exception {
-		checking(new Expectations() {{
-			oneOf(commandProcessor).doCommand("command", args);
-			will(returnValue("OK"));
-		}});
+		doCommandReturnsOK();
 		fixture.doTable(table);
 		assertRightCell("arg2");
 	}
 
-	public void testInvokeSeleniumCommandReturnsNOK() throws Exception {
-		checking(new Expectations() {{
-			oneOf(commandProcessor).doCommand("command", args);
-			will(returnValue("NOK"));
-		}});
+
+	public void testInvokeSeleniumCommandReturnsNOKWithScreenshot() throws Exception {
+		SetupHelper.instance().setTakeScreenshots(true);
+		doCommandReturnsNOK();
+		checkTakingScreenshot(0);
 		fixture.doTable(table);
 		assertWrongCell("arg2");
 	}
 
-	public void testInvokeSeleniumCommandThrowsSeleniumException() throws Exception {
-		checking(new Expectations() {{
-			oneOf(commandProcessor).doCommand("command", args);
-			will(throwException(new SeleniumException("Error: something is wrong!")));
-		}});
+	public void testInvokeSeleniumCommandReturnsNOKWithTwoScreenshots() throws Exception {
+		SetupHelper.instance().setTakeScreenshots(true);
+		createTwoCommandsTable();
+		doCommandReturnsNOK();
+		checkTakingScreenshot(0);
+		doCommandReturnsNOK();
+		checkTakingScreenshot(1);
+		fixture.doTable(table);
+		assertCell(0,2,0);
+	}
+
+
+	public void testInvokeSeleniumCommandReturnsNOK() throws Exception {
+		doCommandReturnsNOK();
+		fixture.doTable(table);
+		assertWrongCell("arg2");
+	}
+
+	public void testInvokeSeleniumCommandThrowsSeleniumExceptionTakeScreenshot() throws Exception {
+		SetupHelper.instance().setTakeScreenshots(true);
+		doCommandThrowsException();
+		checkTakingScreenshot(0);
 		fixture.doTable(table);
 		assertWrongCell("Error: something is wrong!");
 	}
 
-	public void testInvokeSeleniumCommandReturnsNOKAndRetry() throws Exception {
-		table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>commandAndRetry</td><td>arg1</td><td>arg2</td></tr>"
-				+ "</table>");
-		checking(new Expectations() {{
-			exactly(4).of(commandProcessor).doCommand("command", args);
-			will(returnValue("NOK"));
-		}});
+	public void testInvokeSeleniumCommandThrowsSeleniumException() throws Exception {
+		doCommandThrowsException();
+		fixture.doTable(table);
+		assertWrongCell("Error: something is wrong!");
+	}
+
+	public void testInvokeSeleniumCommandReturnsNOKAndRetry() throws Exception {		
+		doCommandCalled4TimesReturnsEachTimeNOK();
 		fixture.doTable(table);
 		assertWrongCell("arg2 expectedTimeout by commandAndRetry; attempts: 4/4 times");
 	}
 
+
+
 	public void testInvokeSeleniumCommandThrowsSeleniumExceptionAndRetry() throws Exception {
-		table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>commandAndRetry</td><td>arg1</td><td>arg2</td></tr>"
-				+ "</table>");
-		checking(new Expectations() {{
-			exactly(4).of(commandProcessor).doCommand("command", args);
-			will(throwException(new SeleniumException("Error")));
-		}});
+		createCommandAndRetryTable();
+		doCommandCalled4TimesEachTimeThrowsException();
 		fixture.doTable(table);
 		assertWrongCell("Timeout by commandAndRetry; attempts: 4/4 times");		
 	}
 
 
+
 	public void testInvokeSeleniumCommandThrowsSeleniumExceptionAndRetryWithSuccessAfterThree() throws Exception {
-		table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>commandAndRetry</td><td>arg1</td><td>arg2</td></tr>"
-				+ "</table>");
-		checking(new Expectations() {{			
-			Sequence sequence = new NamedSequence("trail");
-			oneOf(commandProcessor).doCommand("command", args); 
-			will(throwException(new SeleniumException("Error")));inSequence(sequence);
-			oneOf(commandProcessor).doCommand("command", args);
-			will(throwException(new SeleniumException("Error")));inSequence(sequence);
-			oneOf(commandProcessor).doCommand("command", args);
-            will(returnValue("OK"));inSequence(sequence);
-		}});
+		createCommandAndRetryTable();
+		doCommandCalled4TimesLastTimeReturnsOK();
 		fixture.doTable(table);
 		assertRightCell("arg2 attempts: 3/4 times");
 	}
 
+
 	public void testInvokeSeleniumCommandThrowsException() throws Exception {
 		assertEquals(0, fixture.counts.exceptions);
-		final RuntimeException runtimeException = new RuntimeException("Error");
-		checking(new Expectations() {{
-			oneOf(commandProcessor).doCommand("command", args);
-			will(throwException(runtimeException));
-		}});
+		doCommandThrowsRuntimeException();
 		fixture.doTable(table);
 		assertExceptionCell("java.lang.RuntimeException: Error");
 	}
-    public void testInvokeSeleniumWithCrossReference() throws Exception {
+
+	public void testInvokeSeleniumWithCrossReference() throws Exception {
         final Parse table = new Parse(
                 "<table>"
                 + "<tr><td>ignore</td></tr>"
@@ -144,7 +143,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         fixture.doTable(table);
         assertRightCell();
     }
-
+	
     public void testInvokeSeleniumWithoutParameters() throws Exception {
         checking(new Expectations() {{
             oneOf(commandProcessor).doCommand("command", new String[]{"", ""});
@@ -159,6 +158,86 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
         assertRightCell();
+    }
+
+    private void createTwoCommandsTable() throws ParseException {
+	    table = new Parse(
+				"<table>"
+				+ "<tr><td>ignore</td></tr>"
+				+ "<tr><td>command</td><td>arg1</td><td>arg2</td></tr>"
+				+ "<tr><td>command</td><td>arg1</td><td>arg2</td></tr>"
+				+ "</table>");
+    }
+
+	private void doCommandThrowsRuntimeException() {
+	    final RuntimeException runtimeException = new RuntimeException("Error");
+		checking(new Expectations() {{
+			oneOf(commandProcessor).doCommand("command", args);
+			will(throwException(runtimeException));
+		}});
+    }
+
+    private void doCommandCalled4TimesLastTimeReturnsOK() {
+	    checking(new Expectations() {{			
+			Sequence sequence = new NamedSequence("sequence");
+			oneOf(commandProcessor).doCommand("command", args); 
+			will(throwException(new SeleniumException("Error")));inSequence(sequence);
+			oneOf(commandProcessor).doCommand("command", args);
+			will(throwException(new SeleniumException("Error")));inSequence(sequence);
+			oneOf(commandProcessor).doCommand("command", args);
+            will(returnValue("OK"));inSequence(sequence);
+		}});
+    }
+
+    private void createCommandAndRetryTable() throws ParseException {
+	    table = new Parse(
+				"<table>"
+				+ "<tr><td>ignore</td></tr>"
+				+ "<tr><td>commandAndRetry</td><td>arg1</td><td>arg2</td></tr>"
+				+ "</table>");
+    }
+
+    private void doCommandCalled4TimesEachTimeThrowsException() throws Exception {    	
+	    checking(new Expectations() {{
+			exactly(4).of(commandProcessor).doCommand("command", args);
+			will(throwException(new SeleniumException("Error")));            
+		}});
+    }
+
+    private void doCommandCalled4TimesReturnsEachTimeNOK() throws Exception {
+		createCommandAndRetryTable();
+
+	    checking(new Expectations() {{
+			exactly(4).of(commandProcessor).doCommand("command", args);
+			will(returnValue("NOK"));
+		}});
+    }
+
+    private void doCommandReturnsOK() {
+	    checking(new Expectations() {{
+			oneOf(commandProcessor).doCommand("command", args);
+			will(returnValue("OK"));
+		}});
+    }
+
+    private void doCommandThrowsException() {
+	    checking(new Expectations() {{
+			oneOf(commandProcessor).doCommand("command", args);
+			will(throwException(new SeleniumException("Error: something is wrong!")));
+		}});
+    }
+
+	private void doCommandReturnsNOK() {
+	    checking(new Expectations() {{
+			oneOf(commandProcessor).doCommand("command", args);
+			will(returnValue("NOK"));
+		}});
+    }
+
+    private void checkTakingScreenshot(final int index) {
+	    checking(new Expectations() {{
+	    	oneOf(commandProcessor).doCommand("captureEntirePageScreenshot", new String[]{"fixture.html.screenshot" + index +".png", ""});
+		}});
     }
 
     private void assertRightCell(String text) {

@@ -16,8 +16,9 @@ public class SetupHelper {
 	private String browserURL = "http://localhost";
 	private CommandProcessor commandProcessor;
 	private String speed;
-	private Long timeout;
-	private Long interval;
+	private Long timeout = 30000L;
+	private Long interval = 500L;
+	private boolean takeScreenshots;
 
 
 	public static SetupHelper instance() {
@@ -94,6 +95,10 @@ public class SetupHelper {
 		this.interval = Long.parseLong(interval);
 	}
 
+	public void setTakeScreenshots(boolean takeScreenshots) {
+    	this.takeScreenshots = takeScreenshots;
+    }
+
 	public void start(final String startConfig) {
 		getCommandProcessor().start(startConfig);
 	}
@@ -114,4 +119,10 @@ public class SetupHelper {
 	public Long getInterval() {
 		return interval;
 	}
+
+	public boolean getTakeScreenshots() {
+	    return takeScreenshots;
+    }
+
+
 }

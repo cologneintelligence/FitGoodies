@@ -43,6 +43,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 				+ "<tr><td>speed</td><td>400</td></tr>"
 				+ "<tr><td>timeout</td><td>40</td></tr>"
 				+ "<tr><td>interval</td><td>10</td></tr>"
+				+ "<tr><td>takeScreenshots</td><td>true</td></tr>"
 				+ "<tr><td>start</td><td>start config</td></tr>"
 				+ "</table>"
 				);
@@ -66,6 +67,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 		assertEquals("400", SetupHelper.instance().getSpeed());
 		assertEquals((Long)40l, SetupHelper.instance().getTimeout());
 		assertEquals((Long)10l, SetupHelper.instance().getInterval());
+		assertEquals(true, SetupHelper.instance().getTakeScreenshots());
 		assertNotNull(SetupHelper.instance().getCommandProcessor());
 	}
 
