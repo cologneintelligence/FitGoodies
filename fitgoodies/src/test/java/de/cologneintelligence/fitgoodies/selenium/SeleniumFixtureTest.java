@@ -81,7 +81,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 		checkTakingScreenshot(0);
 		fixture.doTable(table);
 		assertWrongCell("Error: something is wrong!");
-		assertTrue(thirdCell().body, thirdCell().body.contains("<a href=\"file:///fixture.html.screenshot0.png\"</a>"));
+		assertTrue(thirdCell().body, thirdCell().body.contains("<a href=\"file:///fixture.html.screenshot0.png\">screenshot</a>"));
 	}
 
 	public void testInvokeSeleniumCommandThrowsSeleniumException() throws Exception {
@@ -93,7 +93,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 	public void testInvokeSeleniumCommandReturnsNOKAndRetry() throws Exception {		
 		doCommandCalled4TimesReturnsEachTimeNOK();
 		fixture.doTable(table);
-		assertWrongCell("arg2 expectedTimeout by commandAndRetry; attempts: 4/4 times");
+		assertWrongCell("NOK; attempts: 4/4 times");
 	}
 
 
@@ -102,7 +102,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 		createCommandAndRetryTable();
 		doCommandCalled4TimesEachTimeThrowsException();
 		fixture.doTable(table);
-		assertWrongCell("Timeout by commandAndRetry; attempts: 4/4 times");		
+		assertWrongCell("NOK; attempts: 4/4 times");		
 	}
 
 
@@ -111,7 +111,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 		createCommandAndRetryTable();
 		doCommandCalled4TimesLastTimeReturnsOK();
 		fixture.doTable(table);
-		assertRightCell("arg2 attempts: 3/4 times");
+		assertRightCell("arg2 OK; attempts: 3/4 times");
 	}
 
 
@@ -162,6 +162,26 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         assertRightCell();
     }
 
+    public void testInvokeSeleniumOpenCommand() throws Exception {
+        checking(new Expectations() {{
+            oneOf(commandProcessor).doCommand("open", new String[]{"", ""});
+            will(throwException(new SeleniumException("Error")));
+        }});
+	    checking(new Expectations() {{	    	
+			oneOf(commandProcessor).doCommand("waitForPageToLoad", new String[] { "50000", });  
+			will(returnValue("OK"));
+		}});
+
+        table = new Parse(
+                "<table>"
+                + "<tr><td>ignore</td></tr>"
+                + "<tr><td>open</td></tr>"
+                + "</table>");
+
+        fixture.doTable(table);
+        assertRightCell();
+    }
+
     private void createTwoCommandsTable() throws ParseException {
 	    table = new Parse(
 				"<table>"
@@ -181,7 +201,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 
     private void doCommandCalled4TimesLastTimeReturnsOK() {
 	    checking(new Expectations() {{			
-			Sequence sequence = new NamedSequence("sequence");
+			Sequence sequence = new NamedSequence("sequence"); 
 			oneOf(commandProcessor).doCommand("command", args); 
 			will(throwException(new SeleniumException("Error")));inSequence(sequence);
 			oneOf(commandProcessor).doCommand("command", args);
