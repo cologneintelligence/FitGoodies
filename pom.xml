@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.cologneintelligence</groupId>
 	<artifactId>fitgoodies-bundle</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.2-SNAPSHOT</version>
 	<name>FitGoodies bundle</name>
 	<packaging>pom</packaging>
 	<description>
@@ -22,9 +22,9 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/tags/fitgoodies-bundle-1.2.1</connection>
-		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/tags/fitgoodies-bundle-1.2.1</developerConnection>
-		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/tags/fitgoodies-bundle-1.2.1</url>
+		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk</connection>
+		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk</developerConnection>
+		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk</url>
 	</scm>
 
 	<developers>
