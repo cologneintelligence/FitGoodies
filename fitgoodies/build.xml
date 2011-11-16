@@ -83,29 +83,32 @@
 	<target name="checkargs">
 		<condition property="version-given">
 			<not>
-				<isset property="version" />
+				<and>
+					<isset property="version" />
+					<isset property="maven" />
+				</and>
 			</not>
 		</condition>
-		<fail if="version-given" message="please specify a version (-Dversion=1.0.0)"/>
+		<fail if="version-given" message="please specify a version (-Dversion=1.0.0) and the maven executable (-Dmaven=/maven/home)"/>
 	</target>
 	
 	<target name="prepare" depends="checkargs">
 		<mkdir dir="${dirs.dist}" />
-		<artifact:mvn>
-	        <arg value="clean" />
-	        <arg value="package" />
+		<artifact:mvn mavenHome="${maven}">
+			<arg value="clean" />
+			<arg value="package" />
 		</artifact:mvn>
 	</target>
 
 	<target name="mvn-package">
-		<artifact:mvn>
+		<artifact:mvn mavenHome="${maven}">
 			<arg value="assembly:single" />
 		</artifact:mvn>
 	</target>
 	
-   <target name="mvn-javadoc">
-		<artifact:mvn>
-            <arg value="javadoc:javadoc" />
+	<target name="mvn-javadoc">
+		<artifact:mvn mavenHome="${maven}">
+			<arg value="javadoc:javadoc" />
 		</artifact:mvn>
-    </target>
+	</target>
 </project>
