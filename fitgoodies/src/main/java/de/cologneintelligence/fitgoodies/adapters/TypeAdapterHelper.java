@@ -40,6 +40,7 @@ public final class TypeAdapterHelper {
         register(StringTypeAdapter.class);
         register(DateTypeAdapter.class);
         register(SQLDateTypeAdapter.class);
+        register(SQLTimestampTypeAdapter.class);
 	}
 
 	private static TypeAdapterHelper instance;
@@ -79,7 +80,7 @@ public final class TypeAdapterHelper {
 			return typeAdapter.getConstructor(
 					new Class<?>[]{TypeAdapter.class, String.class}).newInstance(
 							baseTypeAdapter, parameter);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -114,8 +115,8 @@ public final class TypeAdapterHelper {
 	 * @param adapterClass subclass of <code>AbstractTypeAdapter</code> to register
 	 */
 	public void register(final Class<? extends AbstractTypeAdapter<?>> adapterClass) {
-		TypeAdapter ta = new TypeAdapter();
-		Class<?> targetType = ((AbstractTypeAdapter<?>)
+		final TypeAdapter ta = new TypeAdapter();
+		final Class<?> targetType = ((AbstractTypeAdapter<?>)
 				instantiate(adapterClass, ta, null)).getType();
 		adapters.put(targetType, adapterClass);
 	}

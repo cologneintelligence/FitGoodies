@@ -22,11 +22,7 @@ package de.cologneintelligence.fitgoodies.adapters;
 import java.math.BigInteger;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
-import de.cologneintelligence.fitgoodies.adapters.ArrayTypeAdapter;
-import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
 import de.cologneintelligence.fitgoodies.util.FixtureToolsTest.DummyValueFixture;
-
 import fit.Fixture;
 import fit.TypeAdapter;
 
@@ -36,7 +32,7 @@ import fit.TypeAdapter;
  */
 public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
 	public void testSingleton() {
-		TypeAdapterHelper expected = TypeAdapterHelper.instance();
+		final TypeAdapterHelper expected = TypeAdapterHelper.instance();
 
 		assertNotNull(expected);
 		assertSame(expected, TypeAdapterHelper.instance());
@@ -46,8 +42,8 @@ public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
 	}
 
 	public void testRegister() throws Exception {
-		Object target = new Object();
-		TypeAdapter typeAdapter = new TypeAdapter();
+		final Object target = new Object();
+		final TypeAdapter typeAdapter = new TypeAdapter();
 		typeAdapter.field = typeAdapter.getClass().getField("field");
 		typeAdapter.fixture = new Fixture();
 		typeAdapter.method = typeAdapter.getClass().getMethod("get", new Class<?>[]{});
@@ -68,7 +64,7 @@ public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
 	}
 
 	public void testDefaults() throws Exception {
-		TypeAdapter typeAdapter = new TypeAdapter();
+		final TypeAdapter typeAdapter = new TypeAdapter();
 		typeAdapter.type = StringBuilder.class;
 
 		AbstractTypeAdapter<?> actual = (AbstractTypeAdapter<?>)
@@ -92,11 +88,17 @@ public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
 		actual = (AbstractTypeAdapter<?>)
 			TypeAdapterHelper.instance().getAdapter(typeAdapter, null);
 		assertEquals(java.util.Date.class, actual.getType());
+
+		typeAdapter.type = java.sql.Timestamp.class;
+
+        actual = (AbstractTypeAdapter<?>)
+            TypeAdapterHelper.instance().getAdapter(typeAdapter, null);
+        assertEquals(java.sql.Timestamp.class, actual.getType());
 	}
 
 	public void testParameter() throws Exception {
-		Object target = new Object();
-		TypeAdapter typeAdapter = new TypeAdapter();
+		final Object target = new Object();
+		final TypeAdapter typeAdapter = new TypeAdapter();
 		typeAdapter.field = typeAdapter.getClass().getField("field");
 		typeAdapter.fixture = new Fixture();
 		typeAdapter.method = typeAdapter.getClass().getMethod("get", new Class<?>[]{});
@@ -119,7 +121,7 @@ public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
 		TypeAdapter actual;
 		TypeAdapterHelper.instance().register(DummyTypeAdapter.class);
 
-		DummyValueFixture fixture = new DummyValueFixture();
+		final DummyValueFixture fixture = new DummyValueFixture();
 		ta = TypeAdapter.on(fixture, DummyValueFixture.class.getField("arr"));
 
 		actual = TypeAdapterHelper.instance().getAdapter(ta, null);
