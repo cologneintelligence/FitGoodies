@@ -35,109 +35,134 @@ import de.cologneintelligence.fitgoodies.references.processors.StorageCrossRefer
  */
 
 public class StorageCrossReferenceProcessorTest extends FitGoodiesTestCase {
-	private AbstractCrossReferenceProcessor processor;
+    private AbstractCrossReferenceProcessor processor;
 
-	@Override
-	public final void setUp() throws Exception {
-		super.setUp();
-		processor = new StorageCrossReferenceProcessor();
-	}
+    @Override
+    public final void setUp() throws Exception {
+        super.setUp();
+        processor = new StorageCrossReferenceProcessor();
+    }
 
-	public final void testPattern() {
-		String pattern = processor.getPattern();
-		pattern = "^\\$\\{" + pattern + "\\}$";
+    public final void testPattern() {
+        String pattern = processor.getPattern();
+        pattern = "^\\$\\{" + pattern + "\\}$";
 
-		Pattern regex = Pattern.compile(pattern);
-		Matcher m;
+        Pattern regex = Pattern.compile(pattern);
+        Matcher m;
 
-		m = regex.matcher("${ns.get(one)}");
-		assertTrue(m.find());
+        m = regex.matcher("${ns.get(one)}");
+        assertTrue(m.find());
 
-		m = regex.matcher("${ns.get(two)}");
-		assertTrue(m.find());
+        m = regex.matcher("${ns.get(two)}");
+        assertTrue(m.find());
 
-		m = regex.matcher("${x.get(three)}");
-		assertTrue(m.find());
+        m = regex.matcher("${x.get(three)}");
+        assertTrue(m.find());
 
-		m = regex.matcher("${xy.put(four)}");
-		assertTrue(m.find());
+        m = regex.matcher("${xy.put(four)}");
+        assertTrue(m.find());
 
-		m = regex.matcher("${six.containsValue(five)}");
-		assertTrue(m.find());
-	}
+        m = regex.matcher("${six.containsValue(five)}");
+        assertTrue(m.find());
 
-	public final void testNegativePattern() {
-		String pattern = processor.getPattern();
-		pattern = "^\\$\\{" + pattern + "\\}$";
+        m = regex.matcher("${six.containsValue(five, /a\\/(b)\\/c/)}");
+        assertTrue(m.find());
+    }
 
-		Pattern regex = Pattern.compile(pattern);
-		Matcher m;
+    public final void testNegativePattern() {
+        String pattern = processor.getPattern();
+        pattern = "^\\$\\{" + pattern + "\\}$";
 
-		m = regex.matcher("${six.containsValue()}");
-		assertFalse(m.find());
+        Pattern regex = Pattern.compile(pattern);
+        Matcher m;
 
-		m = regex.matcher("${.put(x)}");
-		assertFalse(m.find());
+        m = regex.matcher("${six.containsValue()}");
+        assertFalse(m.find());
 
-		m = regex.matcher("${put(x)}");
-		assertFalse(m.find());
+        m = regex.matcher("${.put(x)}");
+        assertFalse(m.find());
 
-		m = regex.matcher("${x.putput(y)}");
-		assertFalse(m.find());
-	}
+        m = regex.matcher("${put(x)}");
+        assertFalse(m.find());
 
-	private void checkCr(final CrossReference cr, final String cmd,
-			final String namespace, final String parameter) {
-		assertNotNull(cr);
-		assertEquals(cmd, cr.getCommand());
-		assertEquals(namespace, cr.getNamespace());
-		assertEquals(parameter, cr.getParameter());
-		assertSame(processor, cr.getProcessor());
-	}
+        m = regex.matcher("${x.putput(y)}");
+        assertFalse(m.find());
 
-	public final void testExtraction() {
-		CrossReference cr;
+        m = regex.matcher("${x.put(y, /a/b/)}");
+        assertFalse(m.find());
+    }
 
-		cr = processor.extractCrossReference("ns1.put(x)");
-		checkCr(cr, "put", "ns1", "x");
+    private void checkCr(final CrossReference cr, final String cmd,
+            final String namespace, final String parameter) {
+        assertNotNull(cr);
+        assertEquals(cmd, cr.getCommand());
+        assertEquals(namespace, cr.getNamespace());
+        assertEquals(parameter, cr.getParameter());
+        assertSame(processor, cr.getProcessor());
+    }
 
-		cr = processor.extractCrossReference("n.put(x3)");
-		checkCr(cr, "put", "n", "x3");
+    public final void testExtraction() {
+        CrossReference cr;
 
-		cr = processor.extractCrossReference("ns3.get(param)");
-		checkCr(cr, "get", "ns3", "param");
+        cr = processor.extractCrossReference("ns1.put(x)");
+        checkCr(cr, "put", "ns1", "x");
 
-		cr = processor.extractCrossReference("n.containsValue(param)");
-		checkCr(cr, "containsValue", "n", "param");
+        cr = processor.extractCrossReference("n.put(x3)");
+        checkCr(cr, "put", "n", "x3");
 
-		assertNull(processor.extractCrossReference("ns3.err(param)"));
-	}
+        cr = processor.extractCrossReference("ns3.get(param)");
+        checkCr(cr, "get", "ns3", "param");
 
-	public final void checkProcessing(
-			final String cmd, final String ns, final String param,
-			final Object object, final String expected)
-			throws CrossReferenceProcessorShortcutException {
+        cr = processor.extractCrossReference("n.containsValue(param)");
+        checkCr(cr, "containsValue", "n", "param");
 
-		String actual = processor.processMatch(
-				new CrossReference(cmd, ns, param, null), object);
-		assertEquals(expected, actual);
-	}
+        assertNull(processor.extractCrossReference("ns3.err(param)"));
+    }
 
-	public final void testProcessing()
-			throws CrossReferenceProcessorShortcutException {
+    public final void checkProcessing(
+            final String cmd, final String ns, final String param,
+            final Object object, final String expected)
+                    throws CrossReferenceProcessorShortcutException {
 
-		checkProcessing("put", "one", "x", 42, "42");
-		checkProcessing("get", "one", "x", 21, "42");
-		checkProcessing("put", "one", "x", new StringBuilder("two"), "two");
-		checkProcessing("get", "one", "x", null, "two");
+        String actual = processor.processMatch(
+                new CrossReference(cmd, ns, param, null), object);
+        assertEquals(expected, actual);
+    }
+
+    public final void testProcessing()
+            throws CrossReferenceProcessorShortcutException {
+
+        checkProcessing("put", "one", "x", 42, "42");
+        checkProcessing("get", "one", "x", 21, "42");
+        checkProcessing("put", "one", "x", new StringBuilder("two"), "two");
+        checkProcessing("get", "one", "x", null, "two");
 
 
-		checkProcessing("get", "two", "n", null,
-				"two.n: cross reference could not be resolved!");
+        checkProcessing("get", "two", "n", null,
+                "two.n: cross reference could not be resolved!");
 
-		checkProcessing("containsValue", "two", "z", "good",
-				"two.z: no value found!");
-		checkProcessing("containsValue", "one", "x", "good",
-				"good");
-	}
+        checkProcessing("containsValue", "two", "z", "good",
+                "two.z: no value found!");
+        checkProcessing("containsValue", "one", "x", "good",
+                "good");
+    }
+
+    public final void testRegexExtraction()
+            throws CrossReferenceProcessorShortcutException {
+
+        checkProcessing("put", "retest", "val1, /my\\/([^\\/]+)\\/test/",
+                "my/simple/test", "my/simple/test");
+        checkProcessing("get", "retest", "val1",
+                "x", "simple");
+
+        checkProcessing("put", "retest", "val2, /a(b)c/",
+                "abc", "abc");
+        checkProcessing("get", "retest", "val2",
+                "x", "b");
+
+        checkProcessing("put", "retest", "val3, /a/c/",
+                "abc", "/a/c/: illegal regex");
+        checkProcessing("get", "retest", "val3", null,
+                "retest.val3: cross reference could not be resolved!");
+    }
 }

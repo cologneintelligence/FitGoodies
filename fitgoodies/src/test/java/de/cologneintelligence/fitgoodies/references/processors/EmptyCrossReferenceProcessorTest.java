@@ -35,94 +35,93 @@ import de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferen
  */
 
 public class EmptyCrossReferenceProcessorTest extends FitGoodiesTestCase {
-	private AbstractCrossReferenceProcessor processor;
+    private AbstractCrossReferenceProcessor processor;
 
-	@Override
-	public final void setUp() throws Exception {
-		super.setUp();
-		processor = new EmptyCrossReferenceProcessor();
-	}
+    @Override
+    public final void setUp() throws Exception {
+        super.setUp();
+        processor = new EmptyCrossReferenceProcessor();
+    }
 
-	public final void testPattern() {
-		String pattern = processor.getPattern();
-		pattern = "^\\$\\{" + pattern + "\\}$";
+    public final void testPattern() {
+        String pattern = processor.getPattern();
+        pattern = "^\\$\\{" + pattern + "\\}$";
 
-		Pattern regex = Pattern.compile(pattern);
-		Matcher m;
+        Pattern regex = Pattern.compile(pattern);
+        Matcher m;
 
-		m = regex.matcher("${empty()}");
-		assertTrue(m.find());
+        m = regex.matcher("${empty()}");
+        assertTrue(m.find());
 
-		m = regex.matcher("${nonEmpty()}");
-		assertTrue(m.find());
+        m = regex.matcher("${nonEmpty()}");
+        assertTrue(m.find());
 
-		m = regex.matcher("${testEmpty()}");
-		assertFalse(m.find());
-	}
+        m = regex.matcher("${testEmpty()}");
+        assertFalse(m.find());
+    }
 
-	private void checkCr(final CrossReference cr, final String cmd) {
-		assertNull(cr.getParameter());
-		assertNull(cr.getNamespace());
-		assertEquals(cmd, cr.getCommand());
-		assertSame(processor, cr.getProcessor());
-	}
+    private void checkCr(final CrossReference cr, final String cmd) {
+        assertNull(cr.getParameter());
+        assertNull(cr.getNamespace());
+        assertEquals(cmd, cr.getCommand());
+        assertSame(processor, cr.getProcessor());
+    }
 
-	public final void testExtraction() {
-		CrossReference cr;
+    public final void testExtraction() {
+        CrossReference cr;
 
-		cr = processor.extractCrossReference("empty()");
-		checkCr(cr, "empty");
+        cr = processor.extractCrossReference("empty()");
+        checkCr(cr, "empty");
 
-		cr = processor.extractCrossReference("empty2()");
-		assertNull(cr);
+        cr = processor.extractCrossReference("empty2()");
+        assertNull(cr);
 
-		cr = processor.extractCrossReference("nonEmpty()");
-		checkCr(cr, "nonEmpty");
-	}
+        cr = processor.extractCrossReference("nonEmpty()");
+        checkCr(cr, "nonEmpty");
+    }
 
-	private void checkProcessMatch(final String command, final Object input,
-			final String expected)
-		throws CrossReferenceProcessorShortcutException {
+    private void checkProcessMatch(final String command, final Object input,
+            final String expected) {
 
-		CrossReference cr = new CrossReference(command, null, null, null);
-		String actual = null;
-		try {
-			processor.processMatch(cr, input);
-			fail("Expected CrossReferenceProcessorException");
-		} catch (CrossReferenceProcessorShortcutException e) {
-			assertTrue(e.isOk());
-			actual = e.getMessage();
-			assertEquals(expected, actual);
-		}
-	}
+        CrossReference cr = new CrossReference(command, null, null, null);
+        String actual = null;
+        try {
+            processor.processMatch(cr, input);
+            fail("Expected CrossReferenceProcessorException");
+        } catch (CrossReferenceProcessorShortcutException e) {
+            assertTrue(e.isOk());
+            actual = e.getMessage();
+            assertEquals(expected, actual);
+        }
+    }
 
-	private void checkProcessMatchWithError(final String command, final Object input,
-			final String expected) {
+    private void checkProcessMatchWithError(final String command, final Object input,
+            final String expected) {
 
-		CrossReference cr = new CrossReference(command, null, null, null);
-		String actual = null;
-		try {
-			processor.processMatch(cr, input);
-			fail("Expected CrossReferenceProcessorException");
-		} catch (CrossReferenceProcessorShortcutException e) {
-			assertFalse(e.isOk());
-			actual = e.getMessage();
-			assertEquals(expected, actual);
-		}
-	}
+        CrossReference cr = new CrossReference(command, null, null, null);
+        String actual = null;
+        try {
+            processor.processMatch(cr, input);
+            fail("Expected CrossReferenceProcessorException");
+        } catch (CrossReferenceProcessorShortcutException e) {
+            assertFalse(e.isOk());
+            actual = e.getMessage();
+            assertEquals(expected, actual);
+        }
+    }
 
-	public final void testReplacement() throws CrossReferenceProcessorShortcutException {
-		checkProcessMatch("empty", "", "value is empty");
-		checkProcessMatch("nonEmpty", "x", "value is non-empty");
-		checkProcessMatch("nonEmpty", "y", "value is non-empty");
+    public final void testReplacement() throws CrossReferenceProcessorShortcutException {
+        checkProcessMatch("empty", "", "value is empty");
+        checkProcessMatch("nonEmpty", "x", "value is non-empty");
+        checkProcessMatch("nonEmpty", "y", "value is non-empty");
 
-		checkProcessMatchWithError("empty", "full", "value must be empty or null!");
-		checkProcessMatchWithError("empty", "x", "value must be empty or null!");
-		checkProcessMatchWithError("nonEmpty", "", "value must not be empty!");
-	}
+        checkProcessMatchWithError("empty", "full", "value must be empty or null!");
+        checkProcessMatchWithError("empty", "x", "value must be empty or null!");
+        checkProcessMatchWithError("nonEmpty", "", "value must not be empty!");
+    }
 
-	public final void testWrongMatch() throws CrossReferenceProcessorShortcutException {
-		CrossReference cr = new CrossReference("wrongCommand", null, null, null);
-		assertNull(processor.processMatch(cr, "nothing"));
-	}
+    public final void testWrongMatch() throws CrossReferenceProcessorShortcutException {
+        CrossReference cr = new CrossReference("wrongCommand", null, null, null);
+        assertNull(processor.processMatch(cr, "nothing"));
+    }
 }
