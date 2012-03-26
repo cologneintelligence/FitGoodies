@@ -37,9 +37,9 @@ public class SQLTimestamp extends FitGoodiesTestCase {
     public final void testParse() throws Exception {
         final TypeAdapter ta = new TypeAdapter();
 
-        final Timestamp t = Timestamp.valueOf("1987-12-01");
+        final Timestamp t = Timestamp.valueOf("1987-12-01 00:00:00");
         final SQLTimestampTypeAdapter d = new SQLTimestampTypeAdapter(ta, null);
-        assertEquals(t, d.parse("1987-12-01"));
+        assertEquals(t, d.parse("1987-12-01 00:00:00"));
     }
 
     public final void testDateFormat() throws Exception {
@@ -50,10 +50,10 @@ public class SQLTimestamp extends FitGoodiesTestCase {
 
         final SQLTimestampTypeAdapter p = new SQLTimestampTypeAdapter(ta, null);
 
-        Timestamp d = Timestamp.valueOf("1987-12-01");
-        assertEquals(d, p.parse("1987-12-01"));
+        Timestamp d = Timestamp.valueOf("1987-12-01 00:11:22");
+        assertEquals(d, p.parse("1987-12-01 00:11:22"));
 
-        d = Timestamp.valueOf("1989-03-08");
+        d = Timestamp.valueOf("1989-03-08 00:00:00");
         assertEquals(d, p.parse("08.03.1989"));
     }
 }
