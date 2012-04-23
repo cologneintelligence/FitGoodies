@@ -13,4 +13,9 @@ public class DateProviderImpl implements DateProvider {
         
     }
 
+    @Override
+    public String getCurrentDate(String format) {
+        return DateUtil.getDateAsString(new Date(), format);
+    }
+
 }

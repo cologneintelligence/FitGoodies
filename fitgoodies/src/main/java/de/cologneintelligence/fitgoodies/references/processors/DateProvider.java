@@ -4,4 +4,6 @@ public interface DateProvider {
 
     public String getCurrentDate();
 
+    public String getCurrentDate(String format);
+
 }
