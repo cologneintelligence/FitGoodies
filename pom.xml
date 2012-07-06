@@ -22,9 +22,9 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk</connection>
-		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk</developerConnection>
-		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk</url>
+		<connection>scm:git:git://github.com/kia/FitGoodies.git</connection>
+		<developerConnection>scm:git:git@github.com:kia/FitGoodies.git</developerConnection>
+		<url>https://github.com/kia/FitGoodies</url>
 	</scm>
 
 	<developers>
