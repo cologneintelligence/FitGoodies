@@ -34,7 +34,7 @@
 	</licenses>
 
 	<properties>
-		<fgversion>${version}</fgversion>
+		<fgversion>${project.version}</fgversion>
 	</properties>
 
 	<build>
