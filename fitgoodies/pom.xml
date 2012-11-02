@@ -12,16 +12,16 @@
 		<version>1.2.2-SNAPSHOT</version>
 	</parent>
 
-	<issueManagement>
-		<system>trac</system>
-		<url>http://sourceforge.net/apps/trac/fitgoodies</url>
-	</issueManagement>
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/kia/FitGoodies/issues</url>
+    </issueManagement>
 
-	<scm>
-		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/fitgoodies</connection>
-		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/fitgoodies</developerConnection>
-		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk/fitgoodies</url>
-	</scm>
+    <scm>
+        <connection>scm:git:git://github.com/kia/FitGoodies.git</connection>
+        <developerConnection>scm:git:git@github.com:kia/FitGoodies.git</developerConnection>
+        <url>https://github.com/kia/FitGoodies</url>
+    </scm>
 
 	<licenses>
 		<license>

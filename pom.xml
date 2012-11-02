@@ -17,8 +17,8 @@
     </parent>
 
 	<issueManagement>
-		<system>trac</system>
-		<url>http://sourceforge.net/apps/trac/fitgoodies</url>
+		<system>github</system>
+		<url>https://github.com/kia/FitGoodies/issues</url>
 	</issueManagement>
 
 	<scm>
