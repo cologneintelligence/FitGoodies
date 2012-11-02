@@ -109,8 +109,6 @@ public class StorageCrossReferenceProcessor extends AbstractCrossReferenceProces
         String regex = args[1].substring(1, args[1].length() - 1).replace("\\/", "/");
         Matcher matcher = Pattern.compile(regex).matcher(object.toString());
 
-        System.err.println("Matching \"" + object.toString() + "\" against \"" +
-                regex + "\" and storing in \"" + cr.getNamespace() + "." + varName);
         if (matcher.find()) {
             String result = matcher.group(1);
             variablesMap.put(cr.getNamespace(), varName, result);
