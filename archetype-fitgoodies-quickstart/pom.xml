@@ -1,34 +1,48 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>de.cologneintelligence</groupId>
-    <artifactId>archetype-fitgoodies-quickstart</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <name>Archetype - fitgoodies-quickstart</name>
-    <description>Archetype which generates an FitGoodies-enabled example project</description>
-    <url>https://github.com/kia/FitGoodies</url>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.cologneintelligence</groupId>
+	<artifactId>archetype-fitgoodies-quickstart</artifactId>
+	<version>1.2.2-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>Archetype - fitgoodies-quickstart</name>
+	<description>Archetype which generates an FitGoodies-enabled example project</description>
+	<url>https://github.com/kia/FitGoodies</url>
 
-    <parent>
-        <artifactId>fitgoodies-bundle</artifactId>
-        <groupId>de.cologneintelligence</groupId>
-        <version>1.2.2-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<artifactId>fitgoodies-bundle</artifactId>
+		<groupId>de.cologneintelligence</groupId>
+		<version>1.2.2-SNAPSHOT</version>
+	</parent>
 
-    <issueManagement>
-        <system>github</system>
-        <url>https://github.com/kia/FitGoodies/issues</url>
-    </issueManagement>
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/kia/FitGoodies/issues</url>
+	</issueManagement>
 
-    <scm>
-        <connection>scm:git:git://github.com/kia/FitGoodies.git</connection>
-        <developerConnection>scm:git:git@github.com:kia/FitGoodies.git</developerConnection>
-        <url>https://github.com/kia/FitGoodies</url>
-    </scm>
+	<scm>
+		<connection>scm:git:git://github.com/kia/FitGoodies.git</connection>
+		<developerConnection>scm:git:git@github.com:kia/FitGoodies.git</developerConnection>
+		<url>https://github.com/kia/FitGoodies</url>
+	</scm>
 
-    <licenses>
-        <license>
-            <name>GPL</name>
-            <url>http://www.gnu.org/licenses/gpl.html</url>
-        </license>
-    </licenses>
+	<licenses>
+		<license>
+			<name>GPL</name>
+			<url>http://www.gnu.org/licenses/gpl.html</url>
+		</license>
+	</licenses>
+
+	<properties>
+		<fgversion>${version}</fgversion>
+	</properties>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
 </project>

@@ -1,3 +1,4 @@
+
 #set($dollar = '$')
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -20,7 +21,7 @@
 		<dependency>
 			<groupId>de.cologneintelligence</groupId>
 			<artifactId>fitgoodies</artifactId>
-			<version>1.2.1</version>
+			<version>${fgversion}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
@@ -68,17 +69,19 @@
 						<configuration>
 							<tasks>
 								<property name="tests" value="${dollar}{basedir}/src/test/fixtures" />
-								<property name="target" value="${dollar}{project.build.directory}/test/fixtures" />
+								<property name="target"
+									value="${dollar}{project.build.directory}/test/fixtures" />
 								<property name="reltarget" value="test/fixtures" />
-								
+
 								<copy todir="${dollar}{target}">
 									<fileset dir="${dollar}{tests}" erroronmissingdir="false"
 										casesensitive="false" excludes="**/*.html" />
 								</copy>
-								
-								<java classname="de.cologneintelligence.fitgoodies.runners.DirectoryRunner" 
-										dir="${dollar}{project.build.directory}"
-										fork="true" failonerror="true">
+
+								<java
+									classname="de.cologneintelligence.fitgoodies.runners.DirectoryRunner"
+									dir="${dollar}{project.build.directory}" fork="true"
+									failonerror="true">
 									<classpath>
 										<path refid="maven.test.classpath" />
 									</classpath>
@@ -92,17 +95,17 @@
 				</executions>
 			</plugin>
 			<plugin>
-			        <groupId>org.codehaus.mojo</groupId>
+				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>selenium-maven-plugin</artifactId>
 				<version>2.0</version>
 				<executions>
-				        <execution>
-					        <phase>pre-integration-test</phase>
+					<execution>
+						<phase>pre-integration-test</phase>
 						<goals>
-						        <goal>start-server</goal>
+							<goal>start-server</goal>
 						</goals>
 						<configuration>
-						        <background>true</background>
+							<background>true</background>
 						</configuration>
 					</execution>
 				</executions>
