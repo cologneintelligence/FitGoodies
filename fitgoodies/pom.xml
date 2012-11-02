@@ -1,5 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>	
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 	<artifactId>fitgoodies</artifactId>
 	<name>FitGoodies</name>
 	<packaging>jar</packaging>
@@ -12,16 +13,16 @@
 		<version>1.2.2-SNAPSHOT</version>
 	</parent>
 
-    <issueManagement>
-        <system>github</system>
-        <url>https://github.com/kia/FitGoodies/issues</url>
-    </issueManagement>
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/kia/FitGoodies/issues</url>
+	</issueManagement>
 
-    <scm>
-        <connection>scm:git:git://github.com/kia/FitGoodies.git</connection>
-        <developerConnection>scm:git:git@github.com:kia/FitGoodies.git</developerConnection>
-        <url>https://github.com/kia/FitGoodies</url>
-    </scm>
+	<scm>
+		<connection>scm:git:git://github.com/kia/FitGoodies.git</connection>
+		<developerConnection>scm:git:git@github.com:kia/FitGoodies.git</developerConnection>
+		<url>https://github.com/kia/FitGoodies</url>
+	</scm>
 
 	<licenses>
 		<license>
@@ -29,7 +30,7 @@
 			<url>http://www.gnu.org/licenses/gpl.html</url>
 		</license>
 	</licenses>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -108,7 +109,7 @@
 			<artifactId>selenium-java</artifactId>
 			<version>2.7.0</version>
 			<scope>compile</scope>
-		</dependency>				
+		</dependency>
 	</dependencies>
 
 	<reporting>
@@ -137,7 +138,7 @@
 							<useStandardDocletOptions>false</useStandardDocletOptions>
 							<additionalparam>
 								-d ${project.build.directory}/site/doccheck
-              				</additionalparam>
+							</additionalparam>
 
 							<destDir>doccheck</destDir>
 							<name>DocCheck</name>
