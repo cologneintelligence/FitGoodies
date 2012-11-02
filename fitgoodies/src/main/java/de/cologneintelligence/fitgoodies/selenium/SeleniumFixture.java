@@ -55,78 +55,77 @@ import fit.Parse;
  * 
  */
 public class SeleniumFixture extends ActionFixture {
-	private int screenshotIndex = 0;
+    private int screenshotIndex = 0;
 
-	public SeleniumFixture() {
-		super();
-	}
+    public SeleniumFixture() {
+        super();
+    }
 
-	@Override
-	public void doCells(final Parse cells) {
+    @Override
+    public void doCells(final Parse cells) {
 
-		final String command = cells.text();
-		try {
-			final String[] args = new String[] { getColumnOrEmptyString(cells, 1), getColumnOrEmptyString(cells, 2) };
-			String result = CommandFactory.createCommand(command, args).execute();
-			checkResult(cells, result);
-		} catch (final SeleniumException e) {
-			wrong(lastCell(cells), e.getMessage());
-		} catch (final Exception e) {
-			exception(lastCell(cells), e);
-		}
-		
-	}
+        final String command = cells.text();
+        try {
+            final String[] args = new String[] { getColumnOrEmptyString(cells, 1), getColumnOrEmptyString(cells, 2) };
+            String result = CommandFactory.createCommand(command, args).execute();
+            checkResult(cells, result);
+        } catch (final SeleniumException e) {
+            wrong(lastCell(cells), e.getMessage());
+        } catch (final Exception e) {
+            exception(lastCell(cells), e);
+        }
+    }
 
-	@Override
-	public void wrong(Parse cell, String message) {
-		super.wrong(cell, message);
-		if (SetupHelper.instance().getTakeScreenshots()) {
-			takeScreenShot(cell);
-		}
-	}
+    @Override
+    public void wrong(final Parse cell, final String message) {
+        super.wrong(cell, message);
+        if (SetupHelper.instance().getTakeScreenshots()) {
+            takeScreenShot(cell);
+        }
+    }
 
-	private void addScreenshotLinkToReportPage(Parse cell, String fileName) {
-		cell.addToBody(" <a href=\"file:///" + fileName + "\">screenshot</a>");
-	}
+    private void addScreenshotLinkToReportPage(final Parse cell, final String fileName) {
+        cell.addToBody(" <a href=\"file:///" + fileName + "\">screenshot</a>");
+    }
 
-	private void takeScreenShot(Parse cell) {
-		String fileName = createSnapshotFilename(screenshotIndex++);
-		CommandFactory.createCommand("captureEntirePageScreenshot", new String[] { fileName, "" }).execute();
-		addScreenshotLinkToReportPage(cell, fileName);
-	}
+    private void takeScreenShot(final Parse cell) {
+        String fileName = createSnapshotFilename(screenshotIndex++);
+        CommandFactory.createCommand("captureEntirePageScreenshot", new String[] { fileName, "" }).execute();
+        addScreenshotLinkToReportPage(cell, fileName);
+    }
 
-	private String createSnapshotFilename(int index) {
-		return RunnerHelper.instance().getResultFilePath() + ".screenshot" + index + ".png";
-	}
+    private String createSnapshotFilename(final int index) {
+        return RunnerHelper.instance().getResultFilePath() + ".screenshot" + index + ".png";
+    }
 
-	private final String getColumnOrEmptyString(final Parse cells, final int column) throws CrossReferenceProcessorShortcutException {
-		Parse parse = cells;
-		for (int i = 0; i < column; ++i) {
-			if (parse.more == null) {
-				return "";
-			}
-			parse = parse.more;
-		}
-		return CrossReferenceHelper.instance().parseBody(parse.text(), null);
-	}
+    private final String getColumnOrEmptyString(final Parse cells, final int column) throws CrossReferenceProcessorShortcutException {
+        Parse parse = cells;
+        for (int i = 0; i < column; ++i) {
+            if (parse.more == null) {
+                return "";
+            }
+            parse = parse.more;
+        }
+        return CrossReferenceHelper.instance().parseBody(parse.text(), null);
+    }
 
-	private void checkResult(final Parse cells, final String result) {
-		if (result.startsWith("OK")) {
-			right(lastCell(cells));
-			info(lastCell(cells), result);
-		} else {
-			wrong(lastCell(cells), result);
-		}		
-	}
+    private void checkResult(final Parse cells, final String result) {
+        if (result.startsWith("OK")) {
+            right(lastCell(cells));
+            info(lastCell(cells), result);
+        } else {
+            wrong(lastCell(cells), result);
+        }
+    }
 
-	protected Parse lastCell(final Parse cells) {
-		Parse lastCell = cells;
-		int i = 0;
-		while (lastCell.more != null && i < 2) {
-			++i;
-			lastCell = lastCell.more;
-		}
-		return lastCell;
-	}
+    protected Parse lastCell(final Parse cells) {
+        Parse lastCell = cells;
+        int i = 0;
+        while (lastCell.more != null && i < 2) {
+            ++i;
+            lastCell = lastCell.more;
+        }
+        return lastCell;
+    }
 
 }
