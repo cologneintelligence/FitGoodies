@@ -29,30 +29,30 @@ import java.util.Map;
  * @version $Id$
  */
 public final class AliasHelper {
-	private static AliasHelper instance;
-	private final Map<String, String> classMapper = new HashMap<String, String>();
+    private static AliasHelper instance;
+    private final Map<String, String> classMapper = new HashMap<String, String>();
 
-	private AliasHelper() {
-	    initDefaultMappings();
-	}
+    private AliasHelper() {
+        initDefaultMappings();
+    }
 
-	/**
-	 * Resets the helper to default values.
-	 */
-	public static void reset() {
-		instance = null;
-	}
+    /**
+     * Resets the helper to default values.
+     */
+    public static void reset() {
+        instance = null;
+    }
 
-	/**
-	 * Returns an instance of <code>AliasHelper</code>.
-	 * @return instance of <code>AliasHelper</code>
-	 */
-	public static AliasHelper instance() {
-		if (instance == null) {
-			instance = new AliasHelper();
-		}
-		return instance;
-	}
+    /**
+     * Returns an instance of <code>AliasHelper</code>.
+     * @return instance of <code>AliasHelper</code>
+     */
+    public static AliasHelper instance() {
+        if (instance == null) {
+            instance = new AliasHelper();
+        }
+        return instance;
+    }
 
     private void initDefaultMappings() {
         classMapper.put("fitgoodies.ActionFixture", "de.cologneintelligence.fitgoodies.ActionFixture");
@@ -83,29 +83,30 @@ public final class AliasHelper {
         classMapper.put("fitgoodies.alias.SetupFixture", "de.cologneintelligence.fitgoodies.alias.SetupFixture");
     }
 
-	/**
-	 * Looks up a class in the alias map. If <code>className</code> exists as
-	 * an alias, it is resolved and returned. If the alias doesn't exist, the
-	 * original String is returned.
-	 *
-	 * @param className class name to look up
-	 * @return resolved name of the alias
-	 */
-	public String getClazz(final String className) {
-		String realName = classMapper.get(className);
-		if (realName == null) {
-			realName = className;
-		}
-		return realName;
-	}
+    /**
+     * Looks up a class in the alias map. If <code>className</code> exists as
+     * an alias, it is resolved and returned. If the alias doesn't exist, the
+     * original String is returned.
+     *
+     * @param className class name to look up
+     * @return resolved name of the alias
+     */
+    public String getClazz(final String className) {
+        String realName = className;
 
-	/**
-	 * Registers a new alias <code>alias</code> for <code>className</code>.
-	 *
-	 * @param alias alias to use
-	 * @param className class the alias maps on
-	 */
-	public void register(final String alias, final String className) {
-		classMapper.put(alias, className);
-	}
+        while (classMapper.containsKey(realName)) {
+            realName = classMapper.get(realName);
+        }
+        return realName;
+    }
+
+    /**
+     * Registers a new alias <code>alias</code> for <code>className</code>.
+     *
+     * @param alias alias to use
+     * @param className class the alias maps on
+     */
+    public void register(final String alias, final String className) {
+        classMapper.put(alias, className);
+    }
 }
