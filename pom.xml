@@ -9,7 +9,7 @@
 	<description>
 		Transistent pom which is used do install FitGoodies and its archetype
 	</description>
-	<url>http://fitgoodies.sourceforge.net</url>
+	<url>https://github.com/kia/FitGoodies</url>
 
 	<parent>
 		<groupId>org.sonatype.oss</groupId>

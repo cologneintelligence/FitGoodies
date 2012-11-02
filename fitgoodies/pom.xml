@@ -5,7 +5,7 @@
 	<name>FitGoodies</name>
 	<packaging>jar</packaging>
 	<description>Integration Test Framework extending Fit</description>
-	<url>http://fitgoodies.sourceforge.net</url>
+	<url>https://github.com/kia/FitGoodies</url>
 
 	<parent>
 		<artifactId>fitgoodies-bundle</artifactId>
