@@ -1,6 +1,8 @@
 FitGoodies
 ==========
 
+[![Build Status](https://travis-ci.org/jochenwierum/FitGoodies.png)](https://travis-ci.org/jochenwierum/FitGoodies)
+
 Goodies for Fit (Framework for Integration Tests)
 
 - cheking log files
