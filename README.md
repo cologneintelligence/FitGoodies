@@ -1,7 +1,7 @@
 FitGoodies
 ==========
 
-[![Build Status](https://travis-ci.org/${user.name}/FitGoodies.png)](https://travis-ci.org/${user.name}/FitGoodies)
+[![Build Status](https://travis-ci.org/kia/FitGoodies.png)](https://travis-ci.org/kia/FitGoodies)
 
 Goodies for Fit (Framework for Integration Tests)
 
