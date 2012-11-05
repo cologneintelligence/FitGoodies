@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.cologneintelligence</groupId>
 	<artifactId>archetype-fitgoodies-quickstart</artifactId>
@@ -6,7 +7,7 @@
 	<packaging>jar</packaging>
 	<name>Archetype - fitgoodies-quickstart</name>
 	<description>Archetype which generates an FitGoodies-enabled example project</description>
-	<url>http://fitgoodies.sourceforge.net</url>
+	<url>https://github.com/kia/FitGoodies</url>
 
 	<parent>
 		<artifactId>fitgoodies-bundle</artifactId>
@@ -15,14 +16,14 @@
 	</parent>
 
 	<issueManagement>
-		<system>trac</system>
-		<url>http://sourceforge.net/apps/trac/fitgoodies</url>
+		<system>github</system>
+		<url>https://github.com/kia/FitGoodies/issues</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/archetype-fitgoodies-quickstart</connection>
-		<developerConnection>scm:svn:https://fitgoodies.svn.sourceforge.net/svnroot/fitgoodies/trunk/archetype-fitgoodies-quickstart</developerConnection>
-		<url>http://sourceforge.net/apps/trac/fitgoodies/browser/trunk/archetype-fitgoodies-quickstart</url>
+		<connection>scm:git:git://github.com/kia/FitGoodies.git</connection>
+		<developerConnection>scm:git:git@github.com:kia/FitGoodies.git</developerConnection>
+		<url>https://github.com/kia/FitGoodies</url>
 	</scm>
 
 	<licenses>
@@ -31,4 +32,17 @@
 			<url>http://www.gnu.org/licenses/gpl.html</url>
 		</license>
 	</licenses>
+
+	<properties>
+		<fgversion>${project.version}</fgversion>
+	</properties>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
 </project>

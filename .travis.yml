@@ -1,0 +1,4 @@
+language: java
+notifications:
+    email:
+        - jochen.wierum@co-in.de

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.cologneintelligence</groupId>
 	<artifactId>fitgoodies-bundle</artifactId>
@@ -8,17 +9,17 @@
 	<description>
 		Transistent pom which is used do install FitGoodies and its archetype
 	</description>
-	<url>http://fitgoodies.sourceforge.net</url>
+	<url>https://github.com/kia/FitGoodies</url>
 
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 
 	<issueManagement>
-		<system>trac</system>
-		<url>http://sourceforge.net/apps/trac/fitgoodies</url>
+		<system>github</system>
+		<url>https://github.com/kia/FitGoodies/issues</url>
 	</issueManagement>
 
 	<scm>
@@ -65,7 +66,7 @@
 			</roles>
 		</developer>
 	</developers>
-    
+
 	<licenses>
 		<license>
 			<name>GPL</name>
@@ -77,13 +78,17 @@
 		<module>fitgoodies</module>
 		<module>archetype-fitgoodies-quickstart</module>
 	</modules>
-	
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>2.2.1</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<pushChanges>false</pushChanges>
+					<localCheckout>true</localCheckout>
+				</configuration>
 			</plugin>
 		</plugins>
 
