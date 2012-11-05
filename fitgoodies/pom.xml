@@ -9,7 +9,7 @@
 	<parent>
 		<artifactId>fitgoodies-bundle</artifactId>
 		<groupId>de.cologneintelligence</groupId>
-		<version>1.2.2</version>
+		<version>1.2.3-SNAPSHOT</version>
 	</parent>
 
 	<issueManagement>
