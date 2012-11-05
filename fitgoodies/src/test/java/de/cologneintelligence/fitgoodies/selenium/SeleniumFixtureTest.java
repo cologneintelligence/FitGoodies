@@ -28,8 +28,8 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
     public void setUp() throws Exception {
         commandProcessor = mock(CommandProcessor.class);
         SetupHelper.instance().setCommandProcessor(commandProcessor);
-        SetupHelper.instance().setTimeout("2000");
-        SetupHelper.instance().setInterval("500");
+        SetupHelper.instance().setTimeout("500");
+        SetupHelper.instance().setInterval("100");
         SetupHelper.instance().setTakeScreenshots(false);
         SetupHelper.instance().setSleepBeforeScreenshot(1L);
         RunnerHelper.instance().setResultFilePath("fixture.html");
@@ -93,7 +93,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
     public void testInvokeSeleniumCommandReturnsNOKAndRetry() throws Exception {
         doCommandCalled4TimesReturnsEachTimeNOK();
         fixture.doTable(table);
-        assertWrongCell("NOK; attempts: 4/4 times");
+        assertWrongCell("NOK; attempts: ");
     }
 
 
@@ -102,7 +102,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         createCommandAndRetryTable();
         doCommandCalled4TimesEachTimeThrowsException();
         fixture.doTable(table);
-        assertWrongCell("NOK; attempts: 4/4 times");
+        assertWrongCell("NOK; attempts: ");
     }
 
 
@@ -111,7 +111,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         createCommandAndRetryTable();
         doCommandCalled4TimesLastTimeReturnsOK();
         fixture.doTable(table);
-        assertRightCell("arg2 OK; attempts: 3/4 times");
+        assertRightCell("arg2 OK; attempts: 3 times");
     }
 
 
@@ -221,7 +221,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 
     private void doCommandCalled4TimesEachTimeThrowsException() throws Exception {
         checking(new Expectations() {{
-            exactly(4).of(commandProcessor).doCommand("command", args);
+            atLeast(4).of(commandProcessor).doCommand("command", args);
             will(throwException(new SeleniumException("Error")));
         }});
     }
@@ -230,7 +230,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         createCommandAndRetryTable();
 
         checking(new Expectations() {{
-            exactly(4).of(commandProcessor).doCommand("command", args);
+            atLeast(4).of(commandProcessor).doCommand("command", args);
             will(returnValue("NOK"));
         }});
     }

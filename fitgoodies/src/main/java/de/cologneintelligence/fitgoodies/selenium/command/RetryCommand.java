@@ -33,8 +33,7 @@ public class RetryCommand extends WrappedCommand {
     }
 
     private String attemptMessage(final int count) {
-        long maxCount = SetupHelper.instance().getTimeout() / SetupHelper.instance().getInterval();
-        return "attempts: " + count + "/" + maxCount + " times";
+        return "attempts: " + count + " times";
     }
 
 
