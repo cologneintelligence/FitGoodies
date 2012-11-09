@@ -20,6 +20,7 @@
 package de.cologneintelligence.fitgoodies.parsers;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
  * Fixture which allows the user to register new parsers via HTML.
@@ -37,24 +38,25 @@ import de.cologneintelligence.fitgoodies.ActionFixture;
  * @version $Id$
  */
 public class SetupFixture extends ActionFixture {
-	/**
-	 * Calls {@link #load(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 * @see #load(String) load(String)
-	 */
-	public void load() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #load(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     * @see #load(String) load(String)
+     */
+    public void load() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Registers the parser which is identified by its fully qualified class
-	 * name <code>className</code>.
-	 * @param className fully qualified class name to register
-	 * @throws Exception thrown in case of errors. Propagate it to fit.
-	 * @see #load() load()
-	 */
-	public final void load(final String className) throws Exception {
-		Parser<?> p = (Parser<?>) Class.forName(className).newInstance();
-		ParserHelper.instance().registerParser(p);
-	}
+    /**
+     * Registers the parser which is identified by its fully qualified class
+     * name <code>className</code>.
+     * @param className fully qualified class name to register
+     * @throws Exception thrown in case of errors. Propagate it to fit.
+     * @see #load() load()
+     */
+    public final void load(final String className) throws Exception {
+        Parser<?> p = (Parser<?>) Class.forName(className).newInstance();
+        ParserHelper helper = DependencyManager.INSTANCE.getOrCreate(ParserHelper.class);
+        helper.registerParser(p);
+    }
 }

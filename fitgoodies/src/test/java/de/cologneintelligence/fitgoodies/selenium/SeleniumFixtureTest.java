@@ -14,25 +14,32 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.processors.DateProvider;
 import de.cologneintelligence.fitgoodies.references.processors.DateProviderCrossReferenceProcessor;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 
 public class SeleniumFixtureTest extends FitGoodiesTestCase {
-
     private CommandProcessor commandProcessor;
     private SeleniumFixture fixture;
     private Parse table;
     private final String[] args = new String[]{"arg1", "arg2"};
+    private SetupHelper helper;
 
 
     @Override
     public void setUp() throws Exception {
+        super.setUp();
+
+        RunnerHelper runnerHelper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+        helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+
         commandProcessor = mock(CommandProcessor.class);
-        SetupHelper.instance().setCommandProcessor(commandProcessor);
-        SetupHelper.instance().setTimeout("500");
-        SetupHelper.instance().setInterval("100");
-        SetupHelper.instance().setTakeScreenshots(false);
-        SetupHelper.instance().setSleepBeforeScreenshot(1L);
-        RunnerHelper.instance().setResultFilePath("fixture.html");
+        helper.setCommandProcessor(commandProcessor);
+        helper.setTimeout("500");
+        helper.setInterval("100");
+        helper.setTakeScreenshots(false);
+        helper.setSleepBeforeScreenshotMillis(1L);
+
+        runnerHelper.setResultFilePath("fixture.html");
         fixture = new SeleniumFixture();
 
         table = new Parse(
@@ -50,7 +57,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 
 
     public void testInvokeSeleniumCommandReturnsNOKWithScreenshot() throws Exception {
-        SetupHelper.instance().setTakeScreenshots(true);
+        helper.setTakeScreenshots(true);
         doCommandReturnsNOK();
         checkTakingScreenshot(0);
         fixture.doTable(table);
@@ -58,7 +65,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
     }
 
     public void testInvokeSeleniumCommandReturnsNOKWithTwoScreenshots() throws Exception {
-        SetupHelper.instance().setTakeScreenshots(true);
+        helper.setTakeScreenshots(true);
         createTwoCommandsTable();
         doCommandReturnsNOK();
         checkTakingScreenshot(0);
@@ -76,7 +83,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
     }
 
     public void testInvokeSeleniumCommandThrowsSeleniumExceptionTakeScreenshot() throws Exception {
-        SetupHelper.instance().setTakeScreenshots(true);
+        helper.setTakeScreenshots(true);
         doCommandThrowsException();
         checkTakingScreenshot(0);
         fixture.doTable(table);
@@ -131,8 +138,9 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         final DateProvider dateProvider = mock(DateProvider.class);
         final String date = "21.01.2009";
         final DateProviderCrossReferenceProcessor processor = new DateProviderCrossReferenceProcessor(dateProvider);
-        CrossReferenceHelper.instance().getProcessors().remove(processor);
-        CrossReferenceHelper.instance().getProcessors().add(processor);
+        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+        helper.getProcessors().remove(processor);
+        helper.getProcessors().add(processor);
         checking(new Expectations() {{
             oneOf(dateProvider).getCurrentDate();
             will(returnValue(date));

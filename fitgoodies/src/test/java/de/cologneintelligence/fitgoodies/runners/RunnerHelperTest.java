@@ -24,68 +24,67 @@ import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
 import de.cologneintelligence.fitgoodies.file.DirectoryHelperMock;
 import de.cologneintelligence.fitgoodies.runners.Runner;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Counts;
 
 /**
- * $Id$
  * @author jwierum
  */
 public final class RunnerHelperTest extends FitGoodiesTestCase {
-	public void testSingleton() {
-		RunnerHelper expected = RunnerHelper.instance();
+    private RunnerHelper helper;
 
-		expected = RunnerHelper.instance();
-		assertSame(expected, RunnerHelper.instance());
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
-		RunnerHelper.reset();
-		assertNotSame(expected, RunnerHelper.instance());
-	}
+        helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+    }
 
-	public void testFilePath() {
-		RunnerHelper.instance().setFilePath("/path/to/test1.html");
-		assertEquals("/path/to/test1.html", RunnerHelper.instance().getFilePath());
+    public void testFilePath() {
+        helper.setFilePath("/path/to/test1.html");
+        assertEquals("/path/to/test1.html", helper.getFilePath());
 
-		RunnerHelper.instance().setFilePath("/dir/file2.html");
-		assertEquals("/dir/file2.html", RunnerHelper.instance().getFilePath());
-	}
+        helper.setFilePath("/dir/file2.html");
+        assertEquals("/dir/file2.html", helper.getFilePath());
+    }
 
-	public void testResultPath() {
-		RunnerHelper.instance().setResultFilePath("/path/to/test1.html");
-		assertEquals("/path/to/test1.html", RunnerHelper.instance().getResultFilePath());
+    public void testResultPath() {
+        helper.setResultFilePath("/path/to/test1.html");
+        assertEquals("/path/to/test1.html", helper.getResultFilePath());
 
-		RunnerHelper.instance().setResultFilePath("/dir/file2.html");
-		assertEquals("/dir/file2.html", RunnerHelper.instance().getResultFilePath());
-	}
+        helper.setResultFilePath("/dir/file2.html");
+        assertEquals("/dir/file2.html", helper.getResultFilePath());
+    }
 
-	public void testEncoding() {
-		Runner runner = new Runner() {
-			@Override
-			public Counts run(final String inputFile, final String outputFile) {
-				return null;
-			}
+    public void testEncoding() {
+        Runner runner = new Runner() {
+            @Override
+            public Counts run(final String inputFile, final String outputFile) {
+                return null;
+            }
 
-			@Override
-			public void setEncoding(final String encoding) { }
+            @Override
+            public void setEncoding(final String encoding) { }
 
-			@Override
-			public String getEncoding() { return null; }
-		};
+            @Override
+            public String getEncoding() { return null; }
+        };
 
-		RunnerHelper.instance().setRunner(runner);
-		assertSame(runner, RunnerHelper.instance().getRunner());
-	}
+        helper.setRunner(runner);
+        assertSame(runner, helper.getRunner());
+    }
 
-	public void testHelper() {
-		AbstractDirectoryHelper helper = new DirectoryHelperMock();
-		RunnerHelper.instance().setHelper(helper);
-		assertSame(helper, RunnerHelper.instance().getHelper());
-	}
+    public void testHelper() {
+        AbstractDirectoryHelper dirHelper = new DirectoryHelperMock();
+        helper.setHelper(dirHelper);
+        assertSame(dirHelper, helper.getHelper());
+    }
 
-	public void testStream() {
-		RunnerHelper.instance().setLog(System.err);
-		assertSame(System.err, RunnerHelper.instance().getLog());
+    public void testStream() {
+        helper.setLog(System.err);
+        assertSame(System.err, helper.getLog());
 
-		RunnerHelper.instance().setLog(System.out);
-		assertSame(System.out, RunnerHelper.instance().getLog());
-	}
+        helper.setLog(System.out);
+        assertSame(System.out, helper.getLog());
+    }
 }

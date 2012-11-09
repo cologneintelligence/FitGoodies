@@ -27,60 +27,53 @@ import de.cologneintelligence.fitgoodies.file.FileSelector;
 
 
 /**
- * $Id$
  * @author jwierum
  */
 public class FileFixtureHelperTest extends FitGoodiesTestCase {
-	public final void testSingleton() {
-		FileFixtureHelper expected = FileFixtureHelper.instance();
-		assertSame(expected, FileFixtureHelper.instance());
+    private FileFixtureHelper helper;
 
-		FileFixtureHelper.reset();
-		assertNotSame(expected, FileFixtureHelper.instance());
-	}
+    @Override
+    public void setUp() throws Exception {
+        helper = new FileFixtureHelper();
+    }
 
-	public final void testSelector() throws FileNotFoundException {
-		FileFixtureHelper.instance().setEncoding("utf-8");
-		FileFixtureHelper.instance().setPattern(".*");
-		FileFixtureHelper.instance().setProvider(new DirectoryProviderMock());
+    public final void testSelector() throws FileNotFoundException {
+        helper.setEncoding("utf-8");
+        helper.setPattern(".*");
+        helper.setProvider(new DirectoryProviderMock());
 
-		FileSelector fs = FileFixtureHelper.instance().getSelector();
-		assertEquals("file1.txt", fs.getFirstFile().filename());
+        FileSelector fs = helper.getSelector();
+        assertEquals("file1.txt", fs.getFirstFile().filename());
 
-		fs = FileFixtureHelper.selector();
-		assertEquals("file1.txt", fs.getFirstFile().filename());
+        fs = helper.getSelector();
+        assertEquals("file1.txt", fs.getFirstFile().filename());
 
-		FileFixtureHelper.instance().setPattern(".*\\.bat");
-		fs = FileFixtureHelper.instance().getSelector();
-		assertEquals("f.txt.bat", fs.getFirstFile().filename());
+        helper.setPattern(".*\\.bat");
+        fs = helper.getSelector();
+        assertEquals("f.txt.bat", fs.getFirstFile().filename());
 
-		fs = FileFixtureHelper.selector();
-		assertEquals("f.txt.bat", fs.getFirstFile().filename());
-	}
+        fs = helper.getSelector();
+        assertEquals("f.txt.bat", fs.getFirstFile().filename());
+    }
 
     public final void testEncoding() {
-		FileFixtureHelper.instance().setEncoding("utf-8");
-		assertEquals("utf-8", FileFixtureHelper.instance().getEncoding());
-		assertEquals("utf-8", FileFixtureHelper.encoding());
+        helper.setEncoding("utf-8");
+        assertEquals("utf-8", helper.getEncoding());
 
-		FileFixtureHelper.instance().setEncoding("latin-1");
-		assertEquals("latin-1", FileFixtureHelper.instance().getEncoding());
-		assertEquals("latin-1", FileFixtureHelper.encoding());
-	}
+        helper.setEncoding("latin-1");
+        assertEquals("latin-1", helper.getEncoding());
+    }
 
-	public final void testPattern() {
-		FileFixtureHelper.instance().setPattern("*\\.txt");
-		assertEquals("*\\.txt", FileFixtureHelper.instance().getPattern());
-		assertEquals("*\\.txt", FileFixtureHelper.pattern());
+    public final void testPattern() {
+        helper.setPattern("*\\.txt");
+        assertEquals("*\\.txt", helper.getPattern());
 
-		FileFixtureHelper.instance().setPattern("*\\.bat");
-		assertEquals("*\\.bat", FileFixtureHelper.instance().getPattern());
-		assertEquals("*\\.bat", FileFixtureHelper.pattern());
-	}
+        helper.setPattern("*\\.bat");
+        assertEquals("*\\.bat", helper.getPattern());
+    }
 
-	public final void testDirectory() {
-		FileFixtureHelper.instance().setProvider(new DirectoryProviderMock());
-		assertEquals("/test",
-				FileFixtureHelper.instance().getProvider().getPath());
-	}
+    public final void testDirectory() {
+        helper.setProvider(new DirectoryProviderMock());
+        assertEquals("/test", helper.getProvider().getPath());
+    }
 }

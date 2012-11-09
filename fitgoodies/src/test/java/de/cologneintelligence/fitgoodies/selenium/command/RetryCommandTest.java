@@ -10,28 +10,35 @@ import de.cologneintelligence.fitgoodies.selenium.RetryException;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
 import de.cologneintelligence.fitgoodies.selenium.command.CommandFactory;
 import de.cologneintelligence.fitgoodies.selenium.command.WrappedCommand;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 public class RetryCommandTest extends FitGoodiesTestCase {
-
+    private SetupHelper helper;
     private CommandProcessor commandProcessor;
     private WrappedCommand retryCommand;
-    final String[] args = new String[]{"arg1", "arg2"};
+
+    private final String[] args = new String[]{"arg1", "arg2"};
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+
+        RunnerHelper runnerHelper = DependencyManager.INSTANCE.getOrCreate(
+                RunnerHelper.class);
+
+        helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
         commandProcessor = mock(CommandProcessor.class);
-        SetupHelper.instance().setCommandProcessor(commandProcessor);
-        SetupHelper.instance().setTakeScreenshots(false);
-        SetupHelper.instance().setSleepBeforeScreenshot(1L);
-        RunnerHelper.instance().setResultFilePath("fixture.html");
-        retryCommand = CommandFactory.createCommand("commandAndRetry",args);
+        helper.setCommandProcessor(commandProcessor);
+        helper.setTakeScreenshots(false);
+        helper.setSleepBeforeScreenshotMillis(1L);
+        runnerHelper.setResultFilePath("fixture.html");
+        retryCommand = CommandFactory.createCommand("commandAndRetry", args, helper);
 
     }
 
     public void testDoCommand4Times() {
-
-        SetupHelper.instance().setTimeout("200");
-        SetupHelper.instance().setInterval("50");
+        helper.setTimeout("200");
+        helper.setInterval("50");
 
         checking(new Expectations() {{
             exactly(4).of(commandProcessor).doCommand("command", args);
@@ -47,8 +54,8 @@ public class RetryCommandTest extends FitGoodiesTestCase {
     public void testDoCommand6Times() {
 
         final String[] args = new String[]{"arg1", "arg2"};
-        SetupHelper.instance().setTimeout("600");
-        SetupHelper.instance().setInterval("100");
+        helper.setTimeout("600");
+        helper.setInterval("100");
 
         checking(new Expectations() {{
             exactly(6).of(commandProcessor).doCommand("command", args);
@@ -65,8 +72,8 @@ public class RetryCommandTest extends FitGoodiesTestCase {
     public void testDoCommandFirst5ReturnsNOKThenOK() {
 
         final String[] args = new String[]{"arg1", "arg2"};
-        SetupHelper.instance().setTimeout("1600");
-        SetupHelper.instance().setInterval("100");
+        helper.setTimeout("1600");
+        helper.setInterval("100");
 
         checking(new Expectations() {{
             exactly(3).of(commandProcessor).doCommand("command", args);

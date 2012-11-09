@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 
 import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReference;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 
 /**
@@ -35,42 +36,43 @@ import de.cologneintelligence.fitgoodies.references.CrossReference;
  * @version $Id$
  */
 public class FileFixtureCrossReferenceProcessor extends
-		AbstractCrossReferenceProcessor {
-	private static final String PATTERN = "(selectedFile|selectedEncoding)\\(\\)";
+AbstractCrossReferenceProcessor {
+    private static final String PATTERN = "(selectedFile|selectedEncoding)\\(\\)";
 
-	/**
-	 * Default constructor.
-	 */
-	public FileFixtureCrossReferenceProcessor() {
-		super(PATTERN);
-	}
+    /**
+     * Default constructor.
+     */
+    public FileFixtureCrossReferenceProcessor() {
+        super(PATTERN);
+    }
 
-	/**
-	 * A user friendly description.
-	 * @return a description.
-	 */
-	@Override
-	public final String info() {
-		return "provides selectedFile() and selectedEncoding()";
-	}
+    /**
+     * A user friendly description.
+     * @return a description.
+     */
+    @Override
+    public final String info() {
+        return "provides selectedFile() and selectedEncoding()";
+    }
 
-	/**
-	 * Replaces the match with the selected file's name or encoding.
-	 * @param cr the extracted match
-	 * @param object ignored
-	 * @return if the command was selectedFile, the first matching file is returned,
-	 * 		if it was selectedEncoding, the selected encoding is returned
-	 */
-	@Override
-	public final String processMatch(final CrossReference cr, final Object object) {
-		if (cr.getCommand().equals("selectedEncoding")) {
-			return FileFixtureHelper.instance().getEncoding();
-		} else {
-			try {
-				return FileFixtureHelper.instance().getSelector().getFirstFile().filename();
-			} catch (FileNotFoundException e) {
-				throw new RuntimeException("no file found");
-			}
-		}
-	}
+    /**
+     * Replaces the match with the selected file's name or encoding.
+     * @param cr the extracted match
+     * @param object ignored
+     * @return if the command was selectedFile, the first matching file is returned,
+     * 		if it was selectedEncoding, the selected encoding is returned
+     */
+    @Override
+    public final String processMatch(final CrossReference cr, final Object object) {
+        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        if (cr.getCommand().equals("selectedEncoding")) {
+            return helper.getEncoding();
+        } else {
+            try {
+                return helper.getSelector().getFirstFile().filename();
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException("no file found");
+            }
+        }
+    }
 }

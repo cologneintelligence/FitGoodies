@@ -25,74 +25,76 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
+
 /**
  * Represents a file and provides information about it.
  *
  * @author jwierum
- * @version $Id$
  */
 public abstract class FileInformation {
-	/**
-	 * The file's name.
-	 * @return the filename
-	 */
-	public abstract String filename();
+    /**
+     * The file's name.
+     * @return the filename
+     */
+    public abstract String filename();
 
-	/**
-	 * The file's path.
-	 * @return the path to the file without the filename itself.
-	 */
-	public abstract String pathname();
+    /**
+     * The file's path.
+     * @return the path to the file without the filename itself.
+     */
+    public abstract String pathname();
 
-	/**
-	 * The full path to the file.
-	 * @return the file path and the filename
-	 */
-	public abstract String fullname();
+    /**
+     * The full path to the file.
+     * @return the file path and the filename
+     */
+    public abstract String fullname();
 
-	/**
-	 * Opens the file and returns a <code>FileReader</code> object.
-	 * @return the open file as <code>FileReader</code>
-	 * @throws IOException thrown if the file could not be read
-	 */
-	public abstract FileReader openFileReader() throws IOException;
+    /**
+     * Opens the file and returns a <code>FileReader</code> object.
+     * @return the open file as <code>FileReader</code>
+     * @throws IOException thrown if the file could not be read
+     */
+    public abstract FileReader openFileReader() throws IOException;
 
-	/**
-	 * Opens the file and returns a <code>InputStream</code> object.
-	 * @return the open file as <code>InputStream</code>
-	 * @throws IOException thrown if the file could not be read
-	 */
-	public abstract InputStream openInputStream() throws IOException;
+    /**
+     * Opens the file and returns a <code>InputStream</code> object.
+     * @return the open file as <code>InputStream</code>
+     * @throws IOException thrown if the file could not be read
+     */
+    public abstract InputStream openInputStream() throws IOException;
 
-	/**
-	 * Opens the file and returns a <code>BufferedReader</code> object.
-	 * The encoding is determined by asking {@link FileFixtureHelper#encoding()}.
-	 * @return the open file as <code>BufferdReader</code>
-	 * @throws IOException thrown if the file could not be read
-	 */
-	public BufferedReader openBufferedReader() throws IOException {
-		return openBufferedReader(FileFixtureHelper.encoding());
-	}
+    /**
+     * Opens the file and returns a <code>BufferedReader</code> object.
+     * The encoding is determined by asking {@link FileFixtureHelper#encoding()}.
+     * @return the open file as <code>BufferdReader</code>
+     * @throws IOException thrown if the file could not be read
+     */
+    public BufferedReader openBufferedReader() throws IOException {
+        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        return openBufferedReader(helper.getEncoding());
+    }
 
-	/**
-	 * Opens the file and returns a <code>BufferedReader</code> object using
-	 * the given encoding.
-	 * @param encoding the encoding to use
-	 * @return the open file as <code>BufferdReader</code>
-	 * @throws IOException thrown if the file could not be read
-	 */
-	public BufferedReader openBufferedReader(final String encoding) throws IOException {
-		InputStream fis = openInputStream();
-		InputStreamReader isr = new InputStreamReader(fis, encoding);
-		return new BufferedReader(isr);
-	}
+    /**
+     * Opens the file and returns a <code>BufferedReader</code> object using
+     * the given encoding.
+     * @param encoding the encoding to use
+     * @return the open file as <code>BufferdReader</code>
+     * @throws IOException thrown if the file could not be read
+     */
+    public BufferedReader openBufferedReader(final String encoding) throws IOException {
+        InputStream fis = openInputStream();
+        InputStreamReader isr = new InputStreamReader(fis, encoding);
+        return new BufferedReader(isr);
+    }
 
-	/**
-	 * Alias to {@link #fullname()}.
-	 * @return the file's path and name
-	 */
-	@Override
-	public final String toString() {
-		return fullname();
-	}
+    /**
+     * Alias to {@link #fullname()}.
+     * @return the file's path and name
+     */
+    @Override
+    public final String toString() {
+        return fullname();
+    }
 }

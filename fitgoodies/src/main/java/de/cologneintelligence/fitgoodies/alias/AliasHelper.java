@@ -29,29 +29,10 @@ import java.util.Map;
  * @version $Id$
  */
 public final class AliasHelper {
-    private static AliasHelper instance;
     private final Map<String, String> classMapper = new HashMap<String, String>();
 
-    private AliasHelper() {
+    public AliasHelper() {
         initDefaultMappings();
-    }
-
-    /**
-     * Resets the helper to default values.
-     */
-    public static void reset() {
-        instance = null;
-    }
-
-    /**
-     * Returns an instance of <code>AliasHelper</code>.
-     * @return instance of <code>AliasHelper</code>
-     */
-    public static AliasHelper instance() {
-        if (instance == null) {
-            instance = new AliasHelper();
-        }
-        return instance;
     }
 
     private void initDefaultMappings() {

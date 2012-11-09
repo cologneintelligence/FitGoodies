@@ -20,6 +20,7 @@
 package de.cologneintelligence.fitgoodies.adapters;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
  * Fixture that contains one single command: load.
@@ -30,29 +31,31 @@ import de.cologneintelligence.fitgoodies.ActionFixture;
  * @version $Id$
  */
 public class SetupFixture extends ActionFixture {
-	/**
-	 * Calls {@link #load} using the 2. column as argument.
-	 * @throws Exception propagated to fit
-	 */
-	public void load() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #load} using the 2. column as argument.
+     * @throws Exception propagated to fit
+     */
+    public void load() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Registers the {@link AbstractTypeAdapter} which is provided by
-	 * <code>className</code>. After processing this row, the TypeAdapter
-	 * will be automatically used when the destination type matches
-	 * {@link AbstractTypeAdapter#getType()}.
-	 *
-	 * @param className fully qualified name of a class
-	 * @throws Exception propagated to fit, in case of unknown classes,
-	 * 			permission errors, etc.
-	 */
-	@SuppressWarnings("unchecked")
-	public final void load(final String className) throws Exception {
-		Class<? extends AbstractTypeAdapter<?>> clazz =
-			(Class<? extends AbstractTypeAdapter<?>>) Class.forName(className);
+    /**
+     * Registers the {@link AbstractTypeAdapter} which is provided by
+     * <code>className</code>. After processing this row, the TypeAdapter
+     * will be automatically used when the destination type matches
+     * {@link AbstractTypeAdapter#getType()}.
+     *
+     * @param className fully qualified name of a class
+     * @throws Exception propagated to fit, in case of unknown classes,
+     * 			permission errors, etc.
+     */
+    @SuppressWarnings("unchecked")
+    public final void load(final String className) throws Exception {
+        Class<? extends AbstractTypeAdapter<?>> clazz =
+                (Class<? extends AbstractTypeAdapter<?>>) Class.forName(className);
 
-		TypeAdapterHelper.instance().register(clazz);
-	}
+        TypeAdapterHelper helper = DependencyManager.INSTANCE.getOrCreate(
+                TypeAdapterHelper.class);
+        helper.register(clazz);
+    }
 }

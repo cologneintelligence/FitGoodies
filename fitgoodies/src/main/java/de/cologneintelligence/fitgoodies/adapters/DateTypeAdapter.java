@@ -23,6 +23,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import de.cologneintelligence.fitgoodies.date.SetupHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import fit.TypeAdapter;
 
@@ -39,42 +40,43 @@ import fit.TypeAdapter;
  * @version $Id$
  */
 public class DateTypeAdapter extends AbstractTypeAdapter<Date> {
-	/**
-	 * Creates a new TypeAdapter which bases on <code>ta</code>.
-	 * @param ta TypeAdapter to use as source
-	 * @param convertParameter a parameter in the format [locale, format] which
-	 * 		represents the format to use
-	 */
-	public DateTypeAdapter(final TypeAdapter ta, final String convertParameter) {
-		super(ta, convertParameter);
-	}
+    /**
+     * Creates a new TypeAdapter which bases on <code>ta</code>.
+     * @param ta TypeAdapter to use as source
+     * @param convertParameter a parameter in the format [locale, format] which
+     * 		represents the format to use
+     */
+    public DateTypeAdapter(final TypeAdapter ta, final String convertParameter) {
+        super(ta, convertParameter);
+    }
 
-	/**
-	 * Parses a string and converts it into a <code>java.util.Date</code> object.
-	 * @param s <code>String</code> which will be converted
-	 * @return <code>java.util.Date</code> object which is represented by <code>s</code>.
-	 * @throws ParseException if the date could not be parsed
-	 */
-	@Override
-	public final Date parse(final String s) throws ParseException {
-		if (getParameter() == null) {
-			return SetupHelper.instance().getDate(s);
-		} else {
-			String[] parameters = getParameter().split("\\s*,\\s*", 2);
-			if (parameters.length < 2) {
-				throw new ParseException(
-					"Parameter must have the format [localname, format]", 0);
-			}
-			return SetupHelper.instance().getDate(s, parameters[0], parameters[1]);
-		}
-	}
+    /**
+     * Parses a string and converts it into a <code>java.util.Date</code> object.
+     * @param s <code>String</code> which will be converted
+     * @return <code>java.util.Date</code> object which is represented by <code>s</code>.
+     * @throws ParseException if the date could not be parsed
+     */
+    @Override
+    public final Date parse(final String s) throws ParseException {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        if (getParameter() == null) {
+            return helper.getDate(s);
+        } else {
+            String[] parameters = getParameter().split("\\s*,\\s*", 2);
+            if (parameters.length < 2) {
+                throw new ParseException(
+                        "Parameter must have the format [localname, format]", 0);
+            }
+            return helper.getDate(s, parameters[0], parameters[1]);
+        }
+    }
 
-	/**
-	 * Returns the destination class which is managed by this parser.
-	 * @return java.util.Date.class
-	 */
-	@Override
-	public final Class<Date> getType() {
-		return Date.class;
-	}
+    /**
+     * Returns the destination class which is managed by this parser.
+     * @return java.util.Date.class
+     */
+    @Override
+    public final Class<Date> getType() {
+        return Date.class;
+    }
 }

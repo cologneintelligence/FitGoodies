@@ -2,22 +2,19 @@ package de.cologneintelligence.fitgoodies.selenium.command;
 
 import com.thoughtworks.selenium.CommandProcessor;
 
-import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
-
 public abstract class WrappedCommand {
-	protected final String command;
-	protected final String[] args;
-	protected final CommandProcessor commandProcessor;
+    protected final String command;
+    protected final String[] args;
+    protected final CommandProcessor commandProcessor;
 
-	
-	public WrappedCommand(String command, String[] args) {
-	    super();
-	    this.command = command;
-	    this.args = args;
-	    this.commandProcessor = SetupHelper.instance().getCommandProcessor();
+    public WrappedCommand(final String command, final String[] args,
+            final CommandProcessor commandProcessor) {
+        this.command = command;
+        this.args = args;
+        this.commandProcessor = commandProcessor;
     }
 
-	public abstract String execute();
-	
+    public abstract String execute();
+
 
 }

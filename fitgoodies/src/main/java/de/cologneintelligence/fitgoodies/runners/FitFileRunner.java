@@ -30,6 +30,7 @@ import java.util.Date;
 import de.cologneintelligence.fitgoodies.alias.AliasEnabledFixture;
 import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import fit.Counts;
 import fit.Fixture;
@@ -42,42 +43,43 @@ import fit.Parse;
  * @version $Id$
  */
 public class FitFileRunner implements Runner {
-	private String encoding;
+    private String encoding;
 
-	@Override
-	public final void setEncoding(final String fileEncoding) {
-		this.encoding = fileEncoding;
-	}
+    @Override
+    public final void setEncoding(final String fileEncoding) {
+        this.encoding = fileEncoding;
+    }
 
-	/**
-	 * Processes <code>inputFile</code>, write output to <code>outputFile</code>
-	 * and return the resulting counts using most of fit's default components.
-	 * @param inputFile file to process
-	 * @param outputFile file to write output to
-	 * @return resulting counts
-	 */
-	@Override
-	public final Counts run(final String inputFile, final String outputFile) {
-		AbstractDirectoryHelper helper = new FileSystemDirectoryHelper();
+    /**
+     * Processes <code>inputFile</code>, write output to <code>outputFile</code>
+     * and return the resulting counts using most of fit's default components.
+     * @param inputFile file to process
+     * @param outputFile file to write output to
+     * @return resulting counts
+     */
+    @Override
+    public final Counts run(final String inputFile, final String outputFile) {
+        AbstractDirectoryHelper dirHelper = new FileSystemDirectoryHelper();
+        RunnerHelper helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
 
-		RunnerHelper.instance().setFilePath(helper.rel2abs(System.getProperty("user.dir"),
-				inputFile));
-		RunnerHelper.instance().setResultFilePath(helper.rel2abs(System.getProperty("user.dir"),
-				outputFile));
-		RunnerHelper.instance().setRunner(this);
-		RunnerHelper.instance().setHelper(helper);
+        helper.setFilePath(dirHelper.rel2abs(System.getProperty("user.dir"),
+                inputFile));
+        helper.setResultFilePath(dirHelper.rel2abs(System.getProperty("user.dir"),
+                outputFile));
+        helper.setRunner(this);
+        helper.setHelper(dirHelper);
 
-		try {
-			return process(inputFile, outputFile);
-		} catch (Exception e) {
-			System.err.println(e + " while processing " + inputFile + " ->"
-					+ outputFile);
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+        try {
+            return process(inputFile, outputFile);
+        } catch (Exception e) {
+            System.err.println(e + " while processing " + inputFile + " ->"
+                    + outputFile);
+            System.err.println(e.getMessage());
+            e.printStackTrace();
 
-			return null;
-		}
-	}
+            return null;
+        }
+    }
 
     /**
      * Returns the content of the file <code>input</code> using the saved encoding.
@@ -86,7 +88,7 @@ public class FitFileRunner implements Runner {
      * @see #setEncoding(String) setEncoding(String)
      * @throws IOException if the file could not be read
      */
-	private String read(final File input) throws IOException {
+    private String read(final File input) throws IOException {
         char[] chars = new char[(int) (input.length())];
 
         InputStream is = new FileInputStream(input);
@@ -98,20 +100,20 @@ public class FitFileRunner implements Runner {
         return new String(chars);
     }
 
-	@Override
-	public final String getEncoding() {
-		return encoding;
-	}
+    @Override
+    public final String getEncoding() {
+        return encoding;
+    }
 
     private Counts process(final String inputFile, final String outputFile)
-    		throws IOException {
-    	File in = new File(inputFile);
-    	File out = new File(outputFile);
-    	PrintWriter output = new PrintWriter(out, encoding);
-    	Fixture fixture = prepareFixture(in, out);
+            throws IOException {
+        File in = new File(inputFile);
+        File out = new File(outputFile);
+        PrintWriter output = new PrintWriter(out, encoding);
+        Fixture fixture = prepareFixture(in, out);
 
-    	String input = read(in);
-    	Parse tables;
+        String input = read(in);
+        Parse tables;
 
         try {
             if (input.indexOf("<wiki>") >= 0) {
@@ -122,7 +124,7 @@ public class FitFileRunner implements Runner {
                 fixture.doTables(tables);
             }
         } catch (Exception e) {
-        	tables = new Parse("body", "Unable to parse input. Input ignored.", null, null);
+            tables = new Parse("body", "Unable to parse input. Input ignored.", null, null);
             fixture.exception(tables, e);
         }
         tables.print(output);
@@ -130,12 +132,12 @@ public class FitFileRunner implements Runner {
         return fixture.counts;
     }
 
-	@SuppressWarnings("unchecked")
-	private Fixture prepareFixture(final File in, final File out) {
-		Fixture fixture = new AliasEnabledFixture();
-    	fixture.summary.put("input file", in.getAbsolutePath());
+    @SuppressWarnings("unchecked")
+    private Fixture prepareFixture(final File in, final File out) {
+        Fixture fixture = new AliasEnabledFixture();
+        fixture.summary.put("input file", in.getAbsolutePath());
         fixture.summary.put("input update", new Date(in.lastModified()));
         fixture.summary.put("output file", out.getAbsolutePath());
-		return fixture;
-	}
+        return fixture;
+    }
 }

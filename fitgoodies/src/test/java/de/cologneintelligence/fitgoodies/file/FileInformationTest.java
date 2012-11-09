@@ -25,43 +25,45 @@ import java.nio.charset.Charset;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 
 public class FileInformationTest extends FitGoodiesTestCase {
-	public final void testOpenBufferedReader() throws IOException {
-		FileFixtureHelper.instance().setEncoding("iso-8859-1");
+    public final void testOpenBufferedReader() throws IOException {
+        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        helper.setEncoding("iso-8859-1");
 
-		FileInformationMock file = new FileInformationMock("C:\\dir",
-				"test.txt", "line1\nline2\näöü".getBytes(Charset.forName("iso-8859-1")));
+        FileInformationMock file = new FileInformationMock("C:\\dir",
+                "test.txt", "line1\nline2\näöü".getBytes(Charset.forName("iso-8859-1")));
 
-		BufferedReader br = file.openBufferedReader();
-		assertEquals("line1", br.readLine());
-		assertEquals("line2", br.readLine());
-		assertEquals("äöü", br.readLine());
-		br.close();
+        BufferedReader br = file.openBufferedReader();
+        assertEquals("line1", br.readLine());
+        assertEquals("line2", br.readLine());
+        assertEquals("äöü", br.readLine());
+        br.close();
 
-		FileFixtureHelper.instance().setEncoding("utf-16");
-		file = new FileInformationMock("C:\\dir",
-				"test.txt", "äöü".getBytes(Charset.forName("utf-16")));
-		br = file.openBufferedReader();
-		assertEquals("äöü", br.readLine());
-		br.close();
-	}
+        helper.setEncoding("utf-16");
+        file = new FileInformationMock("C:\\dir",
+                "test.txt", "äöü".getBytes(Charset.forName("utf-16")));
+        br = file.openBufferedReader();
+        assertEquals("äöü", br.readLine());
+        br.close();
+    }
 
-	public final void testOpenBufferedReaderString() throws IOException {
-		FileInformationMock file = new FileInformationMock("C:\\dir",
-				"test.txt", "line1\nüß".getBytes(Charset.forName("iso-8859-1")));
+    public final void testOpenBufferedReaderString() throws IOException {
+        FileInformationMock file = new FileInformationMock("C:\\dir",
+                "test.txt", "line1\nüß".getBytes(Charset.forName("iso-8859-1")));
 
-		BufferedReader br = file.openBufferedReader("iso-8859-1");
-		assertEquals("line1", br.readLine());
-		assertEquals("üß", br.readLine());
-		br.close();
+        BufferedReader br = file.openBufferedReader("iso-8859-1");
+        assertEquals("line1", br.readLine());
+        assertEquals("üß", br.readLine());
+        br.close();
 
-		file = new FileInformationMock("C:\\dir",
-				"test.txt", "äöü".getBytes(Charset.forName("utf-16")));
-		br = file.openBufferedReader("utf-16");
-		assertEquals("äöü", br.readLine());
-		br.close();
-	}
+        file = new FileInformationMock("C:\\dir",
+                "test.txt", "äöü".getBytes(Charset.forName("utf-16")));
+        br = file.openBufferedReader("utf-16");
+        assertEquals("äöü", br.readLine());
+        br.close();
+    }
 
 }

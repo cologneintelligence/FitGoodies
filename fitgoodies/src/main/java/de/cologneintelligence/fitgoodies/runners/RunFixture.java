@@ -24,6 +24,7 @@ import java.text.ParseException;
 import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryProvider;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import fit.Counts;
 import fit.Parse;
@@ -42,111 +43,113 @@ import fit.Parse;
  * </table>
  *
  * @author jwierum
- * @version $Id$
  */
 public class RunFixture extends ActionFixture {
-	private Runner runner;
-	private AbstractDirectoryHelper dirHelper;
-	private String thisdir;
-	private String outdir;
-	private Parse thisRow;
+    private Runner runner;
+    private AbstractDirectoryHelper dirHelper;
+    private String thisdir;
+    private String outdir;
+    private Parse thisRow;
+    private RunnerHelper helper;
 
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
-		dirHelper = RunnerHelper.instance().getHelper();
-		thisdir = dirHelper.getDir(RunnerHelper.instance().getFilePath());
-		outdir = dirHelper.getDir(RunnerHelper.instance().getResultFilePath());
-		runner = RunnerHelper.instance().getRunner();
-	}
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
-	@Override
-	public void doRows(final Parse rows) {
-		Parse nextRow = rows;
+        helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+        dirHelper = helper.getHelper();
+        thisdir = dirHelper.getDir(helper.getFilePath());
+        outdir = dirHelper.getDir(helper.getResultFilePath());
+        runner = helper.getRunner();
+    }
 
-		while (nextRow != null) {
-			thisRow = nextRow;
-			nextRow = nextRow.more;
-			super.doRow(thisRow);
-		}
-	}
+    @Override
+    public void doRows(final Parse rows) {
+        Parse nextRow = rows;
 
-	/**
-	 * Calls {@link #file(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void file() throws Exception {
-		transformAndEnter();
-	}
+        while (nextRow != null) {
+            thisRow = nextRow;
+            nextRow = nextRow.more;
+            super.doRow(thisRow);
+        }
+    }
 
-	/**
-	 * Calls {@link #directory(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void directory() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #file(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void file() throws Exception {
+        transformAndEnter();
+    }
 
-	private String color(final Counts c) {
-		if (c.wrong > 0 || c.exceptions > 0) {
-			return red;
-		} else {
-			return green;
-		}
-	}
+    /**
+     * Calls {@link #directory(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void directory() throws Exception {
+        transformAndEnter();
+    }
 
-	private void generateResultRow(
-			final Parse firstCell,
-			final String name,
-			final Counts results)
-			throws ParseException {
+    private String color(final Counts c) {
+        if (c.wrong > 0 || c.exceptions > 0) {
+            return red;
+        } else {
+            return green;
+        }
+    }
 
-		firstCell.more = new Parse("<td></td><td></td>", new String[]{"td"});
-		firstCell.more.body = "<a href=\"" + name + "\">" + name + "</a>";
+    private void generateResultRow(
+            final Parse firstCell,
+            final String name,
+            final Counts results)
+                    throws ParseException {
 
-		//Parse newCell = new Parse("<td></td>", new String[]{"td"});
-		firstCell.more.more.body = results.toString();
-		firstCell.more.more.addToTag(" bgcolor=\"" + color(results) + "\"");
-		//firstCell.more = newCell;
-	}
+        firstCell.more = new Parse("<td></td><td></td>", new String[]{"td"});
+        firstCell.more.body = "<a href=\"" + name + "\">" + name + "</a>";
 
-	/**
-	 * Runs the file <code>fileName</code> using the current runner and replaces
-	 * the current row with the results.
-	 * @param fileName file to process
-	 * @throws Exception propagated to fit
-	 */
-	public final void file(final String fileName) throws Exception {
-		String in = dirHelper.rel2abs(thisdir, fileName);
-		String out = dirHelper.rel2abs(outdir, fileName);
+        //Parse newCell = new Parse("<td></td>", new String[]{"td"});
+        firstCell.more.more.body = results.toString();
+        firstCell.more.more.addToTag(" bgcolor=\"" + color(results) + "\"");
+        //firstCell.more = newCell;
+    }
 
-		dirHelper.mkDir(dirHelper.getDir(out));
-		Counts result = runner.run(in, out);
+    /**
+     * Runs the file <code>fileName</code> using the current runner and replaces
+     * the current row with the results.
+     * @param fileName file to process
+     * @throws Exception propagated to fit
+     */
+    public final void file(final String fileName) throws Exception {
+        String in = dirHelper.rel2abs(thisdir, fileName);
+        String out = dirHelper.rel2abs(outdir, fileName);
 
-		generateResultRow(cells, fileName, result);
-		counts.tally(result);
-	}
+        dirHelper.mkDir(dirHelper.getDir(out));
+        Counts result = runner.run(in, out);
 
-	/**
-	 * Runs all HTML files in <code>dir</code> using the current runner and replaces
-	 * the current row with the results.
-	 * @param dir file to process
-	 * @throws Exception propagated to fit
-	 */
-	public final void directory(final String dir) throws Exception {
-		String srcDir = dirHelper.rel2abs(thisdir, dir);
+        generateResultRow(cells, fileName, result);
+        counts.tally(result);
+    }
 
-		FitParseResult results = new FitParseResult();
+    /**
+     * Runs all HTML files in <code>dir</code> using the current runner and replaces
+     * the current row with the results.
+     * @param dir file to process
+     * @throws Exception propagated to fit
+     */
+    public final void directory(final String dir) throws Exception {
+        String srcDir = dirHelper.rel2abs(thisdir, dir);
 
-		DirectoryRunner directoryRunner = new DirectoryRunner(
-				new FileSystemDirectoryProvider(srcDir),
-				outdir, RunnerHelper.instance().getRunner().getEncoding(),
-				dirHelper);
+        FitParseResult results = new FitParseResult();
 
-		directoryRunner.runFiles(RunnerHelper.instance().getRunner(), results,
-				RunnerHelper.instance().getLog());
+        DirectoryRunner directoryRunner = new DirectoryRunner(
+                new FileSystemDirectoryProvider(srcDir),
+                outdir, helper.getRunner().getEncoding(),
+                dirHelper);
 
-		results.replaceLine(thisRow);
-		counts.tally(results.getCounts());
-	}
+        directoryRunner.runFiles(helper.getRunner(), results,
+                helper.getLog());
+
+        results.replaceLine(thisRow);
+        counts.tally(results.getCounts());
+    }
 }

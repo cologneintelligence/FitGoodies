@@ -28,73 +28,69 @@ import de.cologneintelligence.fitgoodies.file.DirectoryHelperMock;
 import de.cologneintelligence.fitgoodies.runners.RunFixture;
 import de.cologneintelligence.fitgoodies.runners.Runner;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import fit.Parse;
 
 /**
- * $Id$
  * @author jwierum
  */
 public final class RunFixtureTest extends FitGoodiesTestCase {
+    public void testFile() throws ParseException {
+        RunnerHelper helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+        Parse table = prepareFileFixtureData(helper);
 
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
-	}
+        RunFixture fixture = new RunFixture();
+        fixture.doTable(table);
 
-	public void testFile() throws ParseException {
-		Parse table = prepareFileFixtureData();
+        assertEquals(0, fixture.counts.exceptions);
+        assertEquals(6, fixture.counts.right);
+        assertEquals(2, fixture.counts.wrong);
+        assertEquals(10, fixture.counts.ignores);
 
-		RunFixture fixture = new RunFixture();
-		fixture.doTable(table);
+        assertArray(new String[]{"/results/", "/tests2/"},
+                ((DirectoryHelperMock) helper.getHelper()).getPathes());
+    }
 
-		assertEquals(0, fixture.counts.exceptions);
-		assertEquals(6, fixture.counts.right);
-		assertEquals(2, fixture.counts.wrong);
-		assertEquals(10, fixture.counts.ignores);
+    public void testFileTableProcessing() throws ParseException {
+        RunnerHelper helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+        Parse table = prepareFileFixtureData(helper);
 
-		assertArray(new String[]{"/results/", "/tests2/"},
-				((DirectoryHelperMock) RunnerHelper.instance().getHelper()).getPathes());
-	}
+        RunFixture fixture = new RunFixture();
+        fixture.doTable(table);
 
-	public void testFileTableProcessing() throws ParseException {
-		Parse table = prepareFileFixtureData();
+        assertEquals("<a href=\"file1.html\">file1.html</a>",
+                table.parts.more.parts.body);
+        assertEquals("1 right, 2 wrong, 3 ignored, 0 exceptions",
+                table.parts.more.parts.more.body);
+        assertEquals("<a href=\"../tests2/test2.html\">../tests2/test2.html</a>",
+                table.parts.more.more.parts.body);
+        assertEquals("5 right, 0 wrong, 7 ignored, 0 exceptions",
+                table.parts.more.more.parts.more.body);
 
-		RunFixture fixture = new RunFixture();
-		fixture.doTable(table);
+        assertTrue(table.parts.more.parts.more.tag.contains("ffcfcf"));
+        assertTrue(table.parts.more.more.parts.more.tag.contains("cfffcf"));
+    }
 
-		assertEquals("<a href=\"file1.html\">file1.html</a>",
-				table.parts.more.parts.body);
-		assertEquals("1 right, 2 wrong, 3 ignored, 0 exceptions",
-				table.parts.more.parts.more.body);
-		assertEquals("<a href=\"../tests2/test2.html\">../tests2/test2.html</a>",
-				table.parts.more.more.parts.body);
-		assertEquals("5 right, 0 wrong, 7 ignored, 0 exceptions",
-				table.parts.more.more.parts.more.body);
+    private Parse prepareFileFixtureData(final RunnerHelper helper) throws ParseException {
+        final Runner runner = mock(Runner.class);
 
-		assertTrue(table.parts.more.parts.more.tag.contains("ffcfcf"));
-		assertTrue(table.parts.more.more.parts.more.tag.contains("cfffcf"));
-	}
+        checking(new Expectations() {{
+            oneOf(runner).run("/tests/file1.html", "/results/file1.html");
+            will(returnValue(mkCounts(1, 2, 3, 0)));
+            oneOf(runner).run("/tests2/test2.html", "/tests2/test2.html");
+            will(returnValue(mkCounts(5, 0, 7, 0)));
+        }});
 
-	private Parse prepareFileFixtureData() throws ParseException {
-		final Runner runner = mock(Runner.class);
+        DirectoryHelperMock dirHelper = new DirectoryHelperMock();
+        helper.setFilePath("/tests/testfile.html");
+        helper.setResultFilePath("/results/resultfile.html");
+        helper.setHelper(dirHelper);
+        helper.setRunner(runner);
 
-		DirectoryHelperMock helper = new DirectoryHelperMock();
-		checking(new Expectations() {{
-			oneOf(runner).run("/tests/file1.html", "/results/file1.html");
-				will(returnValue(mkCounts(1, 2, 3, 0)));
-			oneOf(runner).run("/tests2/test2.html", "/tests2/test2.html");
-				will(returnValue(mkCounts(5, 0, 7, 0)));
-		}});
-
-		RunnerHelper.instance().setFilePath("/tests/testfile.html");
-		RunnerHelper.instance().setResultFilePath("/results/resultfile.html");
-		RunnerHelper.instance().setHelper(helper);
-		RunnerHelper.instance().setRunner(runner);
-
-		Parse table = new Parse("<table><tr><td>ignored</td></tr>"
-				+ "<tr><td>file</td><td>file1.html</td></tr>"
-				+ "<tr><td>file</td><td>../tests2/test2.html</td></tr></table>");
-		return table;
-	}
+        Parse table = new Parse("<table><tr><td>ignored</td></tr>"
+                + "<tr><td>file</td><td>file1.html</td></tr>"
+                + "<tr><td>file</td><td>../tests2/test2.html</td></tr></table>");
+        return table;
+    }
 }

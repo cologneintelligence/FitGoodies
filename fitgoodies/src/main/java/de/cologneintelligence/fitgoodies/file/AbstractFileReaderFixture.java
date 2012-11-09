@@ -22,6 +22,7 @@ package de.cologneintelligence.fitgoodies.file;
 import java.io.File;
 
 import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 
 
@@ -51,59 +52,60 @@ import de.cologneintelligence.fitgoodies.util.FixtureTools;
  * @version $Id$
  */
 public abstract class AbstractFileReaderFixture extends Fixture {
-	private FileInformation file;
-	private String encoding;
+    private FileInformation file;
+    private String encoding;
 
-	/**
-	 * Reads the given parameters and initializes the values of
-	 * {@link #getEncoding()} and {@link #getFile()}.
-	 */
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
+    /**
+     * Reads the given parameters and initializes the values of
+     * {@link #getEncoding()} and {@link #getFile()}.
+     */
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
-		encoding = FileFixtureHelper.instance().getEncoding();
-		encoding = FixtureTools.getArg(args, "encoding", encoding);
+        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        encoding = helper.getEncoding();
+        encoding = FixtureTools.getArg(args, "encoding", encoding);
 
-		String fileName = FixtureTools.getArg(args, "file", null);
-		if (fileName == null) {
-			DirectoryProvider provider = FileFixtureHelper.instance().getProvider();
+        String fileName = FixtureTools.getArg(args, "file", null);
+        if (fileName == null) {
+            DirectoryProvider provider = helper.getProvider();
 
-			String dir = FixtureTools.getArg(args, "dir", null);
-			if (dir != null) {
-				provider = new FileSystemDirectoryProvider(dir);
-			}
+            String dir = FixtureTools.getArg(args, "dir", null);
+            if (dir != null) {
+                provider = new FileSystemDirectoryProvider(dir);
+            }
 
-			if (provider == null) {
-				throw new RuntimeException("No directory selected");
-			}
+            if (provider == null) {
+                throw new RuntimeException("No directory selected");
+            }
 
-			String pattern = FileFixtureHelper.instance().getPattern();
-			pattern = FixtureTools.getArg(args, "pattern", pattern);
+            String pattern = helper.getPattern();
+            pattern = FixtureTools.getArg(args, "pattern", pattern);
 
-			FileSelector fs = new FileSelector(provider, pattern);
-			file = fs.getFirstFile();
-		} else {
-			String filePath = new File(fileName).getAbsolutePath();
-			filePath = new File(filePath).getParent();
-			fileName = new File(fileName).getName();
-			file = new FileSystemFileInformation(filePath, fileName);
-		}
-	}
+            FileSelector fs = new FileSelector(provider, pattern);
+            file = fs.getFirstFile();
+        } else {
+            String filePath = new File(fileName).getAbsolutePath();
+            filePath = new File(filePath).getParent();
+            fileName = new File(fileName).getName();
+            file = new FileSystemFileInformation(filePath, fileName);
+        }
+    }
 
-	/**
-	 * Gets the selected file.
-	 * @return the matching file
-	 */
-	public final FileInformation getFile() {
-		return file;
-	}
+    /**
+     * Gets the selected file.
+     * @return the matching file
+     */
+    public final FileInformation getFile() {
+        return file;
+    }
 
-	/**
-	 * Gets the selected encoding.
-	 * @return the encoding name
-	 */
-	public final String getEncoding() {
-		return encoding;
-	}
+    /**
+     * Gets the selected encoding.
+     * @return the encoding name
+     */
+    public final String getEncoding() {
+        return encoding;
+    }
 }

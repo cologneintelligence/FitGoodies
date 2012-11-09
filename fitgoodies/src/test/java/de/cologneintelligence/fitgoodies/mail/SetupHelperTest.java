@@ -23,121 +23,119 @@ import java.util.Properties;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.mail.SetupHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 
 /**
- * $Id$
  * @author jwierum
  */
 public final class SetupHelperTest extends FitGoodiesTestCase {
-	public void testSingleton() {
-		SetupHelper helper = SetupHelper.instance();
-		assertNotNull(helper);
+    private SetupHelper helper;
 
-		assertSame(helper, SetupHelper.instance());
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+    }
 
-		SetupHelper.reset();
-		assertNotSame(helper, SetupHelper.instance());
-	}
+    public void testErrors() {
+        try {
+            helper.generateProperties();
+            fail("Expected error: no protocol set");
+        } catch (RuntimeException e) {
+            assertContains("protocol", e.getMessage());
+        }
 
-	public void testErrors() {
-		try {
-			SetupHelper.instance().generateProperties();
-			fail("Expected error: no protocol set");
-		} catch (RuntimeException e) {
-			assertContains("protocol", e.getMessage());
-		}
+        helper.setProtocol("imap");
+        try {
+            helper.generateProperties();
+            fail("Expected error: no inbox set");
+        } catch (RuntimeException e) {
+            assertContains("inbox", e.getMessage());
+        }
+    }
 
-		SetupHelper.instance().setProtocol("imap");
-		try {
-			SetupHelper.instance().generateProperties();
-			fail("Expected error: no inbox set");
-		} catch (RuntimeException e) {
-			assertContains("inbox", e.getMessage());
-		}
-	}
+    public void testPOP3Setters1() {
+        helper.setProtocol("pOp3");
+        helper.setUsername("user");
+        helper.setPassword("password");
+        helper.setHost("127.0.0.1");
+        helper.setInbox("test");
+        helper.setPort(42);
 
-	public void testPOP3Setters1() {
-		SetupHelper.instance().setProtocol("pOp3");
-		SetupHelper.instance().setUsername("user");
-		SetupHelper.instance().setPassword("password");
-		SetupHelper.instance().setHost("127.0.0.1");
-		SetupHelper.instance().setInbox("test");
-		SetupHelper.instance().setPort(42);
+        Properties p = helper.generateProperties();
 
-		Properties p = SetupHelper.instance().generateProperties();
+        assertEquals("pop3", p.getProperty("mail.store.protocol"));
+        assertEquals("127.0.0.1", p.getProperty("mail.pop3.host"));
+        assertEquals("42", p.getProperty("mail.pop3.port"));
+        assertEquals("user", p.getProperty("mail.username"));
+        assertEquals("password", p.getProperty("mail.password"));
+        assertEquals("INBOX", p.getProperty("mail.inbox"));
+    }
 
-		assertEquals("pop3", p.getProperty("mail.store.protocol"));
-		assertEquals("127.0.0.1", p.getProperty("mail.pop3.host"));
-		assertEquals("42", p.getProperty("mail.pop3.port"));
-		assertEquals("user", p.getProperty("mail.username"));
-		assertEquals("password", p.getProperty("mail.password"));
-		assertEquals("INBOX", p.getProperty("mail.inbox"));
-	}
+    public void testPOP3Setters2() {
+        helper.setProtocol("POP3");
+        helper.setUsername("jw");
+        helper.setPassword("secret");
+        helper.setHost("mail.mycompany.xx");
+        helper.setInbox("");
 
-	public void testPOP3Setters2() {
-		SetupHelper.instance().setProtocol("POP3");
-		SetupHelper.instance().setUsername("jw");
-		SetupHelper.instance().setPassword("secret");
-		SetupHelper.instance().setHost("mail.mycompany.xx");
-		SetupHelper.instance().setInbox("");
+        Properties p = helper.generateProperties();
 
-		Properties p = SetupHelper.instance().generateProperties();
+        assertEquals("pop3", p.getProperty("mail.store.protocol"));
+        assertEquals("mail.mycompany.xx", p.getProperty("mail.pop3.host"));
+        assertEquals("jw", p.getProperty("mail.username"));
+        assertEquals("secret", p.getProperty("mail.password"));
+        assertEquals("INBOX", p.getProperty("mail.inbox"));
+        assertNull(p.getProperty("mail.pop3.port"));
+    }
 
-		assertEquals("pop3", p.getProperty("mail.store.protocol"));
-		assertEquals("mail.mycompany.xx", p.getProperty("mail.pop3.host"));
-		assertEquals("jw", p.getProperty("mail.username"));
-		assertEquals("secret", p.getProperty("mail.password"));
-		assertEquals("INBOX", p.getProperty("mail.inbox"));
-		assertNull(p.getProperty("mail.pop3.port"));
-	}
+    public void testIMAPSetters1() {
+        helper.setProtocol("imap");
+        helper.setUsername("u");
+        helper.setPassword("p");
+        helper.setHost("localhost");
+        helper.setInbox("inbx");
+        helper.setPort(23);
+        helper.setSSL(false);
 
-	public void testIMAPSetters1() {
-		SetupHelper.instance().setProtocol("imap");
-		SetupHelper.instance().setUsername("u");
-		SetupHelper.instance().setPassword("p");
-		SetupHelper.instance().setHost("localhost");
-		SetupHelper.instance().setInbox("inbx");
-		SetupHelper.instance().setPort(23);
-		SetupHelper.instance().setSSL(false);
+        Properties p = helper.generateProperties();
 
-		Properties p = SetupHelper.instance().generateProperties();
+        assertEquals("imap", p.getProperty("mail.store.protocol"));
+        assertEquals("localhost", p.getProperty("mail.imap.host"));
+        assertEquals("u", p.getProperty("mail.username"));
+        assertEquals("p", p.getProperty("mail.password"));
+        assertEquals("inbx", p.getProperty("mail.inbox"));
+        assertEquals("23", p.getProperty("mail.imap.port"));
+        assertNull(p.getProperty("mail.imap.ssl"));
+    }
 
-		assertEquals("imap", p.getProperty("mail.store.protocol"));
-		assertEquals("localhost", p.getProperty("mail.imap.host"));
-		assertEquals("u", p.getProperty("mail.username"));
-		assertEquals("p", p.getProperty("mail.password"));
-		assertEquals("inbx", p.getProperty("mail.inbox"));
-		assertEquals("23", p.getProperty("mail.imap.port"));
-		assertNull(p.getProperty("mail.imap.ssl"));
-	}
+    public void testIMAPSetters2() {
+        helper.setProtocol("IMAP");
+        helper.setUsername("user");
+        helper.setPassword("pass");
+        helper.setHost("mail");
+        helper.setInbox("home");
+        helper.setSSL(true);
 
-	public void testIMAPSetters2() {
-		SetupHelper.instance().setProtocol("IMAP");
-		SetupHelper.instance().setUsername("user");
-		SetupHelper.instance().setPassword("pass");
-		SetupHelper.instance().setHost("mail");
-		SetupHelper.instance().setInbox("home");
-		SetupHelper.instance().setSSL(true);
+        Properties p = helper.generateProperties();
 
-		Properties p = SetupHelper.instance().generateProperties();
+        assertEquals("imap", p.getProperty("mail.store.protocol"));
+        assertEquals("mail", p.getProperty("mail.imap.host"));
+        assertEquals("user", p.getProperty("mail.username"));
+        assertEquals("pass", p.getProperty("mail.password"));
+        assertEquals("home", p.getProperty("mail.inbox"));
+        assertEquals("true", p.getProperty("mail.imap.ssl"));
+    }
 
-		assertEquals("imap", p.getProperty("mail.store.protocol"));
-		assertEquals("mail", p.getProperty("mail.imap.host"));
-		assertEquals("user", p.getProperty("mail.username"));
-		assertEquals("pass", p.getProperty("mail.password"));
-		assertEquals("home", p.getProperty("mail.inbox"));
-		assertEquals("true", p.getProperty("mail.imap.ssl"));
-	}
+    public void testUnset() {
+        helper.setProtocol("IMAP");
+        helper.setUsername("user");
+        helper.setHost("mail");
+        helper.setInbox("home");
 
-	public void testUnset() {
-		SetupHelper.instance().setProtocol("IMAP");
-		SetupHelper.instance().setUsername("user");
-		SetupHelper.instance().setHost("mail");
-		SetupHelper.instance().setInbox("home");
+        Properties p = helper.generateProperties();
 
-		Properties p = SetupHelper.instance().generateProperties();
-
-		assertNull(p.getProperty("mail.password"));
-	}
+        assertNull(p.getProperty("mail.password"));
+    }
 }

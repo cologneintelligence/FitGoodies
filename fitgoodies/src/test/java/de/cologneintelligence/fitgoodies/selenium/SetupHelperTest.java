@@ -1,31 +1,29 @@
 package de.cologneintelligence.fitgoodies.selenium;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 public class SetupHelperTest extends FitGoodiesTestCase {
+    private SetupHelper helper;
 
-	public void testSetupHelper() {
-		final SetupHelper helper1 = SetupHelper.instance();
-		assertNotNull(helper1);
-		final SetupHelper helper2 = SetupHelper.instance();
-		assertNotNull(helper2);
-		assertSame(helper1, helper2);
-	}
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+    }
 
-	public void testDefaultValues() {
-	    final SetupHelper helper = SetupHelper.instance();
-	    assertEquals(4444, helper.getServerPort());
-	    assertEquals("*firefox", helper.getBrowserStartCommand());
-	    assertEquals("http://localhost", helper.getBrowserURL());
-	    assertEquals("localhost", helper.getServerHost());
-	    assertNull(helper.getSpeed());
-	}
+    public void testDefaultValues() {
+        assertEquals(4444, helper.getServerPort());
+        assertEquals("*firefox", helper.getBrowserStartCommand());
+        assertEquals("http://localhost", helper.getBrowserURL());
+        assertEquals("localhost", helper.getServerHost());
+        assertNull(helper.getSpeed());
+    }
 
-	public void testGettersAndSetters() {
-	    final SetupHelper helper = SetupHelper.instance();
-	    helper.setBrowserStartCommand("*chrome");
-	    assertEquals("*chrome", helper.getBrowserStartCommand());
-	    helper.setBrowserStartCommand("*opera");
+    public void testGettersAndSetters() {
+        helper.setBrowserStartCommand("*chrome");
+        assertEquals("*chrome", helper.getBrowserStartCommand());
+        helper.setBrowserStartCommand("*opera");
         assertEquals("*opera", helper.getBrowserStartCommand());
 
         helper.setBrowserURL("http://example.org");
@@ -47,5 +45,5 @@ public class SetupHelperTest extends FitGoodiesTestCase {
         assertEquals("slow", helper.getSpeed());
         helper.setSpeed("fast");
         assertEquals("fast", helper.getSpeed());
-	}
+    }
 }

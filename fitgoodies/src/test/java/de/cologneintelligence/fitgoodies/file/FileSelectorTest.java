@@ -31,109 +31,111 @@ import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
 import de.cologneintelligence.fitgoodies.file.FileInformation;
 import de.cologneintelligence.fitgoodies.file.FileSelector;
 import de.cologneintelligence.fitgoodies.file.FilenameNotUniqueException;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 
 /**
- * $Id$
  * @author jwierum
  */
 public class FileSelectorTest extends FitGoodiesTestCase {
-	public final void testFindFiles() throws FilenameNotUniqueException, FileNotFoundException {
-		FileSelector fs = new FileSelector(new DirectoryProviderMock(), "file1\\.txt");
+    public final void testFindFiles() throws FilenameNotUniqueException, FileNotFoundException {
+        FileSelector fs = new FileSelector(new DirectoryProviderMock(), "file1\\.txt");
 
-		assertEquals("file1.txt", fs.getUniqueFile().filename());
-		fs = new FileSelector(new DirectoryProviderMock(), "file[26]\\.txt");
+        assertEquals("file1.txt", fs.getUniqueFile().filename());
+        fs = new FileSelector(new DirectoryProviderMock(), "file[26]\\.txt");
 
-		assertEquals("file2.txt", fs.getUniqueFile().filename());
-	}
+        assertEquals("file2.txt", fs.getUniqueFile().filename());
+    }
 
-	public final void testUniqueNameErrorHandling() throws FileNotFoundException {
-		FileSelector fs = new FileSelector(new DirectoryProviderMock(), "file[23]\\.txt");
+    public final void testUniqueNameErrorHandling() throws FileNotFoundException {
+        FileSelector fs = new FileSelector(new DirectoryProviderMock(), "file[23]\\.txt");
 
-		try {
-			fs.getUniqueFile().filename();
-			fail("Non unique filename was not recognized");
-		} catch (FilenameNotUniqueException e) {
-		}
+        try {
+            fs.getUniqueFile().filename();
+            fail("Non unique filename was not recognized");
+        } catch (FilenameNotUniqueException e) {
+        }
 
-		fs = new FileSelector(new DirectoryProviderMock(), ".*");
-		try {
-			fs.getUniqueFile().filename();
-			fail("Non unique filename was not recognized");
-		} catch (FilenameNotUniqueException e) {
-		}
-	}
+        fs = new FileSelector(new DirectoryProviderMock(), ".*");
+        try {
+            fs.getUniqueFile().filename();
+            fail("Non unique filename was not recognized");
+        } catch (FilenameNotUniqueException e) {
+        }
+    }
 
-	public final void testNotFoundErrorHandling() throws FilenameNotUniqueException {
-		FileSelector fs = new FileSelector(new DirectoryProviderMock(), "xyz");
+    public final void testNotFoundErrorHandling() throws FilenameNotUniqueException {
+        FileSelector fs = new FileSelector(new DirectoryProviderMock(), "xyz");
 
-		try {
-			fs.getFirstFile();
-			fail("FileNotFoundException error not raised");
-		} catch (FileNotFoundException e) {
-		}
+        try {
+            fs.getFirstFile();
+            fail("FileNotFoundException error not raised");
+        } catch (FileNotFoundException e) {
+        }
 
-		try {
-			fs.getUniqueFile();
-			fail("FileNotFound error not raised");
-		} catch (FileNotFoundException e) {
-		}
+        try {
+            fs.getUniqueFile();
+            fail("FileNotFound error not raised");
+        } catch (FileNotFoundException e) {
+        }
 
-		fs = new FileSelector(new DirectoryProvider() {
-			@Override public Iterator<DirectoryProvider> getDirectories() { return null; }
-			@Override public String getPath() { return null; }
+        fs = new FileSelector(new DirectoryProvider() {
+            @Override public Iterator<DirectoryProvider> getDirectories() { return null; }
+            @Override public String getPath() { return null; }
 
-			@Override public Iterator<FileInformation> getFiles()
-					throws FileNotFoundException {
-				throw new FileNotFoundException();
-			}
-		}, "");
+            @Override public Iterator<FileInformation> getFiles()
+                    throws FileNotFoundException {
+                throw new FileNotFoundException();
+            }
+        }, "");
 
 
-		assertEquals(0, fs.getFiles().length);
-	}
+        assertEquals(0, fs.getFiles().length);
+    }
 
 
     public final void testGetLastFile() throws FileNotFoundException {
-        FileFixtureHelper.instance().setEncoding("utf-8");
-        FileFixtureHelper.instance().setPattern(".*");
-        FileFixtureHelper.instance().setProvider(new DirectoryProviderMock());
+        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        helper.setEncoding("utf-8");
+        helper.setPattern(".*");
+        helper.setProvider(new DirectoryProviderMock());
 
-        FileSelector fs = FileFixtureHelper.instance().getSelector();
+        FileSelector fs = helper.getSelector();
         assertEquals("noext", fs.getLastFile().filename());
     }
 
     public final void testGetLastFileWithErrors() throws FileNotFoundException {
-        FileFixtureHelper.instance().setEncoding("utf-8");
-        FileFixtureHelper.instance().setPattern("nofile");
-        FileFixtureHelper.instance().setProvider(new DirectoryProviderMock());
+        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        helper.setEncoding("utf-8");
+        helper.setPattern("nofile");
+        helper.setProvider(new DirectoryProviderMock());
 
-        FileSelector fs = FileFixtureHelper.instance().getSelector();
+        FileSelector fs = helper.getSelector();
         try {
-        	fs.getLastFile();
-        	fail("Expected FileNotFoundException");
+            fs.getLastFile();
+            fail("Expected FileNotFoundException");
         } catch (FileNotFoundException e) {
         }
     }
 
-	public final void testFirstFilename() throws FileNotFoundException {
-		FileSelector fs = new FileSelector(new DirectoryProviderMock(), ".*");
-		assertEquals("file1.txt", fs.getFirstFile().filename());
-		assertEquals("file1.txt", fs.getFirstFile().filename());
+    public final void testFirstFilename() throws FileNotFoundException {
+        FileSelector fs = new FileSelector(new DirectoryProviderMock(), ".*");
+        assertEquals("file1.txt", fs.getFirstFile().filename());
+        assertEquals("file1.txt", fs.getFirstFile().filename());
 
-		fs = new FileSelector(new DirectoryProviderMock(), ".*\\.bat");
-		assertEquals("f.txt.bat", fs.getFirstFile().filename());
-		assertEquals("f.txt.bat", fs.getFirstFile().filename());
-	}
+        fs = new FileSelector(new DirectoryProviderMock(), ".*\\.bat");
+        assertEquals("f.txt.bat", fs.getFirstFile().filename());
+        assertEquals("f.txt.bat", fs.getFirstFile().filename());
+    }
 
-	public final void testFiles() throws FileNotFoundException {
-		FileSelector fs = new FileSelector(new DirectoryProviderMock(), ".*\\.txt");
+    public final void testFiles() throws FileNotFoundException {
+        FileSelector fs = new FileSelector(new DirectoryProviderMock(), ".*\\.txt");
 
-		FileInformation[] f = fs.getFiles();
+        FileInformation[] f = fs.getFiles();
 
-		final int numberOfFiles = 3;
-		assertEquals(numberOfFiles, f.length);
-		assertEquals("file1.txt", f[0].filename());
-		assertEquals("file3.txt", f[2].filename());
-	}
+        final int numberOfFiles = 3;
+        assertEquals(numberOfFiles, f.length);
+        assertEquals("file1.txt", f[0].filename());
+        assertEquals("file3.txt", f[2].filename());
+    }
 }

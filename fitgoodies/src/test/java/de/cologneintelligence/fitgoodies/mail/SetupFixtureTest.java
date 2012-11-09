@@ -25,59 +25,61 @@ import java.util.Properties;
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.mail.SetupFixture;
 import de.cologneintelligence.fitgoodies.mail.SetupHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import fit.Parse;
 
 /**
- * $Id$
  * @author jwierum
  */
 public final class SetupFixtureTest extends FitGoodiesTestCase {
-	public void testPares1() throws ParseException {
-		Parse table1 = new Parse("<table><tr><td>ignore</td></tr>"
-				+ "<tr><td>host</td><td>127.0.0.1</td></tr>"
-				+ "<tr><td>protocol</td><td>pop3</td></tr>"
-				+ "<tr><td>username</td><td>testuser</td></tr>"
-				+ "<tr><td>password</td><td>testpassword</td></tr>"
-				+ "<tr><td>ssl</td><td>true</td></tr>"
-				+ "<tr><td>port</td><td>123</td></tr>"
-				+ "</table>");
+    public void testPares1() throws ParseException {
+        Parse table1 = new Parse("<table><tr><td>ignore</td></tr>"
+                + "<tr><td>host</td><td>127.0.0.1</td></tr>"
+                + "<tr><td>protocol</td><td>pop3</td></tr>"
+                + "<tr><td>username</td><td>testuser</td></tr>"
+                + "<tr><td>password</td><td>testpassword</td></tr>"
+                + "<tr><td>ssl</td><td>true</td></tr>"
+                + "<tr><td>port</td><td>123</td></tr>"
+                + "</table>");
 
-		SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table1);
+        SetupFixture fixture = new SetupFixture();
+        fixture.doTable(table1);
 
-		assertEquals(0, fixture.counts.exceptions);
-		Properties prop = SetupHelper.instance().generateProperties();
+        assertEquals(0, fixture.counts.exceptions);
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        Properties prop = helper.generateProperties();
 
-		assertEquals("pop3", prop.getProperty("mail.store.protocol"));
-		assertEquals("127.0.0.1", prop.getProperty("mail.pop3.host"));
-		assertEquals("123", prop.getProperty("mail.pop3.port"));
-		assertEquals("true", prop.getProperty("mail.pop3.ssl"));
-		assertEquals("testuser", prop.getProperty("mail.username"));
-		assertEquals("testpassword", prop.getProperty("mail.password"));
-	}
+        assertEquals("pop3", prop.getProperty("mail.store.protocol"));
+        assertEquals("127.0.0.1", prop.getProperty("mail.pop3.host"));
+        assertEquals("123", prop.getProperty("mail.pop3.port"));
+        assertEquals("true", prop.getProperty("mail.pop3.ssl"));
+        assertEquals("testuser", prop.getProperty("mail.username"));
+        assertEquals("testpassword", prop.getProperty("mail.password"));
+    }
 
-	public void testPares2() throws ParseException {
-		Parse table1 = new Parse("<table><tr><td>ignore</td></tr>"
-				+ "<tr><td>host</td><td>localhost</td></tr>"
-				+ "<tr><td>protocol</td><td>imap</td></tr>"
-				+ "<tr><td>username</td><td>user</td></tr>"
-				+ "<tr><td>password</td><td>passwd</td></tr>"
-				+ "<tr><td>inbox</td><td>INBOX</td></tr>"
-				+ "</table>");
+    public void testPares2() throws ParseException {
+        Parse table1 = new Parse("<table><tr><td>ignore</td></tr>"
+                + "<tr><td>host</td><td>localhost</td></tr>"
+                + "<tr><td>protocol</td><td>imap</td></tr>"
+                + "<tr><td>username</td><td>user</td></tr>"
+                + "<tr><td>password</td><td>passwd</td></tr>"
+                + "<tr><td>inbox</td><td>INBOX</td></tr>"
+                + "</table>");
 
-		SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table1);
+        SetupFixture fixture = new SetupFixture();
+        fixture.doTable(table1);
 
-		assertEquals(0, fixture.counts.exceptions);
-		Properties prop = SetupHelper.instance().generateProperties();
+        assertEquals(0, fixture.counts.exceptions);
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        Properties prop = helper.generateProperties();
 
-		assertEquals("INBOX", prop.getProperty("mail.inbox"));
-		assertEquals("imap", prop.getProperty("mail.store.protocol"));
-		assertEquals("localhost", prop.getProperty("mail.imap.host"));
-		assertNull(prop.getProperty("mail.imap.port"));
-		assertNull(prop.getProperty("mail.imap.ssl"));
-		assertEquals("user", prop.getProperty("mail.username"));
-		assertEquals("passwd", prop.getProperty("mail.password"));
-	}
+        assertEquals("INBOX", prop.getProperty("mail.inbox"));
+        assertEquals("imap", prop.getProperty("mail.store.protocol"));
+        assertEquals("localhost", prop.getProperty("mail.imap.host"));
+        assertNull(prop.getProperty("mail.imap.port"));
+        assertNull(prop.getProperty("mail.imap.ssl"));
+        assertEquals("user", prop.getProperty("mail.username"));
+        assertEquals("passwd", prop.getProperty("mail.password"));
+    }
 }

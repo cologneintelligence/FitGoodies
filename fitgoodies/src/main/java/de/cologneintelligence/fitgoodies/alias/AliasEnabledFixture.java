@@ -21,6 +21,8 @@ package de.cologneintelligence.fitgoodies.alias;
 
 import java.util.Date;
 
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
+
 import fit.Fixture;
 import fit.Parse;
 
@@ -34,13 +36,13 @@ import fit.Parse;
  * @version $Id$
  */
 public final class AliasEnabledFixture extends Fixture {
-	/**
-	 * Initializes all fixtures and runs doTable on them.
-	 *
-	 * @param tables the tables to interpret
-	 */
+    /**
+     * Initializes all fixtures and runs doTable on them.
+     *
+     * @param tables the tables to interpret
+     */
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void doTables(final Parse tables) {
         summary.put("run date", new Date());
         summary.put("run elapsed time", new RunTime());
@@ -54,8 +56,8 @@ public final class AliasEnabledFixture extends Fixture {
                         fixture.doTable(nextTable);
                     } catch (Throwable e) {
                         exception(fixtureName, e);
-    		        }
-    		    }
+                    }
+                }
                 nextTable = nextTable.more;
             }
         }
@@ -76,19 +78,20 @@ public final class AliasEnabledFixture extends Fixture {
      * 		thrown if something different went wrong
      */
     @Override
-	public fit.Fixture loadFixture(final String fixtureName)
-			throws InstantiationException, IllegalAccessException {
-    	String realName = AliasHelper.instance().getClazz(fixtureName);
-		String notFound = "The fixture \"" + realName + "\" was not found.";
-		try {
-			return (fit.Fixture) (Class.forName(realName).newInstance());
-		} catch (ClassCastException e) {
-			throw new RuntimeException("\"" + realName
-					+ "\" was found, but it's not a fixture.", e);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(notFound, e);
-		} catch (NoClassDefFoundError e) {
-			throw new RuntimeException(notFound, e);
-		}
-	}
+    public fit.Fixture loadFixture(final String fixtureName)
+            throws InstantiationException, IllegalAccessException {
+        AliasHelper helper = DependencyManager.INSTANCE.getOrCreate(AliasHelper.class);
+        String realName = helper.getClazz(fixtureName);
+        String notFound = "The fixture \"" + realName + "\" was not found.";
+        try {
+            return (fit.Fixture) (Class.forName(realName).newInstance());
+        } catch (ClassCastException e) {
+            throw new RuntimeException("\"" + realName
+                    + "\" was found, but it's not a fixture.", e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(notFound, e);
+        } catch (NoClassDefFoundError e) {
+            throw new RuntimeException(notFound, e);
+        }
+    }
 }

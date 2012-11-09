@@ -33,29 +33,34 @@ import fit.TypeAdapter;
  * @version $Id$
  */
 public class ArrayTypeAdapter extends TypeAdapter {
-	private final String parameter;
+    private final String parameter;
+    private final TypeAdapterHelper helper;
 
-	/**
-	 * Creates a new TypeAdapter which can read arrays.
-	 * In contrast to the fit TypeAdapter, this one is able to process registered
-	 * Types of array.
-	 *
-	 * @param ta old TypeAdapter
-	 * @param convertParameter column/row parameter
-	 */
-	public ArrayTypeAdapter(final TypeAdapter ta, final String convertParameter) {
-		this.field = ta.field;
-		this.fixture = ta.fixture;
-		this.method = ta.method;
-		this.target = ta.target;
-		this.type = ta.type;
-		parameter = convertParameter;
-		init(ta.fixture, ta.type);
-	}
+    /**
+     * Creates a new TypeAdapter which can read arrays.
+     * In contrast to the fit TypeAdapter, this one is able to process registered
+     * Types of array.
+     *
+     * @param ta old TypeAdapter
+     * @param convertParameter column/row parameter
+     * @param typeAdapterHelper the helper which manages registered types
+     */
+    public ArrayTypeAdapter(final TypeAdapter ta, final String convertParameter,
+            final TypeAdapterHelper typeAdapterHelper) {
+        this.field = ta.field;
+        this.fixture = ta.fixture;
+        this.method = ta.method;
+        this.target = ta.target;
+        this.type = ta.type;
+        parameter = convertParameter;
+        helper = typeAdapterHelper;
 
-	/**
-	 * <code>TypeAdapter</code> which handles the array items.
-	 */
+        init(ta.fixture, ta.type);
+    }
+
+    /**
+     * <code>TypeAdapter</code> which handles the array items.
+     */
     protected TypeAdapter componentAdapter;
 
     /**
@@ -64,24 +69,24 @@ public class ArrayTypeAdapter extends TypeAdapter {
      *
      * @param target target fixture
      * @param type type of the fixture data
+     * @param typeAdapterHelper the helper which manages registered types
      */
     @Override @SuppressWarnings("rawtypes")
-	protected void init(final Fixture target, final Class type) {
+    protected void init(final Fixture target, final Class type) {
         super.init(target, type);
 
         componentAdapter = on(target, type.getComponentType());
-        componentAdapter = TypeAdapterHelper.instance().getAdapter(
-        		componentAdapter, parameter);
+        componentAdapter = helper.getAdapter(componentAdapter, parameter);
     }
 
-	/**
-	 * Converts a <code>String</code> into a <code>Array</code>.
-	 * @param s the <code>String</code> to convert
-	 * @return an <code>Array</code> which contains <code>s</code>
-	 * @throws Exception if the string could not be parsed
-	 */
+    /**
+     * Converts a <code>String</code> into a <code>Array</code>.
+     * @param s the <code>String</code> to convert
+     * @return an <code>Array</code> which contains <code>s</code>
+     * @throws Exception if the string could not be parsed
+     */
     @Override
-	public Object parse(final String s) throws Exception {
+    public Object parse(final String s) throws Exception {
         final StringTokenizer t = new StringTokenizer(s, ",");
         final Object array = Array.newInstance(componentAdapter.type, t.countTokens());
         for (int i = 0; t.hasMoreTokens(); i++) {
@@ -90,18 +95,18 @@ public class ArrayTypeAdapter extends TypeAdapter {
         return array;
     }
 
-	/**
-	 * Returns the String representation of the array. The result is a comma
-	 * separated list of all items. The items are converted to Strings using
-	 * an item-specific type adapter.
-	 *
-	 * @param o Array to convert
-	 * @return <code>o</code> as a String
-	 */
+    /**
+     * Returns the String representation of the array. The result is a comma
+     * separated list of all items. The items are converted to Strings using
+     * an item-specific type adapter.
+     *
+     * @param o Array to convert
+     * @return <code>o</code> as a String
+     */
     @Override
-	public String toString(final Object o) {
+    public String toString(final Object o) {
         if (o == null) {
-        	return "";
+            return "";
         }
 
         final int length = Array.getLength(o);
@@ -115,25 +120,25 @@ public class ArrayTypeAdapter extends TypeAdapter {
         return b.toString();
     }
 
-	/**
-	 * Checks whether two Arrays <code>a</code> and <code>b</code> are
-	 * equal.
-	 *
-	 * A type specific <code>TypeAdapter</code> is used to compare the items.
-	 *
-	 * @param a first array
-	 * @param b second array
-	 * @return <code>true</code> if all items are equal, <code>false</code> otherwise
-	 */
+    /**
+     * Checks whether two Arrays <code>a</code> and <code>b</code> are
+     * equal.
+     *
+     * A type specific <code>TypeAdapter</code> is used to compare the items.
+     *
+     * @param a first array
+     * @param b second array
+     * @return <code>true</code> if all items are equal, <code>false</code> otherwise
+     */
     @Override
-	public boolean equals(final Object a, final Object b) {
+    public boolean equals(final Object a, final Object b) {
         final int length = Array.getLength(a);
         if (length != Array.getLength(b)) {
-        	return false;
+            return false;
         }
         for (int i = 0; i < length; i++) {
             if (!componentAdapter.equals(Array.get(a, i), Array.get(b, i))) {
-            	return false;
+                return false;
             }
         }
         return true;

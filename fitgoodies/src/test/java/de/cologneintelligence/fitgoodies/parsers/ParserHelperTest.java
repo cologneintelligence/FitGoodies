@@ -25,50 +25,51 @@ import java.math.BigInteger;
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.parsers.Parser;
 import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 
 /**
- * $Id$
  * @author jwierum
  */
 public class ParserHelperTest extends FitGoodiesTestCase {
-	public final void testSingleton() {
-		ParserHelper expected = ParserHelper.instance();
-		assertSame(expected, ParserHelper.instance());
+    private ParserHelper helper;
 
-		ParserHelper.reset();
-		assertNotSame(expected, ParserHelper.instance());
-	}
+    @Override
+    public final void setUp() throws Exception {
+        helper = DependencyManager.INSTANCE.getOrCreate(ParserHelper.class);
+    }
 
-	public final void testRegister() throws Exception {
-		assertNull(ParserHelper.instance().parse("11", Integer.class, null));
-		ParserHelper.instance().registerParser(Integer.class, new Parser<Integer>() {
-			public Integer parse(final String s, final String i) { return Integer.parseInt(s); }
-			public Class<Integer> getType() { return Integer.class; }
-		});
+    public final void testRegister() throws Exception {
+        assertNull(helper.parse("11", Integer.class, null));
+        helper.registerParser(Integer.class, new Parser<Integer>() {
+            @Override
+            public Integer parse(final String s, final String i) { return Integer.parseInt(s); }
+            @Override
+            public Class<Integer> getType() { return Integer.class; }
+        });
 
-		Object expected = Integer.valueOf(42);
-		Object actual = ParserHelper.instance().parse("42", Integer.class, null);
+        Object expected = Integer.valueOf(42);
+        Object actual = helper.parse("42", Integer.class, null);
 
-		assertEquals(expected, actual);
-		assertNull(ParserHelper.instance().parse("11", Long.class, null));
+        assertEquals(expected, actual);
+        assertNull(helper.parse("11", Long.class, null));
 
-		ParserHelper.instance().registerParser(new LongParserMock());
-		expected = Integer.valueOf(23);
-		actual = ParserHelper.instance().parse("23", Integer.class, null);
-		assertEquals(expected, actual);
+        helper.registerParser(new LongParserMock());
+        expected = Integer.valueOf(23);
+        actual = helper.parse("23", Integer.class, null);
+        assertEquals(expected, actual);
 
-		actual = ParserHelper.instance().parse("x", Long.class, null);
-		expected = Long.valueOf(2);
-		assertEquals(expected, actual);
+        actual = helper.parse("x", Long.class, null);
+        expected = Long.valueOf(2);
+        assertEquals(expected, actual);
 
-		actual = ParserHelper.instance().parse("x", Long.class, "y");
-		expected = Long.valueOf(7);
-		assertEquals(expected, actual);
-	}
+        actual = helper.parse("x", Long.class, "y");
+        expected = Long.valueOf(7);
+        assertEquals(expected, actual);
+    }
 
-	public final void testDefaultRegisters() throws Exception {
-		assertNotNull(ParserHelper.instance().parse("42", BigInteger.class, null));
-		assertNotNull(ParserHelper.instance().parse("3.14159", BigDecimal.class, null));
-	}
+    public final void testDefaultRegisters() throws Exception {
+        assertNotNull(helper.parse("42", BigInteger.class, null));
+        assertNotNull(helper.parse("3.14159", BigDecimal.class, null));
+    }
 }

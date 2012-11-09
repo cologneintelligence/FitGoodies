@@ -7,6 +7,7 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
 import de.cologneintelligence.fitgoodies.selenium.command.CommandFactory;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 
 /**
@@ -57,17 +58,15 @@ import fit.Parse;
 public class SeleniumFixture extends ActionFixture {
     private int screenshotIndex = 0;
 
-    public SeleniumFixture() {
-        super();
-    }
-
     @Override
     public void doCells(final Parse cells) {
 
         final String command = cells.text();
         try {
-            final String[] args = new String[] { getColumnOrEmptyString(cells, 1), getColumnOrEmptyString(cells, 2) };
-            String result = CommandFactory.createCommand(command, args).execute();
+            final String[] args = new String[] { getColumnOrEmptyString(cells, 1),
+                    getColumnOrEmptyString(cells, 2) };
+            String result = CommandFactory.createCommand(command, args,
+                    DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)).execute();
             checkResult(cells, result);
         } catch (final SeleniumException e) {
             wrong(lastCell(cells), e.getMessage());
@@ -79,7 +78,8 @@ public class SeleniumFixture extends ActionFixture {
     @Override
     public void wrong(final Parse cell, final String message) {
         super.wrong(cell, message);
-        if (SetupHelper.instance().getTakeScreenshots()) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        if (helper.getTakeScreenshots()) {
             takeScreenShot(cell);
         }
     }
@@ -90,12 +90,14 @@ public class SeleniumFixture extends ActionFixture {
 
     private void takeScreenShot(final Parse cell) {
         String fileName = createSnapshotFilename(screenshotIndex++);
-        CommandFactory.createCommand("captureEntirePageScreenshot", new String[] { fileName, "" }).execute();
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        CommandFactory.createCommand("captureEntirePageScreenshot", new String[] { fileName, "" }, helper).execute();
         addScreenshotLinkToReportPage(cell, fileName);
     }
 
     private String createSnapshotFilename(final int index) {
-        return RunnerHelper.instance().getResultFilePath() + ".screenshot" + index + ".png";
+        RunnerHelper helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+        return helper.getResultFilePath() + ".screenshot" + index + ".png";
     }
 
     private final String getColumnOrEmptyString(final Parse cells, final int column) throws CrossReferenceProcessorShortcutException {
@@ -106,7 +108,9 @@ public class SeleniumFixture extends ActionFixture {
             }
             parse = parse.more;
         }
-        return CrossReferenceHelper.instance().parseBody(parse.text(), null);
+
+        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+        return helper.parseBody(parse.text(), null);
     }
 
     private void checkResult(final Parse cells, final String result) {

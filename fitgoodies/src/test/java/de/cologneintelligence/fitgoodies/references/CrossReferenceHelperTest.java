@@ -23,140 +23,140 @@ import de.cologneintelligence.fitgoodies.references.CrossReference;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
 import de.cologneintelligence.fitgoodies.references.processors.CrossReferenceProcessorMock;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
- * $Id$
  * @author jwierum
  */
 
 public class CrossReferenceHelperTest extends FitGoodiesTestCase {
-	public final void testCrossReferenceRecognitionWithoutParams() {
-		assertFalse(CrossReferenceHelper.instance().containsCrossReference("test"));
-		assertFalse(CrossReferenceHelper.instance().containsCrossReference("${cr()}"));
+    private CrossReferenceHelper helper;
 
-		assertTrue(CrossReferenceHelper.instance().containsCrossReference("${empty()}"));
-		assertTrue(CrossReferenceHelper.instance().containsCrossReference("${nonEmpty()}"));
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+    }
 
-		assertTrue(CrossReferenceHelper.instance().containsCrossReference("x${empty()}y"));
-	}
+    public final void testCrossReferenceRecognitionWithoutParams() {
+        assertFalse(helper.containsCrossReference("test"));
+        assertFalse(helper.containsCrossReference("${cr()}"));
 
-	public final void testCrossReferenceReognitionWithParameters() {
-		assertTrue(CrossReferenceHelper.instance().containsCrossReference("${x.put(y)}"));
-		assertTrue(CrossReferenceHelper.instance().containsCrossReference(
-				"${namespace.get(param)}"));
-		assertTrue(CrossReferenceHelper.instance().containsCrossReference("${n.put(p)}"));
+        assertTrue(helper.containsCrossReference("${empty()}"));
+        assertTrue(helper.containsCrossReference("${nonEmpty()}"));
 
-		assertTrue(CrossReferenceHelper.instance().containsCrossReference("${n.containsValue(p)}"));
+        assertTrue(helper.containsCrossReference("x${empty()}y"));
+    }
 
-		assertFalse(CrossReferenceHelper.instance().containsCrossReference("${.get(param)}"));
-		assertFalse(CrossReferenceHelper.instance().containsCrossReference("${namespace.get()}"));
-	}
+    public final void testCrossReferenceReognitionWithParameters() {
+        assertTrue(helper.containsCrossReference("${x.put(y)}"));
+        assertTrue(helper.containsCrossReference(
+                "${namespace.get(param)}"));
+        assertTrue(helper.containsCrossReference("${n.put(p)}"));
 
-	public final void testCrossReferences() {
-		StringBuilder actually = new StringBuilder("a ${nonEmpty()} string");
-		CrossReference cr = CrossReferenceHelper.instance().getCrossReference(actually);
-		assertNull(cr);
-		assertEquals("a ${nonEmpty()} string", actually.toString());
+        assertTrue(helper.containsCrossReference("${n.containsValue(p)}"));
 
-		actually = new StringBuilder("${nonEmpty()} string");
-		cr = CrossReferenceHelper.instance().getCrossReference(actually);
-		assertEquals("nonEmpty", cr.getCommand());
-		assertEquals(" string", actually.toString());
+        assertFalse(helper.containsCrossReference("${.get(param)}"));
+        assertFalse(helper.containsCrossReference("${namespace.get()}"));
+    }
 
-		actually = new StringBuilder("${x.put(y)} ${empty()}");
-		cr = CrossReferenceHelper.instance().getCrossReference(actually);
-		assertEquals("put", cr.getCommand());
-		assertEquals("x", cr.getNamespace());
-		assertEquals("y", cr.getParameter());
-		assertEquals(" ${empty()}", actually.toString());
+    public final void testCrossReferences() {
+        StringBuilder actually = new StringBuilder("a ${nonEmpty()} string");
+        CrossReference cr = helper.getCrossReference(actually);
+        assertNull(cr);
+        assertEquals("a ${nonEmpty()} string", actually.toString());
 
-		actually = new StringBuilder("${x.containsValue(y)} b");
-		cr = CrossReferenceHelper.instance().getCrossReference(actually);
-		assertEquals("x", cr.getNamespace());
-		assertEquals("containsValue", cr.getCommand());
-		assertEquals("y", cr.getParameter());
+        actually = new StringBuilder("${nonEmpty()} string");
+        cr = helper.getCrossReference(actually);
+        assertEquals("nonEmpty", cr.getCommand());
+        assertEquals(" string", actually.toString());
 
-		actually = new StringBuilder("${System.getProperty(key)} b");
-		cr = CrossReferenceHelper.instance().getCrossReference(actually);
-		assertEquals("System", cr.getNamespace());
-		assertEquals("getProperty", cr.getCommand());
-		assertEquals("key", cr.getParameter());
-	}
+        actually = new StringBuilder("${x.put(y)} ${empty()}");
+        cr = helper.getCrossReference(actually);
+        assertEquals("put", cr.getCommand());
+        assertEquals("x", cr.getNamespace());
+        assertEquals("y", cr.getParameter());
+        assertEquals(" ${empty()}", actually.toString());
 
-	private void checkParseBody(final String input, final Object param, final String expected)
-			throws CrossReferenceProcessorShortcutException {
-		String actual;
-		actual = CrossReferenceHelper.instance().parseBody(input, param);
-		assertEquals(expected, actual);
-	}
+        actually = new StringBuilder("${x.containsValue(y)} b");
+        cr = helper.getCrossReference(actually);
+        assertEquals("x", cr.getNamespace());
+        assertEquals("containsValue", cr.getCommand());
+        assertEquals("y", cr.getParameter());
 
-	public final void testParseBody()
-			throws CrossReferenceProcessorShortcutException {
-		checkParseBody("a test", null, "a test");
+        actually = new StringBuilder("${System.getProperty(key)} b");
+        cr = helper.getCrossReference(actually);
+        assertEquals("System", cr.getNamespace());
+        assertEquals("getProperty", cr.getCommand());
+        assertEquals("key", cr.getParameter());
+    }
 
-		checkParseBody("a ${x.put(y)} test", "little", "a little test");
-		checkParseBody("${x.get(y)} house", "x", "little house");
-		checkParseBody("${ns.get(error)}", null,
-				"ns.error: cross reference could not be resolved!");
-		checkParseBody("it ${x.containsValue(y)}",
-				new StringBuffer("works"), "it works");
+    private void checkParseBody(final String input, final Object param, final String expected)
+            throws CrossReferenceProcessorShortcutException {
+        String actual;
+        actual = helper.parseBody(input, param);
+        assertEquals(expected, actual);
+    }
 
-		try {
-			CrossReferenceHelper.instance().parseBody("${empty()}", "");
-			fail("missing exception");
-		} catch (CrossReferenceProcessorShortcutException e) {
-			assertTrue(e.isOk());
-		}
-	}
+    public final void testParseBody()
+            throws CrossReferenceProcessorShortcutException {
+        checkParseBody("a test", null, "a test");
 
-	public final void testComplexBody() throws CrossReferenceProcessorShortcutException {
-		checkParseBody("put ${ns.put(word)} it ${ns.get(word)}", "in",
-				"put in it in");
+        checkParseBody("a ${x.put(y)} test", "little", "a little test");
+        checkParseBody("${x.get(y)} house", "x", "little house");
+        checkParseBody("${ns.get(error)}", null,
+                "ns.error: cross reference could not be resolved!");
+        checkParseBody("it ${x.containsValue(y)}",
+                new StringBuffer("works"), "it works");
 
-		try {
-			CrossReferenceHelper.instance().parseBody("x$${empty()}x", null);
-			fail("missing exception");
-		} catch (CrossReferenceProcessorShortcutException e) {
-			assertTrue(e.isOk());
-		}
-	}
+        try {
+            helper.parseBody("${empty()}", "");
+            fail("missing exception");
+        } catch (CrossReferenceProcessorShortcutException e) {
+            assertTrue(e.isOk());
+        }
+    }
+
+    public final void testComplexBody() throws CrossReferenceProcessorShortcutException {
+        checkParseBody("put ${ns.put(word)} it ${ns.get(word)}", "in",
+                "put in it in");
+
+        try {
+            helper.parseBody("x$${empty()}x", null);
+            fail("missing exception");
+        } catch (CrossReferenceProcessorShortcutException e) {
+            assertTrue(e.isOk());
+        }
+    }
 
 
-	public final void testParseBodyExceptions() {
-		try {
-			CrossReferenceHelper.instance().parseBody("${empty()}", "x");
-			fail("missing exception");
-		} catch (CrossReferenceProcessorShortcutException e) {
-		}
+    public final void testParseBodyExceptions() {
+        try {
+            helper.parseBody("${empty()}", "x");
+            fail("missing exception");
+        } catch (CrossReferenceProcessorShortcutException e) {
+        }
 
-		try {
-			CrossReferenceHelper.instance().parseBody("${nonEmpty()}", "");
-			fail("missing exception");
-		} catch (CrossReferenceProcessorShortcutException e) {
-		}
-	}
+        try {
+            helper.parseBody("${nonEmpty()}", "");
+            fail("missing exception");
+        } catch (CrossReferenceProcessorShortcutException e) {
+        }
+    }
 
-	public final void testProcessors() throws CrossReferenceProcessorShortcutException {
-		CrossReferenceProcessorMock mock = new CrossReferenceProcessorMock("x");
+    public final void testProcessors() throws CrossReferenceProcessorShortcutException {
+        CrossReferenceProcessorMock mock = new CrossReferenceProcessorMock("x");
 
-		CrossReferenceHelper.instance().getProcessors().add(mock);
-		assertTrue(mock.isCalledPattern());
+        helper.getProcessors().add(mock);
+        assertTrue(mock.isCalledPattern());
 
-		CrossReferenceHelper.instance().parseBody("x ${y} y", null);
-		assertFalse(mock.isCalledProcess());
+        helper.parseBody("x ${y} y", null);
+        assertFalse(mock.isCalledProcess());
 
-		mock.reset();
-		String actual = CrossReferenceHelper.instance().parseBody("x ${x} y", null);
-		assertTrue(mock.isCalledExtract());
-		assertTrue(mock.isCalledProcess());
-		assertEquals("x matched y", actual);
-	}
-
-	public final void testSingleton() {
-		CrossReferenceHelper ht1 = CrossReferenceHelper.instance();
-		assertSame(ht1, CrossReferenceHelper.instance());
-
-		CrossReferenceHelper.reset();
-		assertNotSame(ht1, CrossReferenceHelper.instance());
-	}
+        mock.reset();
+        String actual = helper.parseBody("x ${x} y", null);
+        assertTrue(mock.isCalledExtract());
+        assertTrue(mock.isCalledProcess());
+        assertEquals("x matched y", actual);
+    }
 }

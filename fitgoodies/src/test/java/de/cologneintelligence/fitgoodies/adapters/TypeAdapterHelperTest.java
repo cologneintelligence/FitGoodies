@@ -22,6 +22,7 @@ package de.cologneintelligence.fitgoodies.adapters;
 import java.math.BigInteger;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureToolsTest.DummyValueFixture;
 import fit.Fixture;
 import fit.TypeAdapter;
@@ -31,112 +32,111 @@ import fit.TypeAdapter;
  * @author jwierum
  */
 public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
-	public void testSingleton() {
-		final TypeAdapterHelper expected = TypeAdapterHelper.instance();
+    private TypeAdapterHelper helper;
 
-		assertNotNull(expected);
-		assertSame(expected, TypeAdapterHelper.instance());
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
-		TypeAdapterHelper.reset();
-		assertNotSame(expected, TypeAdapterHelper.instance());
-	}
+        helper = DependencyManager.INSTANCE.getOrCreate(TypeAdapterHelper.class);
+    }
 
-	public void testRegister() throws Exception {
-		final Object target = new Object();
-		final TypeAdapter typeAdapter = new TypeAdapter();
-		typeAdapter.field = typeAdapter.getClass().getField("field");
-		typeAdapter.fixture = new Fixture();
-		typeAdapter.method = typeAdapter.getClass().getMethod("get", new Class<?>[]{});
-		typeAdapter.target = target;
-		typeAdapter.type = BigInteger.class;
+    public void testRegister() throws Exception {
+        final Object target = new Object();
+        final TypeAdapter typeAdapter = new TypeAdapter();
+        typeAdapter.field = typeAdapter.getClass().getField("field");
+        typeAdapter.fixture = new Fixture();
+        typeAdapter.method = typeAdapter.getClass().getMethod("get", new Class<?>[]{});
+        typeAdapter.target = target;
+        typeAdapter.type = BigInteger.class;
 
-		TypeAdapter actual = TypeAdapterHelper.instance().getAdapter(typeAdapter, null);
-		assertSame(typeAdapter, actual);
+        TypeAdapter actual = helper.getAdapter(typeAdapter, null);
+        assertSame(typeAdapter, actual);
 
-		TypeAdapterHelper.instance().register(DummyTypeAdapter.class);
+        helper.register(DummyTypeAdapter.class);
 
-		actual = TypeAdapterHelper.instance().getAdapter(typeAdapter, null);
-		assertEquals(DummyTypeAdapter.class, actual.getClass());
+        actual = helper.getAdapter(typeAdapter, null);
+        assertEquals(DummyTypeAdapter.class, actual.getClass());
 
-		typeAdapter.type = java.math.BigDecimal.class;
-		actual = TypeAdapterHelper.instance().getAdapter(typeAdapter, null);
-		assertSame(typeAdapter, actual);
-	}
+        typeAdapter.type = java.math.BigDecimal.class;
+        actual = helper.getAdapter(typeAdapter, null);
+        assertSame(typeAdapter, actual);
+    }
 
-	public void testDefaults() throws Exception {
-		final TypeAdapter typeAdapter = new TypeAdapter();
-		typeAdapter.type = StringBuilder.class;
+    public void testDefaults() throws Exception {
+        final TypeAdapter typeAdapter = new TypeAdapter();
+        typeAdapter.type = StringBuilder.class;
 
-		AbstractTypeAdapter<?> actual = (AbstractTypeAdapter<?>)
-				TypeAdapterHelper.instance().getAdapter(typeAdapter, null);
-		assertEquals(StringBuilder.class, actual.getType());
+        AbstractTypeAdapter<?> actual = (AbstractTypeAdapter<?>)
+                helper.getAdapter(typeAdapter, null);
+        assertEquals(StringBuilder.class, actual.getType());
 
-		typeAdapter.type = StringBuffer.class;
-
-		actual = (AbstractTypeAdapter<?>)
-				TypeAdapterHelper.instance().getAdapter(typeAdapter, null);
-		assertEquals(StringBuffer.class, actual.getType());
-
-		typeAdapter.type = java.sql.Date.class;
-
-		actual = (AbstractTypeAdapter<?>)
-			TypeAdapterHelper.instance().getAdapter(typeAdapter, null);
-		assertEquals(java.sql.Date.class, actual.getType());
-
-		typeAdapter.type = java.util.Date.class;
-
-		actual = (AbstractTypeAdapter<?>)
-			TypeAdapterHelper.instance().getAdapter(typeAdapter, null);
-		assertEquals(java.util.Date.class, actual.getType());
-
-		typeAdapter.type = java.sql.Timestamp.class;
+        typeAdapter.type = StringBuffer.class;
 
         actual = (AbstractTypeAdapter<?>)
-            TypeAdapterHelper.instance().getAdapter(typeAdapter, null);
+                helper.getAdapter(typeAdapter, null);
+        assertEquals(StringBuffer.class, actual.getType());
+
+        typeAdapter.type = java.sql.Date.class;
+
+        actual = (AbstractTypeAdapter<?>)
+                helper.getAdapter(typeAdapter, null);
+        assertEquals(java.sql.Date.class, actual.getType());
+
+        typeAdapter.type = java.util.Date.class;
+
+        actual = (AbstractTypeAdapter<?>)
+                helper.getAdapter(typeAdapter, null);
+        assertEquals(java.util.Date.class, actual.getType());
+
+        typeAdapter.type = java.sql.Timestamp.class;
+
+        actual = (AbstractTypeAdapter<?>)
+                helper.getAdapter(typeAdapter, null);
         assertEquals(java.sql.Timestamp.class, actual.getType());
-	}
+    }
 
-	public void testParameter() throws Exception {
-		final Object target = new Object();
-		final TypeAdapter typeAdapter = new TypeAdapter();
-		typeAdapter.field = typeAdapter.getClass().getField("field");
-		typeAdapter.fixture = new Fixture();
-		typeAdapter.method = typeAdapter.getClass().getMethod("get", new Class<?>[]{});
-		typeAdapter.target = target;
-		typeAdapter.type = BigInteger.class;
+    public void testParameter() throws Exception {
+        final Object target = new Object();
+        final TypeAdapter typeAdapter = new TypeAdapter();
+        typeAdapter.field = typeAdapter.getClass().getField("field");
+        typeAdapter.fixture = new Fixture();
+        typeAdapter.method = typeAdapter.getClass().getMethod("get", new Class<?>[]{});
+        typeAdapter.target = target;
+        typeAdapter.type = BigInteger.class;
 
-		TypeAdapterHelper.instance().register(DummyTypeAdapter.class);
+        helper.register(DummyTypeAdapter.class);
 
-		AbstractTypeAdapter<?> actual = (AbstractTypeAdapter<?>)
-			TypeAdapterHelper.instance().getAdapter(typeAdapter, "hello");
-		assertSame("hello", actual.getParameter());
+        AbstractTypeAdapter<?> actual = (AbstractTypeAdapter<?>)
+                helper.getAdapter(typeAdapter, "hello");
+        assertSame("hello", actual.getParameter());
 
-		actual = (AbstractTypeAdapter<?>)
-			TypeAdapterHelper.instance().getAdapter(typeAdapter, "test");
-		assertSame("test", actual.getParameter());
-	}
+        actual = (AbstractTypeAdapter<?>)
+                helper.getAdapter(typeAdapter, "test");
+        assertSame("test", actual.getParameter());
+    }
 
-	public void testRebindTypeAdapterWithArray() throws Exception {
-		TypeAdapter ta;
-		TypeAdapter actual;
-		TypeAdapterHelper.instance().register(DummyTypeAdapter.class);
+    public void testRebindTypeAdapterWithArray() throws Exception {
+        TypeAdapter ta;
+        TypeAdapter actual;
+        helper.register(DummyTypeAdapter.class);
 
-		final DummyValueFixture fixture = new DummyValueFixture();
-		ta = TypeAdapter.on(fixture, DummyValueFixture.class.getField("arr"));
+        final DummyValueFixture fixture = new DummyValueFixture();
+        ta = TypeAdapter.on(fixture, DummyValueFixture.class.getField("arr"));
 
-		actual = TypeAdapterHelper.instance().getAdapter(ta, null);
+        actual = helper.getAdapter(ta, null);
 
-		assertEquals(ArrayTypeAdapter.class, actual.getClass());
-		assertArray(new BigInteger[]{
-				new BigInteger("1"), new BigInteger("2"), new BigInteger("3"),
-		}, (BigInteger[]) actual.get());
+        assertEquals(ArrayTypeAdapter.class, actual.getClass());
+        assertArray(new BigInteger[]{
+                new BigInteger("1"), new BigInteger("2"), new BigInteger("3"),
+        }, (BigInteger[]) actual.get());
 
-		assertArray(new BigInteger[]{
-				new BigInteger("42"), new BigInteger("42")
-		}, (BigInteger[]) actual.parse("x, y"));
+        assertArray(new BigInteger[]{
+                new BigInteger("42"), new BigInteger("42")
+        }, (BigInteger[]) actual.parse("x, y"));
 
-		actual = TypeAdapterHelper.instance().getAdapter(ta, "parameter");
-		assertArray(new BigInteger[]{new BigInteger("23")},
-				(BigInteger[]) actual.parse("z"));
-	}
+        actual = helper.getAdapter(ta, "parameter");
+        assertArray(new BigInteger[]{new BigInteger("23")},
+                (BigInteger[]) actual.parse("z"));
+    }
 }

@@ -29,6 +29,7 @@ import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
 import de.cologneintelligence.fitgoodies.file.FileInformation;
 import de.cologneintelligence.fitgoodies.file.FileIterator;
 import de.cologneintelligence.fitgoodies.file.XMLFileFixture;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import fit.Parse;
 
@@ -37,82 +38,83 @@ import fit.Parse;
  * @author jwierum
  */
 public class XMLFileFixtureTest extends FitGoodiesTestCase {
-	private XMLFileFixture fixture;
+    private XMLFileFixture fixture;
 
-	@Override
-	public final void setUp() throws Exception {
-		super.setUp();
+    @Override
+    public final void setUp() throws Exception {
+        super.setUp();
 
-		final FileInformationMock fileInfo = new FileInformationMock("/", "file.xml",
-				("<?xml version=\"1.0\"?>"
-				+ "<root><child1><child>Content</child><child>x</child></child1>"
-				+ "<sibling>Content 2</sibling>"
-				+ "</root>").getBytes("utf-16"));
+        final FileInformationMock fileInfo = new FileInformationMock("/", "file.xml",
+                ("<?xml version=\"1.0\"?>"
+                        + "<root><child1><child>Content</child><child>x</child></child1>"
+                        + "<sibling>Content 2</sibling>"
+                        + "</root>").getBytes("utf-16"));
 
-		FileFixtureHelper.instance().setProvider(new DirectoryProvider() {
-			@Override public final Iterator<DirectoryProvider> getDirectories()
-					throws FileNotFoundException { return null; }
+        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        helper.setProvider(new DirectoryProvider() {
+            @Override public final Iterator<DirectoryProvider> getDirectories()
+                    throws FileNotFoundException { return null; }
 
-			@Override public final Iterator<FileInformation> getFiles()
-					throws FileNotFoundException {
-				return new FileIterator(new FileInformation[]{fileInfo});
-			}
+            @Override public final Iterator<FileInformation> getFiles()
+                    throws FileNotFoundException {
+                return new FileIterator(new FileInformation[]{fileInfo});
+            }
 
-			@Override public final String getPath() { return null; }
-		});
+            @Override public final String getPath() { return null; }
+        });
 
 
-		fixture = new XMLFileFixture();
-		fixture.setParams(new String[] {"pattern=.*", "encoding=utf-16"});
-	}
+        fixture = new XMLFileFixture();
+        fixture.setParams(new String[] {"pattern=.*", "encoding=utf-16"});
+    }
 
-	public final void testParsing() throws ParseException {
-		final Parse table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>/root/child1/child[1]</td><td>Content</td></tr>"
-				+ "<tr><td>/root/child1/child[2]</td><td>x</td></tr>"
-				+ "<tr><td>/root/sibling</td><td>Content 1</td></tr>"
-				+ "</table>");
+    public final void testParsing() throws ParseException {
+        final Parse table = new Parse(
+                "<table>"
+                        + "<tr><td>ignore</td></tr>"
+                        + "<tr><td>/root/child1/child[1]</td><td>Content</td></tr>"
+                        + "<tr><td>/root/child1/child[2]</td><td>x</td></tr>"
+                        + "<tr><td>/root/sibling</td><td>Content 1</td></tr>"
+                        + "</table>");
 
-		fixture.doTable(table);
+        fixture.doTable(table);
 
-		assertEquals(2, fixture.counts.right);
-		assertEquals(1, fixture.counts.wrong);
-		assertEquals(0, fixture.counts.exceptions);
-		assertEquals(0, fixture.counts.ignores);
-	}
+        assertEquals(2, fixture.counts.right);
+        assertEquals(1, fixture.counts.wrong);
+        assertEquals(0, fixture.counts.exceptions);
+        assertEquals(0, fixture.counts.ignores);
+    }
 
-	public final void testParsingWithErrors() throws ParseException {
-		final Parse table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>/root/child1/child[1]</td></tr>"
-				+ "<tr><td>---</td><td>x</td></tr>"
-				+ "</table>");
+    public final void testParsingWithErrors() throws ParseException {
+        final Parse table = new Parse(
+                "<table>"
+                        + "<tr><td>ignore</td></tr>"
+                        + "<tr><td>/root/child1/child[1]</td></tr>"
+                        + "<tr><td>---</td><td>x</td></tr>"
+                        + "</table>");
 
-		fixture.doTable(table);
+        fixture.doTable(table);
 
-		assertEquals(0, fixture.counts.right);
-		assertEquals(0, fixture.counts.wrong);
-		assertEquals(1, fixture.counts.exceptions);
-		assertEquals(0, fixture.counts.ignores);
-	}
+        assertEquals(0, fixture.counts.right);
+        assertEquals(0, fixture.counts.wrong);
+        assertEquals(1, fixture.counts.exceptions);
+        assertEquals(0, fixture.counts.ignores);
+    }
 
-	public final void testParsingWithIgnores() throws ParseException {
-		final Parse table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>/root/child1/child[1]</td><td></td></tr>"
-				+ "<tr><td>/root/child1/child[2]</td><td></td></tr>"
-				+ "</table>");
+    public final void testParsingWithIgnores() throws ParseException {
+        final Parse table = new Parse(
+                "<table>"
+                        + "<tr><td>ignore</td></tr>"
+                        + "<tr><td>/root/child1/child[1]</td><td></td></tr>"
+                        + "<tr><td>/root/child1/child[2]</td><td></td></tr>"
+                        + "</table>");
 
-		fixture.doTable(table);
+        fixture.doTable(table);
 
-		assertEquals(0, fixture.counts.right);
-		assertEquals(0, fixture.counts.wrong);
-		assertEquals(0, fixture.counts.exceptions);
-		assertEquals("Content", table.parts.more.parts.more.text());
-		assertEquals("x", table.parts.more.more.parts.more.text());
-	}
+        assertEquals(0, fixture.counts.right);
+        assertEquals(0, fixture.counts.wrong);
+        assertEquals(0, fixture.counts.exceptions);
+        assertEquals("Content", table.parts.more.parts.more.text());
+        assertEquals("x", table.parts.more.more.parts.more.text());
+    }
 }

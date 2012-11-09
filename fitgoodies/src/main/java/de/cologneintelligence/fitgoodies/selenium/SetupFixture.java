@@ -1,6 +1,7 @@
 package de.cologneintelligence.fitgoodies.selenium;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
  * Sets the connection parameters for the selenium server.<br /><br />
@@ -19,89 +20,99 @@ import de.cologneintelligence.fitgoodies.ActionFixture;
  *
  */
 public class SetupFixture extends ActionFixture {
+    public void serverHost() throws Exception {
+        transformAndEnter();
+    }
 
+    public void serverPort() throws Exception {
+        transformAndEnter();
+    }
 
-	public void serverHost() throws Exception {
-		transformAndEnter();
-	}
-	
-	public void serverPort() throws Exception {
-		transformAndEnter();	
-	}
-	
-	public void browserStartCommand() throws Exception {
-		transformAndEnter();
-	}
-	
-	public void browserURL() throws Exception {
-		transformAndEnter();
-	}
+    public void browserStartCommand() throws Exception {
+        transformAndEnter();
+    }
 
-	public void speed() throws Exception {
-		transformAndEnter();
-	}
+    public void browserURL() throws Exception {
+        transformAndEnter();
+    }
 
-	public void timeout() throws Exception {
-		transformAndEnter();
-	}
+    public void speed() throws Exception {
+        transformAndEnter();
+    }
 
-	public void interval() throws Exception {
-		transformAndEnter();
-	}
+    public void timeout() throws Exception {
+        transformAndEnter();
+    }
 
-	public void takeScreenshots() throws Exception {
-		transformAndEnter();
-	}
+    public void interval() throws Exception {
+        transformAndEnter();
+    }
 
-	public void sleepBeforeScreenshot() throws Exception {
-		transformAndEnter();
-	}
+    public void takeScreenshots() throws Exception {
+        transformAndEnter();
+    }
 
-	public void start() throws Exception {
-		transformAndEnter();
-	}
+    public void sleepBeforeScreenshot() throws Exception {
+        transformAndEnter();
+    }
 
-	public void stop() throws Exception {
-		SetupHelper.instance().stop();
-	}
+    @Override
+    public void start() throws Exception {
+        transformAndEnter();
+    }
 
-	public void serverHost(String serverHost) {
-		SetupHelper.instance().setServerHost(serverHost);
-	}
-	
-	public void serverPort(String serverPort) {
-		SetupHelper.instance().setServerPort(serverPort);
-	}
-	
-	public void browserStartCommand(String browserStartCommand) {
-		SetupHelper.instance().setBrowserStartCommand(browserStartCommand);
-	}
-	
-	public void browserURL(String browserURL) {
-		SetupHelper.instance().setBrowserURL(browserURL);
-	}
-	
-	public void speed(String speed) {
-		SetupHelper.instance().setSpeed(speed);
-	}
-		
-	public void timeout(String timeout) throws Exception {
-		SetupHelper.instance().setTimeout(timeout);
-	}
+    public void stop() throws Exception {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.stop();
+    }
 
-	public void interval(String interval) throws Exception {
-		SetupHelper.instance().setInterval(interval);
-	}
+    public void serverHost(final String serverHost) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setServerHost(serverHost);
+    }
 
-	public void takeScreenshots(String takeScreenshots) throws Exception {
-		SetupHelper.instance().setTakeScreenshots(Boolean.parseBoolean(takeScreenshots));
-	}
+    public void serverPort(final String serverPort) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setServerPort(serverPort);
+    }
 
-	public void sleepBeforeScreenshot(String sleepBeforeScreenshot) throws Exception {
-		SetupHelper.instance().setSleepBeforeScreenshot(Long.parseLong(sleepBeforeScreenshot));
-	}
+    public void browserStartCommand(final String browserStartCommand) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setBrowserStartCommand(browserStartCommand);
+    }
 
-	public void start(String startConfig) {
-		SetupHelper.instance().start(startConfig);
-	}
+    public void browserURL(final String browserURL) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setBrowserURL(browserURL);
+    }
+
+    public void speed(final String speed) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setSpeed(speed);
+    }
+
+    public void timeout(final String timeout) throws Exception {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setTimeout(timeout);
+    }
+
+    public void interval(final String interval) throws Exception {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setInterval(interval);
+    }
+
+    public void takeScreenshots(final String takeScreenshots) throws Exception {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setTakeScreenshots(Boolean.parseBoolean(takeScreenshots));
+    }
+
+    public void sleepBeforeScreenshot(final String sleepBeforeScreenshot) throws Exception {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setSleepBeforeScreenshotMillis(Long.parseLong(sleepBeforeScreenshot));
+    }
+
+    public void start(final String startConfig) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.start(startConfig);
+    }
 }

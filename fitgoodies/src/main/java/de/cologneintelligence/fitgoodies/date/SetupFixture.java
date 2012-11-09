@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
 import de.cologneintelligence.fitgoodies.parsers.Parser;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 
 /**
@@ -39,42 +40,43 @@ import de.cologneintelligence.fitgoodies.parsers.Parser;
  * </table>
  *
  * @author jwierum
- * @version $Id$
  */
 public class SetupFixture extends ActionFixture {
-	/**
-	 * Calls {@link #locale(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void locale() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #locale(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void locale() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Calls {@link #format(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void format() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #format(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void format() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Sets the locale value to <code>locale</code>.
-	 * @param locale name of the local to use
-	 * @see de.cologneintelligence.fitgoodies.date.SetupHelper#setLocale(String) SetupHelper.setLocale(String)
-	 * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getLocale() SetupHelper.getLocale()
-	 */
-	public final void locale(final String locale) {
-		SetupHelper.instance().setLocale(locale);
-	}
+    /**
+     * Sets the locale value to <code>locale</code>.
+     * @param locale name of the local to use
+     * @see de.cologneintelligence.fitgoodies.date.SetupHelper#setLocale(String) SetupHelper.setLocale(String)
+     * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getLocale() SetupHelper.getLocale()
+     */
+    public final void locale(final String locale) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setLocale(locale);
+    }
 
-	/**
-	 * Sets the format value to <code>format</code>.
-	 * @param format format string which is parsable by {@link SimpleDateFormat}
-	 * @see de.cologneintelligence.fitgoodies.date.SetupHelper#setFormat(String) SetupHelper.setFormat(String)
-	 * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getFormat() SetupHelper.getFormat()
-	 */
-	public final void format(final String format) {
-		SetupHelper.instance().setFormat(format);
-	}
+    /**
+     * Sets the format value to <code>format</code>.
+     * @param format format string which is parsable by {@link SimpleDateFormat}
+     * @see de.cologneintelligence.fitgoodies.date.SetupHelper#setFormat(String) SetupHelper.setFormat(String)
+     * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getFormat() SetupHelper.getFormat()
+     */
+    public final void format(final String format) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setFormat(format);
+    }
 }

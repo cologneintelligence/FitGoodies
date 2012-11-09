@@ -28,123 +28,101 @@ import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
  * Singleton helper class which holds information about the latest runner.
  *
  * @author jwierum
- * @version $Id$
  */
 public final class RunnerHelper {
-	private static RunnerHelper instance;
-	private String filePath;
-	private Runner runner;
-	private String resultFilePath;
-	private AbstractDirectoryHelper dirHelper;
-	private PrintStream logStream;
+    private String filePath;
+    private Runner runner;
+    private String resultFilePath;
+    private AbstractDirectoryHelper dirHelper;
+    private PrintStream logStream;
 
-	private RunnerHelper() { }
+    /**
+     * Sets the current processed file's path.
+     * @param path the path to the current processed file
+     * @see #getFilePath() getFilePath
+     */
+    public void setFilePath(final String path) {
+        filePath = path;
+    }
 
-	/**
-	 * Returns a valid instance of this class.
-	 * @return an instance of <code>RunnerHelper</code>
-	 */
-	public static RunnerHelper instance() {
-		if (instance == null) {
-			instance = new RunnerHelper();
-		}
-		return instance;
-	}
+    /**
+     * Gets the current processed file's path.
+     * @return the path to the current processed file.
+     * @see #setFilePath(String) setFilePath(String)
+     */
+    public String getFilePath() {
+        return filePath;
+    }
 
-	/**
-	 * Resets all data.
-	 */
-	public static void reset() {
-		instance = null;
-	}
+    /**
+     * Sets the currently processed output file.
+     * @param path the path of the current output file
+     * @see #getResultFilePath() getResultFilePath()
+     */
+    public void setResultFilePath(final String path) {
+        resultFilePath = path;
+    }
 
-	/**
-	 * Sets the current processed file's path.
-	 * @param path the path to the current processed file
-	 * @see #getFilePath() getFilePath
-	 */
-	public void setFilePath(final String path) {
-		filePath = path;
-	}
+    /**
+     * Gets the currently processed output file.
+     * @return the path of the current output file
+     * @see #setResultFilePath(String) setResultFilePath(String)
+     */
+    public String getResultFilePath() {
+        return resultFilePath;
+    }
 
-	/**
-	 * Gets the current processed file's path.
-	 * @return the path to the current processed file.
-	 * @see #setFilePath(String) setFilePath(String)
-	 */
-	public String getFilePath() {
-		return filePath;
-	}
+    /**
+     * Sets the current processed file's directory helper.
+     * @param helper helper of the current processed file.
+     * @see #getHelper() getHelper()
+     */
+    public void setHelper(final AbstractDirectoryHelper helper) {
+        dirHelper = helper;
+    }
 
-	/**
-	 * Sets the currently processed output file.
-	 * @param path the path of the current output file
-	 * @see #getResultFilePath() getResultFilePath()
-	 */
-	public void setResultFilePath(final String path) {
-		resultFilePath = path;
-	}
+    /**
+     * Gets the current processed file's directory helper.
+     * @return the helper of the current processed file.
+     * @see #setHelper(AbstractDirectoryHelper) setHelper(AbstractDirectoryHelper)
+     */
+    public AbstractDirectoryHelper getHelper() {
+        return dirHelper;
+    }
 
-	/**
-	 * Gets the currently processed output file.
-	 * @return the path of the current output file
-	 * @see #setResultFilePath(String) setResultFilePath(String)
-	 */
-	public String getResultFilePath() {
-		return resultFilePath;
-	}
+    /**
+     * Gets the current <code>Runner</code>.
+     * @return the current runner
+     * @see #setRunner(Runner) setRunner(Runner)
+     */
+    public Runner getRunner() {
+        return runner;
+    }
 
-	/**
-	 * Sets the current processed file's directory helper.
-	 * @param helper helper of the current processed file.
-	 * @see #getHelper() getHelper()
-	 */
-	public void setHelper(final AbstractDirectoryHelper helper) {
-		dirHelper = helper;
-	}
+    /**
+     * Sets the current <code>Runner</code>.
+     * @param r the current runner
+     * @see #getRunner() getRunner()
+     */
+    public void setRunner(final Runner r) {
+        runner = r;
+    }
 
-	/**
-	 * Gets the current processed file's directory helper.
-	 * @return the helper of the current processed file.
-	 * @see #setHelper(AbstractDirectoryHelper) setHelper(AbstractDirectoryHelper)
-	 */
-	public AbstractDirectoryHelper getHelper() {
-		return dirHelper;
-	}
+    /**
+     * Sets the current log stream.
+     * @return the current stream
+     * @see #setLog(PrintStream) setLog(PrintStream)
+     */
+    public PrintStream getLog() {
+        return logStream;
+    }
 
-	/**
-	 * Gets the current <code>Runner</code>.
-	 * @return the current runner
-	 * @see #setRunner(Runner) setRunner(Runner)
-	 */
-	public Runner getRunner() {
-		return runner;
-	}
-
-	/**
-	 * Sets the current <code>Runner</code>.
-	 * @param r the current runner
-	 * @see #getRunner() getRunner()
-	 */
-	public void setRunner(final Runner r) {
-		runner = r;
-	}
-
-	/**
-	 * Sets the current log stream.
-	 * @return the current stream
-	 * @see #setLog(PrintStream) setLog(PrintStream)
-	 */
-	public PrintStream getLog() {
-		return logStream;
-	}
-
-	/**
-	 * Gets the current log stream.
-	 * @param stream the current stream
-	 * @see #getLog() getLog()
-	 */
-	public void setLog(final PrintStream stream) {
-		logStream = stream;
-	}
+    /**
+     * Gets the current log stream.
+     * @param stream the current stream
+     * @see #getLog() getLog()
+     */
+    public void setLog(final PrintStream stream) {
+        logStream = stream;
+    }
 }

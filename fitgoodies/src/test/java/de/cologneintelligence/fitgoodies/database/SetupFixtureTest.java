@@ -22,6 +22,7 @@ package de.cologneintelligence.fitgoodies.database;
 import java.sql.DriverManager;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 
 /**
@@ -29,43 +30,52 @@ import fit.Parse;
  * @author jwierum
  */
 public class SetupFixtureTest extends FitGoodiesTestCase {
-	public final void testHelperInteraction1() throws Exception {
-		final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-				+ "<tr><td>provider</td><td>"
-				+ "de.cologneintelligence.fitgoodies.database.DriverMock</td></tr>"
-				+ "<tr><td>user</td><td>username</td></tr>"
-				+ "<tr><td>password</td><td>pass</td></tr>"
-				+ "<tr><td>connectionString</td><td>db</td></tr>"
-				+ "</table>"
-				);
+    private SetupHelper helper;
 
-		final SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table);
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
-		assertEquals(0, fixture.counts.exceptions);
-		assertEquals("username", SetupHelper.instance().getUser());
-		assertEquals("pass", SetupHelper.instance().getPassword());
-		assertEquals("db", SetupHelper.instance().getConnectionString());
-		assertNotNull(DriverManager.getDriver("jdbc://test"));
-	}
+        helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+    }
 
-	public final void testHelperInteraction2() throws Exception {
-		final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-				+ "<tr><td>provider</td><td>"
-				+ "de.cologneintelligence.fitgoodies.database.DriverMock</td></tr>"
-				+ "<tr><td>user</td><td>user2</td></tr>"
-				+ "<tr><td>password</td><td>pw2</td></tr>"
-				+ "<tr><td>connectionString</td><td>jdbc://test/db</td></tr>"
-				+ "</table>"
-				);
+    public final void testHelperInteraction1() throws Exception {
+        final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
+                + "<tr><td>provider</td><td>"
+                + "de.cologneintelligence.fitgoodies.database.DriverMock</td></tr>"
+                + "<tr><td>user</td><td>username</td></tr>"
+                + "<tr><td>password</td><td>pass</td></tr>"
+                + "<tr><td>connectionString</td><td>db</td></tr>"
+                + "</table>"
+                );
 
-		final SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table);
+        final SetupFixture fixture = new SetupFixture();
+        fixture.doTable(table);
 
-		assertEquals(0, fixture.counts.exceptions);
-		assertEquals("user2", SetupHelper.instance().getUser());
-		assertEquals("pw2", SetupHelper.instance().getPassword());
-		assertEquals("jdbc://test/db", SetupHelper.instance().getConnectionString());
-		assertNotNull(DriverManager.getDriver("jdbc://test"));
-	}
+        assertEquals(0, fixture.counts.exceptions);
+        assertEquals("username", helper.getUser());
+        assertEquals("pass", helper.getPassword());
+        assertEquals("db", helper.getConnectionString());
+        assertNotNull(DriverManager.getDriver("jdbc://test"));
+    }
+
+    public final void testHelperInteraction2() throws Exception {
+        final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
+                + "<tr><td>provider</td><td>"
+                + "de.cologneintelligence.fitgoodies.database.DriverMock</td></tr>"
+                + "<tr><td>user</td><td>user2</td></tr>"
+                + "<tr><td>password</td><td>pw2</td></tr>"
+                + "<tr><td>connectionString</td><td>jdbc://test/db</td></tr>"
+                + "</table>"
+                );
+
+        final SetupFixture fixture = new SetupFixture();
+        fixture.doTable(table);
+
+        assertEquals(0, fixture.counts.exceptions);
+        assertEquals("user2", helper.getUser());
+        assertEquals("pw2", helper.getPassword());
+        assertEquals("jdbc://test/db", helper.getConnectionString());
+        assertNotNull(DriverManager.getDriver("jdbc://test"));
+    }
 }

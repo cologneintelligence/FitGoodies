@@ -28,6 +28,7 @@ import de.cologneintelligence.fitgoodies.RowFixture;
 import de.cologneintelligence.fitgoodies.dynamic.ResultSetWrapper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 
 import fit.Parse;
@@ -60,144 +61,146 @@ import fit.Parse;
  * @version $Id$
  */
 public class TableFixture extends RowFixture {
-	private String table;
-	private Connection connection;
-	private ResultSetWrapper resultSetWrapper;
-	private Statement statement;
+    private String table;
+    private Connection connection;
+    private ResultSetWrapper resultSetWrapper;
+    private Statement statement;
 
-	/**
-	 * Creates a new fixture. This constructor fetches a connection via
-	 * {@link de.cologneintelligence.fitgoodies.database.SetupHelper#getConnection()}, so it is
-	 * important to setup the connection details first.
-	 */
-	public TableFixture() {
-		try {
-			connection = SetupHelper.instance().getConnection();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    /**
+     * Creates a new fixture. This constructor fetches a connection via
+     * {@link de.cologneintelligence.fitgoodies.database.SetupHelper#getConnection()}, so it is
+     * important to setup the connection details first.
+     */
+    public TableFixture() {
+        try {
+            SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+            connection = helper.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	/**
-	 * Closes the SQL statement.
-	 *
-	 * @exception Exception propagated to fit.
-	 */
-	@Override
-	public void tearDown() throws Exception {
-		if (statement != null) {
-			statement.close();
-			statement = null;
-		}
-		super.tearDown();
-	}
+    /**
+     * Closes the SQL statement.
+     *
+     * @exception Exception propagated to fit.
+     */
+    @Override
+    public void tearDown() throws Exception {
+        if (statement != null) {
+            statement.close();
+            statement = null;
+        }
+        super.tearDown();
+    }
 
-	/**
-	 * Creates a new fixture ignoring the values set in {@link SetupHelper} but
-	 * using <code>conn</code> as the connection object.
-	 * This constructor is primary used for testing.
-	 * @param conn the connection object
-	 */
-	public TableFixture(final Connection conn) {
-		connection = conn;
-	}
+    /**
+     * Creates a new fixture ignoring the values set in {@link SetupHelper} but
+     * using <code>conn</code> as the connection object.
+     * This constructor is primary used for testing.
+     * @param conn the connection object
+     */
+    public TableFixture(final Connection conn) {
+        connection = conn;
+    }
 
-	/**
-	 * Processes a HTML table. This method is called by fit.
-	 * @param parsedTable the table to process
-	 */
-	@Override
-	public void doTable(final Parse parsedTable) {
-		try {
-			resultSetWrapper = new ResultSetWrapper(
-					getResultSet(
-							FixtureTools.getArg(getArgs(), "table", null),
-							FixtureTools.getArg(getArgs(), "where", null)));
-		} catch (RuntimeException e) {
-			exception(parsedTable.parts.parts, e);
-			return;
-		} catch (SQLException e) {
-			exception(parsedTable.parts.parts, e);
-			return;
-		}
-		super.doTable(parsedTable);
-	}
+    /**
+     * Processes a HTML table. This method is called by fit.
+     * @param parsedTable the table to process
+     */
+    @Override
+    public void doTable(final Parse parsedTable) {
+        try {
+            resultSetWrapper = new ResultSetWrapper(
+                    getResultSet(
+                            FixtureTools.getArg(getArgs(), "table", null),
+                            FixtureTools.getArg(getArgs(), "where", null)));
+        } catch (RuntimeException e) {
+            exception(parsedTable.parts.parts, e);
+            return;
+        } catch (SQLException e) {
+            exception(parsedTable.parts.parts, e);
+            return;
+        }
+        super.doTable(parsedTable);
+    }
 
-	/**
-	 * Generates a <code>java.sql.ResultSet</code> by using the saved connection.
-	 * This method queries the table <code>tableName</code> and appends
-	 * <code>where</code> as an optional where clause.
-	 * @param tableName the table name to query
-	 * @param where a where clause or <code>null</code>
-	 * @return the <code>ResultSet</code> which the query returned
-	 */
-	public final ResultSet getResultSet(final String tableName, final String where) {
-		if (tableName == null) {
-			throw new IllegalArgumentException("missing parameter: table");
-		}
+    /**
+     * Generates a <code>java.sql.ResultSet</code> by using the saved connection.
+     * This method queries the table <code>tableName</code> and appends
+     * <code>where</code> as an optional where clause.
+     * @param tableName the table name to query
+     * @param where a where clause or <code>null</code>
+     * @return the <code>ResultSet</code> which the query returned
+     */
+    public final ResultSet getResultSet(final String tableName, final String where) {
+        if (tableName == null) {
+            throw new IllegalArgumentException("missing parameter: table");
+        }
 
-		String whereClause = "";
-		if (where != null) {
-			whereClause = " WHERE " + where;
-		}
+        String whereClause = "";
+        if (where != null) {
+            whereClause = " WHERE " + where;
+        }
 
-		try {
-			table = CrossReferenceHelper.instance().parseBody(tableName, "");
+        try {
+            CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+            table = helper.parseBody(tableName, "");
 
-			statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT * FROM "
-					+ table + whereClause);
-			return rs;
+            statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT * FROM "
+                    + table + whereClause);
+            return rs;
 
-		} catch (CrossReferenceProcessorShortcutException e) {
-			throw new RuntimeException(e);
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
+        } catch (CrossReferenceProcessorShortcutException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	/**
-	 * Gets the type of the dynamic created target class.
-	 * @return the type of the target class.
-	 */
-	@Override
-	public final Class<?> getTargetClass() {
-		return resultSetWrapper.getClazz();
-	}
+    /**
+     * Gets the type of the dynamic created target class.
+     * @return the type of the target class.
+     */
+    @Override
+    public final Class<?> getTargetClass() {
+        return resultSetWrapper.getClazz();
+    }
 
-	/**
-	 * Gets an array which represents the created ResultSet as an object array.
-	 * The type of these objects can be determined via <code>getTargetClass()</code>.
-	 */
-	@Override
-	public final Object[] query() throws Exception {
-		return resultSetWrapper.getRows();
-	}
+    /**
+     * Gets an array which represents the created ResultSet as an object array.
+     * The type of these objects can be determined via <code>getTargetClass()</code>.
+     */
+    @Override
+    public final Object[] query() throws Exception {
+        return resultSetWrapper.getRows();
+    }
 
-	/**
-	 * Returns the extracted table name.
-	 * @return the table name used by the fixture.
-	 */
-	public final String getTable() {
-		return table;
-	}
+    /**
+     * Returns the extracted table name.
+     * @return the table name used by the fixture.
+     */
+    public final String getTable() {
+        return table;
+    }
 
-	/**
-	 * Sets the database connection to <code>conn</code>.
-	 * This method is primary used for testing.
-	 * @param conn connection to use.
-	 * @see #getConnection() getConnection()
-	 */
-	final void setConnection(final Connection conn) {
-		connection = conn;
-	}
+    /**
+     * Sets the database connection to <code>conn</code>.
+     * This method is primary used for testing.
+     * @param conn connection to use.
+     * @see #getConnection() getConnection()
+     */
+    final void setConnection(final Connection conn) {
+        connection = conn;
+    }
 
-	/**
-	 * Gets the connection object which is used to generate the <code>ResultSet</code>.
-	 * @return the connection object
-	 * @see #setConnection(Connection) setConnection(Connection)
-	 */
-	public final Connection getConnection() {
-		return connection;
-	}
+    /**
+     * Gets the connection object which is used to generate the <code>ResultSet</code>.
+     * @return the connection object
+     * @see #setConnection(Connection) setConnection(Connection)
+     */
+    public final Connection getConnection() {
+        return connection;
+    }
 }

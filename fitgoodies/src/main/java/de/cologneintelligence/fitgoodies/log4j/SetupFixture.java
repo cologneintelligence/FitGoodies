@@ -19,6 +19,7 @@
 package de.cologneintelligence.fitgoodies.log4j;
 
 import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 
 
@@ -44,72 +45,75 @@ import fit.Parse;
  * @version $Id$
  */
 public class SetupFixture extends Fixture {
-	private final LoggerProvider loggerProvider;
+    private final LoggerProvider loggerProvider;
 
-	/**
-	 * Creates a new SetupFixture which uses <code>provider</code> to get
-	 * loggers. This method is mainly used for testing.
-	 * @param provider provider to get logger instances
-	 */
-	public SetupFixture(final LoggerProvider provider) {
-		loggerProvider = provider;
-	}
+    /**
+     * Creates a new SetupFixture which uses <code>provider</code> to get
+     * loggers. This method is mainly used for testing.
+     * @param provider provider to get logger instances
+     */
+    public SetupFixture(final LoggerProvider provider) {
+        loggerProvider = provider;
+    }
 
-	/**
-	 * Create a new SetupFixutre which captures log4j loggers.
-	 */
-	public SetupFixture() {
-		this(new LoggerProviderImpl());
-	}
+    /**
+     * Create a new SetupFixutre which captures log4j loggers.
+     */
+    public SetupFixture() {
+        this(new LoggerProviderImpl());
+    }
 
-	/**
-	 * Processes the content of <code>cells</code>.
-	 * @param cells cells to process
-	 */
-	@Override
-	public void doCells(final Parse cells) {
-		String name = cells.text();
+    /**
+     * Processes the content of <code>cells</code>.
+     * @param cells cells to process
+     */
+    @Override
+    public void doCells(final Parse cells) {
+        String name = cells.text();
 
-		processRowWithCommand(cells, name);
-	}
+        processRowWithCommand(cells, name);
+    }
 
-	private void processRowWithCommand(final Parse row, final String name) {
-		if ("monitorRoot".equalsIgnoreCase(name)) {
-			processRowWithMonitorRoot(row);
-		} else if ("monitor".equalsIgnoreCase(name)) {
-			processRowWithMonitor(row);
-		} else if("clear".equalsIgnoreCase(name)) {
-			processRowWithClear(row);
-		}
-	}
+    private void processRowWithCommand(final Parse row, final String name) {
+        if ("monitorRoot".equalsIgnoreCase(name)) {
+            processRowWithMonitorRoot(row);
+        } else if ("monitor".equalsIgnoreCase(name)) {
+            processRowWithMonitor(row);
+        } else if("clear".equalsIgnoreCase(name)) {
+            processRowWithClear(row);
+        }
+    }
 
-	private void processRowWithClear(Parse row) {
-		String className = row.more.text();
-		String appenderName = row.more.more.text();
+    private void processRowWithClear(final Parse row) {
+        String className = row.more.text();
+        String appenderName = row.more.more.text();
 
-		LogHelper.instance().clear(loggerProvider.getLogger(className),
-			appenderName);
-	}
+        LogHelper helper = DependencyManager.INSTANCE.getOrCreate(LogHelper.class);
+        helper.clear(loggerProvider.getLogger(className),
+                appenderName);
+    }
 
-	private void processRowWithMonitor(final Parse row) {
-		String className = row.more.text();
-		String appenderName = row.more.more.text();
+    private void processRowWithMonitor(final Parse row) {
+        String className = row.more.text();
+        String appenderName = row.more.more.text();
 
-		addMonitor(className, appenderName);
-	}
+        addMonitor(className, appenderName);
+    }
 
-	private void processRowWithMonitorRoot(final Parse row) {
-		String appenderName = row.more.text();
-		addRootMonitor(appenderName);
-	}
+    private void processRowWithMonitorRoot(final Parse row) {
+        String appenderName = row.more.text();
+        addRootMonitor(appenderName);
+    }
 
-	private void addRootMonitor(final String appenderName) {
-		LogHelper.instance().addCaptureToLogger(loggerProvider.getRootLogger(),
-				appenderName);
-	}
+    private void addRootMonitor(final String appenderName) {
+        LogHelper helper = DependencyManager.INSTANCE.getOrCreate(LogHelper.class);
+        helper.addCaptureToLogger(loggerProvider.getRootLogger(),
+                appenderName);
+    }
 
-	private void addMonitor(final String className, final String appenderName) {
-		LogHelper.instance().addCaptureToLogger(
-				loggerProvider.getLogger(className), appenderName);
-	}
+    private void addMonitor(final String className, final String appenderName) {
+        LogHelper helper = DependencyManager.INSTANCE.getOrCreate(LogHelper.class);
+        helper.addCaptureToLogger(
+                loggerProvider.getLogger(className), appenderName);
+    }
 }

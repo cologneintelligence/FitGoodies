@@ -21,6 +21,7 @@ package de.cologneintelligence.fitgoodies.references;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
  * This fixture allows to register new processors via HTML. A processor
@@ -38,78 +39,79 @@ import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossRefe
  * @version $Id$
  */
 public class SetupFixture extends ActionFixture {
-	private final Processors processors;
+    private final Processors processors;
 
-	/**
-	 * Default constructor. Uses {@link CrossReferenceHelper}'s singleton
-	 * processor list.
-	 */
-	public SetupFixture() {
-		this(CrossReferenceHelper.instance().getProcessors());
-	}
+    /**
+     * Default constructor. Uses {@link CrossReferenceHelper}'s singleton
+     * processor list.
+     */
+    public SetupFixture() {
+        this(DependencyManager.INSTANCE.getOrCreate(
+                CrossReferenceHelper.class).getProcessors());
+    }
 
-	/**
-	 * Custom constructor which uses a self defined processor list.
-	 * This method is basically used for testing.
-	 * @param procs processor list to use
-	 */
-	SetupFixture(final Processors procs) {
-		super();
-		processors = procs;
-	}
+    /**
+     * Custom constructor which uses a self defined processor list.
+     * This method is basically used for testing.
+     * @param procs processor list to use
+     */
+    SetupFixture(final Processors procs) {
+        super();
+        processors = procs;
+    }
 
-	/**
-	 * Calls {@link #use(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 * @see #use(String) user(String)
-	 */
-	public void use() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #use(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     * @see #use(String) user(String)
+     */
+    public void use() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Calls {@link #remove(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 * @see #remove(String) remove(String)
-	 */
-	public void remove() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #remove(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     * @see #remove(String) remove(String)
+     */
+    public void remove() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Removes the processor <code>module</code> from the list of registered
-	 * processors.
-	 * @param module fully qualified path to an implementation of
-	 * 		{@link AbstractCrossReferenceProcessor}
-	 * @throws Exception propagated to fit, thrown if a class could not be found,
-	 * 		casted or initialized
-	 * @see #remove() remove()
-	 */
-	public final void remove(final String module) throws Exception {
-		Class<?> c = null;
-		c = Class.forName(module);
+    /**
+     * Removes the processor <code>module</code> from the list of registered
+     * processors.
+     * @param module fully qualified path to an implementation of
+     * 		{@link AbstractCrossReferenceProcessor}
+     * @throws Exception propagated to fit, thrown if a class could not be found,
+     * 		casted or initialized
+     * @see #remove() remove()
+     */
+    public final void remove(final String module) throws Exception {
+        Class<?> c = null;
+        c = Class.forName(module);
 
-		for (int i = 0; i < processors.count(); ++i) {
-			if (processors.get(i).getClass() == c) {
-				processors.remove(i);
-			}
-		}
-	}
+        for (int i = 0; i < processors.count(); ++i) {
+            if (processors.get(i).getClass() == c) {
+                processors.remove(i);
+            }
+        }
+    }
 
-	/**
-	 * Adds the processor <code>module</code> to the list of registered processors.
-	 * @param module fully qualified path to an implementation of
-	 * 		{@link AbstractCrossReferenceProcessor}
-	 * @throws Exception propagated to fit, thrown if a class could not be found,
-	 * 		casted or initialized
-	 * @see #remove() remove()
-	 */
-	public final void use(final String module) throws Exception {
-		AbstractCrossReferenceProcessor processor;
-		processor = (AbstractCrossReferenceProcessor)
-			Class.forName(module).newInstance();
+    /**
+     * Adds the processor <code>module</code> to the list of registered processors.
+     * @param module fully qualified path to an implementation of
+     * 		{@link AbstractCrossReferenceProcessor}
+     * @throws Exception propagated to fit, thrown if a class could not be found,
+     * 		casted or initialized
+     * @see #remove() remove()
+     */
+    public final void use(final String module) throws Exception {
+        AbstractCrossReferenceProcessor processor;
+        processor = (AbstractCrossReferenceProcessor)
+                Class.forName(module).newInstance();
 
-		processors.add(processor);
-		cells.more.more.addToBody("<br />" + processor.info());
-	}
+        processors.add(processor);
+        cells.more.more.addToBody("<br />" + processor.info());
+    }
 }

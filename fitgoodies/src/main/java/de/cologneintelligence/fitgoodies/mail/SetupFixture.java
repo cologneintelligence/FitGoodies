@@ -19,6 +19,7 @@
 
 package de.cologneintelligence.fitgoodies.mail;
 
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 
 /**
@@ -53,122 +54,129 @@ import de.cologneintelligence.fitgoodies.util.FixtureTools;
  */
 public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixture {
 
-	/**
-	 * Calls {@link #host(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void host() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #host(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void host() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Calls {@link #protocol(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void protocol() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #protocol(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void protocol() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Calls {@link #username(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void username() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #username(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void username() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Calls {@link #password(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void password() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #password(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void password() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Calls {@link #inbox(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void inbox() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #inbox(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void inbox() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Calls {@link #ssl(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void ssl() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #ssl(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void ssl() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Calls {@link #port(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void port() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #port(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void port() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Sets the SSL parameter of the mail {@link SetupHelper}.
-	 * @param ssl indicates whether SSL shall be used
-	 * @see SetupHelper#setSSL(boolean) SetupHelper.setSSL(boolean)
-	 */
-	public final void ssl(final String ssl) {
-		SetupHelper.instance().setSSL(FixtureTools.convertToBoolean(ssl));
-	}
+    /**
+     * Sets the SSL parameter of the mail {@link SetupHelper}.
+     * @param ssl indicates whether SSL shall be used
+     * @see SetupHelper#setSSL(boolean) SetupHelper.setSSL(boolean)
+     */
+    public final void ssl(final String ssl) {
+        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        .setSSL(FixtureTools.convertToBoolean(ssl));
+    }
 
-	/**
-	 * Sets the port parameter of the mail {@link SetupHelper}.
-	 * @param port port to use
-	 * @see SetupHelper#setPort(int) SetupHelper.setPort(int)
-	 */
-	public final void port(final String port) {
-		SetupHelper.instance().setPort(Integer.parseInt(port));
-	}
+    /**
+     * Sets the port parameter of the mail {@link SetupHelper}.
+     * @param port port to use
+     * @see SetupHelper#setPort(int) SetupHelper.setPort(int)
+     */
+    public final void port(final String port) {
+        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        .setPort(Integer.parseInt(port));
+    }
 
-	/**
-	 * Sets the inbox parameter of the mail {@link SetupHelper}.
-	 * @param inbox inbox to use
-	 * @see SetupHelper#setInbox(String) SetupHelper.setInbox(String)
-	 */
-	public final void inbox(final String inbox) {
-		SetupHelper.instance().setInbox(inbox);
-	}
+    /**
+     * Sets the inbox parameter of the mail {@link SetupHelper}.
+     * @param inbox inbox to use
+     * @see SetupHelper#setInbox(String) SetupHelper.setInbox(String)
+     */
+    public final void inbox(final String inbox) {
+        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        .setInbox(inbox);
+    }
 
-	/**
-	 * Sets the host parameter if the mail {@link SetupFixture}.
-	 * @param host host to use
-	 * @see SetupHelper#setHost(String) SetupHelper.setHost(String)
-	 */
-	public final void host(final String host) {
-		SetupHelper.instance().setHost(host);
-	}
+    /**
+     * Sets the host parameter if the mail {@link SetupFixture}.
+     * @param host host to use
+     * @see SetupHelper#setHost(String) SetupHelper.setHost(String)
+     */
+    public final void host(final String host) {
+        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        .setHost(host);
+    }
 
-	/**
-	 * Sets the user name parameter if the mail {@link SetupFixture}.
-	 * @param username user name to use
-	 * @see SetupHelper#setUsername(String) SetupHelper.setUsername(String)
-	 */
-	public final void username(final String username) {
-		SetupHelper.instance().setUsername(username);
-	}
+    /**
+     * Sets the user name parameter if the mail {@link SetupFixture}.
+     * @param username user name to use
+     * @see SetupHelper#setUsername(String) SetupHelper.setUsername(String)
+     */
+    public final void username(final String username) {
+        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        .setUsername(username);
+    }
 
-	/**
-	 * Sets the password parameter if the mail {@link SetupFixture}.
-	 * @param password password to use
-	 * @see SetupHelper#setPassword(String) SetupHelper.setPassword(String)
-	 */
-	public final void password(final String password) {
-		SetupHelper.instance().setPassword(password);
-	}
+    /**
+     * Sets the password parameter if the mail {@link SetupFixture}.
+     * @param password password to use
+     * @see SetupHelper#setPassword(String) SetupHelper.setPassword(String)
+     */
+    public final void password(final String password) {
+        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        .setPassword(password);
+    }
 
-	/**
-	 * Sets the protocol parameter if the mail {@link SetupFixture}.
-	 * @param protocol protocol to use
-	 * @see SetupHelper#setProtocol(String) SetupHelper.setProtocol(String)
-	 */
-	public final void protocol(final String protocol) {
-		SetupHelper.instance().setProtocol(protocol);
-	}
+    /**
+     * Sets the protocol parameter if the mail {@link SetupFixture}.
+     * @param protocol protocol to use
+     * @see SetupHelper#setProtocol(String) SetupHelper.setProtocol(String)
+     */
+    public final void protocol(final String protocol) {
+        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        .setProtocol(protocol);
+    }
 }

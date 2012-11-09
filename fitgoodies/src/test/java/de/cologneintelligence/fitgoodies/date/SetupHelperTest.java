@@ -28,79 +28,77 @@ import de.cologneintelligence.fitgoodies.date.SetupHelper;
 
 
 /**
- * $Id$
  * @author jwierum
  */
 public class SetupHelperTest extends FitGoodiesTestCase {
-	public final void testSingleton() {
-		SetupHelper expected = SetupHelper.instance();
-		assertNotNull(expected);
-		assertSame(expected, SetupHelper.instance());
+    private SetupHelper helper;
 
-		SetupHelper.reset();
-		assertNotSame(expected, SetupHelper.instance());
-	}
+    @Override
+    public final void setUp() throws Exception {
+        super.setUp();
+        helper = new SetupHelper();
+    }
 
-	public final void testSetLocale() {
-		SetupHelper.instance().setLocale("de_DE");
-		assertEquals(Locale.GERMANY, SetupHelper.instance().getLocale());
-		SetupHelper.instance().setLocale("de");
-		assertEquals(Locale.GERMAN, SetupHelper.instance().getLocale());
-		SetupHelper.instance().setLocale("en_US");
-		assertEquals(Locale.US, SetupHelper.instance().getLocale());
+    public final void testSetLocale() {
+        helper.setLocale("de_DE");
+        assertEquals(Locale.GERMANY, helper.getLocale());
+        helper.setLocale("de");
+        assertEquals(Locale.GERMAN, helper.getLocale());
+        helper.setLocale("en_US");
+        assertEquals(Locale.US, helper.getLocale());
 
-		try {
-			SetupHelper.instance().setLocale("this_is_an_error");
-			fail("Missing exception: invalid locale");
-		} catch (IllegalArgumentException e) {
-		}
-		assertEquals(Locale.US, SetupHelper.instance().getLocale());
+        try {
+            helper.setLocale("this_is_an_error");
+            fail("Missing exception: invalid locale");
+        } catch (IllegalArgumentException e) {
+        }
+        assertEquals(Locale.US, helper.getLocale());
 
-		SetupHelper.instance().setLocale("ja_JP_JP");
-		assertEquals(new Locale("ja", "JP", "JP"), SetupHelper.instance().getLocale());
-	}
+        helper.setLocale("ja_JP_JP");
+        assertEquals(new Locale("ja", "JP", "JP"), helper.getLocale());
+    }
 
-	public final void testSetFormat() {
-		SetupHelper.instance().setFormat("dd.MM.yyyy");
-		assertEquals("dd.MM.yyyy", SetupHelper.instance().getFormat());
+    public final void testSetFormat() {
+        helper.setFormat("dd.MM.yyyy");
+        assertEquals("dd.MM.yyyy", helper.getFormat());
 
-		SetupHelper.instance().setFormat("hh:mm:ss");
-		assertEquals("hh:mm:ss", SetupHelper.instance().getFormat());
-	}
+        helper.setFormat("hh:mm:ss");
+        assertEquals("hh:mm:ss", helper.getFormat());
+    }
 
-	public final void testGetDate() throws ParseException {
-		assertEquals(
-				DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"),
-				SetupHelper.instance().getDate("01/18/1987"));
+    public final void testGetDate() throws ParseException {
+        assertEquals(
+                DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"),
+                helper.getDate("01/18/1987"));
 
-		SetupHelper.instance().setLocale("de_DE");
-		SetupHelper.instance().setFormat("dd.MM.yyyy");
-		assertEquals(
-				DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY).parse("08.03.1989"),
-				SetupHelper.instance().getDate("08.03.1989"));
-	}
+        helper.setLocale("de_DE");
+        helper.setFormat("dd.MM.yyyy");
+        assertEquals(
+                DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY).parse("08.03.1989"),
+                helper.getDate("08.03.1989"));
+    }
 
-	public final void testGetDateWithShortYear() throws ParseException {
-		SetupHelper.instance().setLocale("de_DE");
-		SetupHelper.instance().setFormat("dd.MM.yy");
-		assertEquals(
-				DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"),
-				SetupHelper.instance().getDate("18.01.87"));
-	}
+    public final void testGetDateWithShortYear() throws ParseException {
+        helper.setLocale("de_DE");
+        helper.setFormat("dd.MM.yy");
+        assertEquals(
+                DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"),
+                helper.getDate("18.01.87"));
+    }
 
-	public final void testGetDateWithFormat() throws ParseException {
-		SetupHelper.instance().setLocale("de_DE");
-		SetupHelper.instance().setFormat("dd.MM.yy");
+    public final void testGetDateWithFormat() throws ParseException {
+        helper.setLocale("de_DE");
+        helper.setFormat("dd.MM.yy");
 
-		assertEquals(
-				DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"),
-				SetupHelper.instance().getDate("18.01.1987", "de_DE", "dd.MM.yyyy"));
+        assertEquals(
+                DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"),
+                helper.getDate("18.01.1987", "de_DE", "dd.MM.yyyy"));
 
-		assertEquals(
-				DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"),
-				SetupHelper.instance().getDate("01/18/1987", "en_US", "MM/dd/yyyy"));
+        assertEquals(
+                DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"),
+                helper.getDate("01/18/1987", "en_US", "MM/dd/yyyy"));
 
-		assertEquals("de_DE", SetupHelper.instance().getLocale().toString());
-		assertEquals("dd.MM.yy", SetupHelper.instance().getFormat());
-	}
+        assertEquals("de_DE", helper.getLocale().toString());
+        assertEquals("dd.MM.yy", helper.getFormat());
+    }
 }

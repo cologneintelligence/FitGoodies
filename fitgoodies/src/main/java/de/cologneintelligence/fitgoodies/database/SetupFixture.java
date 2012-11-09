@@ -20,6 +20,7 @@
 package de.cologneintelligence.fitgoodies.database;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
  * Enables a user to setup a database connection from HTML.<br /><br />
@@ -38,74 +39,77 @@ import de.cologneintelligence.fitgoodies.ActionFixture;
  * @version $Id$
  */
 public class SetupFixture extends ActionFixture {
-	/**
-	 * Calls {@link #user(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void user() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #user(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void user() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Sets the database username to <code>userName</code>.
-	 * The username can be received using {@link SetupHelper#getUser()}.
-	 * @param userName the database username
-	 */
-	public final void user(final String userName) {
-		SetupHelper.instance().setUser(userName);
-	}
+    /**
+     * Sets the database username to <code>userName</code>.
+     * The username can be received using {@link SetupHelper#getUser()}.
+     * @param userName the database username
+     */
+    public final void user(final String userName) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setUser(userName);
+    }
 
-	/**
-	 * Calls {@link #password(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void password() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #password(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void password() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Sets the database password to <code>password</code>.
-	 * The password can be received using {@link SetupHelper#getPassword()}.
-	 * @param password the database password
-	 */
-	public final void password(final String password) {
-		SetupHelper.instance().setPassword(password);
-	}
+    /**
+     * Sets the database password to <code>password</code>.
+     * The password can be received using {@link SetupHelper#getPassword()}.
+     * @param password the database password
+     */
+    public final void password(final String password) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setPassword(password);
+    }
 
-	/**
-	 * Calls {@link #connectionString(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void connectionString() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #connectionString(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void connectionString() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Sets the database connection string to <code>uri</code>.
-	 * The connection string can be received using
-	 * {@link SetupHelper#getConnectionString()}.
-	 * @param uri the database connectoin string
-	 */
-	public final void connectionString(final String uri) {
-		SetupHelper.instance().setConnectionString(uri);
-	}
+    /**
+     * Sets the database connection string to <code>uri</code>.
+     * The connection string can be received using
+     * {@link SetupHelper#getConnectionString()}.
+     * @param uri the database connectoin string
+     */
+    public final void connectionString(final String uri) {
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setConnectionString(uri);
+    }
 
-	/**
-	 * Calls {@link #provider(String)}, using the next cell as its parameter.
-	 * @throws Exception propagated to fit
-	 */
-	public void provider() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #provider(String)}, using the next cell as its parameter.
+     * @throws Exception propagated to fit
+     */
+    public void provider() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Sets the database provider. The <code>providerName</code> must be a
-	 * fully qualified class name and the class must be in java's class path.
-	 * @param providerName fully qualified class name of a java.sql.Driver.
-	 * @throws Exception thrown if the class could not be found, initialized or
-	 * 		casted. Propagated to fit.
-	 */
-	public final void provider(final String providerName) throws Exception {
-		SetupHelper.setProvider(providerName);
-	}
+    /**
+     * Sets the database provider. The <code>providerName</code> must be a
+     * fully qualified class name and the class must be in java's class path.
+     * @param providerName fully qualified class name of a java.sql.Driver.
+     * @throws Exception thrown if the class could not be found, initialized or
+     * 		casted. Propagated to fit.
+     */
+    public final void provider(final String providerName) throws Exception {
+        SetupHelper.setProvider(providerName);
+    }
 }

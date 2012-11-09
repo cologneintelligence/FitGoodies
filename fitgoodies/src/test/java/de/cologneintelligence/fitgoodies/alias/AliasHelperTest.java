@@ -21,27 +21,20 @@ package de.cologneintelligence.fitgoodies.alias;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 
-/**
- * $Id$
- * @author jwierum
- */
 public final class AliasHelperTest extends FitGoodiesTestCase {
-    public void testSingleton() {
-        final AliasHelper helper = AliasHelper.instance();
+    private AliasHelper helper;
 
-        assertNotNull(helper);
-        assertSame(helper, AliasHelper.instance());
-
-        AliasHelper.reset();
-        assertNotNull(AliasHelper.instance());
-        assertNotSame(helper, AliasHelper.instance());
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        helper = new AliasHelper();
     }
 
     public void testGetDefaultClass()  {
-        String actual = AliasHelper.instance().getClazz("java.lang.String");
+        String actual = helper.getClazz("java.lang.String");
         assertEquals("java.lang.String", actual);
 
-        actual = AliasHelper.instance().getClazz("java.lang.Integer");
+        actual = helper.getClazz("java.lang.Integer");
         assertEquals("java.lang.Integer", actual);
     }
 
@@ -75,7 +68,7 @@ public final class AliasHelperTest extends FitGoodiesTestCase {
     }
 
     private void assertMapping(final String className) {
-        final String actual = AliasHelper.instance().getClazz(className);
+        final String actual = helper.getClazz(className);
         final String expected = "de.cologneintelligence." + className;
         assertEquals(expected, actual);
         try {
@@ -86,25 +79,25 @@ public final class AliasHelperTest extends FitGoodiesTestCase {
     }
 
     public void testAddAlias() throws ClassNotFoundException {
-        assertEquals("test", AliasHelper.instance().getClazz("test"));
+        assertEquals("test", helper.getClazz("test"));
 
-        AliasHelper.instance().register("test", "fitgoodies.MyFixture");
-        assertEquals("fitgoodies.MyFixture", AliasHelper.instance().getClazz("test"));
+        helper.register("test", "fitgoodies.MyFixture");
+        assertEquals("fitgoodies.MyFixture", helper.getClazz("test"));
 
-        AliasHelper.instance().register("test", "fitgoodies.MyActionFixture");
-        assertEquals("fitgoodies.MyActionFixture", AliasHelper.instance().getClazz("test"));
+        helper.register("test", "fitgoodies.MyActionFixture");
+        assertEquals("fitgoodies.MyActionFixture", helper.getClazz("test"));
 
-        assertEquals("test2", AliasHelper.instance().getClazz("test2"));
+        assertEquals("test2", helper.getClazz("test2"));
 
-        AliasHelper.instance().register("test2", "fitgoodies.MyRowFixture");
-        assertEquals("fitgoodies.MyRowFixture", AliasHelper.instance().getClazz("test2"));
+        helper.register("test2", "fitgoodies.MyRowFixture");
+        assertEquals("fitgoodies.MyRowFixture", helper.getClazz("test2"));
     }
 
     public void testRecursiveAliases() {
-        AliasHelper.instance().register("test", "test2");
-        AliasHelper.instance().register("test2", "test3");
-        AliasHelper.instance().register("test3", "ok");
+        helper.register("test", "test2");
+        helper.register("test2", "test3");
+        helper.register("test3", "ok");
 
-        assertEquals("ok", AliasHelper.instance().getClazz("test"));
+        assertEquals("ok", helper.getClazz("test"));
     }
 }

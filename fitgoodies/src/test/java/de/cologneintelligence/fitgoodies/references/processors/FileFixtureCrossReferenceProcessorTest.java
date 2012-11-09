@@ -28,82 +28,86 @@ import de.cologneintelligence.fitgoodies.references.CrossReference;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
 import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
 import de.cologneintelligence.fitgoodies.references.processors.FileFixtureCrossReferenceProcessor;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 
 /**
- * $Id$
  * @author jwierum
  */
 
 public class FileFixtureCrossReferenceProcessorTest extends FitGoodiesTestCase {
-	private AbstractCrossReferenceProcessor processor;
+    private AbstractCrossReferenceProcessor processor;
 
-	@Override
-	public final void setUp() throws Exception {
-		super.setUp();
-		processor = new FileFixtureCrossReferenceProcessor();
-	}
+    @Override
+    public final void setUp() throws Exception {
+        super.setUp();
+        processor = new FileFixtureCrossReferenceProcessor();
+    }
 
-	public final void testInfo() {
-		assertNotNull(processor.info());
-	}
+    public final void testInfo() {
+        assertNotNull(processor.info());
+    }
 
-	public final void testPattern() {
-		Pattern pattern = Pattern.compile(processor.getPattern());
+    public final void testPattern() {
+        Pattern pattern = Pattern.compile(processor.getPattern());
 
-		assertTrue(pattern.matcher("selectedFile()").find());
-		assertTrue(pattern.matcher("selectedEncoding()").find());
-		assertFalse(pattern.matcher("selectedXFile()").find());
-		assertFalse(pattern.matcher("selectedEncoding(Y)").find());
-	}
+        assertTrue(pattern.matcher("selectedFile()").find());
+        assertTrue(pattern.matcher("selectedEncoding()").find());
+        assertFalse(pattern.matcher("selectedXFile()").find());
+        assertFalse(pattern.matcher("selectedEncoding(Y)").find());
+    }
 
-	public final void testExtraction() {
-		CrossReference cr;
-		cr = processor.extractCrossReference("selectedFile()");
-		assertEquals("selectedFile", cr.getCommand());
+    public final void testExtraction() {
+        CrossReference cr;
+        cr = processor.extractCrossReference("selectedFile()");
+        assertEquals("selectedFile", cr.getCommand());
 
-		cr = processor.extractCrossReference("selectedEncoding()");
-		assertEquals("selectedEncoding", cr.getCommand());
+        cr = processor.extractCrossReference("selectedEncoding()");
+        assertEquals("selectedEncoding", cr.getCommand());
 
-		cr = processor.extractCrossReference("someText");
-		assertNull(cr);
-	}
+        cr = processor.extractCrossReference("someText");
+        assertNull(cr);
+    }
 
-	public final void testEncodingReplacement()
-			throws CrossReferenceProcessorShortcutException {
-		CrossReference cr;
-		cr = new CrossReference("selectedEncoding", null, null, processor);
+    public final void testEncodingReplacement()
+            throws CrossReferenceProcessorShortcutException {
+        CrossReference cr;
+        cr = new CrossReference("selectedEncoding", null, null, processor);
 
-		FileFixtureHelper.instance().setEncoding("xy");
-		assertEquals("xy", processor.processMatch(cr, "match"));
+        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
 
-		FileFixtureHelper.instance().setEncoding("latin-1");
-		assertEquals("latin-1", processor.processMatch(cr, "match"));
-	}
+        helper.setEncoding("xy");
+        assertEquals("xy", processor.processMatch(cr, "match"));
 
-	public final void testFilenameReplacement()
-			throws CrossReferenceProcessorShortcutException {
-		CrossReference cr;
-		cr = new CrossReference("selectedFile", null, null, processor);
-		FileFixtureHelper.instance().setProvider(new DirectoryProviderMock());
-		FileFixtureHelper.instance().setPattern(".*\\.txt");
+        helper.setEncoding("latin-1");
+        assertEquals("latin-1", processor.processMatch(cr, "match"));
+    }
 
-		assertEquals("file1.txt", processor.processMatch(cr, "match"));
-	}
+    public final void testFilenameReplacement()
+            throws CrossReferenceProcessorShortcutException {
+        CrossReference cr;
+        cr = new CrossReference("selectedFile", null, null, processor);
+        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        helper.setProvider(new DirectoryProviderMock());
+        helper.setPattern(".*\\.txt");
 
-	public final void testFinalReplacementException()
-			throws CrossReferenceProcessorShortcutException {
+        assertEquals("file1.txt", processor.processMatch(cr, "match"));
+    }
 
-		CrossReference cr;
-		cr = new CrossReference("selectedFile", null, null, processor);
-		FileFixtureHelper.instance().setProvider(new DirectoryProviderMock());
-		FileFixtureHelper.instance().setPattern(".*\\.error");
+    public final void testFinalReplacementException()
+            throws CrossReferenceProcessorShortcutException {
 
-		try {
-			processor.processMatch(cr, "match");
-			fail("could read non-existend file");
-		} catch (RuntimeException e) {
-			assertTrue(e.getMessage().contains("no file found"));
-		}
-	}
+        CrossReference cr;
+        cr = new CrossReference("selectedFile", null, null, processor);
+        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        helper.setProvider(new DirectoryProviderMock());
+        helper.setPattern(".*\\.error");
+
+        try {
+            processor.processMatch(cr, "match");
+            fail("could read non-existend file");
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains("no file found"));
+        }
+    }
 }

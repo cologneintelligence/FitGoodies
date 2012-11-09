@@ -26,125 +26,101 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 
 /**
- * Singleton class to manage database connection information.
+ * Helper class to manage database connection information.
  * To set the values with HTML, you can use a {@link SetupFixture}.
  *
  * @author jwierum
- * @version $Id$
  */
 public final class SetupHelper {
-	private static SetupHelper instance;
+    private String user;
+    private String password;
+    private String connectionString;
 
-	private String user;
-	private String password;
-	private String connectionString;
+    /**
+     * Sets the database driver. <code>driverName</code> must be a fully
+     * qualified class name and the class must be in java's class path.
+     * Unless the driver is already registered, <code>setProvider</code>
+     * registers it at the <code>java.sql.DriverManager</code>.
+     * @param driverName fully qualified class name of a <code>java.sql.Driver</code>.
+     * @throws Exception thrown if the class could not be found, casted or
+     * 		registered.
+     */
+    public static void setProvider(final String driverName) throws Exception {
+        Driver driver = (Driver) Class.forName(driverName).newInstance();
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            if (drivers.nextElement().getClass().equals(driver.getClass())) {
+                return;
+            }
+        }
 
-	private SetupHelper() {
-	}
+        DriverManager.registerDriver(driver);
+    }
 
-	/**
-	 * Returns an instance of <code>SetupHelper</code>.
-	 * @return a singleton instance of <code>SetupHelper</code>.
-	 */
-	public static SetupHelper instance() {
-		if (instance == null) {
-			instance = new SetupHelper();
-		}
-		return instance;
-	}
+    /**
+     * Sets the username to <code>userName</code>.
+     * @param userName username to set
+     * @see #getUser() getUser()
+     */
+    public void setUser(final String userName) {
+        this.user = userName;
+    }
 
-	/**
-	 * Resets the singleton.
-	 */
-	public static void reset() {
-		instance = null;
-	}
+    /**
+     * Returns the selected username.
+     * @return the username
+     * @see #setUser(String) setUser(String)
+     */
+    public String getUser() {
+        return user;
+    }
 
-	/**
-	 * Sets the database driver. <code>driverName</code> must be a fully
-	 * qualified class name and the class must be in java's class path.
-	 * Unless the driver is already registered, <code>setProvider</code>
-	 * registers it at the <code>java.sql.DriverManager</code>.
-	 * @param driverName fully qualified class name of a <code>java.sql.Driver</code>.
-	 * @throws Exception thrown if the class could not be found, casted or
-	 * 		registered.
-	 */
-	public static void setProvider(final String driverName) throws Exception {
-		Driver driver = (Driver) Class.forName(driverName).newInstance();
-		Enumeration<Driver> drivers = DriverManager.getDrivers();
-		while (drivers.hasMoreElements()) {
-			if (drivers.nextElement().getClass().equals(driver.getClass())) {
-				return;
-			}
-		}
+    /**
+     * Returns the selected password.
+     * @return the password
+     * @see #setPassword(String) setPassword(String)
+     */
+    public String getPassword() {
+        return password;
+    }
 
-		DriverManager.registerDriver(driver);
-	}
+    /**
+     * Sets the password to <code>pw</code>.
+     * @param pw the password to set
+     * @see #getPassword() getPassword()
+     */
+    public void setPassword(final String pw) {
+        this.password = pw;
+    }
 
-	/**
-	 * Sets the username to <code>userName</code>.
-	 * @param userName username to set
-	 * @see #getUser() getUser()
-	 */
-	public void setUser(final String userName) {
-		this.user = userName;
-	}
+    /**
+     * Returns the selected connection string.
+     * The connection string format depends on the selected provider.
+     * @return the selected connection string
+     * @see #setConnectionString(String) setConnectionString(String)
+     */
+    public String getConnectionString() {
+        return connectionString;
+    }
 
-	/**
-	 * Returns the selected username.
-	 * @return the username
-	 * @see #setUser(String) setUser(String)
-	 */
-	public String getUser() {
-		return user;
-	}
+    /**
+     * Set the connection string to <code>connectString</code>.
+     * The connection string format depends on the selected provider.
+     * @param connectString the connection string to use
+     * @see #getConnectionString() getConnectionString()
+     */
+    public void setConnectionString(final String connectString) {
+        this.connectionString = connectString;
+    }
 
-	/**
-	 * Returns the selected password.
-	 * @return the password
-	 * @see #setPassword(String) setPassword(String)
-	 */
-	public String getPassword() {
-		return password;
-	}
-
-	/**
-	 * Sets the password to <code>pw</code>.
-	 * @param pw the password to set
-	 * @see #getPassword() getPassword()
-	 */
-	public void setPassword(final String pw) {
-		this.password = pw;
-	}
-
-	/**
-	 * Returns the selected connection string.
-	 * The connection string format depends on the selected provider.
-	 * @return the selected connection string
-	 * @see #setConnectionString(String) setConnectionString(String)
-	 */
-	public String getConnectionString() {
-		return connectionString;
-	}
-
-	/**
-	 * Set the connection string to <code>connectString</code>.
-	 * The connection string format depends on the selected provider.
-	 * @param connectString the connection string to use
-	 * @see #getConnectionString() getConnectionString()
-	 */
-	public void setConnectionString(final String connectString) {
-		this.connectionString = connectString;
-	}
-
-	/**
-	 * Returns a <code>java.sql.Connection</code> using the saved connection
-	 * string, authenticating with the saved username and password.
-	 * @return an instance of java.sql.Connection
-	 * @throws SQLException thrown by the <code>DriverManager</code> indicating
-	 * 		some kind of problem.
-	 */
-	public Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(connectionString, user, password);
-	}
+    /**
+     * Returns a <code>java.sql.Connection</code> using the saved connection
+     * string, authenticating with the saved username and password.
+     * @return an instance of java.sql.Connection
+     * @throws SQLException thrown by the <code>DriverManager</code> indicating
+     * 		some kind of problem.
+     */
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(connectionString, user, password);
+    }
 }

@@ -26,71 +26,79 @@ import com.thoughtworks.selenium.CommandProcessor;
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.selenium.SetupFixture;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import fit.Parse;
 
 /**
- * $Id: SetupFixtureTest.java 4 2009-08-27 16:10:18Z jochen_wierum $
  * @author kmussawisade
  */
 public class SetupFixtureTest extends FitGoodiesTestCase {
-	public final void testHelperInteraction() throws Exception {
-		Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-				+ "<tr><td>serverHost</td><td>server-host</td></tr>"
-				+ "<tr><td>serverPort</td><td>4444</td></tr>"
-				+ "<tr><td>browserStartCommand</td><td>browser-Start-Command</td></tr>"
-				+ "<tr><td>browserURL</td><td>browser-URL</td></tr>"
-				+ "<tr><td>speed</td><td>400</td></tr>"
-				+ "<tr><td>timeout</td><td>40</td></tr>"
-				+ "<tr><td>interval</td><td>10</td></tr>"
-				+ "<tr><td>takeScreenshots</td><td>true</td></tr>"
-				+ "<tr><td>sleepBeforeScreenshot</td><td>500</td></tr>"
-				+ "<tr><td>start</td><td>start config</td></tr>"
-				+ "</table>"
-				);
+    private SetupHelper helper;
 
-		final CommandProcessor commandProcessor = mock(CommandProcessor.class);
-		
-		checking(new Expectations(){{
-			oneOf(commandProcessor).start("start config");
-		}});
-		
-		SetupHelper.instance().setCommandProcessor(commandProcessor );
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+    }
 
-		SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table);
-		
-		assertEquals(0, fixture.counts.exceptions);
-		assertEquals("server-host", SetupHelper.instance().getServerHost());
-		assertEquals(4444, SetupHelper.instance().getServerPort());
-		assertEquals("browser-Start-Command", SetupHelper.instance().getBrowserStartCommand());
-		assertEquals("browser-URL", SetupHelper.instance().getBrowserURL());		
-		assertEquals("400", SetupHelper.instance().getSpeed());
-		assertEquals((Long)40l, SetupHelper.instance().getTimeout());
-		assertEquals((Long)10l, SetupHelper.instance().getInterval());
-		assertEquals(true, SetupHelper.instance().getTakeScreenshots());
-		assertEquals((Long)500l, SetupHelper.instance().sleepBeforeScreenshot());
-		assertNotNull(SetupHelper.instance().getCommandProcessor());
-	}
+    public final void testHelperInteraction() throws Exception {
+        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
+                + "<tr><td>serverHost</td><td>server-host</td></tr>"
+                + "<tr><td>serverPort</td><td>4444</td></tr>"
+                + "<tr><td>browserStartCommand</td><td>browser-Start-Command</td></tr>"
+                + "<tr><td>browserURL</td><td>browser-URL</td></tr>"
+                + "<tr><td>speed</td><td>400</td></tr>"
+                + "<tr><td>timeout</td><td>40</td></tr>"
+                + "<tr><td>interval</td><td>10</td></tr>"
+                + "<tr><td>takeScreenshots</td><td>true</td></tr>"
+                + "<tr><td>sleepBeforeScreenshot</td><td>500</td></tr>"
+                + "<tr><td>start</td><td>start config</td></tr>"
+                + "</table>"
+                );
 
-	public final void testHelperInteractionStopProcessor() throws Exception {
-		Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-				+ "<tr><td>stop</td><td></td></tr>"
-				+ "</table>"
-				);
+        final CommandProcessor commandProcessor = mock(CommandProcessor.class);
 
-		final CommandProcessor commandProcessor = mock(CommandProcessor.class);
-		
-		checking(new Expectations(){{
-			oneOf(commandProcessor).stop();
-		}});
-		
-		SetupHelper.instance().setCommandProcessor(commandProcessor );
+        checking(new Expectations(){{
+            oneOf(commandProcessor).start("start config");
+        }});
 
-		SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table);
-		
-		assertEquals(0, fixture.counts.exceptions);
-	}
+        helper.setCommandProcessor(commandProcessor );
+
+        SetupFixture fixture = new SetupFixture();
+        fixture.doTable(table);
+
+        assertEquals(0, fixture.counts.exceptions);
+        assertEquals("server-host", helper.getServerHost());
+        assertEquals(4444, helper.getServerPort());
+        assertEquals("browser-Start-Command", helper.getBrowserStartCommand());
+        assertEquals("browser-URL", helper.getBrowserURL());
+        assertEquals("400", helper.getSpeed());
+        assertEquals((Long)40l, helper.getTimeout());
+        assertEquals((Long)10l, helper.getInterval());
+        assertEquals(true, helper.getTakeScreenshots());
+        assertEquals((Long)500l, helper.sleepBeforeScreenshot());
+        assertNotNull(helper.getCommandProcessor());
+    }
+
+    public final void testHelperInteractionStopProcessor() throws Exception {
+        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
+                + "<tr><td>stop</td><td></td></tr>"
+                + "</table>"
+                );
+
+        final CommandProcessor commandProcessor = mock(CommandProcessor.class);
+
+        checking(new Expectations(){{
+            oneOf(commandProcessor).stop();
+        }});
+
+        helper.setCommandProcessor(commandProcessor );
+
+        SetupFixture fixture = new SetupFixture();
+        fixture.doTable(table);
+
+        assertEquals(0, fixture.counts.exceptions);
+    }
 
 }

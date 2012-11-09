@@ -27,6 +27,7 @@ import javax.mail.MessagingException;
 import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.mail.providers.JavaMailMessageProvider;
 import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 
 import fit.Parse;
@@ -60,172 +61,171 @@ import fit.TypeAdapter;
  * <tr><td>subject</td><td>regex</td><td>sp.m</td></tr>
  * </table>
  *
- *
  * @author jwierum
- * @version Id: MailFixture.java 178 2009-08-13 15:23:26Z jwierum $
  */
 public class MailFixture extends Fixture {
-	private final MessageProvider provider;
-	private Mail mail;
+    private final MessageProvider provider;
+    private Mail mail;
 
-	/**
-	 * Generates a new fixture using the given provider.
-	 * @param provider message provider to use
-	 */
-	public MailFixture(final MessageProvider provider) {
-		this.provider = provider;
-	}
+    /**
+     * Generates a new fixture using the given provider.
+     * @param provider message provider to use
+     */
+    public MailFixture(final MessageProvider provider) {
+        this.provider = provider;
+    }
 
-	/**
-	 * Generates a new fixture using the standard provider (which is JavaMail).
-	 */
-	public MailFixture() {
-		this(new JavaMailMessageProvider(SetupHelper.instance().generateProperties()));
-	}
+    /**
+     * Generates a new fixture using the standard provider (which is JavaMail).
+     */
+    public MailFixture() {
+        this(new JavaMailMessageProvider(
+                DependencyManager.INSTANCE.getOrCreate(SetupHelper.class).generateProperties()));
+    }
 
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
-		provider.connect();
-		mail = provider.getLatestMessage();
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        provider.connect();
+        mail = provider.getLatestMessage();
 
-		if (mail == null) {
-			provider.disconnect();
-			throw new RuntimeException("No mail found");
-		}
-	}
+        if (mail == null) {
+            provider.disconnect();
+            throw new RuntimeException("No mail found");
+        }
+    }
 
-	@Override
-	public void tearDown() throws Exception {
-		if (FixtureTools.convertToBoolean(getParam("delete", "true"))) {
-			mail.delete();
-		}
-		provider.disconnect();
-		super.tearDown();
-	}
+    @Override
+    public void tearDown() throws Exception {
+        if (FixtureTools.convertToBoolean(getParam("delete", "true"))) {
+            mail.delete();
+        }
+        provider.disconnect();
+        super.tearDown();
+    }
 
-	@Override
-	public void doRow(final Parse row) {
-		final String object = row.parts.text().toLowerCase();
-		final String command = row.parts.more.text();
-		final String content = parseContentCell(row);
+    @Override
+    public void doRow(final Parse row) {
+        final String object = row.parts.text().toLowerCase();
+        final String command = row.parts.more.text();
+        final String content = parseContentCell(row);
 
-		String[] objects;
-		objects = getMailContent(object);
+        String[] objects;
+        objects = getMailContent(object);
 
-		boolean right = false;
-		if (objects != null) {
-			for (String inspect : objects) {
-				if (inspect != null) {
-					right = dispatchMatcher(row.parts, command, content, inspect);
-					if (right) {
-						break;
-					}
-				}
-			}
-		}
+        boolean right = false;
+        if (objects != null) {
+            for (String inspect : objects) {
+                if (inspect != null) {
+                    right = dispatchMatcher(row.parts, command, content, inspect);
+                    if (right) {
+                        break;
+                    }
+                }
+            }
+        }
 
-		if (!right) {
-			markError(row.parts.more.more, objects);
-		}
-	}
+        if (!right) {
+            markError(row.parts.more.more, objects);
+        }
+    }
 
-	private String parseContentCell(final Parse row) {
-		try {
-			TypeAdapter ta = TypeAdapter.on(this, String.class);
-			FixtureTools.processCell(row.parts.more.more, ta, this);
-			return row.parts.more.more.text();
-		} catch (SecurityException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    private String parseContentCell(final Parse row) {
+        try {
+            TypeAdapter ta = TypeAdapter.on(this, String.class);
+            FixtureTools.processCell(row.parts.more.more, ta, this);
+            return row.parts.more.more.text();
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	private void markError(final Parse cell, final String[] objects) {
-		if (objects == null) {
-			makeMoreString(cell, "(unset)", 0);
-		} else {
-			boolean found = false;
-			for (String o : objects) {
-				if (o != null) {
-					found = true;
-					makeMoreString(cell, o, objects.length);
-					break;
-				}
-			}
-			if (!found) {
-				makeMoreString(cell, "(unset)", objects.length);
-			}
-		}
-	}
+    private void markError(final Parse cell, final String[] objects) {
+        if (objects == null) {
+            makeMoreString(cell, "(unset)", 0);
+        } else {
+            boolean found = false;
+            for (String o : objects) {
+                if (o != null) {
+                    found = true;
+                    makeMoreString(cell, o, objects.length);
+                    break;
+                }
+            }
+            if (!found) {
+                makeMoreString(cell, "(unset)", objects.length);
+            }
+        }
+    }
 
-	private void makeMoreString(final Parse cell, final String message, final int count) {
-		wrong(cell, preview(message));
-		if (count > 1) {
-			info(cell, " (+ " + (count - 1) + " more)");
-		}
-	}
+    private void makeMoreString(final Parse cell, final String message, final int count) {
+        wrong(cell, preview(message));
+        if (count > 1) {
+            info(cell, " (+ " + (count - 1) + " more)");
+        }
+    }
 
-	private String preview(final String text) {
-		final int PREVIEW_LENGTH = 128;
-		String result = text;
+    private String preview(final String text) {
+        final int PREVIEW_LENGTH = 128;
+        String result = text;
 
-		if (text.length() > PREVIEW_LENGTH) {
-			result = text.substring(0, PREVIEW_LENGTH) + "...";
-		}
+        if (text.length() > PREVIEW_LENGTH) {
+            result = text.substring(0, PREVIEW_LENGTH) + "...";
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	private boolean dispatchMatcher(final Parse cells, final String command,
-			final String content, final String inspect) {
-		if (command.equals("contains")) {
-			return matchContains(cells.more.more, content, inspect);
-		} else if (command.equals("regex")) {
-			return matchRegex(cells.more.more, content, inspect);
-		} else {
-			ignore(cells.more);
-			return true;
-		}
-	}
+    private boolean dispatchMatcher(final Parse cells, final String command,
+            final String content, final String inspect) {
+        if (command.equals("contains")) {
+            return matchContains(cells.more.more, content, inspect);
+        } else if (command.equals("regex")) {
+            return matchRegex(cells.more.more, content, inspect);
+        } else {
+            ignore(cells.more);
+            return true;
+        }
+    }
 
-	private boolean matchContains(final Parse cell,
-			final String expected, final String actual) {
-		for (String line : actual.split("\n")) {
-			if (line.toLowerCase().contains(expected.toLowerCase())) {
-				right(cell);
-				cell.addToBody("<hr />" + escape(line));
-				return true;
-			}
-		}
-		return false;
-	}
+    private boolean matchContains(final Parse cell,
+            final String expected, final String actual) {
+        for (String line : actual.split("\n")) {
+            if (line.toLowerCase().contains(expected.toLowerCase())) {
+                right(cell);
+                cell.addToBody("<hr />" + escape(line));
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private boolean matchRegex(final Parse cell,
-			final String expected, final String actual) {
-		Matcher matcher = Pattern.compile(expected).matcher(actual);
+    private boolean matchRegex(final Parse cell,
+            final String expected, final String actual) {
+        Matcher matcher = Pattern.compile(expected).matcher(actual);
 
-		if (matcher.find()) {
-			right(cell);
-			cell.addToBody("<hr />" + escape(matcher.group(0)));
-			return true;
-		} else {
-			return false;
-		}
-	}
+        if (matcher.find()) {
+            right(cell);
+            cell.addToBody("<hr />" + escape(matcher.group(0)));
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	private String[] getMailContent(final String object) {
-		try {
-			if ("body".equals(object)) {
-				return new String[]{mail.getPlainContent(), mail.getHTMLContent()};
-			} else if ("plainbody".equals(object)) {
-				return new String[]{mail.getPlainContent()};
-			} else if ("htmlbody".equals(object)) {
-				return new String[]{mail.getHTMLContent()};
-			} else {
-				return mail.getHeader(object);
-			}
-		} catch (MessagingException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    private String[] getMailContent(final String object) {
+        try {
+            if ("body".equals(object)) {
+                return new String[]{mail.getPlainContent(), mail.getHTMLContent()};
+            } else if ("plainbody".equals(object)) {
+                return new String[]{mail.getPlainContent()};
+            } else if ("htmlbody".equals(object)) {
+                return new String[]{mail.getHTMLContent()};
+            } else {
+                return mail.getHeader(object);
+            }
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

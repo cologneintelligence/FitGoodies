@@ -37,122 +37,102 @@ import de.cologneintelligence.fitgoodies.util.SystemPropertyProvider;
  *
  * @see SetupFixture SetupFixture
  * @author jwierum
- * @version $Id$
  */
 
 public final class CrossReferenceHelper {
-	private static CrossReferenceHelper instance;
-	private final Processors processors = new Processors();
+    private final Processors processors = new Processors();
 
-	private CrossReferenceHelper() {
-		processors.add(new EmptyCrossReferenceProcessor());
-		processors.add(new StorageCrossReferenceProcessor());
-		processors.add(new FileFixtureCrossReferenceProcessor());
-		processors.add(new PropertyCrossReferenceProcessor());
-		processors.add(new EnvironmentPropertyCrossReferenceProcessor(new SystemPropertyProvider()));
-		processors.add(new DateProviderCrossReferenceProcessor(new DateProviderImpl()));
-	};
+    public CrossReferenceHelper() {
+        processors.add(new EmptyCrossReferenceProcessor());
+        processors.add(new StorageCrossReferenceProcessor());
+        processors.add(new FileFixtureCrossReferenceProcessor());
+        processors.add(new PropertyCrossReferenceProcessor());
+        processors.add(new EnvironmentPropertyCrossReferenceProcessor(new SystemPropertyProvider()));
+        processors.add(new DateProviderCrossReferenceProcessor(new DateProviderImpl()));
+    };
 
-	/**
-	 * Returns the instance of <code>CrossReferenceHelper</code>.
-	 * @return an instance of <code>CrossReferenceHelper</code>
-	 */
-	public static CrossReferenceHelper instance() {
-		if (instance == null) {
-			instance = new CrossReferenceHelper();
-		}
-		return instance;
-	}
+    /**
+     * Gets the processor list.
+     * @return a list of registered processors.
+     */
+    public Processors getProcessors() {
+        return processors;
+    }
 
-	/**
-	 * Resets the processors to the default ones.
-	 */
-	public static void reset() {
-		instance = null;
-	}
+    /**
+     * Checks whether <code>string</code> contains one or more cross references.
+     * @param string string to check
+     * @return true whether at least one cross reference is present, false otherwise
+     */
+    public boolean containsCrossReference(final String string) {
+        Matcher m = processors.getSearchPattern().matcher(string);
+        return m.find();
+    }
 
-	/**
-	 * Gets the processor list.
-	 * @return a list of registered processors.
-	 */
-	public Processors getProcessors() {
-		return processors;
-	}
+    /**
+     * Extracts a cross reference from the beginning of <code>string</code>.
+     * @param string string to process
+     * @return <code>CrossReference</code> object which holds the extracted
+     * 		reference
+     */
+    public CrossReference getCrossReference(final StringBuilder string) {
+        CrossReference result = null;
 
-	/**
-	 * Checks whether <code>string</code> contains one or more cross references.
-	 * @param string string to check
-	 * @return true whether at least one cross reference is present, false otherwise
-	 */
-	public boolean containsCrossReference(final String string) {
-		Matcher m = processors.getSearchPattern().matcher(string);
-		return m.find();
-	}
+        Matcher m = processors.getExtractPattern().matcher(string);
+        if (m.find()) {
+            String match = m.group(1);
+            for (int i = 0; i < processors.count(); ++i) {
+                result = processors.get(i).extractCrossReference(match);
 
-	/**
-	 * Extracts a cross reference from the beginning of <code>string</code>.
-	 * @param string string to process
-	 * @return <code>CrossReference</code> object which holds the extracted
-	 * 		reference
-	 */
-	public CrossReference getCrossReference(final StringBuilder string) {
-		CrossReference result = null;
+                if (result != null) {
+                    break;
+                }
+            }
 
-		Matcher m = processors.getExtractPattern().matcher(string);
-		if (m.find()) {
-			String match = m.group(1);
-			for (int i = 0; i < processors.count(); ++i) {
-				result = processors.get(i).extractCrossReference(match);
+            string.delete(0, m.group(0).length());
+        }
 
-				if (result != null) {
-					break;
-				}
-			}
+        return result;
+    }
 
-			string.delete(0, m.group(0).length());
-		}
+    /**
+     * Parses a string and resolves all occurring cross references.
+     * @param text cell text to process
+     * @param object actual object which is compared with the cell afterwards
+     * @return the new text to compare
+     * @throws CrossReferenceProcessorShortcutException thrown if no more comparison is needed
+     */
+    public String parseBody(final String text, final Object object)
+            throws CrossReferenceProcessorShortcutException {
+        String returnValue = text;
 
-		return result;
-	}
+        if (containsCrossReference(text)) {
+            StringBuilder todo = new StringBuilder(text);
+            StringBuilder result = new StringBuilder();
 
-	/**
-	 * Parses a string and resolves all occurring cross references.
-	 * @param text cell text to process
-	 * @param object actual object which is compared with the cell afterwards
-	 * @return the new text to compare
-	 * @throws CrossReferenceProcessorShortcutException thrown if no more comparison is needed
-	 */
-	public String parseBody(final String text, final Object object)
-			throws CrossReferenceProcessorShortcutException {
-		String returnValue = text;
+            while (todo.length() > 0) {
+                if (todo.charAt(0) == '$') {
+                    CrossReference cr = getCrossReference(todo);
 
-		if (containsCrossReference(text)) {
-			StringBuilder todo = new StringBuilder(text);
-			StringBuilder result = new StringBuilder();
+                    if (cr != null) {
+                        result.append(processCrossReference(cr, object));
+                    } else {
+                        result.append('$');
+                        todo.deleteCharAt(0);
+                    }
+                } else {
+                    result.append(todo.charAt(0));
+                    todo.deleteCharAt(0);
+                }
+            }
 
-			while (todo.length() > 0) {
-				if (todo.charAt(0) == '$') {
-					CrossReference cr = getCrossReference(todo);
+            returnValue = result.toString();
+        }
+        return returnValue;
+    }
 
-					if (cr != null) {
-						result.append(processCrossReference(cr, object));
-					} else {
-						result.append('$');
-						todo.deleteCharAt(0);
-					}
-				} else {
-					result.append(todo.charAt(0));
-					todo.deleteCharAt(0);
-				}
-			}
-
-			returnValue = result.toString();
-		}
-		return returnValue;
-	}
-
-	private String processCrossReference(final CrossReference cr, final Object object)
-			throws CrossReferenceProcessorShortcutException {
-		return cr.getProcessor().processMatch(cr, object);
-	}
+    private String processCrossReference(final CrossReference cr, final Object object)
+            throws CrossReferenceProcessorShortcutException {
+        return cr.getProcessor().processMatch(cr, object);
+    }
 }

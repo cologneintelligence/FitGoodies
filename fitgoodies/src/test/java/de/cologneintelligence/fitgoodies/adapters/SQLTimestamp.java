@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.date.SetupHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.TypeAdapter;
 
 public class SQLTimestamp extends FitGoodiesTestCase {
@@ -45,8 +46,9 @@ public class SQLTimestamp extends FitGoodiesTestCase {
     public final void testDateFormat() throws Exception {
         final TypeAdapter ta = new TypeAdapter();
 
-        SetupHelper.instance().setLocale("de_DE");
-        SetupHelper.instance().setFormat("dd.MM.yyyy");
+        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper.setLocale("de_DE");
+        helper.setFormat("dd.MM.yyyy");
 
         final SQLTimestampTypeAdapter p = new SQLTimestampTypeAdapter(ta, null);
 

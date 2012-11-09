@@ -30,47 +30,47 @@ import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
  * @author jwierum
  */
 public class SetupHelperTest extends FitGoodiesTestCase {
-	public final void testSingleton() {
-		final SetupHelper expected = SetupHelper.instance();
-		assertNotNull(expected);
-		assertSame(expected, SetupHelper.instance());
-		SetupHelper.reset();
-		assertNotSame(expected, SetupHelper.instance());
-	}
+    private SetupHelper helper;
 
-	public final void testProvider() throws Exception {
-		SetupHelper.setProvider("de.cologneintelligence.fitgoodies.database.DriverMock");
-		assertNotNull(DriverManager.getDriver("jdbc://test"));
-	}
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        helper = new SetupHelper();
+    }
 
-	public final void testUser() {
-		SetupHelper.instance().setUser("test");
-		assertEquals("test", SetupHelper.instance().getUser());
-		SetupHelper.instance().setUser("user");
-		assertEquals("user", SetupHelper.instance().getUser());
-	}
+    public final void testProvider() throws Exception {
+        SetupHelper.setProvider("de.cologneintelligence.fitgoodies.database.DriverMock");
+        assertNotNull(DriverManager.getDriver("jdbc://test"));
+    }
 
-	public final void testPassword() {
-		SetupHelper.instance().setPassword("pass");
-		assertEquals("pass", SetupHelper.instance().getPassword());
-		SetupHelper.instance().setPassword("pw2");
-		assertEquals("pw2", SetupHelper.instance().getPassword());
-	}
+    public final void testUser() {
+        helper.setUser("test");
+        assertEquals("test", helper.getUser());
+        helper.setUser("user");
+        assertEquals("user", helper.getUser());
+    }
 
-	public final void testSetConnectionString() {
-		SetupHelper.instance().setConnectionString("text");
-		assertEquals("text", SetupHelper.instance().getConnectionString());
-		SetupHelper.instance().setConnectionString("t2");
-		assertEquals("t2", SetupHelper.instance().getConnectionString());
-	}
+    public final void testPassword() {
+        helper.setPassword("pass");
+        assertEquals("pass", helper.getPassword());
+        helper.setPassword("pw2");
+        assertEquals("pw2", helper.getPassword());
+    }
 
-	public final void testGetConnection() throws Exception {
-		SetupHelper.setProvider("de.cologneintelligence.fitgoodies.database.DriverMock");
-		SetupHelper.instance().setUser("username");
-		SetupHelper.instance().setPassword("pw1");
-		SetupHelper.instance().setConnectionString("jdbc://test/url");
-		final Connection conn = SetupHelper.instance().getConnection();
-		assertNotNull(conn);
-		assertEquals(DriverMock.getLastReturnedConnection(), conn);
-	}
+    public final void testSetConnectionString() {
+        helper.setConnectionString("text");
+        assertEquals("text", helper.getConnectionString());
+        helper.setConnectionString("t2");
+        assertEquals("t2", helper.getConnectionString());
+    }
+
+    public final void testGetConnection() throws Exception {
+        SetupHelper.setProvider("de.cologneintelligence.fitgoodies.database.DriverMock");
+        helper.setUser("username");
+        helper.setPassword("pw1");
+        helper.setConnectionString("jdbc://test/url");
+        final Connection conn = helper.getConnection();
+        assertNotNull(conn);
+        assertEquals(DriverMock.getLastReturnedConnection(), conn);
+    }
 }

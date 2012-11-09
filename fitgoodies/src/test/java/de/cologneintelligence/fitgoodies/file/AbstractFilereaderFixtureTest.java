@@ -22,6 +22,7 @@ package de.cologneintelligence.fitgoodies.file;
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.file.AbstractFileReaderFixture;
 import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 
 /**
@@ -29,62 +30,70 @@ import fit.Parse;
  * @author jwierum
  */
 public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
-	public static class TestFixture extends AbstractFileReaderFixture {
-		public String x;
-	}
+    public static class TestFixture extends AbstractFileReaderFixture {
+        public String x;
+    }
 
-	public final void testDefaultParameters() throws Exception {
-		FileFixtureHelper.instance().setEncoding("latin-1");
-		FileFixtureHelper.instance().setProvider(new DirectoryProviderMock());
-		FileFixtureHelper.instance().setPattern(".*\\.bat");
+    private FileFixtureHelper helper;
 
-		TestFixture fixture = new TestFixture();
-		Parse table = new Parse("<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>x</td></tr>"
-				+ "</table>");
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+    }
 
-		fixture.doTable(table);
+    public final void testDefaultParameters() throws Exception {
+        helper.setEncoding("latin-1");
+        helper.setProvider(new DirectoryProviderMock());
+        helper.setPattern(".*\\.bat");
 
-		assertEquals("/f.txt.bat", fixture.getFile().fullname());
-		assertEquals("latin-1", fixture.getEncoding());
+        TestFixture fixture = new TestFixture();
+        Parse table = new Parse("<table>"
+                + "<tr><td>ignore</td></tr>"
+                + "<tr><td>x</td></tr>"
+                + "</table>");
 
-		FileFixtureHelper.instance().setEncoding("utf-16");
-		FileFixtureHelper.instance().setProvider(new DirectoryProviderMock());
-		FileFixtureHelper.instance().setPattern(".*");
-		fixture = new TestFixture();
-		fixture.doTable(table);
+        fixture.doTable(table);
 
-		assertEquals("/test/file1.txt", fixture.getFile().fullname());
-		assertEquals("utf-16", fixture.getEncoding());
-	}
+        assertEquals("/f.txt.bat", fixture.getFile().fullname());
+        assertEquals("latin-1", fixture.getEncoding());
 
-	public final void testErrors() throws Exception {
-		TestFixture fixture = new TestFixture();
-		Parse table = new Parse("<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>x</td></tr>"
-				+ "</table>");
+        helper.setEncoding("utf-16");
+        helper.setProvider(new DirectoryProviderMock());
+        helper.setPattern(".*");
+        fixture = new TestFixture();
+        fixture.doTable(table);
 
-		fixture.doTable(table);
+        assertEquals("/test/file1.txt", fixture.getFile().fullname());
+        assertEquals("utf-16", fixture.getEncoding());
+    }
 
-		assertEquals(1, fixture.counts.exceptions);
-	}
+    public final void testErrors() throws Exception {
+        TestFixture fixture = new TestFixture();
+        Parse table = new Parse("<table>"
+                + "<tr><td>ignore</td></tr>"
+                + "<tr><td>x</td></tr>"
+                + "</table>");
 
-	public final  void testCustomParameters() throws Exception {
-		TestFixture fixture = new TestFixture();
-		Parse table = new Parse("<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>x</td></tr>"
-				+ "</table>");
+        fixture.doTable(table);
 
-		FileFixtureHelper.instance().setProvider(new DirectoryProviderMock());
-		fixture.setParams(new String[] {"pattern=.*\\.bat", "encoding=cp1252"});
-		fixture.doTable(table);
+        assertEquals(1, fixture.counts.exceptions);
+    }
 
-		assertEquals(0, fixture.counts.exceptions);
+    public final  void testCustomParameters() throws Exception {
+        TestFixture fixture = new TestFixture();
+        Parse table = new Parse("<table>"
+                + "<tr><td>ignore</td></tr>"
+                + "<tr><td>x</td></tr>"
+                + "</table>");
 
-		assertEquals("/f.txt.bat", fixture.getFile().fullname());
-		assertEquals("cp1252", fixture.getEncoding());
-	}
+        helper.setProvider(new DirectoryProviderMock());
+        fixture.setParams(new String[] {"pattern=.*\\.bat", "encoding=cp1252"});
+        fixture.doTable(table);
+
+        assertEquals(0, fixture.counts.exceptions);
+
+        assertEquals("/f.txt.bat", fixture.getFile().fullname());
+        assertEquals("cp1252", fixture.getEncoding());
+    }
 }

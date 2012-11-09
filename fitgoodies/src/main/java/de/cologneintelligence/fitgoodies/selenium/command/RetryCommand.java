@@ -9,14 +9,16 @@ import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
 
 
 public class RetryCommand extends WrappedCommand {
+    private final SetupHelper helper;
 
-    public RetryCommand(final String command, final String[] args) {
-        super(command, args);
+    public RetryCommand(final String command, final String[] args, final SetupHelper helper) {
+        super(command, args, helper.getCommandProcessor());
+        this.helper = helper;
     }
 
     @Override
     public String execute() {
-        Retry retry = new Retry(SetupHelper.instance().getTimeout(), SetupHelper.instance().getInterval()) {
+        Retry retry = new Retry(helper.getTimeout(), helper.getInterval()) {
             private String result;
             @Override
             public boolean execute() {
@@ -35,6 +37,4 @@ public class RetryCommand extends WrappedCommand {
     private String attemptMessage(final int count) {
         return "attempts: " + count + " times";
     }
-
-
 }
