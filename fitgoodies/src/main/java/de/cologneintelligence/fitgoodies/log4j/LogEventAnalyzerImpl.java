@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009  Cologne Intelligence GmbH
+ * Copyright (c) 2009-2012  Cologne Intelligence GmbH
  * This file is part of FitGoodies.
  *
  * Foobar is free software: you can redistribute it and/or modify
