@@ -79,7 +79,7 @@ public final class LogHelperTest extends FitGoodiesTestCase {
 
     @Override
     public void setUp() throws Exception {
-        helper = DependencyManager.INSTANCE.getOrCreate(LogHelper.class);
+        helper = DependencyManager.getOrCreate(LogHelper.class);
     }
 
     public void testAppender() {

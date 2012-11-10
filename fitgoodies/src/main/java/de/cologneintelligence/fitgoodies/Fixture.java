@@ -19,6 +19,10 @@
 
 package de.cologneintelligence.fitgoodies;
 
+import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
+import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Parse;
 import fit.TypeAdapter;
@@ -45,8 +49,10 @@ public class Fixture extends fit.Fixture {
      */
 	@Override
 	public void check(final Parse cell, final TypeAdapter a) {
-		TypeAdapter ta = FixtureTools.rebindTypeAdapter(a, cellParameter);
-		ta = FixtureTools.processCell(cell, ta, this);
+	    final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
+		TypeAdapter ta = FixtureTools.rebindTypeAdapter(a, cellParameter, taHelper);
+		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+		ta = FixtureTools.processCell(cell, ta, this, helper);
 		if (ta != null) {
 			super.check(cell, ta);
 		}
@@ -66,7 +72,8 @@ public class Fixture extends fit.Fixture {
 	 */
 	@Override @SuppressWarnings("rawtypes")
 	public Object parse(final String text, final Class type) throws Exception {
-		final Object result = FixtureTools.parse(text, type, cellParameter);
+	    final ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
+		final Object result = FixtureTools.parse(text, type, cellParameter, helper);
 
 		if (result == null) {
 			return super.parse(text, type);
@@ -97,7 +104,9 @@ public class Fixture extends fit.Fixture {
 	 */
     @Override
     public void doTable(final Parse table) {
-    	FixtureTools.copyParamsToFixture(args, this);
+    	FixtureTools.copyParamsToFixture(args, this,
+    	        DependencyManager.getOrCreate(CrossReferenceHelper.class),
+    	        DependencyManager.getOrCreate(TypeAdapterHelper.class));
 
     	try {
     		setUp();
@@ -153,7 +162,8 @@ public class Fixture extends fit.Fixture {
      * @return the parameter value, if it could be found, <code>defaultValue</code> otherwise
 	 */
 	public final String getParam(final String paramName, final String defaultValue) {
-		return FixtureTools.getArg(args, paramName, defaultValue);
+		return FixtureTools.getArg(args, paramName, defaultValue,
+		        DependencyManager.getOrCreate(CrossReferenceHelper.class));
 	}
 
 	/**

@@ -46,7 +46,7 @@ public class SetupFixture extends ActionFixture {
      * processor list.
      */
     public SetupFixture() {
-        this(DependencyManager.INSTANCE.getOrCreate(
+        this(DependencyManager.getOrCreate(
                 CrossReferenceHelper.class).getProcessors());
     }
 

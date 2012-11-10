@@ -35,11 +35,9 @@ import fit.TypeAdapter;
  * Example: &quot;<code>en_US, MM/dd/yyyy</code>&quot;.
  *
  * @author jwierum
- * @version $Id$
  */
 public class SQLDateTypeAdapter extends AbstractTypeAdapter<Date> {
-
-	/**
+    /**
 	 * Creates a new TypeAdapter which bases on <code>ta</code>.
 	 * @param ta ta TypeAdapter to use as source
 	 * @param convertParameter a parameter in the format [locale, format] which
@@ -68,7 +66,7 @@ public class SQLDateTypeAdapter extends AbstractTypeAdapter<Date> {
 	public final Date parse(final String s) throws ParseException {
 		try {
 			return Date.valueOf(s);
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			return new Date(new DateTypeAdapter(this, getParameter()).parse(s).getTime());
 		}
 	}

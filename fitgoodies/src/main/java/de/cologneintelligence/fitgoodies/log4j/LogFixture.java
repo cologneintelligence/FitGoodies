@@ -24,8 +24,9 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.spi.AppenderAttachable;
 
 import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
-
 import fit.Parse;
 import fit.TypeAdapter;
 
@@ -128,26 +129,27 @@ public class LogFixture extends Fixture {
 	}
 
 	private void executeCommand() {
-		CellArgumentParser parser = cellArgumentParserFactory.getParserFor(
+		final CellArgumentParser parser = cellArgumentParserFactory.getParserFor(
 				getCell(COMMAND_COLUMN));
 
-		Map<String, String> parameters = parser.getExtractedCommandParameters();
-		String command = getCell(COMMAND_COLUMN).text();
-		String checkExpression = getExpressionCellContent();
+		final Map<String, String> parameters = parser.getExtractedCommandParameters();
+		final String command = getCell(COMMAND_COLUMN).text();
+		final String checkExpression = getExpressionCellContent();
 
 		dispatchCommand(command, parameters, checkExpression);
 	}
 
 	private String getExpressionCellContent() {
 		final Parse cell = getCell(CHECK_EXPRESSION_COLUMN);
-		TypeAdapter ta = TypeAdapter.on(this, String.class);
-		FixtureTools.processCell(cell, ta, this);
+		final TypeAdapter ta = TypeAdapter.on(this, String.class);
+		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+		FixtureTools.processCell(cell, ta, this, helper);
 		return cell.text();
 	}
 
 	private CaptureAppender getAppender() {
 		final String loggerName = getCell(LOGGER_COLUMN).text();
-		AppenderAttachable logger = getLogger(loggerName);
+		final AppenderAttachable logger = getLogger(loggerName);
 
 		if (logger == null) {
 			error(getCell(LOGGER_COLUMN), "Invalid logger");
@@ -157,7 +159,7 @@ public class LogFixture extends Fixture {
 		final String appenderName = getCell(APPENDER_COLUMN).text();
 		final String captureAppenderName = CaptureAppender.getAppenderNameFor(appenderName);
 
-		Appender appender = logger.getAppender(captureAppenderName);
+		final Appender appender = logger.getAppender(captureAppenderName);
 		if (appender == null) {
 			error(getCell(APPENDER_COLUMN), "Invalid appender or appender not captured");
 			return null;

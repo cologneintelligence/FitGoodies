@@ -30,7 +30,6 @@ import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
 import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
-
 import fit.Fixture;
 import fit.Parse;
 import fit.TypeAdapter;
@@ -79,18 +78,20 @@ public final class FixtureTools {
      * @param cell the cell to parse
      * @param ta the type bound adapter which is used to compare the cell content
      * @param parent the parent fixture
+     * @param crossReferenceHelper
      * @return a cached <code>TypeAdapter</code>, whether the cell should be
      * 		<code>check</code>'ed, <code>null</code> if no more processing is
      * 		required (the cell is then marked as right or wrong from
      * 		<code>processCell</code>)
      */
     public static TypeAdapter processCell(final Parse cell,
-            final TypeAdapter ta, final Fixture parent) {
+            final TypeAdapter ta, final Fixture parent,
+            final CrossReferenceHelper crossReferenceHelper) {
 
         String actualStringValue = "";
         boolean callParentCheck = true;
 
-        TypeAdapter adapter = new CachingTypeAdapter(ta);
+        final TypeAdapter adapter = new CachingTypeAdapter(ta);
 
         Object obj;
         try {
@@ -98,15 +99,13 @@ public final class FixtureTools {
             if (obj != null) {
                 actualStringValue = adapter.toString(obj);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
 
-        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(
-                CrossReferenceHelper.class);
         try {
-            cell.body = helper.parseBody(cell.body, actualStringValue);
-        } catch (CrossReferenceProcessorShortcutException e) {
+            cell.body = crossReferenceHelper.parseBody(cell.body, actualStringValue);
+        } catch (final CrossReferenceProcessorShortcutException e) {
             setShortCutMessage(cell, parent, actualStringValue, obj, e);
             callParentCheck = false;
         }
@@ -153,11 +152,10 @@ public final class FixtureTools {
      * @throws Exception should be propagated to fit.
      */
     public static Object parse(final String text, final Class<?> type,
-            final String parameter)
+            final String parameter, final ParserHelper parserHelper)
                     throws Exception {
 
-        ParserHelper helper = DependencyManager.INSTANCE.getOrCreate(ParserHelper.class);
-        return helper.parse(text, type, parameter);
+        return parserHelper.parse(text, type, parameter);
     }
 
     /**
@@ -168,13 +166,12 @@ public final class FixtureTools {
      * If no suitable TypeAdapter could be found, the old one is returned.
      * @param ta the <code>TypeAdapter</code> to replace.
      * @param parameter column/row parameter
+     * @param taHelper
      * @return a TypeAdapter
      */
     public static TypeAdapter rebindTypeAdapter(final TypeAdapter ta,
-            final String parameter) {
-        TypeAdapterHelper helper = DependencyManager.INSTANCE.getOrCreate(
-                TypeAdapterHelper.class);
-        return helper.getAdapter(ta, parameter);
+            final String parameter, final TypeAdapterHelper taHelper) {
+        return taHelper.getAdapter(ta, parameter);
     }
 
     /**
@@ -197,20 +194,18 @@ public final class FixtureTools {
      * @see #copyParamsToFixture(String[], Fixture) copyParamsToFixture
      */
     public static String getArg(final String[] args, final String argName,
-            final String defaultValue) {
+            final String defaultValue, final CrossReferenceHelper crossReferenceHelper) {
         if (args == null) {
             return defaultValue;
         }
 
-        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
-
-        for (String argument : args) {
-            String[] pair = argument.split("=", 2);
+        for (final String argument : args) {
+            final String[] pair = argument.split("=", 2);
             if (pair.length == 2) {
                 if (pair[0].trim().equalsIgnoreCase(argName)) {
                     try {
-                        return helper.parseBody(pair[1].trim(), "");
-                    } catch (CrossReferenceProcessorShortcutException e) {
+                        return crossReferenceHelper.parseBody(pair[1].trim(), "");
+                    } catch (final CrossReferenceProcessorShortcutException e) {
                         return "";
                     }
                 }
@@ -246,14 +241,14 @@ public final class FixtureTools {
      * @see #copyParamsToFixture(String[], Fixture) copyParamsToFixture
      */
     public static String[] getArgs(final String[] args) {
-        List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>();
 
         if (args == null) {
             return new String[]{};
         }
 
-        for (String argument : args) {
-            String[] pair = argument.split("=", 2);
+        for (final String argument : args) {
+            final String[] pair = argument.split("=", 2);
             if (pair.length == 2) {
                 result.add(pair[0].trim());
             }
@@ -271,20 +266,25 @@ public final class FixtureTools {
      *
      * @param args argument list to process
      * @param fixture fixture to copy the values to
+     * @param crossReferenceHelper
+     * @param taHelper
      *
      * @see #getArg(String[], String, String) getArg
      * @see #getArgs(String[]) getArgs
      */
-    public static void copyParamsToFixture(final String[] args, final Fixture fixture) {
-        for (String fieldName : getArgs(args)) {
+    public static void copyParamsToFixture(final String[] args, final Fixture fixture,
+            final CrossReferenceHelper crossReferenceHelper,
+            final TypeAdapterHelper taHelper) {
+        for (final String fieldName : getArgs(args)) {
             try {
-                Field field = fixture.getClass().getField(fieldName);
-                TypeAdapter ta = rebindTypeAdapter(TypeAdapter.on(fixture, field), null);
+                final Field field = fixture.getClass().getField(fieldName);
+                final TypeAdapter ta = rebindTypeAdapter(TypeAdapter.on(fixture, field), null,
+                        taHelper);
 
-                String fieldValueString = getArg(args, fieldName, null);
-                Object fieldValue = ta.parse(fieldValueString);
+                final String fieldValueString = getArg(args, fieldName, null, crossReferenceHelper);
+                final Object fieldValue = ta.parse(fieldValueString);
                 ta.set(fieldValue);
-            } catch (Exception e) {
+            } catch (final Exception e) {
             }
         }
     }
@@ -296,7 +296,7 @@ public final class FixtureTools {
      */
     public static String[] extractColumnParameters(final Parse row) {
         Parse cell = row.parts;
-        List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>();
 
         while (cell != null) {
             result.add(extractCellParameter(cell));
@@ -312,7 +312,7 @@ public final class FixtureTools {
      * @return the extracted parameter or <code>null</code>
      */
     public static String extractCellParameter(final Parse cell) {
-        Matcher matcher = parameterPattern.matcher(cell.text());
+        final Matcher matcher = parameterPattern.matcher(cell.text());
         if (matcher.matches()) {
             cell.body = matcher.group(1);
             return matcher.group(2);

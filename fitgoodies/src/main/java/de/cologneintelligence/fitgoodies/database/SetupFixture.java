@@ -53,7 +53,7 @@ public class SetupFixture extends ActionFixture {
      * @param userName the database username
      */
     public final void user(final String userName) {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setUser(userName);
     }
 
@@ -71,7 +71,7 @@ public class SetupFixture extends ActionFixture {
      * @param password the database password
      */
     public final void password(final String password) {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setPassword(password);
     }
 
@@ -90,7 +90,7 @@ public class SetupFixture extends ActionFixture {
      * @param uri the database connectoin string
      */
     public final void connectionString(final String uri) {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setConnectionString(uri);
     }
 

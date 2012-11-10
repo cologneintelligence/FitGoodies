@@ -35,7 +35,7 @@ public final class SetupHelperTest extends FitGoodiesTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper = DependencyManager.getOrCreate(SetupHelper.class);
     }
 
     public void testErrors() {

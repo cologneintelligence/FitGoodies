@@ -24,19 +24,17 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 
 public class FileInformationTest extends FitGoodiesTestCase {
     public final void testOpenBufferedReader() throws IOException {
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        final FileFixtureHelper helper = new FileFixtureHelper();
         helper.setEncoding("iso-8859-1");
 
         FileInformationMock file = new FileInformationMock("C:\\dir",
                 "test.txt", "line1\nline2\näöü".getBytes(Charset.forName("iso-8859-1")));
 
-        BufferedReader br = file.openBufferedReader();
+        BufferedReader br = file.openBufferedReader(helper);
         assertEquals("line1", br.readLine());
         assertEquals("line2", br.readLine());
         assertEquals("äöü", br.readLine());
@@ -45,7 +43,7 @@ public class FileInformationTest extends FitGoodiesTestCase {
         helper.setEncoding("utf-16");
         file = new FileInformationMock("C:\\dir",
                 "test.txt", "äöü".getBytes(Charset.forName("utf-16")));
-        br = file.openBufferedReader();
+        br = file.openBufferedReader(helper);
         assertEquals("äöü", br.readLine());
         br.close();
     }

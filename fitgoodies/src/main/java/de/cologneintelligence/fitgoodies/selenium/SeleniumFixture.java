@@ -66,7 +66,7 @@ public class SeleniumFixture extends ActionFixture {
             final String[] args = new String[] { getColumnOrEmptyString(cells, 1),
                     getColumnOrEmptyString(cells, 2) };
             String result = CommandFactory.createCommand(command, args,
-                    DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)).execute();
+                    DependencyManager.getOrCreate(SetupHelper.class)).execute();
             checkResult(cells, result);
         } catch (final SeleniumException e) {
             wrong(lastCell(cells), e.getMessage());
@@ -78,7 +78,7 @@ public class SeleniumFixture extends ActionFixture {
     @Override
     public void wrong(final Parse cell, final String message) {
         super.wrong(cell, message);
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         if (helper.getTakeScreenshots()) {
             takeScreenShot(cell);
         }
@@ -90,13 +90,13 @@ public class SeleniumFixture extends ActionFixture {
 
     private void takeScreenShot(final Parse cell) {
         String fileName = createSnapshotFilename(screenshotIndex++);
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         CommandFactory.createCommand("captureEntirePageScreenshot", new String[] { fileName, "" }, helper).execute();
         addScreenshotLinkToReportPage(cell, fileName);
     }
 
     private String createSnapshotFilename(final int index) {
-        RunnerHelper helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+        RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
         return helper.getResultFilePath() + ".screenshot" + index + ".png";
     }
 
@@ -109,7 +109,7 @@ public class SeleniumFixture extends ActionFixture {
             parse = parse.more;
         }
 
-        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         return helper.parseBody(parse.text(), null);
     }
 

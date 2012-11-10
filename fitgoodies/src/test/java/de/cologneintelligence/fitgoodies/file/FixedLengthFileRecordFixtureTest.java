@@ -64,7 +64,7 @@ public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {
         Parse row = new Parse("<tr><td>1</td><td>${width.get(col2)}</td></tr>",
                 new String[]{"tr", "td"});
 
-        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.parseBody("${width.put(col2)}", 23);
         int[] actual = fixture.extractWidth(row);
 

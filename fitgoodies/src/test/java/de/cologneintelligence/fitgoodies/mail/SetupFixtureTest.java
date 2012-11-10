@@ -47,7 +47,7 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
         fixture.doTable(table1);
 
         assertEquals(0, fixture.counts.exceptions);
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         Properties prop = helper.generateProperties();
 
         assertEquals("pop3", prop.getProperty("mail.store.protocol"));
@@ -71,7 +71,7 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
         fixture.doTable(table1);
 
         assertEquals(0, fixture.counts.exceptions);
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         Properties prop = helper.generateProperties();
 
         assertEquals("INBOX", prop.getProperty("mail.inbox"));

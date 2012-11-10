@@ -22,6 +22,7 @@ package de.cologneintelligence.fitgoodies.file;
 import java.io.File;
 
 import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 
@@ -63,15 +64,17 @@ public abstract class AbstractFileReaderFixture extends Fixture {
     public void setUp() throws Exception {
         super.setUp();
 
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        final CrossReferenceHelper crossReferenceHelper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+        final FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         encoding = helper.getEncoding();
-        encoding = FixtureTools.getArg(args, "encoding", encoding);
+        encoding = FixtureTools.getArg(args, "encoding", encoding,
+                crossReferenceHelper);
 
-        String fileName = FixtureTools.getArg(args, "file", null);
+        String fileName = FixtureTools.getArg(args, "file", null, crossReferenceHelper);
         if (fileName == null) {
             DirectoryProvider provider = helper.getProvider();
 
-            String dir = FixtureTools.getArg(args, "dir", null);
+            final String dir = FixtureTools.getArg(args, "dir", null, crossReferenceHelper);
             if (dir != null) {
                 provider = new FileSystemDirectoryProvider(dir);
             }
@@ -81,9 +84,9 @@ public abstract class AbstractFileReaderFixture extends Fixture {
             }
 
             String pattern = helper.getPattern();
-            pattern = FixtureTools.getArg(args, "pattern", pattern);
+            pattern = FixtureTools.getArg(args, "pattern", pattern, crossReferenceHelper);
 
-            FileSelector fs = new FileSelector(provider, pattern);
+            final FileSelector fs = new FileSelector(provider, pattern);
             file = fs.getFirstFile();
         } else {
             String filePath = new File(fileName).getAbsolutePath();

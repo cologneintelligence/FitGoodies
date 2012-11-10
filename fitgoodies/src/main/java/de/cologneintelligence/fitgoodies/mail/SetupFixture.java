@@ -116,7 +116,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @see SetupHelper#setSSL(boolean) SetupHelper.setSSL(boolean)
      */
     public final void ssl(final String ssl) {
-        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        DependencyManager.getOrCreate(SetupHelper.class)
         .setSSL(FixtureTools.convertToBoolean(ssl));
     }
 
@@ -126,7 +126,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @see SetupHelper#setPort(int) SetupHelper.setPort(int)
      */
     public final void port(final String port) {
-        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        DependencyManager.getOrCreate(SetupHelper.class)
         .setPort(Integer.parseInt(port));
     }
 
@@ -136,7 +136,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @see SetupHelper#setInbox(String) SetupHelper.setInbox(String)
      */
     public final void inbox(final String inbox) {
-        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        DependencyManager.getOrCreate(SetupHelper.class)
         .setInbox(inbox);
     }
 
@@ -146,7 +146,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @see SetupHelper#setHost(String) SetupHelper.setHost(String)
      */
     public final void host(final String host) {
-        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        DependencyManager.getOrCreate(SetupHelper.class)
         .setHost(host);
     }
 
@@ -156,7 +156,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @see SetupHelper#setUsername(String) SetupHelper.setUsername(String)
      */
     public final void username(final String username) {
-        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        DependencyManager.getOrCreate(SetupHelper.class)
         .setUsername(username);
     }
 
@@ -166,7 +166,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @see SetupHelper#setPassword(String) SetupHelper.setPassword(String)
      */
     public final void password(final String password) {
-        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        DependencyManager.getOrCreate(SetupHelper.class)
         .setPassword(password);
     }
 
@@ -176,7 +176,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @see SetupHelper#setProtocol(String) SetupHelper.setProtocol(String)
      */
     public final void protocol(final String protocol) {
-        DependencyManager.INSTANCE.getOrCreate(SetupHelper.class)
+        DependencyManager.getOrCreate(SetupHelper.class)
         .setProtocol(protocol);
     }
 }

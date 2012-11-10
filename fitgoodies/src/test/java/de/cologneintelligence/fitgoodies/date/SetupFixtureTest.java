@@ -42,7 +42,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
     }
 
     public final void testSetup() throws ParseException {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
 
         Parse table = new Parse("<table>"
                 + "<tr><td>ignore</td></tr>"

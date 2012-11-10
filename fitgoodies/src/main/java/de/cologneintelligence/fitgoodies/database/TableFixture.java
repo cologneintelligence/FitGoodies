@@ -30,7 +30,6 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
-
 import fit.Parse;
 
 /**
@@ -73,9 +72,9 @@ public class TableFixture extends RowFixture {
      */
     public TableFixture() {
         try {
-            SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+            final SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
             connection = helper.getConnection();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -111,14 +110,15 @@ public class TableFixture extends RowFixture {
     @Override
     public void doTable(final Parse parsedTable) {
         try {
+            final CrossReferenceHelper crossReferenceHelper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
             resultSetWrapper = new ResultSetWrapper(
                     getResultSet(
-                            FixtureTools.getArg(getArgs(), "table", null),
-                            FixtureTools.getArg(getArgs(), "where", null)));
-        } catch (RuntimeException e) {
+                            FixtureTools.getArg(getArgs(), "table", null, crossReferenceHelper),
+                            FixtureTools.getArg(getArgs(), "where", null, crossReferenceHelper)));
+        } catch (final RuntimeException e) {
             exception(parsedTable.parts.parts, e);
             return;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             exception(parsedTable.parts.parts, e);
             return;
         }
@@ -144,17 +144,17 @@ public class TableFixture extends RowFixture {
         }
 
         try {
-            CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+            final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
             table = helper.parseBody(tableName, "");
 
             statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT * FROM "
+            final ResultSet rs = statement.executeQuery("SELECT * FROM "
                     + table + whereClause);
             return rs;
 
-        } catch (CrossReferenceProcessorShortcutException e) {
+        } catch (final CrossReferenceProcessorShortcutException e) {
             throw new RuntimeException(e);
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }

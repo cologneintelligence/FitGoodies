@@ -26,9 +26,6 @@ import de.cologneintelligence.fitgoodies.file.DirectoryProviderMock;
 import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReference;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
-import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
-import de.cologneintelligence.fitgoodies.references.processors.FileFixtureCrossReferenceProcessor;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 
 /**
@@ -37,11 +34,13 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 public class FileFixtureCrossReferenceProcessorTest extends FitGoodiesTestCase {
     private AbstractCrossReferenceProcessor processor;
+    private FileFixtureHelper helper;
 
     @Override
     public final void setUp() throws Exception {
         super.setUp();
-        processor = new FileFixtureCrossReferenceProcessor();
+        helper = new FileFixtureHelper();
+        processor = new FileFixtureCrossReferenceProcessor(helper);
     }
 
     public final void testInfo() {
@@ -49,7 +48,7 @@ public class FileFixtureCrossReferenceProcessorTest extends FitGoodiesTestCase {
     }
 
     public final void testPattern() {
-        Pattern pattern = Pattern.compile(processor.getPattern());
+        final Pattern pattern = Pattern.compile(processor.getPattern());
 
         assertTrue(pattern.matcher("selectedFile()").find());
         assertTrue(pattern.matcher("selectedEncoding()").find());
@@ -74,8 +73,6 @@ public class FileFixtureCrossReferenceProcessorTest extends FitGoodiesTestCase {
         CrossReference cr;
         cr = new CrossReference("selectedEncoding", null, null, processor);
 
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
-
         helper.setEncoding("xy");
         assertEquals("xy", processor.processMatch(cr, "match"));
 
@@ -87,7 +84,6 @@ public class FileFixtureCrossReferenceProcessorTest extends FitGoodiesTestCase {
             throws CrossReferenceProcessorShortcutException {
         CrossReference cr;
         cr = new CrossReference("selectedFile", null, null, processor);
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
         helper.setProvider(new DirectoryProviderMock());
         helper.setPattern(".*\\.txt");
 
@@ -99,14 +95,13 @@ public class FileFixtureCrossReferenceProcessorTest extends FitGoodiesTestCase {
 
         CrossReference cr;
         cr = new CrossReference("selectedFile", null, null, processor);
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
         helper.setProvider(new DirectoryProviderMock());
         helper.setPattern(".*\\.error");
 
         try {
             processor.processMatch(cr, "match");
             fail("could read non-existend file");
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             assertTrue(e.getMessage().contains("no file found"));
         }
     }

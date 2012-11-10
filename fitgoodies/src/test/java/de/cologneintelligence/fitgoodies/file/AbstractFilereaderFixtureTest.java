@@ -39,7 +39,7 @@ public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
     }
 
     public final void testDefaultParameters() throws Exception {

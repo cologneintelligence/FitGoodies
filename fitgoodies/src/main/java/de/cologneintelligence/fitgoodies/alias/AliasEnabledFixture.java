@@ -80,7 +80,7 @@ public final class AliasEnabledFixture extends Fixture {
     @Override
     public fit.Fixture loadFixture(final String fixtureName)
             throws InstantiationException, IllegalAccessException {
-        AliasHelper helper = DependencyManager.INSTANCE.getOrCreate(AliasHelper.class);
+        AliasHelper helper = DependencyManager.getOrCreate(AliasHelper.class);
         String realName = helper.getClazz(fixtureName);
         String notFound = "The fixture \"" + realName + "\" was not found.";
         try {

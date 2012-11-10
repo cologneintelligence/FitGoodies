@@ -3,17 +3,25 @@ package de.cologneintelligence.fitgoodies.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DependencyManager {
-    public static final DependencyManager INSTANCE = new DependencyManager();
+public final class DependencyManager {
+    private static final DependencyManager INSTANCE = new DependencyManager();
     private DependencyManager() {}
 
     private final Map<Class<?>, Object> cache = new HashMap<Class<?>, Object>();
 
-    public void clear() {
+    public static void clear() {
+        INSTANCE.realClear();
+    }
+
+    private void realClear() {
         cache.clear();
     }
 
-    public <T> T getOrCreate(final Class<T> className) {
+    public static <T> T getOrCreate(final Class<T> className) {
+        return INSTANCE.realGetOrCreate(className);
+    }
+
+    public <T> T realGetOrCreate(final Class<T> className) {
         if (!cache.containsKey(className)) {
             createCacheEntry(className);
         }
@@ -27,14 +35,18 @@ public class DependencyManager {
         try {
             final T instance = className.newInstance();
             cache.put(className, instance);
-        } catch (InstantiationException e) {
+        } catch (final InstantiationException e) {
             throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public <T> void inject(final Class<T> className, final T injected) {
+    public static <T> void inject(final Class<T> className, final T injected) {
+        INSTANCE.realInject(className, injected);
+    }
+
+    public <T> void realInject(final Class<T> className, final T injected) {
         cache.put(className, injected);
     }
 }

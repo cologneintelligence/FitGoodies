@@ -37,7 +37,7 @@ import fit.Parse;
  */
 public final class RunFixtureTest extends FitGoodiesTestCase {
     public void testFile() throws ParseException {
-        RunnerHelper helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+        RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
         Parse table = prepareFileFixtureData(helper);
 
         RunFixture fixture = new RunFixture();
@@ -53,7 +53,7 @@ public final class RunFixtureTest extends FitGoodiesTestCase {
     }
 
     public void testFileTableProcessing() throws ParseException {
-        RunnerHelper helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+        RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
         Parse table = prepareFileFixtureData(helper);
 
         RunFixture fixture = new RunFixture();

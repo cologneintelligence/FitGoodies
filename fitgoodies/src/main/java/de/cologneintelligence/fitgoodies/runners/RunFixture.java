@@ -56,7 +56,7 @@ public class RunFixture extends ActionFixture {
     public void setUp() throws Exception {
         super.setUp();
 
-        helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+        helper = DependencyManager.getOrCreate(RunnerHelper.class);
         dirHelper = helper.getHelper();
         thisdir = dirHelper.getDir(helper.getFilePath());
         outdir = dirHelper.getDir(helper.getResultFilePath());

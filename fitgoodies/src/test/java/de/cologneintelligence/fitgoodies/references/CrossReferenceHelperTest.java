@@ -35,7 +35,7 @@ public class CrossReferenceHelperTest extends FitGoodiesTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+        helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
     }
 
     public final void testCrossReferenceRecognitionWithoutParams() {

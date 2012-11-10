@@ -50,7 +50,7 @@ public class XMLFileFixtureTest extends FitGoodiesTestCase {
                         + "<sibling>Content 2</sibling>"
                         + "</root>").getBytes("utf-16"));
 
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         helper.setProvider(new DirectoryProvider() {
             @Override public final Iterator<DirectoryProvider> getDirectories()
                     throws FileNotFoundException { return null; }

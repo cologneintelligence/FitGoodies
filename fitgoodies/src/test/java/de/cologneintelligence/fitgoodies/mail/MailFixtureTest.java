@@ -243,7 +243,7 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
         final Mail mail = mock(Mail.class);
         MailFixture fixture = prepareFixture(mail, true);
 
-        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.parseBody("${tests.put(body)}", "this goes to the body");
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>plainbody</td><td>contains</td><td>${tests.get(body)}</td></tr>"

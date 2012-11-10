@@ -88,7 +88,7 @@ public class SetupFixture extends Fixture {
         String className = row.more.text();
         String appenderName = row.more.more.text();
 
-        LogHelper helper = DependencyManager.INSTANCE.getOrCreate(LogHelper.class);
+        LogHelper helper = DependencyManager.getOrCreate(LogHelper.class);
         helper.clear(loggerProvider.getLogger(className),
                 appenderName);
     }
@@ -106,13 +106,13 @@ public class SetupFixture extends Fixture {
     }
 
     private void addRootMonitor(final String appenderName) {
-        LogHelper helper = DependencyManager.INSTANCE.getOrCreate(LogHelper.class);
+        LogHelper helper = DependencyManager.getOrCreate(LogHelper.class);
         helper.addCaptureToLogger(loggerProvider.getRootLogger(),
                 appenderName);
     }
 
     private void addMonitor(final String className, final String appenderName) {
-        LogHelper helper = DependencyManager.INSTANCE.getOrCreate(LogHelper.class);
+        LogHelper helper = DependencyManager.getOrCreate(LogHelper.class);
         helper.addCaptureToLogger(
                 loggerProvider.getLogger(className), appenderName);
     }

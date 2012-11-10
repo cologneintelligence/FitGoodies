@@ -56,7 +56,7 @@ public class SetupFixture extends ActionFixture {
      */
     public final void load(final String className) throws Exception {
         Parser<?> p = (Parser<?>) Class.forName(className).newInstance();
-        ParserHelper helper = DependencyManager.INSTANCE.getOrCreate(ParserHelper.class);
+        ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
         helper.registerParser(p);
     }
 }

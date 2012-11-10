@@ -29,8 +29,6 @@ import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
 import de.cologneintelligence.fitgoodies.parsers.LongParserMock;
 import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
-
 import fit.Fixture;
 import fit.Parse;
 import fit.TypeAdapter;
@@ -53,85 +51,85 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
     }
 
     public final void testParse() throws Exception {
-        Integer intExpected = Integer.valueOf(42);
-        assertNull(FixtureTools.parse("42", intExpected.getClass(), null));
+        final ParserHelper helper = new ParserHelper();
+        final Integer intExpected = Integer.valueOf(42);
+        assertNull(FixtureTools.parse("42", intExpected.getClass(), null, helper));
 
         BigInteger biExpected = new BigInteger("123");
-        assertEquals(biExpected, FixtureTools.parse("123", biExpected.getClass(), null));
+        assertEquals(biExpected, FixtureTools.parse("123", biExpected.getClass(), null, helper));
         biExpected = new BigInteger("7");
-        assertEquals(biExpected, FixtureTools.parse("7", biExpected.getClass(), null));
+        assertEquals(biExpected, FixtureTools.parse("7", biExpected.getClass(), null, helper));
 
         BigDecimal bdExpected = new BigDecimal("312.45");
-        assertEquals(bdExpected, FixtureTools.parse("312.45", bdExpected.getClass(), null));
+        assertEquals(bdExpected, FixtureTools.parse("312.45", bdExpected.getClass(), null, helper));
         bdExpected = new BigDecimal("331.0");
-        assertEquals(bdExpected, FixtureTools.parse("331.0", bdExpected.getClass(), null));
+        assertEquals(bdExpected, FixtureTools.parse("331.0", bdExpected.getClass(), null, helper));
 
-        ParserHelper helper = DependencyManager.INSTANCE.getOrCreate(ParserHelper.class);
         helper.registerParser(new LongParserMock());
-        assertEquals(Long.valueOf(7), FixtureTools.parse("7", Long.class, "x"));
+        assertEquals(Long.valueOf(7), FixtureTools.parse("7", Long.class, "x", helper));
     }
 
     public final void testRebindTypeAdapter() {
-        TypeAdapter ta = new TypeAdapter();
+        final TypeAdapter ta = new TypeAdapter();
+        final TypeAdapterHelper helper = new TypeAdapterHelper();
         TypeAdapter actual;
 
         ta.type = BigInteger.class;
-        actual = FixtureTools.rebindTypeAdapter(ta, null);
+        actual = FixtureTools.rebindTypeAdapter(ta, null, helper);
         assertSame(ta, actual);
 
-        TypeAdapterHelper helper = DependencyManager.INSTANCE.getOrCreate(TypeAdapterHelper.class);
         helper.register(DummyTypeAdapter.class);
 
-        actual = FixtureTools.rebindTypeAdapter(ta, null);
+        actual = FixtureTools.rebindTypeAdapter(ta, null, helper);
         assertNotSame(ta, actual);
         assertEquals(DummyTypeAdapter.class, actual.getClass());
     }
 
     public final void testRebingTypeAdapterWithParameter() throws Exception {
-        TypeAdapter ta = new TypeAdapter();
+        final TypeAdapter ta = new TypeAdapter();
         AbstractTypeAdapter<?> actual;
 
         ta.type = BigInteger.class;
-        TypeAdapterHelper helper = DependencyManager.INSTANCE.getOrCreate(TypeAdapterHelper.class);
+        final TypeAdapterHelper helper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
         helper.register(DummyTypeAdapter.class);
 
         actual = (AbstractTypeAdapter<?>)
-                FixtureTools.rebindTypeAdapter(ta, "test");
+                FixtureTools.rebindTypeAdapter(ta, "test", helper);
         assertEquals("test", actual.getParameter());
 
         actual = (AbstractTypeAdapter<?>)
-                FixtureTools.rebindTypeAdapter(ta, "parameter");
+                FixtureTools.rebindTypeAdapter(ta, "parameter", helper);
         assertEquals("parameter", actual.getParameter());
     }
 
     public final void testGetParameter() throws Exception {
+        final CrossReferenceHelper helper = new CrossReferenceHelper();
         String[] args = new String[]{
                 "x = y", " param = value "
         };
 
-        assertEquals("y", FixtureTools.getArg(args, "x", null));
-        assertEquals("value", FixtureTools.getArg(args, "param", null));
-        assertEquals("good", FixtureTools.getArg(args, "not-good", "good"));
+        assertEquals("y", FixtureTools.getArg(args, "x", null, helper));
+        assertEquals("value", FixtureTools.getArg(args, "param", null, helper));
+        assertEquals("good", FixtureTools.getArg(args, "not-good", "good", helper));
 
 
         args = new String[]{
                 "x =z", " a b=test "
         };
 
-        assertEquals("bad", FixtureTools.getArg(args, "param", "bad"));
-        assertEquals("z", FixtureTools.getArg(args, "X", null));
-        assertEquals("test", FixtureTools.getArg(args, "A B", null));
+        assertEquals("bad", FixtureTools.getArg(args, "param", "bad", helper));
+        assertEquals("z", FixtureTools.getArg(args, "X", null, helper));
+        assertEquals("test", FixtureTools.getArg(args, "A B", null, helper));
 
-        assertEquals("null", FixtureTools.getArg(null, "x", "null"));
-        assertEquals("error", FixtureTools.getArg(null, "y", "error"));
+        assertEquals("null", FixtureTools.getArg(null, "x", "null", helper));
+        assertEquals("error", FixtureTools.getArg(null, "y", "error", helper));
 
         args = new String[]{
                 "y = a${tests.get(x)}b", " a b=test "
         };
 
-        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
         helper.parseBody("${tests.put(x)}", "x");
-        assertEquals("axb", FixtureTools.getArg(args, "y", null));
+        assertEquals("axb", FixtureTools.getArg(args, "y", null, helper));
     }
 
     public final void testGetParameters() {
@@ -187,11 +185,14 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
     }
 
     public final void testCopyParamsToFixture() {
+        final CrossReferenceHelper crHelper = new CrossReferenceHelper();
+        final TypeAdapterHelper taHelper = new TypeAdapterHelper();
+
         DummyValueFixture fixture = new DummyValueFixture();
         String[] args = new String[]{" x = 8 ", "y=string", "z=error"};
 
         fixture.a = 9;
-        FixtureTools.copyParamsToFixture(args, fixture);
+        FixtureTools.copyParamsToFixture(args, fixture, crHelper, taHelper);
         assertEquals(9, fixture.a);
         assertEquals(8, fixture.x);
         assertEquals("string", fixture.y);
@@ -199,7 +200,7 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
         fixture = new DummyValueFixture();
         args = new String[]{" a = 42 ", "b=c"};
 
-        FixtureTools.copyParamsToFixture(args, fixture);
+        FixtureTools.copyParamsToFixture(args, fixture, crHelper, taHelper);
         assertEquals(42, fixture.a);
         assertEquals("c", fixture.b);
     }
@@ -237,7 +238,7 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
         try {
             FixtureTools.convertToBoolean("non-bool");
             fail("invalid string should be recognized");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
         }
     }
 }

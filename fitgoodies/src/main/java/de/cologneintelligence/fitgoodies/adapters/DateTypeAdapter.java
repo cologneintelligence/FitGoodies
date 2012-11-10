@@ -24,7 +24,6 @@ import java.util.Date;
 
 import de.cologneintelligence.fitgoodies.date.SetupHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
 import fit.TypeAdapter;
 
 /**
@@ -37,9 +36,10 @@ import fit.TypeAdapter;
  * Example: &quot;<code>en_US, MM/dd/yyyy</code>&quot;.
  *
  * @author jwierum
- * @version $Id$
  */
 public class DateTypeAdapter extends AbstractTypeAdapter<Date> {
+    private final SetupHelper dateSetupHelper;
+
     /**
      * Creates a new TypeAdapter which bases on <code>ta</code>.
      * @param ta TypeAdapter to use as source
@@ -48,6 +48,7 @@ public class DateTypeAdapter extends AbstractTypeAdapter<Date> {
      */
     public DateTypeAdapter(final TypeAdapter ta, final String convertParameter) {
         super(ta, convertParameter);
+        this.dateSetupHelper = DependencyManager.getOrCreate(SetupHelper.class);
     }
 
     /**
@@ -58,16 +59,15 @@ public class DateTypeAdapter extends AbstractTypeAdapter<Date> {
      */
     @Override
     public final Date parse(final String s) throws ParseException {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
         if (getParameter() == null) {
-            return helper.getDate(s);
+            return dateSetupHelper.getDate(s);
         } else {
-            String[] parameters = getParameter().split("\\s*,\\s*", 2);
+            final String[] parameters = getParameter().split("\\s*,\\s*", 2);
             if (parameters.length < 2) {
                 throw new ParseException(
                         "Parameter must have the format [localname, format]", 0);
             }
-            return helper.getDate(s, parameters[0], parameters[1]);
+            return dateSetupHelper.getDate(s, parameters[0], parameters[1]);
         }
     }
 

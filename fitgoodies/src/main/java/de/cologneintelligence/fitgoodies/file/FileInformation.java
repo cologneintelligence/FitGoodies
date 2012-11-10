@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
 /**
  * Represents a file and provides information about it.
  *
@@ -68,12 +66,12 @@ public abstract class FileInformation {
     /**
      * Opens the file and returns a <code>BufferedReader</code> object.
      * The encoding is determined by asking {@link FileFixtureHelper#encoding()}.
+     * @param fileFixtureHelper the FileFixtureHelper
      * @return the open file as <code>BufferdReader</code>
      * @throws IOException thrown if the file could not be read
      */
-    public BufferedReader openBufferedReader() throws IOException {
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
-        return openBufferedReader(helper.getEncoding());
+    public BufferedReader openBufferedReader(final FileFixtureHelper fileFixtureHelper) throws IOException {
+        return openBufferedReader(fileFixtureHelper.getEncoding());
     }
 
     /**
@@ -84,8 +82,8 @@ public abstract class FileInformation {
      * @throws IOException thrown if the file could not be read
      */
     public BufferedReader openBufferedReader(final String encoding) throws IOException {
-        InputStream fis = openInputStream();
-        InputStreamReader isr = new InputStreamReader(fis, encoding);
+        final InputStream fis = openInputStream();
+        final InputStreamReader isr = new InputStreamReader(fis, encoding);
         return new BufferedReader(isr);
     }
 

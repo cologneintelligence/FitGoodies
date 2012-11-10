@@ -37,7 +37,7 @@ public class ParserHelperTest extends FitGoodiesTestCase {
     @Override
     public final void setUp() throws Exception {
         super.setUp();
-        helper = DependencyManager.INSTANCE.getOrCreate(ParserHelper.class);
+        helper = DependencyManager.getOrCreate(ParserHelper.class);
     }
 
     public final void testRegister() throws Exception {

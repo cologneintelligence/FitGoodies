@@ -54,7 +54,7 @@ public class FileFixtureTest extends FitGoodiesTestCase {
 
         assertEquals(0, fixture.counts.wrong);
         assertEquals(0, fixture.counts.exceptions);
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         assertEquals(".*\\.txt", helper.getPattern());
 
         table = new Parse("<table><tr><td>ignore</td></tr>"
@@ -78,7 +78,7 @@ public class FileFixtureTest extends FitGoodiesTestCase {
         FileFixture fixture = new FileFixture();
         fixture.doTable(table);
 
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
 
         assertEquals(0, fixture.counts.right);
         assertEquals(0, fixture.counts.wrong);

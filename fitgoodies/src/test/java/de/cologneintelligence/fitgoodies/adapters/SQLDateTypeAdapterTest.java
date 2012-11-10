@@ -22,37 +22,34 @@ package de.cologneintelligence.fitgoodies.adapters;
 import java.sql.Date;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.adapters.SQLDateTypeAdapter;
 import de.cologneintelligence.fitgoodies.date.SetupHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
 import fit.TypeAdapter;
 
 public class SQLDateTypeAdapterTest extends FitGoodiesTestCase {
-
     public final void testGetType() {
-        TypeAdapter ta = new TypeAdapter();
+        final TypeAdapter ta = new TypeAdapter();
 
-        SQLDateTypeAdapter p = new SQLDateTypeAdapter(ta, null);
+        final SQLDateTypeAdapter p = new SQLDateTypeAdapter(ta, null);
         assertEquals(Date.class, p.getType());
     }
 
     public final void testParse() throws Exception {
-        TypeAdapter ta = new TypeAdapter();
+        final TypeAdapter ta = new TypeAdapter();
 
-        Date d = Date.valueOf("1987-12-01");
-        SQLDateTypeAdapter p = new SQLDateTypeAdapter(ta, null);
+        final Date d = Date.valueOf("1987-12-01");
+        final SQLDateTypeAdapter p = new SQLDateTypeAdapter(ta, null);
         assertEquals(d, p.parse("1987-12-01"));
     }
 
     public final void testDateFormat() throws Exception {
-        TypeAdapter ta = new TypeAdapter();
+        final TypeAdapter ta = new TypeAdapter();
 
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        final SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setLocale("de_DE");
         helper.setFormat("dd.MM.yyyy");
 
-        SQLDateTypeAdapter p = new SQLDateTypeAdapter(ta, null);
+        final SQLDateTypeAdapter p = new SQLDateTypeAdapter(ta, null);
 
         Date d = Date.valueOf("1987-12-01");
         assertEquals(d, p.parse("1987-12-01"));

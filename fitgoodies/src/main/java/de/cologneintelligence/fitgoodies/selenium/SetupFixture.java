@@ -62,57 +62,57 @@ public class SetupFixture extends ActionFixture {
     }
 
     public void stop() throws Exception {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.stop();
     }
 
     public void serverHost(final String serverHost) {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setServerHost(serverHost);
     }
 
     public void serverPort(final String serverPort) {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setServerPort(serverPort);
     }
 
     public void browserStartCommand(final String browserStartCommand) {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setBrowserStartCommand(browserStartCommand);
     }
 
     public void browserURL(final String browserURL) {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setBrowserURL(browserURL);
     }
 
     public void speed(final String speed) {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setSpeed(speed);
     }
 
     public void timeout(final String timeout) throws Exception {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setTimeout(timeout);
     }
 
     public void interval(final String interval) throws Exception {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setInterval(interval);
     }
 
     public void takeScreenshots(final String takeScreenshots) throws Exception {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setTakeScreenshots(Boolean.parseBoolean(takeScreenshots));
     }
 
     public void sleepBeforeScreenshot(final String sleepBeforeScreenshot) throws Exception {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setSleepBeforeScreenshotMillis(Long.parseLong(sleepBeforeScreenshot));
     }
 
     public void start(final String startConfig) {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.start(startConfig);
     }
 }

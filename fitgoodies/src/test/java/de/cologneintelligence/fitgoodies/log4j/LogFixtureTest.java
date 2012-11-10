@@ -228,7 +228,7 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
     }
 
     public void testCrossReferences() throws Exception {
-        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.parseBody("${a.put(message)}", "a message");
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>com.myproject.class1</td><td>stdout</td>"

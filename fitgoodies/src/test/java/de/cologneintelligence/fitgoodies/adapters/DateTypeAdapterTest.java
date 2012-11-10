@@ -25,18 +25,14 @@ import java.util.Date;
 import java.util.Locale;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
-import de.cologneintelligence.fitgoodies.adapters.DateTypeAdapter;
-
 import fit.TypeAdapter;
 
 /**
- * $Id$
  * @author jwierum
  */
 public class DateTypeAdapterTest extends FitGoodiesTestCase {
 	public final void testParser() throws Exception {
-		TypeAdapter ta = new TypeAdapter();
+		final TypeAdapter ta = new TypeAdapter();
 
 		AbstractTypeAdapter<Date> p = new DateTypeAdapter(ta, null);
 		assertEquals(
@@ -62,16 +58,16 @@ public class DateTypeAdapterTest extends FitGoodiesTestCase {
 	}
 
 	public final void testException() {
-		TypeAdapter ta = new TypeAdapter();
+		final TypeAdapter ta = new TypeAdapter();
 		try {
 			new DateTypeAdapter(ta, "invalid").parse("01/01/1970");
 			fail("could set invalid parameter");
-		} catch (ParseException e) {
+		} catch (final ParseException e) {
 		}
 	}
 
 	public final void testType() {
-		TypeAdapter ta = new TypeAdapter();
+		final TypeAdapter ta = new TypeAdapter();
 
 		assertNotNull(new DateTypeAdapter(ta, null).getType());
 	}

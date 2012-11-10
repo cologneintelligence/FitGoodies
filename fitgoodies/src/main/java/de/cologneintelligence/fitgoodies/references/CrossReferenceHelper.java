@@ -21,6 +21,7 @@ package de.cologneintelligence.fitgoodies.references;
 
 import java.util.regex.Matcher;
 
+import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
 import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
 import de.cologneintelligence.fitgoodies.references.processors.DateProviderCrossReferenceProcessor;
 import de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor;
@@ -29,6 +30,7 @@ import de.cologneintelligence.fitgoodies.references.processors.FileFixtureCrossR
 import de.cologneintelligence.fitgoodies.references.processors.PropertyCrossReferenceProcessor;
 import de.cologneintelligence.fitgoodies.references.processors.StorageCrossReferenceProcessor;
 import de.cologneintelligence.fitgoodies.util.DateProviderImpl;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.SystemPropertyProvider;
 
 
@@ -45,7 +47,8 @@ public final class CrossReferenceHelper {
     public CrossReferenceHelper() {
         processors.add(new EmptyCrossReferenceProcessor());
         processors.add(new StorageCrossReferenceProcessor());
-        processors.add(new FileFixtureCrossReferenceProcessor());
+        processors.add(new FileFixtureCrossReferenceProcessor(
+                DependencyManager.getOrCreate(FileFixtureHelper.class)));
         processors.add(new PropertyCrossReferenceProcessor());
         processors.add(new EnvironmentPropertyCrossReferenceProcessor(new SystemPropertyProvider()));
         processors.add(new DateProviderCrossReferenceProcessor(new DateProviderImpl()));
@@ -65,7 +68,7 @@ public final class CrossReferenceHelper {
      * @return true whether at least one cross reference is present, false otherwise
      */
     public boolean containsCrossReference(final String string) {
-        Matcher m = processors.getSearchPattern().matcher(string);
+        final Matcher m = processors.getSearchPattern().matcher(string);
         return m.find();
     }
 
@@ -78,9 +81,9 @@ public final class CrossReferenceHelper {
     public CrossReference getCrossReference(final StringBuilder string) {
         CrossReference result = null;
 
-        Matcher m = processors.getExtractPattern().matcher(string);
+        final Matcher m = processors.getExtractPattern().matcher(string);
         if (m.find()) {
-            String match = m.group(1);
+            final String match = m.group(1);
             for (int i = 0; i < processors.count(); ++i) {
                 result = processors.get(i).extractCrossReference(match);
 
@@ -107,12 +110,12 @@ public final class CrossReferenceHelper {
         String returnValue = text;
 
         if (containsCrossReference(text)) {
-            StringBuilder todo = new StringBuilder(text);
-            StringBuilder result = new StringBuilder();
+            final StringBuilder todo = new StringBuilder(text);
+            final StringBuilder result = new StringBuilder();
 
             while (todo.length() > 0) {
                 if (todo.charAt(0) == '$') {
-                    CrossReference cr = getCrossReference(todo);
+                    final CrossReference cr = getCrossReference(todo);
 
                     if (cr != null) {
                         result.append(processCrossReference(cr, object));

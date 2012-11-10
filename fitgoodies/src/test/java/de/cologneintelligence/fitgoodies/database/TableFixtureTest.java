@@ -43,7 +43,7 @@ public class TableFixtureTest extends FitGoodiesTestCase {
     @Override
     public final void setUp() throws Exception {
         super.setUp();
-        helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setUser("user");
         helper.setPassword("pw");
         SetupHelper.setProvider("de.cologneintelligence.fitgoodies.database.DriverMock");

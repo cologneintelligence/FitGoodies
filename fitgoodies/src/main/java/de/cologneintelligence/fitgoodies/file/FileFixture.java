@@ -43,7 +43,7 @@ public class FileFixture extends ActionFixture {
      * @param pattern pattern to use
      */
     public final void pattern(final String pattern) {
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         helper.setPattern(pattern);
     }
 
@@ -76,7 +76,7 @@ public class FileFixture extends ActionFixture {
      * @param directory directory to use
      */
     public final void directory(final String directory) {
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         helper.setProvider(new FileSystemDirectoryProvider(directory));
     }
 
@@ -85,7 +85,7 @@ public class FileFixture extends ActionFixture {
      * @param encoding encoding to use
      */
     public final void encoding(final String encoding) {
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         helper.setEncoding(encoding);
     }
 }

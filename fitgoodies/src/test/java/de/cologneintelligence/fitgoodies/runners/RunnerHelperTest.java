@@ -37,7 +37,7 @@ public final class RunnerHelperTest extends FitGoodiesTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+        helper = DependencyManager.getOrCreate(RunnerHelper.class);
     }
 
     public void testFilePath() {

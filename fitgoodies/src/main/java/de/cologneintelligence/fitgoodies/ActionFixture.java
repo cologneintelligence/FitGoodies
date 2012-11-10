@@ -21,6 +21,10 @@ package de.cologneintelligence.fitgoodies;
 
 import java.lang.reflect.Method;
 
+import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
+import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import de.cologneintelligence.fitgoodies.util.WaitForResult;
 import fit.Fixture;
@@ -75,8 +79,10 @@ public class ActionFixture extends fit.ActionFixture {
      */
 	@Override
 	public void check(final Parse cell, final TypeAdapter a) {
-		TypeAdapter ta = FixtureTools.rebindTypeAdapter(a, parameter);
-		ta = FixtureTools.processCell(cell, ta, this);
+	    final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
+		TypeAdapter ta = FixtureTools.rebindTypeAdapter(a, parameter, taHelper);
+		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+		ta = FixtureTools.processCell(cell, ta, this, helper);
 		if (ta != null) {
 			super.check(cell, ta);
 		}
@@ -101,8 +107,10 @@ public class ActionFixture extends fit.ActionFixture {
 
 	private TypeAdapter getTypeAdapter(final Class<?> type) {
 		TypeAdapter ta = TypeAdapter.on(actor, type);
-        ta = FixtureTools.rebindTypeAdapter(ta, parameter);
-        ta = FixtureTools.processCell(cells.more.more, ta, this);
+		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
+		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+        ta = FixtureTools.rebindTypeAdapter(ta, parameter, taHelper);
+        ta = FixtureTools.processCell(cells.more.more, ta, this, helper);
 		return ta;
 	}
 
@@ -191,7 +199,8 @@ public class ActionFixture extends fit.ActionFixture {
 	 */
 	@Override @SuppressWarnings("rawtypes")
 	public Object parse(final String text, final Class type) throws Exception {
-		final Object result = FixtureTools.parse(text, type, parameter);
+	    final ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
+		final Object result = FixtureTools.parse(text, type, parameter, helper);
 
 		if (result == null) {
 			return super.parse(text, type);
@@ -222,7 +231,9 @@ public class ActionFixture extends fit.ActionFixture {
 	 */
 	@Override
 	public void doTable(final Parse table) {
-    	FixtureTools.copyParamsToFixture(args, this);
+    	FixtureTools.copyParamsToFixture(args, this,
+    	        DependencyManager.getOrCreate(CrossReferenceHelper.class),
+    	        DependencyManager.getOrCreate(TypeAdapterHelper.class));
 
     	try {
     		setUp();
@@ -278,7 +289,8 @@ public class ActionFixture extends fit.ActionFixture {
      * @return the parameter value, if it could be found, <code>defaultValue</code> otherwise
 	 */
 	public final String getParam(final String paramName, final String defaultValue) {
-		return FixtureTools.getArg(args, paramName, defaultValue);
+		return FixtureTools.getArg(args, paramName, defaultValue,
+		        DependencyManager.getOrCreate(CrossReferenceHelper.class));
 	}
 
 	@Override

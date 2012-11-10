@@ -29,8 +29,8 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        RunnerHelper runnerHelper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
-        helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        RunnerHelper runnerHelper = DependencyManager.getOrCreate(RunnerHelper.class);
+        helper = DependencyManager.getOrCreate(SetupHelper.class);
 
         commandProcessor = mock(CommandProcessor.class);
         helper.setCommandProcessor(commandProcessor);
@@ -138,7 +138,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         final DateProvider dateProvider = mock(DateProvider.class);
         final String date = "21.01.2009";
         final DateProviderCrossReferenceProcessor processor = new DateProviderCrossReferenceProcessor(dateProvider);
-        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.getProcessors().remove(processor);
         helper.getProcessors().add(processor);
         checking(new Expectations() {{

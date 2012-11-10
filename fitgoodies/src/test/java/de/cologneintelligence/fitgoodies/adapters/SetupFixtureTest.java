@@ -53,7 +53,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         final TypeAdapter ta = new TypeAdapter();
         ta.type = BigInteger.class;
 
-        TypeAdapterHelper helper = DependencyManager.INSTANCE.getOrCreate(
+        TypeAdapterHelper helper = DependencyManager.getOrCreate(
                 TypeAdapterHelper.class);
         assertEquals(DummyTypeAdapter.class,
                 helper.getAdapter(ta, null).getClass());

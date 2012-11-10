@@ -95,7 +95,7 @@ public class FileSelectorTest extends FitGoodiesTestCase {
 
 
     public final void testGetLastFile() throws FileNotFoundException {
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         helper.setEncoding("utf-8");
         helper.setPattern(".*");
         helper.setProvider(new DirectoryProviderMock());
@@ -105,7 +105,7 @@ public class FileSelectorTest extends FitGoodiesTestCase {
     }
 
     public final void testGetLastFileWithErrors() throws FileNotFoundException {
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
+        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         helper.setEncoding("utf-8");
         helper.setPattern("nofile");
         helper.setProvider(new DirectoryProviderMock());

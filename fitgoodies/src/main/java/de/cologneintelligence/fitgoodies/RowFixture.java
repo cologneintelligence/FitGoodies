@@ -19,6 +19,10 @@
 
 package de.cologneintelligence.fitgoodies;
 
+import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
+import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Parse;
 import fit.TypeAdapter;
@@ -45,7 +49,8 @@ public abstract class RowFixture extends fit.RowFixture {
      */
 	@Override
 	public void check(final Parse cell, final TypeAdapter a) {
-		final TypeAdapter ta = FixtureTools.processCell(cell, a, this);
+	    final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+		final TypeAdapter ta = FixtureTools.processCell(cell, a, this, helper);
 		if (ta != null) {
 			super.check(cell, a);
 		}
@@ -65,7 +70,8 @@ public abstract class RowFixture extends fit.RowFixture {
 	 */
 	@Override @SuppressWarnings("rawtypes")
 	public Object parse(final String text, final Class type) throws Exception {
-		final Object result = FixtureTools.parse(text, type, null);
+	    final ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
+		final Object result = FixtureTools.parse(text, type, null, helper);
 		if (result == null) {
 			return super.parse(text, type);
 		} else {
@@ -115,8 +121,9 @@ public abstract class RowFixture extends fit.RowFixture {
 	 */
 	private TypeAdapter bindField(final String name, final String parameter)
 			throws Exception {
+	    final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
 		TypeAdapter a = super.bindField(name);
-		a = FixtureTools.rebindTypeAdapter(a, parameter);
+		a = FixtureTools.rebindTypeAdapter(a, parameter, taHelper);
 		return a;
 	}
 
@@ -134,8 +141,9 @@ public abstract class RowFixture extends fit.RowFixture {
      *  	{@link fit.RowFixture#bindMethod(String)}
 	 */
 	private TypeAdapter bindMethod(final String name, final String parameter) throws Exception {
+	    final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
 		TypeAdapter a = super.bindMethod(name);
-		a = FixtureTools.rebindTypeAdapter(a, parameter);
+		a = FixtureTools.rebindTypeAdapter(a, parameter, taHelper);
 		return a;
 	}
 
@@ -161,7 +169,9 @@ public abstract class RowFixture extends fit.RowFixture {
 	 */
     @Override
     public void doTable(final Parse table) {
-    	FixtureTools.copyParamsToFixture(args, this);
+    	FixtureTools.copyParamsToFixture(args, this,
+    	        DependencyManager.getOrCreate(CrossReferenceHelper.class),
+    	        DependencyManager.getOrCreate(TypeAdapterHelper.class));
 
     	try {
     		setUp();
@@ -218,7 +228,8 @@ public abstract class RowFixture extends fit.RowFixture {
      * @return the parameter value, if it could be found, <code>defaultValue</code> otherwise
 	 */
 	public final String getParam(final String paramName, final String defaultValue) {
-		return FixtureTools.getArg(args, paramName, defaultValue);
+		return FixtureTools.getArg(args, paramName, defaultValue,
+		        DependencyManager.getOrCreate(CrossReferenceHelper.class));
 	}
 
 	@Override

@@ -20,6 +20,7 @@
 package de.cologneintelligence.fitgoodies.alias;
 
 import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Parse;
@@ -48,9 +49,9 @@ public class SetupFixture extends Fixture {
         try {
             aliasTypeAdapter = TypeAdapter.on(this, this.getClass().getField("alias"));
             classNameTypeAdapter = TypeAdapter.on(this, this.getClass().getField("className"));
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             throw new RuntimeException(e);
-        } catch (NoSuchFieldException e) {
+        } catch (final NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
@@ -76,10 +77,11 @@ public class SetupFixture extends Fixture {
         alias = row.parts.text();
         className = row.parts.more.text();
 
-        FixtureTools.processCell(row.parts, aliasTypeAdapter, this);
-        FixtureTools.processCell(row.parts.more, classNameTypeAdapter, this);
+        final CrossReferenceHelper crossReferenceHelper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+        FixtureTools.processCell(row.parts, aliasTypeAdapter, this, crossReferenceHelper);
+        FixtureTools.processCell(row.parts.more, classNameTypeAdapter, this, crossReferenceHelper);
 
-        AliasHelper helper = DependencyManager.INSTANCE.getOrCreate(AliasHelper.class);
-        helper.register(alias, className);
+        final AliasHelper aliasHelper = DependencyManager.getOrCreate(AliasHelper.class);
+        aliasHelper.register(alias, className);
     }
 }

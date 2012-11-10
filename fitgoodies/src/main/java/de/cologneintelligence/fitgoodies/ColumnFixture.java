@@ -19,6 +19,10 @@
 
 package de.cologneintelligence.fitgoodies;
 
+import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
+import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Parse;
 import fit.TypeAdapter;
@@ -56,7 +60,8 @@ public class ColumnFixture extends fit.ColumnFixture {
         if (a == null) {
             ignore(cell);
         } else {
-	        a = FixtureTools.processCell(cell, a, this);
+            final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+	        a = FixtureTools.processCell(cell, a, this, helper);
 	        if (a != null) {
 		        try {
 		            final String text = cell.text();
@@ -88,7 +93,8 @@ public class ColumnFixture extends fit.ColumnFixture {
 	 */
 	@Override @SuppressWarnings("rawtypes")
 	public Object parse(final String text, final Class type) throws Exception {
-		final Object result = FixtureTools.parse(text, type, columnParameter);
+	    final ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
+		final Object result = FixtureTools.parse(text, type, columnParameter, helper);
 
 		if (result == null) {
 			return super.parse(text, type);
@@ -139,8 +145,9 @@ public class ColumnFixture extends fit.ColumnFixture {
 	 */
 	private TypeAdapter bindMethod(final String name, final String parameter)
 			throws Exception {
+	    final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
 		TypeAdapter ta = super.bindMethod(name);
-		ta = FixtureTools.rebindTypeAdapter(ta, parameter);
+		ta = FixtureTools.rebindTypeAdapter(ta, parameter, taHelper);
 		return ta;
 	}
 
@@ -159,8 +166,9 @@ public class ColumnFixture extends fit.ColumnFixture {
 	 */
 	private TypeAdapter bindField(final String name, final String parameter)
 			throws Exception {
+	    final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
 		TypeAdapter ta = super.bindField(name);
-		ta = FixtureTools.rebindTypeAdapter(ta, parameter);
+		ta = FixtureTools.rebindTypeAdapter(ta, parameter, taHelper);
 		return ta;
 	}
 
@@ -203,7 +211,9 @@ public class ColumnFixture extends fit.ColumnFixture {
 	 */
     @Override
     public void doTable(final Parse table) {
-    	FixtureTools.copyParamsToFixture(args, this);
+    	FixtureTools.copyParamsToFixture(args, this,
+    	        DependencyManager.getOrCreate(CrossReferenceHelper.class),
+    	        DependencyManager.getOrCreate(TypeAdapterHelper.class));
 
     	try {
     		setUp();
@@ -259,6 +269,7 @@ public class ColumnFixture extends fit.ColumnFixture {
      * @return the columnParameter value, if it could be found, <code>defaultValue</code> otherwise
 	 */
 	public final String getParam(final String paramName, final String defaultValue) {
-		return FixtureTools.getArg(args, paramName, defaultValue);
+		return FixtureTools.getArg(args, paramName, defaultValue,
+		        DependencyManager.getOrCreate(CrossReferenceHelper.class));
 	}
 }

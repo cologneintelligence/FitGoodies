@@ -114,7 +114,7 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
                 + "<tr><td>string</td><td>s()</td></tr>"
                 + "<tr><td>matched</td><td>${test}</td></tr></table>");
 
-        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(
+        CrossReferenceHelper helper = DependencyManager.getOrCreate(
                 CrossReferenceHelper.class);
         helper.getProcessors().add(new CrossReferenceProcessorMock("test"));
 

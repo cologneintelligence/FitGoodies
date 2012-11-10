@@ -24,7 +24,6 @@ import java.util.Iterator;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
 import fit.Counts;
 
 /**
@@ -42,8 +41,7 @@ public abstract class FitGoodiesTestCase extends MockObjectTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
-        DependencyManager.INSTANCE.clear();
+        DependencyManager.clear();
     }
 
     @Override

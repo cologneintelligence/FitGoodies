@@ -22,8 +22,8 @@ public class OpenCommandTest extends FitGoodiesTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        RunnerHelper runnerHelper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
-        helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        RunnerHelper runnerHelper = DependencyManager.getOrCreate(RunnerHelper.class);
+        helper = DependencyManager.getOrCreate(SetupHelper.class);
 
         commandProcessor = mock(CommandProcessor.class);
         helper.setCommandProcessor(commandProcessor);

@@ -60,7 +60,7 @@ public class FitFileRunner implements Runner {
     @Override
     public final Counts run(final String inputFile, final String outputFile) {
         AbstractDirectoryHelper dirHelper = new FileSystemDirectoryHelper();
-        RunnerHelper helper = DependencyManager.INSTANCE.getOrCreate(RunnerHelper.class);
+        RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
 
         helper.setFilePath(dirHelper.rel2abs(System.getProperty("user.dir"),
                 inputFile));

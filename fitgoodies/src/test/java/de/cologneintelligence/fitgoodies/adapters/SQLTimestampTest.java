@@ -26,8 +26,7 @@ import de.cologneintelligence.fitgoodies.date.SetupHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.TypeAdapter;
 
-public class SQLTimestamp extends FitGoodiesTestCase {
-
+public class SQLTimestampTest extends FitGoodiesTestCase {
     public final void testGetType() {
         final TypeAdapter ta = new TypeAdapter();
 
@@ -46,7 +45,7 @@ public class SQLTimestamp extends FitGoodiesTestCase {
     public final void testDateFormat() throws Exception {
         final TypeAdapter ta = new TypeAdapter();
 
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        final SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setLocale("de_DE");
         helper.setFormat("dd.MM.yyyy");
 

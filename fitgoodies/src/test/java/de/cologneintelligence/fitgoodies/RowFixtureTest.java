@@ -107,7 +107,7 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
                 + "<tr><td>x</td><td>y</td><td>z</td></tr>"
                 + "<tr><td>8</td><td>${2}</td><td>6</td></tr></table>");
 
-        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.getProcessors().add(new CrossReferenceProcessorMock("2"));
 
         rowFixture.doTable(table);

@@ -22,8 +22,9 @@ package de.cologneintelligence.fitgoodies.file;
 import java.io.IOException;
 
 import de.cologneintelligence.fitgoodies.file.readers.FixedLengthRecordReader;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
-
 import fit.Parse;
 import fit.TypeAdapter;
 
@@ -57,7 +58,7 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 	public void setUp() throws Exception {
 		super.setUp();
 
-		String skipEOL = getParam("skipEOL", "0");
+		final String skipEOL = getParam("skipEOL", "0");
 		noeol = false;
 		if (skipEOL.equalsIgnoreCase("true")
 				|| skipEOL.equalsIgnoreCase("yes")
@@ -68,7 +69,7 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 
 	@Override
 	public void doRows(final Parse rows) {
-		int[] width = extractWidth(rows);
+		final int[] width = extractWidth(rows);
 
 		if (width == null) {
 			return;
@@ -78,7 +79,7 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 			setRecordReader(new FixedLengthRecordReader(
 					getFile().openBufferedReader(super.getEncoding()),
 					width, noeol));
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			exception(rows.more, e);
 		}
 
@@ -102,12 +103,13 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 		}
 
 		cell = row.parts;
-		int[] width = new int[cellCount];
+		final int[] width = new int[cellCount];
+		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 		for (int i = 0; i < cellCount; ++i) {
 			try {
-				FixtureTools.processCell(cell, TypeAdapter.on(this, Integer.class), this);
+				FixtureTools.processCell(cell, TypeAdapter.on(this, Integer.class), this, helper);
 				width[i] = Integer.parseInt(cell.text());
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				exception(cell, e);
 				return null;
 			}

@@ -38,7 +38,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         fixture.doTable(table);
 
         assertEquals(0, fixture.counts.exceptions);
-        AliasHelper helper = DependencyManager.INSTANCE.getOrCreate(AliasHelper.class);
+        AliasHelper helper = DependencyManager.getOrCreate(AliasHelper.class);
         assertEquals("java.lang.String", helper.getClazz("asdf"));
 
         table = new Parse("<table><tr><td>ignore</td></tr>"

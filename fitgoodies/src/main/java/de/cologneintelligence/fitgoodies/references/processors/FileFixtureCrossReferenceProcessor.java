@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 
 import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReference;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 
 /**
@@ -38,12 +37,14 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 public class FileFixtureCrossReferenceProcessor extends
 AbstractCrossReferenceProcessor {
     private static final String PATTERN = "(selectedFile|selectedEncoding)\\(\\)";
+    private final FileFixtureHelper fileFixtureHelper;
 
     /**
      * Default constructor.
      */
-    public FileFixtureCrossReferenceProcessor() {
+    public FileFixtureCrossReferenceProcessor(final FileFixtureHelper fileFixtureHelper) {
         super(PATTERN);
+        this.fileFixtureHelper = fileFixtureHelper;
     }
 
     /**
@@ -64,13 +65,12 @@ AbstractCrossReferenceProcessor {
      */
     @Override
     public final String processMatch(final CrossReference cr, final Object object) {
-        FileFixtureHelper helper = DependencyManager.INSTANCE.getOrCreate(FileFixtureHelper.class);
         if (cr.getCommand().equals("selectedEncoding")) {
-            return helper.getEncoding();
+            return fileFixtureHelper.getEncoding();
         } else {
             try {
-                return helper.getSelector().getFirstFile().filename();
-            } catch (FileNotFoundException e) {
+                return fileFixtureHelper.getSelector().getFirstFile().filename();
+            } catch (final FileNotFoundException e) {
                 throw new RuntimeException("no file found");
             }
         }

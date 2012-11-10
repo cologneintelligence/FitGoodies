@@ -54,7 +54,7 @@ public class SetupFixture extends ActionFixture {
         Class<? extends AbstractTypeAdapter<?>> clazz =
                 (Class<? extends AbstractTypeAdapter<?>>) Class.forName(className);
 
-        TypeAdapterHelper helper = DependencyManager.INSTANCE.getOrCreate(
+        TypeAdapterHelper helper = DependencyManager.getOrCreate(
                 TypeAdapterHelper.class);
         helper.register(clazz);
     }

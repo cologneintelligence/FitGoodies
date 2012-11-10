@@ -38,7 +38,7 @@ public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        helper = DependencyManager.INSTANCE.getOrCreate(TypeAdapterHelper.class);
+        helper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
     }
 
     public void testRegister() throws Exception {

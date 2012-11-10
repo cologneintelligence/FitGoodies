@@ -27,9 +27,9 @@ import javax.mail.MessagingException;
 import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.mail.providers.JavaMailMessageProvider;
 import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
-
 import fit.Parse;
 import fit.TypeAdapter;
 
@@ -80,7 +80,7 @@ public class MailFixture extends Fixture {
      */
     public MailFixture() {
         this(new JavaMailMessageProvider(
-                DependencyManager.INSTANCE.getOrCreate(SetupHelper.class).generateProperties()));
+                DependencyManager.getOrCreate(SetupHelper.class).generateProperties()));
     }
 
     @Override
@@ -115,7 +115,7 @@ public class MailFixture extends Fixture {
 
         boolean right = false;
         if (objects != null) {
-            for (String inspect : objects) {
+            for (final String inspect : objects) {
                 if (inspect != null) {
                     right = dispatchMatcher(row.parts, command, content, inspect);
                     if (right) {
@@ -132,10 +132,11 @@ public class MailFixture extends Fixture {
 
     private String parseContentCell(final Parse row) {
         try {
-            TypeAdapter ta = TypeAdapter.on(this, String.class);
-            FixtureTools.processCell(row.parts.more.more, ta, this);
+            final TypeAdapter ta = TypeAdapter.on(this, String.class);
+            final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+            FixtureTools.processCell(row.parts.more.more, ta, this, helper);
             return row.parts.more.more.text();
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             throw new RuntimeException(e);
         }
     }
@@ -145,7 +146,7 @@ public class MailFixture extends Fixture {
             makeMoreString(cell, "(unset)", 0);
         } else {
             boolean found = false;
-            for (String o : objects) {
+            for (final String o : objects) {
                 if (o != null) {
                     found = true;
                     makeMoreString(cell, o, objects.length);
@@ -190,7 +191,7 @@ public class MailFixture extends Fixture {
 
     private boolean matchContains(final Parse cell,
             final String expected, final String actual) {
-        for (String line : actual.split("\n")) {
+        for (final String line : actual.split("\n")) {
             if (line.toLowerCase().contains(expected.toLowerCase())) {
                 right(cell);
                 cell.addToBody("<hr />" + escape(line));
@@ -202,7 +203,7 @@ public class MailFixture extends Fixture {
 
     private boolean matchRegex(final Parse cell,
             final String expected, final String actual) {
-        Matcher matcher = Pattern.compile(expected).matcher(actual);
+        final Matcher matcher = Pattern.compile(expected).matcher(actual);
 
         if (matcher.find()) {
             right(cell);
@@ -224,7 +225,7 @@ public class MailFixture extends Fixture {
             } else {
                 return mail.getHeader(object);
             }
-        } catch (MessagingException e) {
+        } catch (final MessagingException e) {
             throw new RuntimeException(e);
         }
     }

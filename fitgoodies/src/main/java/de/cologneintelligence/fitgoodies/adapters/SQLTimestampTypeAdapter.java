@@ -35,7 +35,6 @@ import fit.TypeAdapter;
  * Example: &quot;<code>en_US, MM/dd/yyyy</code>&quot;.
  *
  * @author jwierum
- * @version $Id$
  */
 public class SQLTimestampTypeAdapter extends AbstractTypeAdapter<Timestamp> {
     /**

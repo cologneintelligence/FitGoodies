@@ -101,7 +101,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
     }
 
     public final void testConstructor() throws ParseException  {
-        CrossReferenceHelper helper = DependencyManager.INSTANCE.getOrCreate(CrossReferenceHelper.class);
+        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 
         while (helper.getProcessors().count() > 0) {
             helper.getProcessors().remove(0);

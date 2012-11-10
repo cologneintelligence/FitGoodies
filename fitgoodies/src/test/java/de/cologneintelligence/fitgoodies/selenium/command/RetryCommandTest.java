@@ -23,10 +23,10 @@ public class RetryCommandTest extends FitGoodiesTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        RunnerHelper runnerHelper = DependencyManager.INSTANCE.getOrCreate(
+        RunnerHelper runnerHelper = DependencyManager.getOrCreate(
                 RunnerHelper.class);
 
-        helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        helper = DependencyManager.getOrCreate(SetupHelper.class);
         commandProcessor = mock(CommandProcessor.class);
         helper.setCommandProcessor(commandProcessor);
         helper.setTakeScreenshots(false);

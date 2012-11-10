@@ -65,7 +65,7 @@ public class SetupFixture extends ActionFixture {
      * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getLocale() SetupHelper.getLocale()
      */
     public final void locale(final String locale) {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setLocale(locale);
     }
 
@@ -76,7 +76,7 @@ public class SetupFixture extends ActionFixture {
      * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getFormat() SetupHelper.getFormat()
      */
     public final void format(final String format) {
-        SetupHelper helper = DependencyManager.INSTANCE.getOrCreate(SetupHelper.class);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setFormat(format);
     }
 }
