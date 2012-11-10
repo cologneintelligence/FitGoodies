@@ -25,7 +25,7 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShort
 import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class AbstractCrossReferenceProcessorTest extends FitGoodiesTestCase {

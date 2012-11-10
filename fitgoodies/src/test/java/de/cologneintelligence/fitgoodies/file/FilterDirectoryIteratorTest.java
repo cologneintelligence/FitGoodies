@@ -29,7 +29,7 @@ import de.cologneintelligence.fitgoodies.file.FilterDirectoryIterator;
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class FilterDirectoryIteratorTest extends FitGoodiesTestCase {

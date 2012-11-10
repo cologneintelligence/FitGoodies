@@ -26,7 +26,7 @@ import fit.Fixture;
 import fit.TypeAdapter;
 
 /**
- * $Id$
+ *
  * @author kmussawisade
  */
 public class StringTypeAdapterTest extends FitGoodiesTestCase {

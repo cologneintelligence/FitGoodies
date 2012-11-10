@@ -31,7 +31,7 @@ import fit.Counts;
 import fit.Parse;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class FitParseResultTest extends FitGoodiesTestCase {

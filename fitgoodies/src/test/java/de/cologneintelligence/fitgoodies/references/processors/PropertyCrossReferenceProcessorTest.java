@@ -33,7 +33,7 @@ import de.cologneintelligence.fitgoodies.references.processors.PropertyCrossRefe
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 

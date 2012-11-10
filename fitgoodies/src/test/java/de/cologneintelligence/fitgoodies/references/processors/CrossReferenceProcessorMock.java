@@ -23,7 +23,7 @@ import de.cologneintelligence.fitgoodies.references.CrossReference;
 import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class CrossReferenceProcessorMock extends AbstractCrossReferenceProcessor {

@@ -31,7 +31,7 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class MailFixtureTest extends FitGoodiesTestCase {

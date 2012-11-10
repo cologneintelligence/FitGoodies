@@ -27,7 +27,7 @@ import de.cologneintelligence.fitgoodies.file.IteratorHelper;
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class IteratorHelperTest extends FitGoodiesTestCase {

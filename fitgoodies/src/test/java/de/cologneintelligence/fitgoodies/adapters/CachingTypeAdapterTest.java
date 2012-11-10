@@ -25,7 +25,7 @@ import de.cologneintelligence.fitgoodies.adapters.CachingTypeAdapter;
 import fit.TypeAdapter;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class CachingTypeAdapterTest extends FitGoodiesTestCase {

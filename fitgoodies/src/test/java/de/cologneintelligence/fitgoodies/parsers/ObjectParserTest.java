@@ -23,7 +23,7 @@ import de.cologneintelligence.fitgoodies.parsers.ObjectParser;
 import de.cologneintelligence.fitgoodies.parsers.Parser;
 
 /**
- * $Id$
+ *
  * @author jwierum
  *
  */

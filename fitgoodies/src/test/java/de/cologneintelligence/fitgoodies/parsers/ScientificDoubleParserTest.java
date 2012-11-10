@@ -24,7 +24,7 @@ import de.cologneintelligence.fitgoodies.ScientificDouble;
 import de.cologneintelligence.fitgoodies.parsers.ScientificDoubleParser;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class ScientificDoubleParserTest extends FitGoodiesTestCase {

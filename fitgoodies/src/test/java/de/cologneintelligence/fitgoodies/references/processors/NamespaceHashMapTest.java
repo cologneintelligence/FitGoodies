@@ -22,7 +22,7 @@ import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.references.processors.NamespaceHashMap;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 

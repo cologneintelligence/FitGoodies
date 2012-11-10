@@ -29,7 +29,7 @@ import de.cologneintelligence.fitgoodies.file.readers.FileRecordReaderMock;
 import fit.Parse;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {

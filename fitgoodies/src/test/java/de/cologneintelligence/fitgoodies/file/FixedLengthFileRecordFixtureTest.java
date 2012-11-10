@@ -29,7 +29,7 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {

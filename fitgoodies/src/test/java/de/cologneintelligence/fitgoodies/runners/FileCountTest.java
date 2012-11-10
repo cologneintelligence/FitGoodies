@@ -24,7 +24,7 @@ import de.cologneintelligence.fitgoodies.runners.FileCount;
 import fit.Counts;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class FileCountTest extends FitGoodiesTestCase {

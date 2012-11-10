@@ -37,7 +37,7 @@ import de.cologneintelligence.fitgoodies.runners.Runner;
 import fit.Counts;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class DirectoryRunnerTest extends FitGoodiesTestCase {

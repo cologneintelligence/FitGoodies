@@ -26,7 +26,7 @@ import de.cologneintelligence.fitgoodies.file.FileInformation;
 import de.cologneintelligence.fitgoodies.file.FileIterator;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class DirectoryProviderMock implements DirectoryProvider {

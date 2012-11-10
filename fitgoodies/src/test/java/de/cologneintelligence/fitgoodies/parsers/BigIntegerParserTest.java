@@ -27,7 +27,7 @@ import de.cologneintelligence.fitgoodies.parsers.Parser;
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class BigIntegerParserTest extends FitGoodiesTestCase {

@@ -26,7 +26,7 @@ import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
 import fit.TypeAdapter;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class DummyTypeAdapter extends AbstractTypeAdapter<BigInteger> {

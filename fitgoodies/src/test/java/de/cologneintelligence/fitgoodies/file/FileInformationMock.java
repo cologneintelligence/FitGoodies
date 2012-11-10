@@ -30,7 +30,7 @@ import java.io.InputStream;
 import de.cologneintelligence.fitgoodies.file.FileInformation;
 
 /**
- * $Id$
+ *
  * @author jwierum
  *
  */

@@ -33,7 +33,7 @@ import de.cologneintelligence.fitgoodies.file.RecursiveFileSelector;
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class RecursiveFileSelectorTest extends FitGoodiesTestCase {

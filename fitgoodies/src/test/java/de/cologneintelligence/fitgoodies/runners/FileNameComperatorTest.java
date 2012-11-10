@@ -25,7 +25,7 @@ import de.cologneintelligence.fitgoodies.file.FileInformationMock;
 import de.cologneintelligence.fitgoodies.runners.FileNameComperator;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class FileNameComperatorTest extends FitGoodiesTestCase {

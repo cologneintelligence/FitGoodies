@@ -27,7 +27,7 @@ import de.cologneintelligence.fitgoodies.references.processors.CrossReferencePro
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  *
  */

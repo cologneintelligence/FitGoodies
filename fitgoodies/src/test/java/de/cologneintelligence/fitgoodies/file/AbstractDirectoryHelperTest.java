@@ -23,7 +23,7 @@ import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class AbstractDirectoryHelperTest extends FitGoodiesTestCase {

@@ -29,7 +29,7 @@ import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
 import junit.framework.TestCase;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class DelimiterRecordReaderTest extends TestCase {

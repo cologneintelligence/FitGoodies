@@ -33,7 +33,7 @@ import de.cologneintelligence.fitgoodies.dynamic.ResultSetWrapper;
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class ResultSetWrapperTest extends FitGoodiesTestCase {

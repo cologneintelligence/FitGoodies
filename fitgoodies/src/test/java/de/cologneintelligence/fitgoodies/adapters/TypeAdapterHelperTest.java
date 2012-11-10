@@ -28,7 +28,7 @@ import fit.Fixture;
 import fit.TypeAdapter;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class TypeAdapterHelperTest extends FitGoodiesTestCase {

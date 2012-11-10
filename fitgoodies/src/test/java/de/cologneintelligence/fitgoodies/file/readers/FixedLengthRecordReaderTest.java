@@ -29,7 +29,7 @@ import de.cologneintelligence.fitgoodies.file.readers.FixedLengthRecordReader;
 import junit.framework.TestCase;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class FixedLengthRecordReaderTest extends TestCase {

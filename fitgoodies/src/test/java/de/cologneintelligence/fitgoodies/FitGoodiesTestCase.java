@@ -27,7 +27,7 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Counts;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public abstract class FitGoodiesTestCase extends MockObjectTestCase {

@@ -25,7 +25,7 @@ import java.util.List;
 import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class DirectoryHelperMock extends AbstractDirectoryHelper {

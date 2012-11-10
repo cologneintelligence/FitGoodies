@@ -26,7 +26,7 @@ import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class SetupHelperTest extends FitGoodiesTestCase {

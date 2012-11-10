@@ -26,7 +26,7 @@ import de.cologneintelligence.fitgoodies.dynamic.DynamicObjectFactory;
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class DynamicObjectFactoryTest extends FitGoodiesTestCase {

@@ -30,7 +30,7 @@ import de.cologneintelligence.fitgoodies.references.processors.StorageCrossRefer
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 

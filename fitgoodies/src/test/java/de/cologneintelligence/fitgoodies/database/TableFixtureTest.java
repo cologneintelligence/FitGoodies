@@ -33,7 +33,7 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class TableFixtureTest extends FitGoodiesTestCase {

@@ -29,7 +29,7 @@ import de.cologneintelligence.fitgoodies.runners.FitResultTable;
 import fit.Counts;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class FitResultTableTest extends FitGoodiesTestCase {

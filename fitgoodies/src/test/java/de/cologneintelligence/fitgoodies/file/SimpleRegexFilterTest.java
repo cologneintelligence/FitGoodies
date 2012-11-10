@@ -26,7 +26,7 @@ import de.cologneintelligence.fitgoodies.file.SimpleRegexFilter;
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class SimpleRegexFilterTest extends FitGoodiesTestCase {

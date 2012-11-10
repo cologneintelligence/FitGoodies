@@ -22,7 +22,7 @@ package de.cologneintelligence.fitgoodies;
 import de.cologneintelligence.fitgoodies.ScientificDouble;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class ScientificDoubleTest extends FitGoodiesTestCase {

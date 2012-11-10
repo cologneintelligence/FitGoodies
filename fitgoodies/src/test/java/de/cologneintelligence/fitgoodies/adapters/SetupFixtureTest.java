@@ -28,7 +28,7 @@ import fit.Parse;
 import fit.TypeAdapter;
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public class SetupFixtureTest extends FitGoodiesTestCase {

@@ -39,7 +39,7 @@ import de.cologneintelligence.fitgoodies.mail.JavaMailMail;
 
 
 /**
- * $Id$
+ *
  * @author jwierum
  */
 public final class JavaMailMailTest extends FitGoodiesTestCase {

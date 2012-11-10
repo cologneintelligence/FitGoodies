@@ -33,7 +33,7 @@ import fit.Fixture;
 import fit.Parse;
 
 /**
- * $Id$
+ *
  * @author jwierum
  *
  */
