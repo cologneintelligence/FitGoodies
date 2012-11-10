@@ -36,9 +36,9 @@ public class SetupHelperTest extends FitGoodiesTestCase {
         helper.setServerHost("192.168.0.1");
         assertEquals("192.168.0.1", helper.getServerHost());
 
-        helper.setServerPort("1234");
+        helper.setServerPort(1234);
         assertEquals(1234, helper.getServerPort());
-        helper.setServerPort("4321");
+        helper.setServerPort(4321);
         assertEquals(4321, helper.getServerPort());
 
         helper.setSpeed("slow");

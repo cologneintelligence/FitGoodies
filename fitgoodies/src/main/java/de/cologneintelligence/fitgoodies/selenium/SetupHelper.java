@@ -13,11 +13,10 @@ public class SetupHelper {
     private String browserURL = "http://localhost";
     private CommandProcessor commandProcessor;
     private String speed;
-    private Long timeout = 30000L;
-    private Long interval = 500L;
+    private long timeout = 30000L;
+    private long interval = 500L;
     private boolean takeScreenshots;
-
-    private Long sleepBeforeScreenshotMillis=2000L;
+    private long sleepBeforeScreenshotMillis=2000L;
 
     public String getServerHost() {
         return serverHost;
@@ -31,8 +30,8 @@ public class SetupHelper {
         return serverPort;
     }
 
-    public void setServerPort(final String serverPort) {
-        this.serverPort = Integer.parseInt(serverPort);
+    public void setServerPort(final int serverPort) {
+        this.serverPort = serverPort;
     }
 
     public String getBrowserStartCommand() {
@@ -73,13 +72,12 @@ public class SetupHelper {
         this.speed = speed;
     }
 
-
-    public void setTimeout(final String timeout) {
-        this.timeout = Long.parseLong(timeout);
+    public void setTimeout(final long timeout) {
+        this.timeout = timeout;
     }
 
-    public void setInterval(final String interval) {
-        this.interval = Long.parseLong(interval);
+    public void setInterval(final long interval) {
+        this.interval = interval;
     }
 
     public void setTakeScreenshots(final boolean takeScreenshots) {
@@ -107,11 +105,11 @@ public class SetupHelper {
         return this.speed;
     }
 
-    public Long getTimeout() {
+    public long getTimeout() {
         return timeout;
     }
 
-    public Long getInterval() {
+    public long getInterval() {
         return interval;
     }
 
@@ -119,9 +117,7 @@ public class SetupHelper {
         return takeScreenshots;
     }
 
-    public Long sleepBeforeScreenshot() {
+    public long sleepBeforeScreenshot() {
         return sleepBeforeScreenshotMillis;
     }
-
-
 }

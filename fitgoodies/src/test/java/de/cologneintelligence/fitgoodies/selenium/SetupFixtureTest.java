@@ -24,10 +24,7 @@ import org.jmock.Expectations;
 import com.thoughtworks.selenium.CommandProcessor;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.selenium.SetupFixture;
-import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
 import fit.Parse;
 
 /**
@@ -43,7 +40,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
     }
 
     public final void testHelperInteraction() throws Exception {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
+        final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>serverHost</td><td>server-host</td></tr>"
                 + "<tr><td>serverPort</td><td>4444</td></tr>"
                 + "<tr><td>browserStartCommand</td><td>browser-Start-Command</td></tr>"
@@ -65,7 +62,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
         helper.setCommandProcessor(commandProcessor );
 
-        SetupFixture fixture = new SetupFixture();
+        final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
         assertEquals(0, fixture.counts.exceptions);
@@ -74,15 +71,15 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         assertEquals("browser-Start-Command", helper.getBrowserStartCommand());
         assertEquals("browser-URL", helper.getBrowserURL());
         assertEquals("400", helper.getSpeed());
-        assertEquals((Long)40l, helper.getTimeout());
-        assertEquals((Long)10l, helper.getInterval());
+        assertEquals(40L, helper.getTimeout());
+        assertEquals(10L, helper.getInterval());
         assertEquals(true, helper.getTakeScreenshots());
-        assertEquals((Long)500l, helper.sleepBeforeScreenshot());
+        assertEquals(500L, helper.sleepBeforeScreenshot());
         assertNotNull(helper.getCommandProcessor());
     }
 
     public final void testHelperInteractionStopProcessor() throws Exception {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
+        final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>stop</td><td></td></tr>"
                 + "</table>"
                 );
@@ -95,7 +92,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
         helper.setCommandProcessor(commandProcessor );
 
-        SetupFixture fixture = new SetupFixture();
+        final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
         assertEquals(0, fixture.counts.exceptions);

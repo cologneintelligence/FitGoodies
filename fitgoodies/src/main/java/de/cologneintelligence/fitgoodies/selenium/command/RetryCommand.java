@@ -18,14 +18,14 @@ public class RetryCommand extends WrappedCommand {
 
     @Override
     public String execute() {
-        Retry retry = new Retry(helper.getTimeout(), helper.getInterval()) {
+        final Retry retry = new Retry(helper.getTimeout(), helper.getInterval()) {
             private String result;
             @Override
             public boolean execute() {
                 try{
-                    String seleniumCommand = command.substring(0, command.indexOf("AndRetry"));
+                    final String seleniumCommand = command.substring(0, command.indexOf("AndRetry"));
                     result = commandProcessor.doCommand(seleniumCommand, args);
-                } catch (SeleniumException e) {
+                } catch (final SeleniumException e) {
                     throw new RetryException(e.getMessage() + "; " + attemptMessage(attemptCounter()));
                 }
                 return result.startsWith("OK");

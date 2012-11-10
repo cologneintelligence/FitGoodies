@@ -29,13 +29,13 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        RunnerHelper runnerHelper = DependencyManager.getOrCreate(RunnerHelper.class);
+        final RunnerHelper runnerHelper = DependencyManager.getOrCreate(RunnerHelper.class);
         helper = DependencyManager.getOrCreate(SetupHelper.class);
 
         commandProcessor = mock(CommandProcessor.class);
         helper.setCommandProcessor(commandProcessor);
-        helper.setTimeout("500");
-        helper.setInterval("100");
+        helper.setTimeout(500);
+        helper.setInterval(100);
         helper.setTakeScreenshots(false);
         helper.setSleepBeforeScreenshotMillis(1L);
 
@@ -138,7 +138,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         final DateProvider dateProvider = mock(DateProvider.class);
         final String date = "21.01.2009";
         final DateProviderCrossReferenceProcessor processor = new DateProviderCrossReferenceProcessor(dateProvider);
-        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+        final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.getProcessors().remove(processor);
         helper.getProcessors().add(processor);
         checking(new Expectations() {{
@@ -209,7 +209,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 
     private void doCommandCalled4TimesLastTimeReturnsOK() {
         checking(new Expectations() {{
-            Sequence sequence = new NamedSequence("sequence");
+            final Sequence sequence = new NamedSequence("sequence");
             oneOf(commandProcessor).doCommand("command", args);
             will(throwException(new SeleniumException("Error")));inSequence(sequence);
             oneOf(commandProcessor).doCommand("command", args);
@@ -297,13 +297,13 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
     }
 
     private void thirdCellContains(final String text) {
-        Parse cell = thirdCell();
+        final Parse cell = thirdCell();
         assertTrue("expected to contain [" + text + "] but was [" + cell.text() + "]" , cell.text().contains(text));
     }
 
     private Parse thirdCell() {
-        Parse rows = table.parts;
-        Parse cells = rows.more.parts;
+        final Parse rows = table.parts;
+        final Parse cells = rows.more.parts;
         return cells.more.more;
     }
 
