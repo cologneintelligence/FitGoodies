@@ -24,6 +24,7 @@ import org.jmock.Expectations;
 import com.thoughtworks.selenium.CommandProcessor;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.selenium.command.SeleniumFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 
@@ -32,11 +33,22 @@ import fit.Parse;
  */
 public class SetupFixtureTest extends FitGoodiesTestCase {
     private SetupHelper helper;
+    private SeleniumFactory factory;
+    private CommandProcessor commandProcessor;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+
         helper = DependencyManager.getOrCreate(SetupHelper.class);
+        factory = mock(SeleniumFactory.class);
+        commandProcessor = mock(CommandProcessor.class);
+        DependencyManager.inject(SeleniumFactory.class, factory);
+
+        checking(new Expectations() {{
+            allowing(factory).createCommandProcessor("localhost", 4444, "*firefox", "http://localhost");
+            will(returnValue(commandProcessor));
+        }});
     }
 
     public final void testHelperInteraction() throws Exception {
@@ -46,18 +58,18 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
                 + "<tr><td>browserStartCommand</td><td>browser-Start-Command</td></tr>"
                 + "<tr><td>browserURL</td><td>browser-URL</td></tr>"
                 + "<tr><td>speed</td><td>400</td></tr>"
-                + "<tr><td>timeout</td><td>40</td></tr>"
-                + "<tr><td>interval</td><td>10</td></tr>"
+                + "<tr><td>timeout</td><td>3000</td></tr>"
+                + "<tr><td>retryTimeout</td><td>40</td></tr>"
+                + "<tr><td>retryInterval</td><td>10</td></tr>"
                 + "<tr><td>takeScreenshots</td><td>true</td></tr>"
                 + "<tr><td>sleepBeforeScreenshot</td><td>500</td></tr>"
                 + "<tr><td>start</td><td>start config</td></tr>"
                 + "</table>"
                 );
 
-        final CommandProcessor commandProcessor = mock(CommandProcessor.class);
-
         checking(new Expectations(){{
             oneOf(commandProcessor).start("start config");
+            oneOf(commandProcessor).doCommand("setTimeout", new String[]{"3000"});
         }});
 
         helper.setCommandProcessor(commandProcessor );
@@ -70,9 +82,10 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         assertEquals(4444, helper.getServerPort());
         assertEquals("browser-Start-Command", helper.getBrowserStartCommand());
         assertEquals("browser-URL", helper.getBrowserURL());
-        assertEquals("400", helper.getSpeed());
-        assertEquals(40L, helper.getTimeout());
-        assertEquals(10L, helper.getInterval());
+        assertEquals(Integer.valueOf(400), helper.getSpeed());
+        assertEquals(3000L, helper.getTimeout());
+        assertEquals(40L, helper.getRetryTimeout());
+        assertEquals(10L, helper.getRetryInterval());
         assertEquals(true, helper.getTakeScreenshots());
         assertEquals(500L, helper.sleepBeforeScreenshot());
         assertNotNull(helper.getCommandProcessor());
@@ -83,8 +96,6 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
                 + "<tr><td>stop</td><td></td></tr>"
                 + "</table>"
                 );
-
-        final CommandProcessor commandProcessor = mock(CommandProcessor.class);
 
         checking(new Expectations(){{
             oneOf(commandProcessor).stop();

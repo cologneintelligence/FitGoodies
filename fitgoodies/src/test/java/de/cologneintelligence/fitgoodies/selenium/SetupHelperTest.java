@@ -59,9 +59,11 @@ public class SetupHelperTest extends FitGoodiesTestCase {
         helper.setServerPort(4321);
         assertEquals(4321, helper.getServerPort());
 
-        helper.setSpeed("slow");
-        assertEquals("slow", helper.getSpeed());
-        helper.setSpeed("fast");
-        assertEquals("fast", helper.getSpeed());
+        helper.setSpeed(123);
+        assertEquals(Integer.valueOf(123), helper.getSpeed());
+        helper.setSpeed(321);
+        assertEquals(Integer.valueOf(321), helper.getSpeed());
+        helper.setSpeed(null);
+        assertEquals(null, helper.getSpeed());
     }
 }

@@ -53,8 +53,8 @@ public class RetryCommandTest extends FitGoodiesTestCase {
     }
 
     public void testDoCommand4Times() {
-        helper.setTimeout(200);
-        helper.setInterval(50);
+        helper.setRetryTimeout(200);
+        helper.setRetryInterval(50);
 
         checking(new Expectations() {{
             exactly(4).of(commandProcessor).doCommand("command", args);
@@ -70,8 +70,8 @@ public class RetryCommandTest extends FitGoodiesTestCase {
     public void testDoCommand6Times() {
 
         final String[] args = new String[]{"arg1", "arg2"};
-        helper.setTimeout(600);
-        helper.setInterval(100);
+        helper.setRetryTimeout(600);
+        helper.setRetryInterval(100);
 
         checking(new Expectations() {{
             exactly(6).of(commandProcessor).doCommand("command", args);
@@ -88,8 +88,8 @@ public class RetryCommandTest extends FitGoodiesTestCase {
     public void testDoCommandFirst5ReturnsNOKThenOK() {
 
         final String[] args = new String[]{"arg1", "arg2"};
-        helper.setTimeout(1600);
-        helper.setInterval(100);
+        helper.setRetryTimeout(1600);
+        helper.setRetryInterval(100);
 
         checking(new Expectations() {{
             exactly(3).of(commandProcessor).doCommand("command", args);

@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 public class DependencyManagerTest extends TestCase {
     public static class DependencyManagerTestDummy {}
+    public static class DependencyManagerTestDummySubclass extends DependencyManagerTestDummy {}
 
     @Override
     public void setUp() throws Exception {
@@ -36,6 +37,19 @@ public class DependencyManagerTest extends TestCase {
 
         assertNotNull(obj);
         assertTrue(obj instanceof DependencyManagerTestDummy);
+    }
+
+    public void testUnknownSubClassIsLoaded() {
+        final DependencyManagerTestDummy obj =
+                DependencyManager.getOrCreate(DependencyManagerTestDummy.class,
+                        DependencyManagerTestDummySubclass.class);
+        final DependencyManagerTestDummy obj2 =
+                DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
+
+        assertNotNull(obj);
+        assertNotNull(obj2);
+        assertSame(obj2, obj);
+        assertTrue(obj instanceof DependencyManagerTestDummySubclass);
     }
 
     public void testObjectsAreCached() {

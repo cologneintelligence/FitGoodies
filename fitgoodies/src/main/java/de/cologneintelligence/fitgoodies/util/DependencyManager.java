@@ -36,12 +36,12 @@ public final class DependencyManager {
     }
 
     public static <T> T getOrCreate(final Class<T> className) {
-        return INSTANCE.realGetOrCreate(className);
+        return INSTANCE.realGetOrCreate(className, className);
     }
 
-    public <T> T realGetOrCreate(final Class<T> className) {
+    public <T> T realGetOrCreate(final Class<T> className, final Class<? extends T> concreteClass) {
         if (!cache.containsKey(className)) {
-            createCacheEntry(className);
+            createCacheEntry(className, concreteClass);
         }
 
         @SuppressWarnings("unchecked")
@@ -49,9 +49,9 @@ public final class DependencyManager {
         return result;
     }
 
-    private <T> void createCacheEntry(final Class<T> className) {
+    private <T> void createCacheEntry(final Class<T> className, final Class<? extends T> concreteClass) {
         try {
-            final T instance = className.newInstance();
+            final T instance = concreteClass.newInstance();
             cache.put(className, instance);
         } catch (final InstantiationException e) {
             throw new RuntimeException(e);
@@ -66,5 +66,9 @@ public final class DependencyManager {
 
     public <T> void realInject(final Class<T> className, final T injected) {
         cache.put(className, injected);
+    }
+
+    public static <T> T getOrCreate(final Class<T> baseClass, final Class<? extends T> concreteClass) {
+        return INSTANCE.realGetOrCreate(baseClass, concreteClass);
     }
 }

@@ -18,6 +18,10 @@
 
 package de.cologneintelligence.fitgoodies.selenium.command;
 
+import org.jmock.Expectations;
+
+import com.thoughtworks.selenium.CommandProcessor;
+
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
 import de.cologneintelligence.fitgoodies.selenium.command.CaptureEntirePageScreenshotCommand;
@@ -25,8 +29,28 @@ import de.cologneintelligence.fitgoodies.selenium.command.CommandFactory;
 import de.cologneintelligence.fitgoodies.selenium.command.OpenCommand;
 import de.cologneintelligence.fitgoodies.selenium.command.RetryCommand;
 import de.cologneintelligence.fitgoodies.selenium.command.SeleniumCommand;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 public class CommandFactoryTest extends FitGoodiesTestCase {
+    private SeleniumFactory factory;
+    private CommandProcessor seleniumCommand;
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+
+        factory = mock(SeleniumFactory.class);
+        seleniumCommand = mock(CommandProcessor.class);
+        DependencyManager.inject(SeleniumFactory.class, factory);
+
+        checking(new Expectations() {{
+            allowing(factory).createCommandProcessor("localhost", 4444, "*firefox", "http://localhost");
+            will(returnValue(seleniumCommand));
+
+            allowing(seleniumCommand).doCommand("setTimeout", new String[]{"30000"});
+        }});
+    }
+
     private final String[] args = new String[]{};
 
     public void testCommandAndRetry() {

@@ -52,8 +52,8 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 
         commandProcessor = mock(CommandProcessor.class);
         helper.setCommandProcessor(commandProcessor);
-        helper.setTimeout(500);
-        helper.setInterval(100);
+        helper.setRetryTimeout(500);
+        helper.setRetryInterval(100);
         helper.setTakeScreenshots(false);
         helper.setSleepBeforeScreenshotMillis(1L);
 

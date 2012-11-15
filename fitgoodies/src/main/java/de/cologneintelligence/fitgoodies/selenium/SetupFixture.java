@@ -60,11 +60,11 @@ public class SetupFixture extends ActionFixture {
         transformAndEnter();
     }
 
-    public void timeout() throws Exception {
+    public void retryTimeout() throws Exception {
         transformAndEnter();
     }
 
-    public void interval() throws Exception {
+    public void retryInterval() throws Exception {
         transformAndEnter();
     }
 
@@ -73,6 +73,10 @@ public class SetupFixture extends ActionFixture {
     }
 
     public void sleepBeforeScreenshot() throws Exception {
+        transformAndEnter();
+    }
+
+    public void timeout() throws Exception {
         transformAndEnter();
     }
 
@@ -102,15 +106,19 @@ public class SetupFixture extends ActionFixture {
     }
 
     public void speed(final String speed) {
-        helper.setSpeed(speed);
+        helper.setSpeed(Integer.parseInt(speed));
+    }
+
+    public void retryTimeout(final String timeout) throws Exception {
+        helper.setRetryTimeout(Long.parseLong(timeout));
+    }
+
+    public void retryInterval(final String interval) throws Exception {
+        helper.setRetryInterval(Long.parseLong(interval));
     }
 
     public void timeout(final String timeout) throws Exception {
         helper.setTimeout(Long.parseLong(timeout));
-    }
-
-    public void interval(final String interval) throws Exception {
-        helper.setInterval(Long.parseLong(interval));
     }
 
     public void takeScreenshots(final String takeScreenshots) throws Exception {

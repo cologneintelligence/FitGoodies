@@ -36,7 +36,7 @@ public class RetryCommand extends WrappedCommand {
 
     @Override
     public String execute() {
-        final Retry retry = new Retry(helper.getTimeout(), helper.getInterval()) {
+        final Retry retry = new Retry(helper.getRetryTimeout(), helper.getRetryInterval()) {
             private String result;
             @Override
             public boolean execute() {

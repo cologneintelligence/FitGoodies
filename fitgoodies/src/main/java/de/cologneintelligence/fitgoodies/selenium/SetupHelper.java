@@ -19,7 +19,10 @@
 package de.cologneintelligence.fitgoodies.selenium;
 
 import com.thoughtworks.selenium.CommandProcessor;
-import com.thoughtworks.selenium.HttpCommandProcessor;
+
+import de.cologneintelligence.fitgoodies.selenium.command.DefaultSeleniumFactory;
+import de.cologneintelligence.fitgoodies.selenium.command.SeleniumFactory;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
  * @author kmussawisade
@@ -30,11 +33,49 @@ public class SetupHelper {
     private String browserStartCommand = "*firefox";
     private String browserURL = "http://localhost";
     private CommandProcessor commandProcessor;
-    private String speed;
-    private long timeout = 30000L;
-    private long interval = 500L;
+    private Integer speed;
+    private long timeout = 30000;
+    private long retryTimeout = 30000;
+    private long retryInterval = 500;
     private boolean takeScreenshots;
     private long sleepBeforeScreenshotMillis=2000L;
+
+    public String getBrowserStartCommand() {
+        return browserStartCommand;
+    }
+
+    public String getBrowserURL() {
+        return browserURL;
+    }
+
+    public CommandProcessor getCommandProcessor() {
+        if (commandProcessor == null) {
+            commandProcessor = DependencyManager.getOrCreate(SeleniumFactory.class, DefaultSeleniumFactory.class)
+                    .createCommandProcessor(serverHost, serverPort, browserStartCommand, browserURL);
+
+            if (speed != null) {
+                commandProcessor.doCommand("setSpeed", new String[]{Integer.toString(speed)});
+            }
+        }
+
+        return commandProcessor;
+    }
+
+    public long getRetryInterval() {
+        return retryInterval;
+    }
+
+    public void setRetryInterval(final long intervalInMs) {
+        this.retryInterval = intervalInMs;
+    }
+
+    public long getRetryTimeout() {
+        return retryTimeout;
+    }
+
+    public void setRetryTimeout(final long timeoutInMs) {
+        this.retryTimeout = timeoutInMs;
+    }
 
     public String getServerHost() {
         return serverHost;
@@ -52,33 +93,48 @@ public class SetupHelper {
         this.serverPort = serverPort;
     }
 
-    public String getBrowserStartCommand() {
-        return browserStartCommand;
+    public Long getSleepBeforeScreenshotMillis() {
+        return sleepBeforeScreenshotMillis;
+    }
+
+    public Integer getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(final Integer speed) {
+        this.speed = speed;
+    }
+
+    public boolean getTakeScreenshots() {
+        return takeScreenshots;
+    }
+
+    public void setTakeScreenshots(final boolean takeScreenshots) {
+        this.takeScreenshots = takeScreenshots;
+    }
+
+    public void setSleepBeforeScreenshotMillis(final Long sleepBeforeScreenshotMillis) {
+        this.sleepBeforeScreenshotMillis = sleepBeforeScreenshotMillis;
+    }
+
+    public long sleepBeforeScreenshot() {
+        return sleepBeforeScreenshotMillis;
+    }
+
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(final long timeout) {
+        this.timeout = timeout;
     }
 
     public void setBrowserStartCommand(final String browserStartCommand) {
         this.browserStartCommand = browserStartCommand;
     }
 
-    public String getBrowserURL() {
-        return browserURL;
-    }
-
     public void setBrowserURL(final String browserURL) {
         this.browserURL = browserURL;
-    }
-
-    public CommandProcessor getCommandProcessor() {
-        if (commandProcessor == null) {
-
-            commandProcessor = new HttpCommandProcessor(
-                    serverHost, serverPort, browserStartCommand, browserURL);
-            if (getSpeed() != null) {
-                commandProcessor.doCommand("setSpeed", new String[]{getSpeed()});
-            }
-        }
-
-        return commandProcessor;
     }
 
     public void setCommandProcessor(final CommandProcessor commandProcessor) {
@@ -86,56 +142,13 @@ public class SetupHelper {
 
     }
 
-    public void setSpeed(final String speed) {
-        this.speed = speed;
-    }
-
-    public void setTimeout(final long timeout) {
-        this.timeout = timeout;
-    }
-
-    public void setInterval(final long interval) {
-        this.interval = interval;
-    }
-
-    public void setTakeScreenshots(final boolean takeScreenshots) {
-        this.takeScreenshots = takeScreenshots;
-    }
-
-    public Long getSleepBeforeScreenshotMillis() {
-        return sleepBeforeScreenshotMillis;
-    }
-
-    public void setSleepBeforeScreenshotMillis(final Long sleepBeforeScreenshotMillis) {
-        this.sleepBeforeScreenshotMillis = sleepBeforeScreenshotMillis;
-    }
-
     public void start(final String startConfig) {
         getCommandProcessor().start(startConfig);
+        getCommandProcessor().doCommand("setTimeout", new String[]{Long.toString(timeout)});
     }
 
     public void stop() {
         getCommandProcessor().stop();
         commandProcessor = null;
-    }
-
-    public String getSpeed() {
-        return this.speed;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public long getInterval() {
-        return interval;
-    }
-
-    public boolean getTakeScreenshots() {
-        return takeScreenshots;
-    }
-
-    public long sleepBeforeScreenshot() {
-        return sleepBeforeScreenshotMillis;
     }
 }
