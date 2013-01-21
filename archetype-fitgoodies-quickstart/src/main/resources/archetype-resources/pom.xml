@@ -1,11 +1,9 @@
-
-#set($dollar = '$')
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>${groupId}</groupId>
-	<artifactId>${artifactId}</artifactId>
-	<version>${version}</version>
+	<groupId>\${groupId}</groupId>
+	<artifactId>\${artifactId}</artifactId>
+	<version>\${version}</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -21,7 +19,7 @@
 		<dependency>
 			<groupId>de.cologneintelligence</groupId>
 			<artifactId>fitgoodies</artifactId>
-			<version>${fgversion}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
@@ -68,25 +66,25 @@
 						<inherited>true</inherited>
 						<configuration>
 							<tasks>
-								<property name="tests" value="${dollar}{basedir}/src/test/fixtures" />
+								<property name="tests" value="\${basedir}/src/test/fixtures" />
 								<property name="target"
-									value="${dollar}{project.build.directory}/test/fixtures" />
+									value="\${project.build.directory}/test/fixtures" />
 								<property name="reltarget" value="test/fixtures" />
 
-								<copy todir="${dollar}{target}">
-									<fileset dir="${dollar}{tests}" erroronmissingdir="false"
+								<copy todir="\${target}">
+									<fileset dir="\${tests}" erroronmissingdir="false"
 										casesensitive="false" excludes="**/*.html" />
 								</copy>
 
 								<java
 									classname="de.cologneintelligence.fitgoodies.runners.DirectoryRunner"
-									dir="${dollar}{project.build.directory}" fork="true"
+									dir="\${project.build.directory}" fork="true"
 									failonerror="true">
 									<classpath>
 										<path refid="maven.test.classpath" />
 									</classpath>
-									<arg value="${dollar}{tests}" />
-									<arg value="${dollar}{reltarget}" />
+									<arg value="\${tests}" />
+									<arg value="\${reltarget}" />
 									<arg value="utf-8" />
 								</java>
 							</tasks>

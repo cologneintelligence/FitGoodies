@@ -1,0 +1,29 @@
+<archetype-descriptor
+    xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0 http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd"
+    name="archetype-fitgoodies-quickstart">
+
+    <fileSets>
+        <fileSet encoding="UTF-8" filtered="true" packaged="true">
+            <directory>src/main/java</directory>
+        </fileSet>
+        <fileSet encoding="UTF-8" filtered="true" packaged="true">
+            <directory>src/test/java</directory>
+        </fileSet>
+        <fileSet encoding="UTF-8" filtered="true" packaged="true">
+            <directory>src/test/fixtures</directory>
+            <includes>
+                <include>setup.html</include>
+                <include>03_storage.html</include>
+            </includes>
+        </fileSet>
+        <fileSet encoding="UTF-8" filtered="false" packaged="true">
+            <directory>src/test/fixtures</directory>
+            <excludes>
+                <exclude>setup.html</exclude>
+                <exclude>03_storage.html</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+</archetype-descriptor>
