@@ -28,18 +28,39 @@ import de.cologneintelligence.fitgoodies.file.readers.CSVRecordReader;
  * defaults to comma, the mask defaults to the quotation mark.
  *
  * @author jwierum
- * @version $Id$
  */
 public class CSVFileRecordFixture extends AbstractFileRecordReaderFixture {
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
-		char fieldDelimiter = getParam("delimiter", ",").charAt(0);
-		char fieldMask = getParam("mask", "\"").charAt(0);
+        final char fieldDelimiter = getMaskedParam("delimiter", ",");
+        final char fieldMask = getMaskedParam("mask", "\"");
 
-		setRecordReader(new CSVRecordReader(
-				getFile().openBufferedReader(super.getEncoding()),
-				fieldDelimiter, fieldMask));
-	}
+        setRecordReader(new CSVRecordReader(
+                getFile().openBufferedReader(super.getEncoding()),
+                fieldDelimiter, fieldMask));
+    }
+
+    private char getMaskedParam(final String name, final String defaultValue) {
+        final String param = getParam(name, defaultValue);
+
+        if (param.startsWith("\\")) {
+            final char masked = param.charAt(1);
+            switch (masked) {
+            case '\\':
+                return '\\';
+            case 'n':
+                return '\n';
+            case 'r':
+                return '\r';
+            case 't':
+                return '\t';
+            default:
+                return masked;
+            }
+        }
+
+        return param.charAt(0);
+    }
 }
