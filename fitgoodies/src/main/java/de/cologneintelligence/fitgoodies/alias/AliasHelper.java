@@ -62,6 +62,8 @@ public final class AliasHelper {
         classMapper.put("fitgoodies.log4j.SetupFixture", "de.cologneintelligence.fitgoodies.log4j.SetupFixture");
         classMapper.put("fitgoodies.mail.MailFixture", "de.cologneintelligence.fitgoodies.mail.MailFixture");
         classMapper.put("fitgoodies.alias.SetupFixture", "de.cologneintelligence.fitgoodies.alias.SetupFixture");
+
+        classMapper.put("fitgoodies.external.StartFixture", "de.cologneintelligence.fitgoodies.external.StartFixture");
     }
 
     /**

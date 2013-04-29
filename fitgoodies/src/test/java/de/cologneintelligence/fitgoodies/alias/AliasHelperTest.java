@@ -65,6 +65,8 @@ public final class AliasHelperTest extends FitGoodiesTestCase {
         assertMapping("fitgoodies.log4j.SetupFixture");
         assertMapping("fitgoodies.mail.MailFixture");
         assertMapping("fitgoodies.alias.SetupFixture");
+
+        assertMapping("fitgoodies.external.StartFixture");
     }
 
     private void assertMapping(final String className) {

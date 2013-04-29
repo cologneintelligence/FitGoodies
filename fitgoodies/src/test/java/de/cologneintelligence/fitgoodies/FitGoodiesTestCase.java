@@ -25,6 +25,7 @@ import org.jmock.integration.junit3.MockObjectTestCase;
 
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Counts;
+import fit.Parse;
 
 /**
  *
@@ -122,5 +123,43 @@ public abstract class FitGoodiesTestCase extends MockObjectTestCase {
         if (o != null) {
             fail("Should be null, but is: " + o.toString());
         }
+    }
+
+    protected static void assertCounts(final Counts counts, final int right, final int wrong, final int ignores, final int exceptions) {
+        assertCounts(counts, null, right, wrong, ignores, exceptions);
+    }
+
+    protected static void assertCounts(final Counts counts, final Parse table, final int right, final int wrong, final int ignores, final int exceptions) {
+        if (exceptions != counts.exceptions) {
+            final String message = "unexpected numer of exceptions count: expected: " + exceptions + ", got: " + counts.exceptions;
+            if (table != null) {
+                fail(message + "\nFirst exception is: " + findException(table));
+            } else {
+                fail(message);
+            }
+        }
+
+        assertEquals("unexpected numer of right count: expected: " + right + ", got: " + counts.right, right, counts.right);
+        assertEquals("unexpected numer of wrong count: expected: " + wrong + ", got: " + counts.wrong, wrong, counts.wrong);
+        assertEquals("unexpected numer of ignores count: expected: " + ignores + ", got: " + counts.ignores, ignores, counts.ignores);
+    }
+
+    private static String findException(Parse table) {
+        Parse row = table.parts;
+        while (row != null) {
+            Parse cell = row.parts;
+            while (cell != null) {
+
+                if (cell.tag.contains("bgcolor=\"" + fit.Fixture.yellow + "\"")) {
+                    final String body = cell.body;
+                    final String trace = body.replaceFirst("^.*<pre>", "").replaceFirst("</pre>.*$", "");
+                    return Parse.unescape(trace);
+                }
+
+                cell = cell.more;
+            }
+            row = row.more;
+        }
+        throw new IllegalArgumentException("Table does not contain a stacktrace!");
     }
 }
