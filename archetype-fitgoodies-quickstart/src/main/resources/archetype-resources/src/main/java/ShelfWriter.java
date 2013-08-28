@@ -17,7 +17,7 @@
  */
 
 
-package ${groupId};
+package ${package};
 
 public interface ShelfWriter {
 	void write(Bookshelf shelf);
