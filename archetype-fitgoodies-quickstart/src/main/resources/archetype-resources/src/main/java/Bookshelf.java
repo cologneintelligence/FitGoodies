@@ -17,7 +17,7 @@
  */
 
 
-package ${groupId};
+package ${package};
 
 import java.util.ArrayList;
 

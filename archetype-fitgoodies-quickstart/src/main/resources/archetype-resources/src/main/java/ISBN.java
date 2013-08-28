@@ -17,7 +17,7 @@
  */
 
 
-package ${groupId};
+package ${package};
 
 import org.apache.log4j.Logger;
 

@@ -68,8 +68,8 @@
 							<tasks>
 								<property name="tests" value="\${basedir}/src/test/fixtures" />
 								<property name="target"
-									value="\${project.build.directory}/test/fixtures" />
-								<property name="reltarget" value="test/fixtures" />
+									value="\${project.build.directory}/fit" />
+								<property name="reltarget" value="fit" />
 
 								<copy todir="\${target}">
 									<fileset dir="\${tests}" erroronmissingdir="false"
