@@ -17,7 +17,7 @@
  */
 
 
-package ${groupId};
+package ${package};
 
 public final class Book {
 	private StringBuffer title;
