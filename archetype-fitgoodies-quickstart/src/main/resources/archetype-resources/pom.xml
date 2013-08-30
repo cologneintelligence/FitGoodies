@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>\${groupId}</groupId>
-	<artifactId>\${artifactId}</artifactId>
-	<version>\${version}</version>
+	<groupId>de.co.in.de</groupId>
+	<artifactId>FitGoodiesSandbox</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>de.cologneintelligence</groupId>
 			<artifactId>fitgoodies</artifactId>
-			<version>${project.version}</version>
+			<version>1.2.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
@@ -66,26 +66,30 @@
 						<inherited>true</inherited>
 						<configuration>
 							<tasks>
-								<property name="tests" value="\${basedir}/src/test/fixtures" />
+								<property name="tests" value="..\\src\\test\\fixtures\\de\\co\\in\\de\\" />
 								<property name="target"
-									value="\${project.build.directory}/fit" />
-								<property name="reltarget" value="fit" />
+									value="${project.build.directory}\\output" />
+								<property name="reltarget" value="output\\" />
 
-								<copy todir="\${target}">
-									<fileset dir="\${tests}" erroronmissingdir="false"
+								<copy todir="${target}">
+									<fileset dir="${tests}" erroronmissingdir="false"
 										casesensitive="false" excludes="**/*.html" />
 								</copy>
 
 								<java
-									classname="de.cologneintelligence.fitgoodies.runners.DirectoryRunner"
-									dir="\${project.build.directory}" fork="true"
+									classname="de.cologneintelligence.fitgoodies.runners.FitRunner"
+									dir="${project.build.directory}" fork="true"
 									failonerror="true">
 									<classpath>
 										<path refid="maven.test.classpath" />
 									</classpath>
-									<arg value="\${tests}" />
-									<arg value="\${reltarget}" />
-									<arg value="utf-8" />
+									<arg value="-s"/>
+									<arg value="${tests}"/>
+									<arg value="-d"/>
+									<arg value="${reltarget}\\"/>
+									<arg value="-e" />
+									<arg value="utf-8"/>
+									
 								</java>
 							</tasks>
 						</configuration>

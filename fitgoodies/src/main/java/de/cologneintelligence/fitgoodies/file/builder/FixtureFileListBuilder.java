@@ -19,7 +19,11 @@ public class FixtureFileListBuilder {
 		files = new ArrayList<String>();
 		this.baseDir = new File(baseDir).getPath();
 		currentDir = "\\";
-		addIfExists(new File(this.baseDir), "\\setup.html");
+		File fullFilePath = new File(this.baseDir);
+		if(!fullFilePath.getPath().endsWith(seperator)){
+			fullFilePath = new File(fullFilePath, seperator);
+		}
+		addIfExists(fullFilePath, "setup.html");
 
 	}
 
@@ -39,12 +43,18 @@ public class FixtureFileListBuilder {
 
 		for (int i = baseDirArray.length-1; i >= indexOfPrefix ; i--) {
 			File fullFilePath = createDirectoryToFile(baseDirArray, i);
-			addIfExists(fullFilePath, "\\teardown.html");
+			if(!fullFilePath.getPath().endsWith(seperator)){
+				fullFilePath = new File(fullFilePath, seperator);
+			}
+			addIfExists(fullFilePath, "teardown.html");
 		}
 
 		for(int i = indexOfPrefix; i<pathArray.length; i++){
 			File fullFilePath = createDirectoryToFile(pathArray, i);
-			addIfExists(fullFilePath, "\\setup.html");
+			if(!fullFilePath.getPath().endsWith(seperator)){
+				fullFilePath = new File(fullFilePath, seperator);
+			}
+			addIfExists(fullFilePath, "setup.html");
 		}
 
 		File fullFilePath = new File(baseDir);
@@ -58,7 +68,6 @@ public class FixtureFileListBuilder {
 	 */
 	private void addIfExists(File fullFilePath, String fileName) {
 		if (new File(fullFilePath, fileName).exists()) {
-			//File currentPath = new File(baseDir, currentDir);
 			String diff = StringUtils.difference(baseDir, fullFilePath.getPath());
 			files.add(diff + fileName);
 		}
@@ -72,9 +81,8 @@ public class FixtureFileListBuilder {
 		File currentPath = new File(baseDir, currentDir);
 		while(!currentPath.equals(new File(baseDir))){
 			currentPath = currentPath.getParentFile();
-			addIfExists(currentPath, "\\teardown.html");
+			addIfExists(currentPath, "teardown.html");
 		}
-		System.out.println(files.toString());
 		return files;
 	}
 
