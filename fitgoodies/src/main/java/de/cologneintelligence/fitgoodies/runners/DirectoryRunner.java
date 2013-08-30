@@ -37,7 +37,6 @@ import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryProvider;
 import de.cologneintelligence.fitgoodies.file.IteratorHelper;
 import de.cologneintelligence.fitgoodies.file.RecursiveFileSelector;
-
 import fit.Counts;
 
 /**
@@ -84,7 +83,7 @@ public class DirectoryRunner {
 	public final FileInformation[] getRelevantFiles() {
 		List<FileInformation> files = new LinkedList<FileInformation>();
 		RecursiveFileSelector selector =
-			new RecursiveFileSelector(directoryProvider, ".*\\.(?i:html?)");
+				new RecursiveFileSelector(directoryProvider, ".*\\.(?i:html?)");
 
 		for (FileInformation fi : new IteratorHelper<FileInformation>(selector)) {
 			files.add(fi);
@@ -126,7 +125,7 @@ public class DirectoryRunner {
 			final PrintStream log) {
 		FileInformation[] files = getRelevantFiles();
 		prepareDirectories(files);
-		
+
 		return !runFiles(fileRunner, result, log, files);
 	}
 
@@ -145,7 +144,7 @@ public class DirectoryRunner {
 			if (counts != null && (counts.exceptions > 0 || counts.wrong > 0)) {
 				failed = true;
 			}
-			
+
 			if (log != null) {
 				log.println(counts);
 			}
@@ -186,7 +185,7 @@ public class DirectoryRunner {
 		pw.println("</body></html>");
 		pw.close();
 		fos.close();
-		
+
 		return results;
 	}
 
@@ -201,7 +200,7 @@ public class DirectoryRunner {
 	public static void main(final String[] args) {
 		if (args.length < 2) {
 			final String error = "Usage:\n"
-				+ "fitgoodies.runners.DirectoryRunner inputdir outputdir [encoding]";
+					+ "fitgoodies.runners.DirectoryRunner inputdir outputdir [encoding]";
 			System.err.println(error);
 			throw new RuntimeException(error);
 		}
@@ -222,7 +221,7 @@ public class DirectoryRunner {
 			DirectoryRunner runner = new DirectoryRunner(
 					new FileSystemDirectoryProvider(sourcePath),
 					destPath, encoding, directoryHelper);
-			
+
 			if (!runner.runStandAlone()) {
 				System.exit(1);
 			}
