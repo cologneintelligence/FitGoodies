@@ -16,7 +16,7 @@
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ${groupId};
+package ${package};
 
 public final class FixtureObjects {
 	private FixtureObjects() { }

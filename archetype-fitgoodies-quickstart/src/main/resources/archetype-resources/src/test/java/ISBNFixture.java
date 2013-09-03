@@ -16,7 +16,7 @@
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ${groupId};
+package ${package};
 
 import de.cologneintelligence.fitgoodies.ColumnFixture;
 
