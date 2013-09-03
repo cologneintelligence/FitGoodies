@@ -18,7 +18,7 @@ public class FixtureFileListBuilder {
 		this.seperator = File.separator;
 		files = new ArrayList<String>();
 		this.baseDir = new File(baseDir).getPath();
-		currentDir = "\\";
+		currentDir = this.separator;
 		File fullFilePath = new File(this.baseDir);
 		if(!fullFilePath.getPath().endsWith(seperator)){
 			fullFilePath = new File(fullFilePath, seperator);
