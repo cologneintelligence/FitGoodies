@@ -10,18 +10,18 @@ import org.apache.commons.lang.StringUtils;
 
 public class FixtureFileListBuilder {
 	private String currentDir;
-	private String seperator;
+	private String separator;
 	private String baseDir;
 	private List<String> files;
 
 	public FixtureFileListBuilder(String baseDir){
-		this.seperator = File.separator;
+		this.separator = File.separator;
 		files = new ArrayList<String>();
 		this.baseDir = new File(baseDir).getPath();
 		currentDir = this.separator;
 		File fullFilePath = new File(this.baseDir);
-		if(!fullFilePath.getPath().endsWith(seperator)){
-			fullFilePath = new File(fullFilePath, seperator);
+		if(!fullFilePath.getPath().endsWith(separator)){
+			fullFilePath = new File(fullFilePath, separator);
 		}
 		addIfExists(fullFilePath, "setup.html");
 
@@ -32,27 +32,27 @@ public class FixtureFileListBuilder {
 	 * @param file	- The filename received from the runner
 	 */
 	public void addFile(String file){
-		if(!file.startsWith(seperator)){
-			file = seperator + file;
+		if(!file.startsWith(separator)){
+			file = separator + file;
 		}
-		String[] baseDirArray = currentDir.split(Pattern.quote(seperator), -1);
+		String[] baseDirArray = currentDir.split(Pattern.quote(separator), -1);
 		String parent = new File(file).getParent();
-		String[] pathArray = parent.split(Pattern.quote(seperator));
+		String[] pathArray = parent.split(Pattern.quote(separator));
 		int indexOfPrefix = 0;
 		indexOfPrefix = getCommonIndex(baseDirArray, pathArray, indexOfPrefix);
 
 		for (int i = baseDirArray.length-1; i >= indexOfPrefix ; i--) {
 			File fullFilePath = createDirectoryToFile(baseDirArray, i);
-			if(!fullFilePath.getPath().endsWith(seperator)){
-				fullFilePath = new File(fullFilePath, seperator);
+			if(!fullFilePath.getPath().endsWith(separator)){
+				fullFilePath = new File(fullFilePath, separator);
 			}
 			addIfExists(fullFilePath, "teardown.html");
 		}
 
 		for(int i = indexOfPrefix; i<pathArray.length; i++){
 			File fullFilePath = createDirectoryToFile(pathArray, i);
-			if(!fullFilePath.getPath().endsWith(seperator)){
-				fullFilePath = new File(fullFilePath, seperator);
+			if(!fullFilePath.getPath().endsWith(separator)){
+				fullFilePath = new File(fullFilePath, separator);
 			}
 			addIfExists(fullFilePath, "setup.html");
 		}
@@ -87,8 +87,8 @@ public class FixtureFileListBuilder {
 	}
 
 	/**
-	 * @param baseDirArray	- the path to the base directory, split by File.seperator
-	 * @param pathArray		- the path to the selected file, split by File.seperator
+	 * @param baseDirArray	- the path to the base directory, split by File.separator
+	 * @param pathArray		- the path to the selected file, split by File.separator
 	 * @param indexOfPrefix	- the position of the suffix of the comparison between base and path directory.
 	 * @return
 	 */
@@ -103,7 +103,7 @@ public class FixtureFileListBuilder {
 	}
 
 	/**
-	 * @param dirArray	- the path to the base directory, split by File.seperator
+	 * @param dirArray	- the path to the base directory, split by File.separator
 	 * @param pathIndex  	- index of current directory iteration
 	 * @return a file containing the full path
 	 */
