@@ -1,7 +1,11 @@
 package de.cologneintelligence.fitgoodies.external;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.Arrays;
 
 public class SystemProcessWrapper implements ProcessWrapper {
@@ -27,6 +31,30 @@ public class SystemProcessWrapper implements ProcessWrapper {
         final ProcessBuilder builder = new ProcessBuilder(command);
         builder.command().addAll(Arrays.asList(arguments));
         builder.directory(dir);
-        return builder.start();
+        builder.redirectErrorStream(true);
+        final Process process = builder.start();
+
+        copyStreamAsync(process.getInputStream(), System.out);
+        copyStreamAsync(process.getErrorStream(), System.err);
+
+        return process;
+    }
+
+    private void copyStreamAsync(final InputStream is, final PrintStream output) {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    final InputStreamReader isr = new InputStreamReader(is);
+                    final BufferedReader br = new BufferedReader(isr);
+                    String line;
+                    while ( (line = br.readLine()) != null) {
+                        output.println(line);
+                    }
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        }.run();
     }
 }
