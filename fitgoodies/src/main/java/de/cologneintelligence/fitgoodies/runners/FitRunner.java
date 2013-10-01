@@ -341,8 +341,6 @@ public class FitRunner {
 
         final boolean error;
 
-        System.err.println("fsf: " + firstSelectedFile + "; f: " + files.size() + "; ");
-
         /*
          * --only was used, the additional setup and teardown files will be
          * added
