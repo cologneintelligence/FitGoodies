@@ -143,7 +143,7 @@ public class FitRunner {
         FileInformation[] files = getRelevantFiles();
         prepareDirectories(files);
 
-        return !runFiles(fileRunner, result, log, files);
+        return runFiles(fileRunner, result, log, files);
     }
 
     public boolean runFiles(final Runner fileRunner, final FitResult result,
