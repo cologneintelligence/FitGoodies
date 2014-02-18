@@ -33,10 +33,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.sanityinc.jargs.CmdLineParser;
-import com.sanityinc.jargs.CmdLineParser.Option;
-import com.sanityinc.jargs.CmdLineParser.OptionException;
-
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
 import de.cologneintelligence.fitgoodies.file.DirectoryProvider;
 import de.cologneintelligence.fitgoodies.file.FileInformation;
@@ -44,7 +42,6 @@ import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryProvider;
 import de.cologneintelligence.fitgoodies.file.IteratorHelper;
 import de.cologneintelligence.fitgoodies.file.RecursiveFileSelector;
-import de.cologneintelligence.fitgoodies.file.builder.FixtureFileListBuilder;
 import fit.Counts;
 
 /**
@@ -53,10 +50,10 @@ import fit.Counts;
  * file in the directory, files which are named teardown.html are processed as
  * last. These files are <em>not</em> processed before each html file.<br />
  * <br />
- * 
+ *
  * All processed files are copied into an output folder. Additionally, a report
  * file is generated.
- * 
+ *
  * @author dgoering
  */
 public class FitRunner {
@@ -67,7 +64,7 @@ public class FitRunner {
 
     /**
      * Initializes a new FitRunner.
-     * 
+     *
      * @param directory
      *            provider, which represents the selected input directory.
      * @param dest
@@ -90,19 +87,19 @@ public class FitRunner {
     /**
      * Generates a sorted list of all HTML relevant files in the input
      * directory.
-     * 
+     *
      * @return list of files.
      */
     public final FileInformation[] getRelevantFiles() {
-        List<FileInformation> files = new LinkedList<FileInformation>();
-        RecursiveFileSelector selector = new RecursiveFileSelector(
+        final List<FileInformation> files = new LinkedList<FileInformation>();
+        final RecursiveFileSelector selector = new RecursiveFileSelector(
                 directoryProvider, ".*\\.(?i:html?)");
 
-        for (FileInformation fi : new IteratorHelper<FileInformation>(selector)) {
+        for (final FileInformation fi : new IteratorHelper<FileInformation>(selector)) {
             files.add(fi);
         }
 
-        FileInformation[] filearr = new FileInformation[files.size()];
+        final FileInformation[] filearr = new FileInformation[files.size()];
         files.toArray(filearr);
 
         Arrays.sort(filearr, new FileNameComperator());
@@ -112,13 +109,13 @@ public class FitRunner {
     /**
      * Creates the directory structure which is needed to save all files in
      * <code>fileInformation</code>.
-     * 
+     *
      * @param fileInformations
      *            list of files to process
      */
     public final void prepareDirectories(
             final FileInformation[] fileInformations) {
-        for (FileInformation file : fileInformations) {
+        for (final FileInformation file : fileInformations) {
             directoryHelper.mkDir(directoryHelper.join(
                     destPath,
                     directoryHelper.removePrefix(file.pathname(),
@@ -129,7 +126,7 @@ public class FitRunner {
     /**
      * Processes a directory with a given Runner, writing results to
      * <code>result</code>, printing output to <code>log</code>.
-     * 
+     *
      * @param fileRunner
      *            runner which will process the input files
      * @param result
@@ -140,24 +137,24 @@ public class FitRunner {
      */
     public final boolean runFiles(final Runner fileRunner,
             final FitResult result, final PrintStream log) {
-        FileInformation[] files = getRelevantFiles();
+        final FileInformation[] files = getRelevantFiles();
         prepareDirectories(files);
 
         return runFiles(fileRunner, result, log, files);
     }
 
     public boolean runFiles(final Runner fileRunner, final FitResult result,
-            final PrintStream log, FileInformation[] files) {
+            final PrintStream log, final FileInformation[] files) {
         boolean failed = false;
-        for (FileInformation file : files) {
-            String relPath = directoryHelper.abs2rel(directoryProvider.getPath(),
+        for (final FileInformation file : files) {
+            final String relPath = directoryHelper.abs2rel(directoryProvider.getPath(),
                     file.fullname());
 
             if (log != null) {
                 log.println(relPath);
             }
 
-            Counts counts = fileRunner.run(file.fullname(),
+            final Counts counts = fileRunner.run(file.fullname(),
                     directoryHelper.join(destPath, relPath));
 
             if (counts != null && (counts.exceptions > 0 || counts.wrong > 0)) {
@@ -178,29 +175,29 @@ public class FitRunner {
     /**
      * Prepares the output and runs
      * {@link #runFiles(Runner, FitResult, PrintStream)}.
-     * 
+     *
      * The normal file system will be used. The report is saved as
      * &quot;report.html&quot; in the output directory.
-     * 
+     *
      * @throws IOException
      *             thrown if a file access went wrong
      */
     public final boolean runDir() throws IOException {
-        FitResultTable result = new FitResultTable(directoryHelper);
+        final FitResultTable result = new FitResultTable(directoryHelper);
 
-        Runner runner = new FitFileRunner();
+        final Runner runner = new FitFileRunner();
         runner.setEncoding(encoding);
-        boolean results = runFiles(runner, result, System.err);
+        final boolean results = runFiles(runner, result, System.err);
 
         writeResults(result);
 
         return results;
     }
 
-    private void writeResults(FitResultTable result) throws FileNotFoundException, IOException {
-        FileOutputStream fos = new FileOutputStream(directoryHelper.join(destPath,
+    private void writeResults(final FitResultTable result) throws FileNotFoundException, IOException {
+        final FileOutputStream fos = new FileOutputStream(directoryHelper.join(destPath,
                 "report.html"));
-        PrintWriter pw = new PrintWriter(fos, true);
+        final PrintWriter pw = new PrintWriter(fos, true);
         pw.println("<html><head><title>Fit Report</title></head><body>");
         pw.println("<h1>Fit Report</h1>");
         pw.println("<p>" + DateFormat.getDateTimeInstance().format(new Date())
@@ -215,24 +212,25 @@ public class FitRunner {
     }
 
 
-    private boolean runSingleFile(Collection<String> files) throws IOException {
+    private boolean runSingleFile(final Collection<String> files) throws IOException {
         boolean error = false;
-        Runner runner = new FitFileRunner();
-        FitResultTable table = new FitResultTable(directoryHelper);
+        final Runner runner = new FitFileRunner();
+        final FitResultTable table = new FitResultTable(directoryHelper);
         for (String file : files) {
             file = unifySeperator(file);
-            final String outputFilePath = new File(destPath
-                    + new File(file).getName()).getPath();
+            System.out.println(file);
+            final String outputFilePath = new File(destPath,
+                    new File(file).getName()).getPath();
+            System.out.println(outputFilePath);
             runner.setEncoding(encoding);
-            Counts result = runner.run(file, outputFilePath);
+            final Counts result = runner.run(file, outputFilePath);
             System.out.println(result);
             if (result != null
                     && (result.exceptions > 0 || result.wrong > 0)) {
                 error = true;
             }
 
-            table.put(directoryHelper.abs2rel(System.getProperty("user.dir"),
-                    file), result);
+            table.put(directoryHelper.abs2rel(destPath, outputFilePath), result);
         }
 
         writeResults(table);
@@ -240,21 +238,22 @@ public class FitRunner {
         return error;
     }
 
-    private boolean runDirWithOnly(String sourcePath, ArrayList<String> selectedFiles) throws IOException {
+    private boolean runDirWithOnly(final String sourcePath,
+            List<String> selectedFiles) throws IOException {
         boolean error = false;
-        FitResultTable resultTable = new FitResultTable(directoryHelper);
-        Runner runner = new FitFileRunner();
+        final FitResultTable resultTable = new FitResultTable(directoryHelper);
+        final Runner runner = new FitFileRunner();
         selectedFiles = addMaintenanceFiles(selectedFiles, sourcePath);
 
         for (String fileName : selectedFiles) {
-            File outputFile = new File(new File(destPath), fileName);
+            final File outputFile = new File(new File(destPath), fileName);
             outputFile.getParentFile().mkdirs();
-            String outputFilePath = outputFile.getPath();
+            final String outputFilePath = outputFile.getPath();
             runner.setEncoding(encoding);
             System.out.println(outputFilePath);
-            String filePath = new File(new File(sourcePath), fileName).getPath();
+            final String filePath = new File(new File(sourcePath), fileName).getPath();
             fileName = unifySeperator(filePath);
-            Counts result = runner.run(fileName, outputFilePath);
+            final Counts result = runner.run(fileName, outputFilePath);
             System.out.println(result);
 
             if (result != null
@@ -269,11 +268,11 @@ public class FitRunner {
         return error;
     }
 
-    private String unifySeperator(String destPath) {
+    private String unifySeperator(final String destPath) {
         return unifySeparator(directoryHelper, destPath);
     }
 
-    private static String unifySeparator(AbstractDirectoryHelper directoryHelper, String destPath) {
+    private static String unifySeparator(final AbstractDirectoryHelper directoryHelper, String destPath) {
         destPath = directoryHelper.rel2abs(
                 System.getProperty("user.dir"),
                 destPath.replace('/', File.separatorChar).replace('\\',
@@ -282,11 +281,11 @@ public class FitRunner {
     }
 
     private ArrayList<String> addMaintenanceFiles(
-            ArrayList<String> selectedFiles, String sourcePath) {
+            final List<String> selectedFiles, final String sourcePath) {
         Collections.sort(selectedFiles);
         ArrayList<String> filesWithSetupTeardown = new ArrayList<String>();
-        FixtureFileListBuilder builder = new FixtureFileListBuilder(sourcePath);
-        for (String fileName : selectedFiles) {
+        final FixtureFileListBuilder builder = new FixtureFileListBuilder(sourcePath);
+        for (final String fileName : selectedFiles) {
             builder.addFile(fileName);
         }
         filesWithSetupTeardown = (ArrayList<String>) builder.returnFiles();
@@ -297,29 +296,24 @@ public class FitRunner {
         /*
          * Parse the provided arguments with jargs
          */
-        CmdLineParser parser = new CmdLineParser();
-        Option<String> enc = parser.addStringOption('e', "encoding");
-        Option<String> sourceDir = parser.addStringOption('s', "source");
-        Option<String> destinationDir = parser.addStringOption('d',
-                "destination");
-        Option<String> f = parser.addStringOption('f', "file");
-        Option<String> onlyFiles = parser.addStringOption("only");
+        final OptionParser parser = new OptionParser();
+        parser.accepts("encoding").withRequiredArg().defaultsTo("utf-8");
+        parser.accepts("source").withRequiredArg();
+        parser.accepts("destination").withRequiredArg();
+        parser.accepts("file").withOptionalArg();
+        parser.accepts("only").withOptionalArg();
 
-        try {
-            parser.parse(args);
-        } catch (OptionException e1) {
-            throw new RuntimeException(e1);
-        }
+        final OptionSet options = parser.parse(args);
 
-        String encoding = parser.getOptionValue(enc, "utf-8");
-        String sourcePath = parser.getOptionValue(sourceDir);
-        String destPath = parser.getOptionValue(destinationDir);
-        Collection<String> files = parser.getOptionValues(f);
-        String firstSelectedFile = parser.getOptionValue(onlyFiles);
-        String[] otherArgs = parser.getRemainingArgs();
-        ArrayList<String> selectedFiles = new ArrayList<String>();
-        selectedFiles.add(firstSelectedFile);
-        selectedFiles.addAll(Arrays.asList(otherArgs));
+        final String encoding = options.valueOf("encoding").toString();
+
+        String sourcePath = (String) options.valueOf("source");
+        final String destPath = (String) options.valueOf("destination");
+        @SuppressWarnings("unchecked")
+        final List<String> files = (List<String>) options.valuesOf("file");
+        @SuppressWarnings("unchecked")
+        final List<String> selectedFiles = (List<String>) options
+                .valuesOf("only");
 
         if (args.length < 2 || (sourcePath != null && files.size() > 0)) {
             final String usage = "FitRunner {-d dir | --destination dir } [-e encoding | --encoding encoding] {-f file | -s dir [--only file1 ... fileN]}";
@@ -345,8 +339,9 @@ public class FitRunner {
          * --only was used, the additional setup and teardown files will be
          * added
          */
-        if (firstSelectedFile != null) {
-            error = runner.runDirWithOnly(sourcePath, selectedFiles);
+        if (selectedFiles != null && selectedFiles.size() > 0) {
+            error = runner.runDirWithOnly(sourcePath, new ArrayList<String>(
+                    selectedFiles));
         }
 
         /*
