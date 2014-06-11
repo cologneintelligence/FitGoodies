@@ -33,7 +33,7 @@ public class FixtureFileListBuilder {
         final String[] pathArray = parent.split(Pattern.quote(separator));
         final int indexOfPrefix = getCommonIndex(baseDirArray, pathArray);
 
-        for (int i = baseDirArray.length - 1; i >= indexOfPrefix; i--) {
+        for (int i = baseDirArray.length - 1; i > indexOfPrefix; i--) {
             final File fullFilePath = createDirectoryToFile(indexOfPrefix,
                     baseDirArray, i);
             addIfExists(fullFilePath, "teardown.html");
@@ -56,7 +56,6 @@ public class FixtureFileListBuilder {
      */
     private void addIfExists(final File fullFilePath, final String fileName) {
         final File file = new File(fullFilePath, fileName);
-        System.out.println("aie: " + file);
         if (file.exists()) {
             final String diff = StringUtils.difference(baseDir, fullFilePath.getPath());
             files.add(diff + fileName);
