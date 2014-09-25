@@ -50,7 +50,7 @@ public final class CrossReferenceHelper {
         processors.add(new FileFixtureCrossReferenceProcessor(
                 DependencyManager.getOrCreate(FileFixtureHelper.class)));
         processors.add(new PropertyCrossReferenceProcessor());
-        processors.add(new EnvironmentPropertyCrossReferenceProcessor(new SystemPropertyProvider()));
+        processors.add(new EnvironmentPropertyCrossReferenceProcessor(DependencyManager.getOrCreate(SystemPropertyProvider.class)));
         processors.add(new DateProviderCrossReferenceProcessor(new DateProviderImpl()));
     };
 

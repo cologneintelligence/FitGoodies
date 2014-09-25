@@ -3,8 +3,11 @@ package de.cologneintelligence.fitgoodies.external;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 
 /**
@@ -79,6 +82,8 @@ public class StartFixture extends ActionFixture {
             cell = cell.more;
         }
 
+        SetupHelper setupHelper = DependencyManager.getOrCreate(SetupHelper.class);
+        parameterList.addAll(setupHelper.getProperties());
         final String[] parameters = parameterList.toArray(new String[parameterList.size()]);
         return parameters;
     }
