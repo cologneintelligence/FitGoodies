@@ -1,5 +1,7 @@
 package de.cologneintelligence.fitgoodies.external;
 
+import de.cologneintelligence.fitgoodies.external.SetupHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.jmock.Expectations;
 
 import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
@@ -8,11 +10,14 @@ import fit.Parse;
 public class StartFixtureTest extends FitGoodiesTestCase {
     private ProcessWrapper processWrapper;
     private StartFixture fixture;
+    private SetupHelper setupHelper;
 
     @Override
     public void setUp() {
         processWrapper = mock(ProcessWrapper.class);
         fixture = new StartFixture(processWrapper);
+        setupHelper = new SetupHelper();
+        DependencyManager.inject(SetupHelper.class, setupHelper);
     }
 
     public void testStartFixtureStartsCommandWithoutArgs() throws Exception {
@@ -107,4 +112,19 @@ public class StartFixtureTest extends FitGoodiesTestCase {
         fixture.doTable(table);
         assertCounts(fixture.counts, table, 0, 0, 0, 0);
     }
+
+    public void testReadDefaultSystemPropertiesFromSetupHelper() throws Exception {
+        setupHelper.addProperty("bla");
+        setupHelper.addProperty("blub");
+        final Parse table = new Parse("<table><tr><td>ignore</td></tr><tr><td>executeAndWait</td><td>ant</td><td>test-target</td></tr></table>");
+
+        checking(new Expectations() {{
+            oneOf(processWrapper).startAndWait("ant", "test-target", "bla", "blub");
+            will(returnValue(0));
+        }});
+
+        fixture.doTable(table);
+        assertCounts(fixture.counts, table, 1, 0, 0, 0);
+    }
+
 }
