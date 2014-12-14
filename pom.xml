@@ -5,11 +5,15 @@
 	<artifactId>fitgoodies-bundle</artifactId>
 	<version>1.2.5-SNAPSHOT</version>
 	<name>FitGoodies bundle</name>
+
 	<packaging>pom</packaging>
-	<description>
-		Transistent pom which is used do install FitGoodies and its archetype
-	</description>
-	<url>https://github.com/kia/FitGoodies</url>
+	<description>Transistent pom which is used do install FitGoodies and its archetype</description>
+	<url>https://github.com/cologneintelligence/FitGoodies</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>1.6</java.version>
+	</properties>
 
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
@@ -19,13 +23,13 @@
 
 	<issueManagement>
 		<system>github</system>
-		<url>https://github.com/kia/FitGoodies/issues</url>
+		<url>https://github.com/cologneintelligence/FitGoodies/issues</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:git://github.com/kia/FitGoodies.git</connection>
-		<developerConnection>scm:git:git@github.com:kia/FitGoodies.git</developerConnection>
-		<url>https://github.com/kia/FitGoodies</url>
+		<connection>scm:git:git://github.com/cologneintelligence/FitGoodies.git</connection>
+		<developerConnection>scm:git:git@github.com:cologneintelligence/FitGoodies.git</developerConnection>
+		<url>https://github.com/cologneintelligence/FitGoodies</url>
 	</scm>
 
 	<developers>
@@ -43,7 +47,7 @@
 			</roles>
 		</developer>
 		<developer>
-			<id>kia69</id>
+			<id>kia</id>
 			<name>Kiaresch Mussawisade</name>
 			<email>kiaresch.mussawisade@co-in.de</email>
 			<organization>Cologne Intelligence</organization>
@@ -77,7 +81,8 @@
 	<modules>
 		<module>fitgoodies</module>
 		<module>archetype-fitgoodies-quickstart</module>
-	</modules>
+    <module>fitgoodies-maven-plugin</module>
+  </modules>
 
 	<build>
 		<plugins>
@@ -97,11 +102,10 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.0.2</version>
+					<version>3.1</version>
 					<configuration>
-						<source>1.6</source>
-						<target>1.6</target>
-						<encoding>UTF-8</encoding>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
 					</configuration>
 				</plugin>
 				<plugin>
