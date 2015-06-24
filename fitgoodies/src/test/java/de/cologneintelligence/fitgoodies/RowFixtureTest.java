@@ -15,26 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package de.cologneintelligence.fitgoodies;
 
 import java.text.ParseException;
 
-import de.cologneintelligence.fitgoodies.RowFixture;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.processors.CrossReferenceProcessorMock;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
-import fit.Fixture;
 import fit.Parse;
 
 /**
- *
  * @author jwierum
- *
  */
 public final class RowFixtureTest extends FitGoodiesTestCase {
+
     public static class DummyRowObject {
+
         public Integer x;
         public String y;
         public Integer z;
@@ -49,29 +45,92 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
         }
     }
 
+    public static class TestRowObject {
+
+        public String x;
+        public Integer y;
+        public Integer z;
+
+        public TestRowObject(
+                final String xVal,
+                final Integer yVal,
+                final Integer zVal) {
+            x = xVal;
+            y = yVal;
+            z = zVal;
+        }
+    }
+
     private static class DummyRowFixture extends RowFixture {
+
         public boolean upCalled;
         public boolean downCalled;
 
-        @Override public Class<?> getTargetClass() {
+        @Override
+        public Class<?> getTargetClass() {
             return DummyRowObject.class;
         }
 
-        @Override public Object[] query() throws Exception {
+        @Override
+        public Object[] query() throws Exception {
             return new DummyRowObject[] {
                     new DummyRowObject(1, "x", 3),
                     new DummyRowObject(8, "matched", 6)
             };
         }
 
-        @Override public void setUp() { upCalled = true; }
-        @Override public void tearDown() { downCalled = true; }
+        @Override
+        public void setUp() {
+            upCalled = true;
+        }
+
+        @Override
+        public void tearDown() {
+            downCalled = true;
+        }
+    }
+
+    private static class TestRowFixture extends RowFixture {
+
+        public boolean upCalled;
+        public boolean downCalled;
+
+        @Override
+        public Class<?> getTargetClass() {
+            return TestRowObject.class;
+        }
+
+        @Override
+        public Object[] query() throws Exception {
+            return new TestRowObject[] {
+                    new TestRowObject("x", 2, 3),
+                    new TestRowObject("x", 5, 6)
+            };
+        }
+
+        @Override
+        public void setUp() {
+            upCalled = true;
+        }
+
+        @Override
+        public void tearDown() {
+            downCalled = true;
+        }
     }
 
     public static final class ErrorFixture extends DummyRowFixture {
+
         private boolean downCalled = false;
-        public boolean isDownCalled() { return downCalled; }
-        @Override public void tearDown() { downCalled = true; }
+
+        public boolean isDownCalled() {
+            return downCalled;
+        }
+
+        @Override
+        public void tearDown() {
+            downCalled = true;
+        }
     }
 
     private DummyRowFixture rowFixture;
@@ -98,7 +157,7 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
         assertEquals(5, rowFixture.counts.right);
     }
 
-    public void testCrossReferences() throws ParseException {
+    public void testCrossReferencesForStringValues() throws ParseException {
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>x</td><td>y</td><td>z</td></tr>"
                 + "<tr><td>8</td><td>${2}</td><td>6</td></tr></table>");
@@ -116,6 +175,33 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
         assertEquals(4, rowFixture.counts.wrong);
     }
 
+    public void testCrossReferencesForIntegerValues() throws ParseException {
+        TestRowFixture sameValueRowFixture = new TestRowFixture();
+        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
+                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
+                + "<tr><td>x</td><td>${test}</td><td>3</td></tr></table>");
+
+        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+        helper.getProcessors().add(new CrossReferenceProcessorMock("test", "2"));
+
+        sameValueRowFixture.doTable(table);
+        assertEquals(3, sameValueRowFixture.counts.right);
+    }
+
+    public void testCrossReferencesExpectedRowsCountEqualsComputedRowsCount() throws ParseException {
+        TestRowFixture sameValueRowFixture = new TestRowFixture();
+        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
+                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
+                + "<tr><td>x</td><td>${test2}</td><td>3</td></tr>"
+                + "<tr><td>x</td><td>5</td><td>6</td></tr></table>");
+
+        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+        helper.getProcessors().add(new CrossReferenceProcessorMock("test2", "2"));
+
+        sameValueRowFixture.doTable(table);
+        assertEquals(6, sameValueRowFixture.counts.right);
+    }
+
     public void testUpDown() throws ParseException {
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>number</td><td>n()</td></tr>"
@@ -127,7 +213,7 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
     }
 
     public void testGetParams() {
-        rowFixture.setParams(new String[]{"x=y", "a=b"});
+        rowFixture.setParams(new String[] { "x=y", "a=b" });
 
         assertEquals("y", rowFixture.getParam("x"));
         assertNull(rowFixture.getParam("y"));
@@ -140,13 +226,26 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>x</td></tr></table>");
 
-        Fixture fixture = new RowFixture() {
-            @Override public Class<?> getTargetClass() { return null; }
-            @Override public Object[] query() throws Exception { return null; }
+        RowFixture fixture = new RowFixture() {
             @Override
-            public void setUp() throws Exception { throw new RuntimeException("x"); }
+            public Class<?> getTargetClass() {
+                return null;
+            }
+
             @Override
-            public void tearDown() throws Exception { throw new RuntimeException("x"); }
+            public Object[] query() throws Exception {
+                return null;
+            }
+
+            @Override
+            public void setUp() throws Exception {
+                throw new RuntimeException("x");
+            }
+
+            @Override
+            public void tearDown() throws Exception {
+                throw new RuntimeException("x");
+            }
         };
         fixture.doTable(table);
 

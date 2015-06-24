@@ -15,82 +15,86 @@
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 package de.cologneintelligence.fitgoodies.references.processors;
 
 import de.cologneintelligence.fitgoodies.references.CrossReference;
-import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
 
 /**
- *
  * @author jwierum
  */
 public class CrossReferenceProcessorMock extends AbstractCrossReferenceProcessor {
-	private boolean calledExtract;
-	private boolean calledPattern;
-	private boolean calledProcess;
-	private boolean calledInfo;
-	private CrossReference cachedResult;
-	private final String match;
 
-	public CrossReferenceProcessorMock(final String matchString) {
-		super(matchString);
-		this.match = matchString;
-	}
+    private boolean calledExtract;
+    private boolean calledPattern;
+    private boolean calledProcess;
+    private boolean calledInfo;
+    private CrossReference cachedResult;
+    private final String match;
+    private String returnValue = "matched";
 
-	public final boolean isCalledExtract() {
-		return calledExtract;
-	}
+    public CrossReferenceProcessorMock(final String matchString) {
+        super(matchString);
+        this.match = matchString;
+    }
 
-	public final boolean isCalledPattern() {
-		return calledPattern;
-	}
+    public CrossReferenceProcessorMock(String match, String returnValue) {
+        super(match);
+        this.returnValue = returnValue;
+        this.match = match;
+    }
 
-	public final boolean isCalledProcess() {
-		return calledProcess;
-	}
+    public final boolean isCalledExtract() {
+        return calledExtract;
+    }
 
-	public final boolean isCalledInfo() {
-		return calledInfo;
-	}
+    public final boolean isCalledPattern() {
+        return calledPattern;
+    }
 
-	public final CrossReference getCachedResult() {
-		return cachedResult;
-	}
+    public final boolean isCalledProcess() {
+        return calledProcess;
+    }
 
-	public final void reset() {
-		calledExtract = false;
-		calledPattern = false;
-		calledProcess = false;
-	}
+    public final boolean isCalledInfo() {
+        return calledInfo;
+    }
 
-	@Override
-	public final CrossReference extractCrossReference(final String ignored) {
-		calledExtract = true;
-		cachedResult = new CrossReference(match, null, null, this);
-		return cachedResult;
-	}
+    public final CrossReference getCachedResult() {
+        return cachedResult;
+    }
 
-	@Override
-	public final String getPattern() {
-		calledPattern = true;
-		return super.getPattern();
-	}
+    public final void reset() {
+        calledExtract = false;
+        calledPattern = false;
+        calledProcess = false;
+    }
 
-	@Override
-	public final String processMatch(final CrossReference cr, final Object object) {
-		calledProcess = true;
+    @Override
+    public final CrossReference extractCrossReference(final String ignored) {
+        calledExtract = true;
+        cachedResult = new CrossReference(match, null, null, this);
+        return cachedResult;
+    }
 
-		if (cr == cachedResult) {
-			return "matched";
-		} else {
-			return "error";
-		}
-	}
+    @Override
+    public final String getPattern() {
+        calledPattern = true;
+        return super.getPattern();
+    }
 
-	@Override
-	public final String info() {
-		return match;
-	}
+    @Override
+    public final String processMatch(final CrossReference cr, final Object object) {
+        calledProcess = true;
+
+        if (cr == cachedResult) {
+            return returnValue;
+        } else {
+            return "error";
+        }
+    }
+
+    @Override
+    public final String info() {
+        return match;
+    }
 }
