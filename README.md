@@ -1,7 +1,7 @@
 FitGoodies
 ==========
 
-[![Build Status](https://travis-ci.org/cologneintelligence/FitGoodies.png)](https://travis-ci.org/cologneintelligence/FitGoodies)
+[![Build Status](https://travis-ci.org/cologneintelligence/FitGoodies.svg?branch=master)](https://travis-ci.org/cologneintelligence/FitGoodies)
 
 Goodies for Fit (Framework for Integration Tests)
 
