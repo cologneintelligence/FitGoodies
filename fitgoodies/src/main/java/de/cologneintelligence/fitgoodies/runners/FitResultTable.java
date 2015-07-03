@@ -193,6 +193,7 @@ public final class FitResultTable implements FitResult {
 
 			for (File file : files) {
                 File newDir = file.getAbsoluteFile().getParentFile();
+				System.out.println(">> " + currentDir + "  <->  " + newDir + " (" + file + ")");
 				if (!newDir.equals(currentDir) && !dirHelper.isSubDir(currentDir, newDir)) {
                     for (File tmpDir : dirHelper.getParentDirs(dirHelper.getCommonDir(currentDir, file), newDir)) {
                         bw.write(getSubSummaryRow(tmpDir));

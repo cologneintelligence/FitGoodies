@@ -34,7 +34,7 @@ package de.cologneintelligence.fitgoodies.runners;
  */
 @Deprecated
 public class DirectoryRunner {
-	public static void main(final String[] args) throws Exception {
+	public static void main(final String[] args) throws Throwable {
 		if (args.length < 2) {
 			final String error = "Usage:\n"
 					+ "fitgoodies.runners.DirectoryRunner inputdir outputdir [encoding]";

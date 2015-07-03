@@ -1,11 +1,10 @@
-#set($dollar = '$')
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>${groupId}</groupId>
-    <artifactId>${artifactId}</artifactId>
-    <version>${version}</version>
+    <groupId>de.cologneintelligence</groupId>
+    <artifactId>archetype-fitgoodies-quickstart</artifactId>
+    <version>1.3.0-SNAPSHOT</version>
 
     <prerequisites>
         <maven>3.0</maven>
@@ -26,7 +25,7 @@
         <dependency>
             <groupId>de.cologneintelligence</groupId>
             <artifactId>fitgoodies</artifactId>
-            <version>${project.version}</version>
+            <version>1.3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>
@@ -43,15 +42,15 @@
                 <version>3.1</version>
 
                 <configuration>
-                    <source>${dollar}{java.version}</source>
-                    <target>${dollar}{java.version}</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
 
             <plugin>
                 <groupId>de.cologneintelligence</groupId>
                 <artifactId>fitgoodies-maven-plugin</artifactId>
-                <version>${project.version}</version>
+                <version>1.3.0-SNAPSHOT</version>
 
                 <executions>
                     <execution>
@@ -71,17 +70,17 @@
                     <dependency>
                         <groupId>org.seleniumhq.selenium</groupId>
                         <artifactId>selenium-api</artifactId>
-                        <version>${dollar}{selenium.version}</version>
+                        <version>${selenium.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.seleniumhq.selenium</groupId>
                         <artifactId>selenium-server</artifactId>
-                        <version>${dollar}{selenium.version}</version>
+                        <version>${selenium.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.seleniumhq.selenium</groupId>
                         <artifactId>selenium-remote-driver</artifactId>
-                        <version>${dollar}{selenium.version}</version>
+                        <version>${selenium.version}</version>
                     </dependency>
                 </dependencies>
 

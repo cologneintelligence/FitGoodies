@@ -59,6 +59,7 @@ public class DirectoryMockHelper {
         when(fileMock.getName()).thenReturn(fileName);
         when(fileMock.getPath()).thenReturn(file);
         when(fileMock.toString()).thenReturn(file);
+        when(fileMock.getAbsoluteFile()).thenReturn(fileMock);
 
         currentDir.put(fileName, fileMock);
     }

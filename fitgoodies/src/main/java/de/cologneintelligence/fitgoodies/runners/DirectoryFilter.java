@@ -49,7 +49,7 @@ public class DirectoryFilter {
                 if (file.isDirectory()) {
                     listFiles(file);
                 } else if (filter.accept(file)) {
-                    allFiles.add(new FileInformation(file));
+                    allFiles.add(new FileInformation(file.getAbsoluteFile()));
                 }
             }
         }
@@ -104,6 +104,6 @@ public class DirectoryFilter {
 
     public void addLimit(File file) {
         limited = true;
-        limits.add(new FileInformation(file));
+        limits.add(new FileInformation(file.getAbsoluteFile()));
     }
 }

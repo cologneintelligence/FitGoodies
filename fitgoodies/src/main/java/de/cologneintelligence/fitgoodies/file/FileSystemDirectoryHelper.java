@@ -193,12 +193,12 @@ public class FileSystemDirectoryHelper {
      * @param relPath path to convert
      * @return <code>relPath</code> as a absolute path
      */
-    public String rel2abs(final String basePath, final String relPath) {
+    public File rel2abs(final String basePath, final String relPath) {
         String[] baseParts = getParts(basePath);
         String[] relParts = getParts(relPath);
 
         if (isAbsolutePath(relPath)) {
-            return relPath;
+            return new File(relPath);
         }
 
         List<String> parts = new ArrayList<String>();
@@ -226,7 +226,7 @@ public class FileSystemDirectoryHelper {
             result.append(part);
         }
 
-        return result.toString();
+        return new File(result.toString());
     }
 
     private boolean isWindowsDrive(final String pathElement) {

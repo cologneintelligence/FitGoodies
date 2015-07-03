@@ -3,6 +3,7 @@ package de.cologneintelligence;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -27,10 +28,13 @@ public class FitMojo extends AbstractMojo {
     @Parameter(defaultValue = "src/test/fixtures", property="fixturesDir", required = true)
     private File fixturesDirectory;
 
+    @Parameter(defaultValue = "UTF-8", property="project.build.sourceEncoding", required = false)
+    private String encoding;
+
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
 
-    public void execute() throws MojoExecutionException {
+    public void execute() throws MojoExecutionException, MojoFailureException {
         ClassLoader loader = createClassloader();
         runFit(loader);
     }
@@ -63,7 +67,7 @@ public class FitMojo extends AbstractMojo {
         }
     }
 
-    private void runFit(ClassLoader loader) throws MojoExecutionException {
+    private void runFit(ClassLoader loader) throws MojoExecutionException, MojoFailureException {
         Class<?> runner;
         try {
             runner = loader.loadClass("de.cologneintelligence.fitgoodies.runners.FitRunner");
@@ -72,8 +76,10 @@ public class FitMojo extends AbstractMojo {
         }
 
         final String[] methodArgs = {
+                "-e", encoding,
                 "-s", fixturesDirectory.getPath(),
-                "-d", outputDirectory.getPath()
+                "-d", outputDirectory.getPath(),
+                "--ne"
         };
 
         try {
@@ -82,7 +88,12 @@ public class FitMojo extends AbstractMojo {
         } catch (NoSuchMethodException e) {
             throw new MojoExecutionException("Error while running fit", e);
         } catch (InvocationTargetException e) {
-            throw new MojoExecutionException("Error while running fit", e);
+            if (e.getTargetException() instanceof AssertionError) {
+                throw new MojoFailureException("One or more fit test(s) failed");
+            } else {
+                e.getTargetException().printStackTrace();
+                throw new MojoExecutionException("Error while running fit", e);
+            }
         } catch (IllegalAccessException e) {
             throw new MojoExecutionException("Error while running fit", e);
         }

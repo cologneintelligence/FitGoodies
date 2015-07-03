@@ -108,28 +108,49 @@ public class ArgumentParserTest extends FitGoodiesTestCase {
 
         File dir1 = getMockedFile(dir, "dir1");
         File dir2 = getMockedFile(dir, "dir2");
-        when(fsHelper.subdir(dir, "dir1")).thenReturn(dir1);
-        when(fsHelper.subdir(dir, "dir2")).thenReturn(dir2);
+        when(fsHelper.rel2abs(dir.getAbsolutePath(), "dir1")).thenReturn(dir1);
+        when(fsHelper.rel2abs(dir.getAbsolutePath(), "dir2")).thenReturn(dir2);
 
-        testParser(dir, new String[]{"-d", "outdir", "--source", "dir1", "-s", "dir2"},
-                "outdir", "utf-8", "dir1/f1.html", "dir2/f2.html", "dir2/f3.html");
+        testParser(dir, new String[]{"-d", "outdir", "-s", "dir2"},
+                "outdir", "utf-8", "dir2/f2.html", "dir2/f3.html");
+    }
+
+    @Test
+    public void addDirectoryLong() {
+        File dir = mockDirectory(PATTERN, "dir1/f1.html", "dir2/f2.html", "dir2/f3.html");
+
+        File dir1 = getMockedFile(dir, "dir1");
+        File dir2 = getMockedFile(dir, "dir2");
+        when(fsHelper.rel2abs(dir.getAbsolutePath(), "dir1")).thenReturn(dir1);
+        when(fsHelper.rel2abs(dir.getAbsolutePath(), "dir2")).thenReturn(dir2);
+
+        testParser(dir, new String[]{"-d", "outdir", "--source", "dir2"},
+                "outdir", "utf-8", "dir2/f2.html", "dir2/f3.html");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void addDirectoryTwice() {
+        File dir = mockDirectory(PATTERN, "dir1/f1.html", "dir2/f2.html", "dir2/f3.html");
+
+        File dir2 = getMockedFile(dir, "dir2");
+        when(fsHelper.rel2abs(dir.getAbsolutePath(), "dir2")).thenReturn(dir2);
+
+        new ArgumentParser(dir, fsHelper).parse(new String[]{"-d", "outdir", "-s", "dir2", "--source", "dir1"});
     }
 
     @Test
     public void addDirectoryWithLimit() {
         File dir = mockDirectory(PATTERN, "dir1/f1.html", "dir2/f2.html", "dir2/f3.html", "dir2/f4.html");
 
-        File dir1 = getMockedFile(dir, "dir1");
         File dir2 = getMockedFile(dir, "dir2");
         File file2 = getMockedFile(dir, "dir2", "f2.html");
         File file4 = getMockedFile(dir, "dir2", "f4.html");
-        when(fsHelper.subdir(dir, "dir1")).thenReturn(dir1);
-        when(fsHelper.subdir(dir, "dir2")).thenReturn(dir2);
-        when(fsHelper.subdir(dir2, "f2.html")).thenReturn(file2);
-        when(fsHelper.subdir(dir2, "f4.html")).thenReturn(file4);
+        when(fsHelper.rel2abs(dir.getAbsolutePath(), "dir2")).thenReturn(dir2);
+        when(fsHelper.rel2abs(dir2.getAbsolutePath(), "f2.html")).thenReturn(file2);
+        when(fsHelper.rel2abs(dir2.getAbsolutePath(), "f4.html")).thenReturn(file4);
 
-        testParser(dir, new String[]{"-d", "outdir", "--source", "dir1", "-s", "dir2", "--only", "f2.html", "-o", "f4.html"},
-                "outdir", "utf-8", "dir1/f1.html", "dir2/f2.html", "dir2/f4.html");
+        testParser(dir, new String[]{"-d", "outdir", "-s", "dir2", "--only", "f2.html", "-o", "f4.html"},
+                "outdir", "utf-8", "dir2/f2.html", "dir2/f4.html");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -141,7 +162,7 @@ public class ArgumentParserTest extends FitGoodiesTestCase {
     public void addLimitInWrongPosition2() {
         File dir = mockDirectory(PATTERN, "dir/f.html");
         File subdir = getMockedFile(dir, "dir");
-        when(fsHelper.subdir(dir, "dir")).thenReturn(subdir);
+        when(fsHelper.rel2abs(dir.getAbsolutePath(), "dir")).thenReturn(subdir);
         new ArgumentParser(dir, fsHelper).parse(new String[]{"-d", "outdir", "-s", "dir", "--file", "file1", "-o", "limit"});
     }
 
@@ -149,7 +170,7 @@ public class ArgumentParserTest extends FitGoodiesTestCase {
         ArgumentParser parser = new ArgumentParser(baseDir, fsHelper);
         parser.parse(arguments);
 
-        assertThat(parser.getDestinationDir(), is(equalTo(destinationDir)));
+        assertThat(parser.getDestinationDir().getAbsolutePath(), is(equalTo(destinationDir)));
         assertThat(parser.getEncoding(), is(equalTo(encoding)));
 
         List<Matcher<FileInformation>> matchers = new ArrayList<Matcher<FileInformation>>();

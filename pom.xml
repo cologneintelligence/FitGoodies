@@ -81,7 +81,7 @@
 	<modules>
 		<module>fitgoodies</module>
 		<module>archetype-fitgoodies-quickstart</module>
-    <module>fitgoodies-maven-plugin</module>
+		<module>fitgoodies-maven-plugin</module>
   </modules>
 
 	<build>

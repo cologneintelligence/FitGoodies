@@ -145,23 +145,27 @@ public final class FileSystemDirectoryHelperTest extends FitGoodiesTestCase {
 		return path.replace('/', File.separatorChar);
 	}
 
+	private File file(String path) {
+		return new File(path(path));
+	}
+
 	@Test
 	public void testRel2Abs() {
 		// test if path already is absolute
 		// test with empty parameters?
 		assertThat(helper.rel2abs(path("/this/is/a/test"), path("../../my/project")),
-				is(equalTo(path("/this/is/my/project"))));
+				is(equalTo(file("/this/is/my/project"))));
 
 		assertThat(helper.rel2abs(path("/files/documents/"), path("projects")),
-				is(equalTo(path("/files/documents/projects"))));
+				is(equalTo(file("/files/documents/projects"))));
 
 		assertThat(helper.rel2abs(path("/no/"), path("../../../../problem")),
-				is(equalTo(path("/problem"))));
+				is(equalTo(file("/problem"))));
 
 		assertThat(helper.rel2abs(path("c:/no/"), path("../../../../problem")),
-				is(equalTo(path("c:/problem"))));
+				is(equalTo(file("c:/problem"))));
 
 		assertThat(helper.rel2abs(path("/please/ignore/me"), path("/test")),
-				is(equalTo(path("/test"))));
+				is(equalTo(file("/test"))));
 	}
 }

@@ -57,10 +57,10 @@ public class FitFileRunner implements Runner {
 
         DependencyManager.inject(RunnerHelper.class, helper);
 
-        helper.setFile(new File(dirHelper.rel2abs(System.getProperty("user.dir"),
-                inputFile.toString())));
-        helper.setResultFile(new File(dirHelper.rel2abs(System.getProperty("user.dir"),
-                outputFile.toString())));
+        helper.setFile(dirHelper.rel2abs(System.getProperty("user.dir"),
+                inputFile.toString()));
+        helper.setResultFile(dirHelper.rel2abs(System.getProperty("user.dir"),
+                outputFile.toString()));
         helper.setRunner(this);
         helper.setHelper(dirHelper);
 

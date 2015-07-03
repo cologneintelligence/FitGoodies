@@ -22,9 +22,13 @@ import de.cologneintelligence.fitgoodies.file.FileInformation;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import fit.Counts;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * This runner traverses a directory tree. All files that end with .htm or .html
@@ -32,7 +36,7 @@ import java.util.Date;
  * file in the directory, files which are named teardown.html are processed as
  * last. These files are <em>not</em> processed before each html file.<br />
  * <br />
- *
+ * <p/>
  * All processed files are copied into an output folder. Additionally, a report
  * file is generated.
  */
@@ -45,15 +49,15 @@ public class FitRunner {
         this.runConfiguration = runConfiguration;
     }
 
-    private static String canonical(final FileSystemDirectoryHelper directoryHelper, String destPath) {
-        destPath = directoryHelper.rel2abs(
+    private static String canonical(final FileSystemDirectoryHelper directoryHelper, File destPath) {
+        return directoryHelper.rel2abs(
                 System.getProperty("user.dir"),
-                destPath.replace('/', File.separatorChar).replace('\\', File.separatorChar));
-        return destPath;
+                destPath.getAbsolutePath().replace('/', File.separatorChar).replace('\\', File.separatorChar)).getPath();
     }
 
-    public static void main(final String[] args) throws IOException {
-        ArgumentParser parser = new ArgumentParser(new File("."), new FileSystemDirectoryHelper());
+    public static void main(final String[] args) throws Throwable {
+        ArgumentParser parser = new ArgumentParser(new File(System.getProperty("user.dir")),
+                new FileSystemDirectoryHelper());
 
         try {
             parser.parse(args);
@@ -72,19 +76,17 @@ public class FitRunner {
             System.err.println("-f, -s and -l can be applied multiple times");
             System.err.println("At least one -f or -s must be provided");
 
-            try {
-                System.exit(1);
-            } catch(SecurityException ignored) {
-                throw new IllegalArgumentException(e.getMessage(), e);
-            }
+            abort(parser, new IllegalArgumentException(e.getMessage()));
         }
 
         FileSystemDirectoryHelper directoryHelper = new FileSystemDirectoryHelper();
 
         RunConfiguration runConfiguration = new RunConfiguration();
-        runConfiguration.setSource(parser.getFiles().toArray(new FileInformation[parser.getFiles().size()]));
+        List<FileInformation> files = parser.getFiles();
+        runConfiguration.setSource(files.toArray(new FileInformation[files.size()]));
         runConfiguration.setDestination(canonical(directoryHelper, parser.getDestinationDir()));
         runConfiguration.setEncoding(parser.getEncoding());
+        runConfiguration.setBaseDir(parser.getBaseDir());
 
         final FitRunner fitRunner = new FitRunner(directoryHelper, runConfiguration);
         FitResultTable result = new FitResultTable(directoryHelper);
@@ -93,19 +95,40 @@ public class FitRunner {
         fitRunner.writeResults(result);
 
         if (error) {
-            System.exit(1);
+            abort(parser, new AssertionError("Tests failed"));
         }
     }
 
-    public boolean run(FitResultTable resultTable) {
+    private static void abort(ArgumentParser parser, Throwable t) throws Throwable {
+        if (!parser.isNoExit()) {
+            try {
+                System.exit(1);
+            } catch (SecurityException ignored) {
+            }
+        }
+        throw t;
+    }
+
+    public boolean run(FitResultTable resultTable) throws IOException {
         boolean error = false;
+
+        new File(runConfiguration.getDestination()).mkdirs();
+
         for (FileInformation file : runConfiguration.getSources()) {
-            File outputFile = new File(new File(runConfiguration.getDestination()), file.getFile().getPath());
+
+            File outputFile;
+            if (directoryHelper.isSubDir(runConfiguration.getBaseDir(), file.getFile().getAbsoluteFile())) {
+                 String relPath = directoryHelper.abs2rel(runConfiguration.getBaseDir().getAbsolutePath(),
+                         file.getFile().getAbsolutePath());
+                 outputFile = new File(runConfiguration.getDestination(), relPath);
+             } else {
+                 outputFile = new File(runConfiguration.getDestination(), file.getFile().getAbsolutePath());
+             }
             outputFile.getParentFile().mkdirs();
 
-            String filePath = new File(file.getFile(), outputFile.getPath()).getPath();
+            String filePath = directoryHelper.abs2rel(System.getProperty("user.dir"), file.getFile().getAbsolutePath());
 
-            System.out.println(outputFile.getPath());
+            System.out.println(directoryHelper.abs2rel(System.getProperty("user.dir"), outputFile.getAbsolutePath()));
 
             FitFileRunner runner = new FitFileRunner();
             runner.setEncoding(runConfiguration.getEncoding());
@@ -113,11 +136,20 @@ public class FitRunner {
 
             System.out.println(result);
 
+
+            System.out.println("This was: ");
+            System.out.println("filePath: " + filePath);
+            System.out.println("outputFile: " + outputFile.getPath());
+            System.out.println("file: " + file.getFile().getPath());
+
+
             if (result != null && (result.exceptions > 0 || result.wrong > 0)) {
                 error = true;
             }
 
-            resultTable.put(new File(directoryHelper.abs2rel(file.getFile().getName(), filePath)), result);
+            String path = directoryHelper.abs2rel(filePath, file.getFile().getAbsolutePath());
+            System.out.println("path (result): " + path);
+            resultTable.put(new File(path), result);
         }
 
         return error;

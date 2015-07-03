@@ -29,12 +29,13 @@ public class ArgumentParser {
     private static final String DEFAULT_ENCODING = "utf-8";
 
     private final File baseDir;
-    private String destinationDir;
+    private File destinationDir;
     private String encoding;
     private List<FileInformation> files = new LinkedList<FileInformation>();
     private FileSystemDirectoryHelper fsHelper;
     private DirectoryFilter currentDirFilter;
-    private File currentDir;
+    private File sourceDir;
+    private boolean noExit;
 
     public ArgumentParser(File baseDir, FileSystemDirectoryHelper fsHelper) {
         this.baseDir = baseDir;
@@ -46,7 +47,7 @@ public class ArgumentParser {
             String arg = args[i];
 
             if ("-d".equals(arg) || "--destination".equals(arg)) {
-                this.destinationDir = getOption(args, i, "-d", this.destinationDir);
+                this.destinationDir = new File(getOption(args, i, "-d", this.destinationDir));
             } else if ("-e".equals(arg) || "--encoding".equals(arg)) {
                 this.encoding = getOption(args, i, "-e", this.encoding);
             } else if ("-f".equals(arg) || "--file".equals(arg)) {
@@ -54,12 +55,14 @@ public class ArgumentParser {
                 addFile(getOption(args, i, "-f", null));
             } else if ("-s".equals(arg) || "--source".equals(arg)) {
                 finishDir();
-                addDirectory(getOption(args, i, "s", null));
+                addDirectory(getOption(args, i, "s", sourceDir));
             } else if ("-o".equals(arg) || "--only".equals(arg)) {
                 if (currentDirFilter == null) {
                     throw new IllegalArgumentException("Limit must follow -s or -o");
                 }
                 addLimit(getOption(args, i, "l", null));
+            } else if ("--ne".equals(arg)) {
+                noExit = true;
             }
         }
 
@@ -75,17 +78,17 @@ public class ArgumentParser {
     }
 
     private void addLimit(String limit) {
-        currentDirFilter.addLimit(fsHelper.subdir(currentDir, limit));
+        currentDirFilter.addLimit(fsHelper.rel2abs(sourceDir.getAbsolutePath(), limit));
     }
 
     private void addFile(String file) {
-        files.add(new FileInformation(new File(file)));
+        files.add(new FileInformation(new File(file).getAbsoluteFile()));
     }
 
     private void addDirectory(String file) {
         finishDir();
-        currentDir = fsHelper.subdir(baseDir, file);
-        currentDirFilter = new DirectoryFilter(currentDir, fsHelper);
+        sourceDir = fsHelper.rel2abs(baseDir.getAbsolutePath(), file);
+        currentDirFilter = new DirectoryFilter(sourceDir, fsHelper);
     }
 
     private void finishDir() {
@@ -97,7 +100,7 @@ public class ArgumentParser {
         }
     }
 
-    private String getOption(String[] args, int i, String option, String oldValue) {
+    private String getOption(String[] args, int i, String option, Object oldValue) {
         if (i == args.length - 1) {
             throw new IllegalArgumentException("Option " + option + " is missing an argument!");
         }
@@ -109,7 +112,7 @@ public class ArgumentParser {
         return args[i + 1];
     }
 
-    public String getDestinationDir() {
+    public File getDestinationDir() {
         return destinationDir;
     }
 
@@ -119,5 +122,13 @@ public class ArgumentParser {
 
     public List<FileInformation> getFiles() {
         return files;
+    }
+
+    public File getBaseDir() {
+        return baseDir;
+    }
+
+    public boolean isNoExit() {
+        return noExit;
     }
 }

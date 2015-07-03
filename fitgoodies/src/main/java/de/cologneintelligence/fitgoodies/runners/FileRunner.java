@@ -38,7 +38,7 @@ public final class FileRunner {
 	 *
 	 * @param args program parameters
 	 */
-	public static void main(final String[] args) throws Exception {
+	public static void main(final String[] args) throws Throwable {
 		if (args.length < 2) {
 			final String error = "Usage:\n"
 				+ "fitgoodies.runners.FileRunner inputfile outputfile [encoding]";
