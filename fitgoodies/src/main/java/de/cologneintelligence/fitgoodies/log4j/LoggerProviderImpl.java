@@ -25,8 +25,6 @@ import org.apache.log4j.spi.AppenderAttachable;
  * LoggerProvider which returns corresponding <code>org.apache.log4j.logger</code>
  * objects.
  *
- * @author jwierum
- * @version $Id$
  */
 public final class LoggerProviderImpl implements LoggerProvider {
 	@Override

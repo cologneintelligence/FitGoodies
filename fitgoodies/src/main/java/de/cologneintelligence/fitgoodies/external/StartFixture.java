@@ -13,7 +13,7 @@ import fit.Parse;
 /**
  * This fixture runs external commands and optionally waits for them to finish<br />
  * <br />
- * 
+ *
  * <table border="1">
  * <tr>
  * <td colspan="3">fitgoodies.external.ProcessWrapper</td>
@@ -33,8 +33,7 @@ import fit.Parse;
  * <td>c:\myfile.txt</td>
  * </tr>
  * </table>
- * 
- * @author jwierum
+ *
  */
 public class StartFixture extends ActionFixture {
 

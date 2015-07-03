@@ -20,14 +20,16 @@
 package de.cologneintelligence.fitgoodies.adapters;
 
 import de.cologneintelligence.fitgoodies.ColumnFixture;
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.adapters.CachingTypeAdapter;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import fit.TypeAdapter;
+import org.hamcrest.Matcher;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+
 public final class CachingTypeAdapterTest extends FitGoodiesTestCase {
 	public static class DummyFixture extends ColumnFixture {
 		private int calls = 0;
@@ -49,37 +51,39 @@ public final class CachingTypeAdapterTest extends FitGoodiesTestCase {
 		}
 	}
 
+	@Test
 	public void testCalls() throws Exception {
 		DummyFixture dummy = new DummyFixture(13);
 		TypeAdapter taMethod = TypeAdapter.on(dummy,
 				DummyFixture.class.getMethod("getValue", new Class<?>[]{}));
 		taMethod = new CachingTypeAdapter(taMethod);
 
-		assertEquals(13, taMethod.get());
-		assertEquals(13, taMethod.get());
-		assertEquals(1, dummy.getCalls());
+		assertThat(taMethod.get(), is(equalTo((Object) 13)));
+		assertThat(taMethod.get(), is(equalTo((Object) 13)));
+		assertThat(dummy.getCalls(), is(equalTo((Object) 1)));
 
 		dummy = new DummyFixture(42);
 		taMethod = TypeAdapter.on(dummy,
 				DummyFixture.class.getMethod("getValue", new Class<?>[]{}));
 		taMethod = new CachingTypeAdapter(taMethod);
 
-		assertEquals(42, taMethod.get());
-		assertEquals(42, taMethod.get());
-		assertEquals(1, dummy.getCalls());
+		assertThat(taMethod.get(), is(equalTo((Object) 42)));
+		assertThat(taMethod.get(), is(equalTo((Object) 42)));
+		assertThat(dummy.getCalls(), is(equalTo((Object) 1)));
 	}
 
+	@Test
 	public void testSetter() throws Exception {
 		DummyFixture dummy = new DummyFixture(13);
 		TypeAdapter taField = TypeAdapter.on(dummy, DummyFixture.class.getField("field"));
 		taField = new CachingTypeAdapter(taField);
 
-		assertEquals("xy", taField.get());
+		assertThat(taField.get(), (Matcher) is(equalTo("xy")));
 
 		taField.set("new!");
-		assertEquals("new!", taField.get());
+		assertThat(taField.get(), (Matcher) is(equalTo("new!")));
 
 		taField.set("abc");
-		assertEquals("abc", taField.get());
+		assertThat(taField.get(), (Matcher) is(equalTo("abc")));
 	}
 }

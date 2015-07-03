@@ -19,90 +19,105 @@
 
 package de.cologneintelligence.fitgoodies.references.processors;
 
-import java.util.regex.Pattern;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.DirectoryProviderMock;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReference;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.regex.Pattern;
+
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 
-/**
- * @author jwierum
- */
+
 
 public class FileFixtureCrossReferenceProcessorTest extends FitGoodiesTestCase {
     private AbstractCrossReferenceProcessor processor;
     private FileFixtureHelper helper;
 
-    @Override
-    public final void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         helper = new FileFixtureHelper();
         processor = new FileFixtureCrossReferenceProcessor(helper);
     }
 
-    public final void testInfo() {
-        assertNotNull(processor.info());
+    @Test
+    public void testInfo() {
+        assertThat(processor.info(), not(CoreMatchers.is(nullValue())));
     }
 
-    public final void testPattern() {
+    @Test
+    public void testPattern() {
         final Pattern pattern = Pattern.compile(processor.getPattern());
 
-        assertTrue(pattern.matcher("selectedFile()").find());
-        assertTrue(pattern.matcher("selectedEncoding()").find());
-        assertFalse(pattern.matcher("selectedXFile()").find());
-        assertFalse(pattern.matcher("selectedEncoding(Y)").find());
+        assertThat(pattern.matcher("selectedFile()").find(), is(true));
+        assertThat(pattern.matcher("selectedEncoding()").find(), is(true));
+        assertThat(pattern.matcher("selectedXFile()").find(), is(false));
+
+        assertThat(pattern.matcher("selectedEncoding(Y)").find(), is(false));
+
     }
 
-    public final void testExtraction() {
+    @Test
+    public void testExtraction() {
         CrossReference cr;
         cr = processor.extractCrossReference("selectedFile()");
-        assertEquals("selectedFile", cr.getCommand());
+        assertThat(cr.getCommand(), is(equalTo("selectedFile")));
 
         cr = processor.extractCrossReference("selectedEncoding()");
-        assertEquals("selectedEncoding", cr.getCommand());
+        assertThat(cr.getCommand(), is(equalTo("selectedEncoding")));
 
         cr = processor.extractCrossReference("someText");
-        assertNull(cr);
+        assertThat(cr, is(nullValue()));
     }
 
-    public final void testEncodingReplacement()
+    @Test
+    public void testEncodingReplacement()
             throws CrossReferenceProcessorShortcutException {
         CrossReference cr;
         cr = new CrossReference("selectedEncoding", null, null, processor);
 
         helper.setEncoding("xy");
-        assertEquals("xy", processor.processMatch(cr, "match"));
+        assertThat(processor.processMatch(cr, "match"), is(equalTo("xy")));
 
         helper.setEncoding("latin-1");
-        assertEquals("latin-1", processor.processMatch(cr, "match"));
+        assertThat(processor.processMatch(cr, "match"), is(equalTo("latin-1")));
     }
 
-    public final void testFilenameReplacement()
+    @Test
+    public void testFilenameReplacement()
             throws CrossReferenceProcessorShortcutException {
-        CrossReference cr;
-        cr = new CrossReference("selectedFile", null, null, processor);
-        helper.setProvider(new DirectoryProviderMock());
-        helper.setPattern(".*\\.txt");
+        CrossReference cr = new CrossReference("selectedFile", null, null, processor);
+        String pattern = ".*\\.txt";
 
-        assertEquals("file1.txt", processor.processMatch(cr, "match"));
+        helper.setPattern(pattern);
+        helper.setDirectory(mockDirectory(pattern, "file1.txt"));
+
+        assertThat(processor.processMatch(cr, "match"), is(equalTo("file1.txt")));
     }
 
-    public final void testFinalReplacementException()
+    @Test
+    public void testFinalReplacementException()
             throws CrossReferenceProcessorShortcutException {
 
         CrossReference cr;
         cr = new CrossReference("selectedFile", null, null, processor);
-        helper.setProvider(new DirectoryProviderMock());
+        helper.setDirectory(mockDirectory(".*\\.error"));
         helper.setPattern(".*\\.error");
 
         try {
             processor.processMatch(cr, "match");
-            fail("could read non-existend file");
+            Assert.fail("could read non-existent file");
         } catch (final RuntimeException e) {
-            assertTrue(e.getMessage().contains("no file found"));
+            assertThat(e.getMessage().contains("no file found"), is(true));
         }
     }
 }

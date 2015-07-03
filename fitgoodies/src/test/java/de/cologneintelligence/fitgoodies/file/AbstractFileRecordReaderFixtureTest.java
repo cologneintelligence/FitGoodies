@@ -19,19 +19,18 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import java.text.ParseException;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.AbstractFileRecordReaderFixture;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReaderMock;
-
 import fit.Parse;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import java.text.ParseException;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+
 public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 	private static class DummyRecordReaderFixture
 			extends AbstractFileRecordReaderFixture {
@@ -40,11 +39,12 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 			super.setRecordReader(r);
 		}
 
-		@Override public final void setUp() {
-		};
+		@Override public void setUp() {
+		}
 	}
 
-	public final void testComparison() throws Exception {
+	@Test
+	public void testComparison() throws Exception {
 		Parse table = new Parse(
 				"<table>"
 				+ "<tr><td>ignore</td></tr>"
@@ -61,13 +61,14 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 		fixture.doTable(table);
 
-		assertEquals(0, fixture.counts.ignores);
-		assertEquals(0, fixture.counts.exceptions);
-		assertEquals(0, fixture.counts.wrong);
-		assertEquals(4, fixture.counts.right);
+		assertThat(fixture.counts.ignores, is(equalTo((Object) 0)));
+		assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+		assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
+		assertThat(fixture.counts.right, is(equalTo((Object) 4)));
 	}
 
-	public final void testComparisonWithErrors() throws Exception {
+	@Test
+	public void testComparisonWithErrors() throws Exception {
 		Parse table = new Parse(
 				"<table>"
 				+ "<tr><td>ignore</td></tr>"
@@ -84,11 +85,12 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 		fixture.doTable(table);
 
-		assertEquals(3, fixture.counts.right);
-		assertEquals(3, fixture.counts.wrong);
+		assertThat(fixture.counts.right, is(equalTo((Object) 3)));
+		assertThat(fixture.counts.wrong, is(equalTo((Object) 3)));
 	}
 
-	public final void testSurplusRows() throws Exception {
+	@Test
+	public void testSurplusRows() throws Exception {
 		Parse table = new Parse(
 				"<table>"
 				+ "<tr><td>ignore</td></tr>"
@@ -105,14 +107,15 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 		fixture.doTable(table);
 
-		assertEquals(3, fixture.counts.right);
-		assertEquals(6, fixture.counts.wrong);
+		assertThat(fixture.counts.right, is(equalTo((Object) 3)));
+		assertThat(fixture.counts.wrong, is(equalTo((Object) 6)));
 
-		assertContains("surplus", table.parts.more.more.parts.text());
-		assertContains("surplus", table.parts.more.more.parts.last().text());
+		assertThat(table.parts.more.more.parts.text(), containsString("surplus"));
+		assertThat(table.parts.more.more.parts.last().text(), containsString("surplus"));
 	}
 
-	public final void testMissingRows() throws Exception {
+	@Test
+	public void testMissingRows() throws Exception {
 		Parse table = new Parse(
 				"<table>"
 				+ "<tr><td>ignore</td></tr>"
@@ -129,14 +132,15 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 		fixture.doTable(table);
 
-		assertEquals(3, fixture.counts.right);
-		assertEquals(6, fixture.counts.wrong);
+		assertThat(fixture.counts.right, is(equalTo((Object) 3)));
+		assertThat(fixture.counts.wrong, is(equalTo((Object) 6)));
 
-		assertContains("missing", table.parts.more.more.parts.text());
-		assertContains("missing", table.parts.more.more.parts.last().text());
+		assertThat(table.parts.more.more.parts.text(), containsString("missing"));
+		assertThat(table.parts.more.more.parts.last().text(), containsString("missing"));
 	}
 
-	public final void testEmptyTable() throws ParseException {
+	@Test
+	public void testEmptyTable() throws ParseException {
 		Parse table = new Parse("<table><tr><td>ignore</td></tr></table>");
 
 		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
@@ -145,7 +149,7 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 				}));
 
 		fixture.doTable(table);
-		assertEquals(1, fixture.counts.exceptions);
-		assertContains("at least", table.parts.parts.text());
+		assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+		assertThat(table.parts.parts.text(), containsString("at least"));
 	}
 }

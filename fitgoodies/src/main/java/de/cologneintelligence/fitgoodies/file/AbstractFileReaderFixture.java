@@ -19,12 +19,12 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import java.io.File;
-
 import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
+
+import java.io.File;
 
 
 /**
@@ -49,12 +49,19 @@ import de.cologneintelligence.fitgoodies.util.FixtureTools;
  * <code>dir</code> and <code>encoding</code> are retrieved from the
  * {@link FileFixtureHelper} if they are missing.
  *
- * @author jwierum
- * @version $Id$
  */
 public abstract class AbstractFileReaderFixture extends Fixture {
+    private final FileInformationWrapper wrapper;
     private FileInformation file;
     private String encoding;
+
+    public AbstractFileReaderFixture() {
+        this(new SimpleFileInformationWrapper());
+    }
+
+    AbstractFileReaderFixture(FileInformationWrapper wrapper) {
+        this.wrapper = wrapper;
+    }
 
     /**
      * Reads the given parameters and initializes the values of
@@ -72,11 +79,11 @@ public abstract class AbstractFileReaderFixture extends Fixture {
 
         String fileName = FixtureTools.getArg(args, "file", null, crossReferenceHelper);
         if (fileName == null) {
-            DirectoryProvider provider = helper.getProvider();
+            File provider = helper.getDirectory();
 
             final String dir = FixtureTools.getArg(args, "dir", null, crossReferenceHelper);
             if (dir != null) {
-                provider = new FileSystemDirectoryProvider(dir);
+                provider = new File(dir);
             }
 
             if (provider == null) {
@@ -87,12 +94,9 @@ public abstract class AbstractFileReaderFixture extends Fixture {
             pattern = FixtureTools.getArg(args, "pattern", pattern, crossReferenceHelper);
 
             final FileSelector fs = new FileSelector(provider, pattern);
-            file = fs.getFirstFile();
+            file = wrapper.wrap(fs.getFirstFile());
         } else {
-            String filePath = new File(fileName).getAbsolutePath();
-            filePath = new File(filePath).getParent();
-            fileName = new File(fileName).getName();
-            file = new FileSystemFileInformation(filePath, fileName);
+            file = wrapper.wrap(new File(fileName).getAbsoluteFile());
         }
     }
 

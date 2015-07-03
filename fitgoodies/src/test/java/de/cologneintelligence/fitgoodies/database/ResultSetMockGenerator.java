@@ -19,91 +19,98 @@
 
 package de.cologneintelligence.fitgoodies.database;
 
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-/*
- *
- * @author jwierum
- */
 public final class ResultSetMockGenerator {
-	private ResultSetMockGenerator() {
-	}
+    private final Connection connection;
+    private final Statement statement;
 
-	public static ResultSet mkResultSet(final Mockery context,
-			final String[] cols, final Object[][] obj) {
+    private String sqlClause;
 
-		final ResultSet resultSet = context.mock(ResultSet.class);
-		final ResultSetMetaData meta = context.mock(ResultSetMetaData.class);
+    public ResultSetMockGenerator(
+            final String table,
+            final String[] cols,
+            final Object[][] obj) {
+        this(table, null, cols, obj);
+    }
 
-		try {
-			context.checking(new Expectations() {{
-				oneOf(resultSet).getMetaData(); will(returnValue(meta));
+    public ResultSetMockGenerator(
+            final String table,
+            final String where,
+            final String[] cols,
+            final Object[][] obj) {
 
-				oneOf(meta).getColumnCount(); will(returnValue(cols.length));
-				for (int i = 0; i < cols.length; ++i) {
-					oneOf(meta).getColumnName(i + 1); will(returnValue(cols[i]));
-				}
+        try {
+            connection = mock(Connection.class);
+            statement = mock(Statement.class);
+            final ResultSet resultSet;
+            resultSet = mkResultSet(cols, obj);
 
-				for (int j = 0; j < obj.length; ++j) {
-					oneOf(resultSet).next(); will(returnValue(true));
-					for (int i = 0; i < obj[0].length; ++i) {
-						oneOf(resultSet).getObject(i + 1); will(returnValue(obj[j][i]));
-					}
-				}
+            final String sqlWhere;
+            if (where != null && !where.equals("")) {
+                sqlWhere = " WHERE " + where;
+            } else {
+                sqlWhere = "";
+            }
+            sqlClause = "SELECT * FROM " + table + sqlWhere;
 
-				between(0, 2).of(resultSet).next(); will(returnValue(false));
-			}});
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+            when(connection.createStatement()).thenReturn(statement);
+            when(statement.executeQuery(sqlClause)).thenReturn(resultSet);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-		return resultSet;
-	}
 
-	public static Connection mkConnection(
-			final Mockery context,
-			final String table,
-			final String[] cols,
-			final Object[][] obj) {
-		return mkConnection(context, table, null, cols, obj);
-	}
+    private ResultSet mkResultSet(final String[] cols, final Object[][] obj) throws SQLException {
+        final ResultSet resultSet = mock(ResultSet.class);
+        final ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-	public static Connection mkConnection(
-			final Mockery context,
-			final String table,
-			final String where,
-			final String[] cols,
-			final Object[][] obj) {
+        when(resultSet.getMetaData()).thenReturn(meta);
 
-		final Connection connection = context.mock(Connection.class);
-		final Statement statement = context.mock(Statement.class);
-		final ResultSet resultSet = mkResultSet(context, cols, obj);
+        when(meta.getColumnCount()).thenReturn(cols.length);
+        for (int i = 0; i < cols.length; ++i) {
+            when(meta.getColumnName(i + 1)).thenReturn(cols[i]);
+        }
 
-		final String sqlWhere;
-		if (where != null && !where.equals("")) {
-			sqlWhere = " WHERE " + where;
-		} else {
-			sqlWhere = "";
-		}
+        Boolean[] nextResult = new Boolean[obj.length];
 
-		try {
-			context.checking(new Expectations() {{
-				oneOf(connection).createStatement(); will(returnValue(statement));
-				oneOf(statement).executeQuery(
-						"SELECT * FROM " + table + sqlWhere);
-					will(returnValue(resultSet));
-				oneOf(statement).close();
-			}});
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-		return connection;
-	}
+        if (cols.length == 0) {
+            when(resultSet.next()).thenReturn(false);
+        } else {
+            for (int j = 0; j < obj.length; j++) {
+                nextResult[j] = j < obj.length - 1;
+
+                for (int i = 0; i < obj[0].length; ++i) {
+                    when(resultSet.getObject(i + 1)).thenReturn(obj[j][i]);
+                }
+            }
+
+            when(resultSet.next()).thenReturn(true, nextResult);
+        }
+
+        return resultSet;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void verifyInteractions() {
+        try {
+            verify(statement).executeQuery(sqlClause);
+            verify(statement).close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

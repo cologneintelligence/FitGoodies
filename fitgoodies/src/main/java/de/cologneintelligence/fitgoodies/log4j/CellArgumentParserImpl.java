@@ -27,8 +27,6 @@ import fit.Parse;
 
 /**
  * Removes the parameters from a cell value and stores it in a <code>Map</code>.
- * @author jwierum
- * @version $Id$
  *
  */
 public final class CellArgumentParserImpl implements CellArgumentParser {

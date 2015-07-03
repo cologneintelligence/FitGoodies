@@ -19,56 +19,57 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import java.io.FileNotFoundException;
-import java.text.ParseException;
-import java.util.Iterator;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.DirectoryProvider;
-import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
-import de.cologneintelligence.fitgoodies.file.FileInformation;
-import de.cologneintelligence.fitgoodies.file.FileIterator;
-import de.cologneintelligence.fitgoodies.file.XMLFileFixture;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
 import fit.Parse;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.text.ParseException;
+
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+
 public class XMLFileFixtureTest extends FitGoodiesTestCase {
     private XMLFileFixture fixture;
 
-    @Override
-    public final void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
+        final byte[] fileContent = ("<?xml version=\"1.0\"?>"
+                + "<root><child1><child>Content</child><child>x</child></child1>"
+                + "<sibling>Content 2</sibling>"
+                + "</root>").getBytes("utf-16");
 
-        final FileInformationMock fileInfo = new FileInformationMock("/", "file.xml",
-                ("<?xml version=\"1.0\"?>"
-                        + "<root><child1><child>Content</child><child>x</child></child1>"
-                        + "<sibling>Content 2</sibling>"
-                        + "</root>").getBytes("utf-16"));
+        //final FileInformation fileInfo = new FileInformation("/", "file.xml", fileContent);
+
+        File directory = mock(File.class, "directory");
+        File file = mock(File.class, "file");
+        FileInformationWrapper wrapper = mock(FileInformationWrapper.class);
+        FileInformation fileInformation = mock(FileInformation.class);
+
+        when(directory.listFiles(argThat(is(any(FileFilter.class)))))
+                .thenReturn(new File[]{file});
+        when(wrapper.wrap(file)).thenReturn(fileInformation);
+        when(fileInformation.openInputStream()).thenReturn(new ByteArrayInputStream(fileContent));
 
         FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-        helper.setProvider(new DirectoryProvider() {
-            @Override public final Iterator<DirectoryProvider> getDirectories()
-                    throws FileNotFoundException { return null; }
+        helper.setDirectory(directory);
 
-            @Override public final Iterator<FileInformation> getFiles()
-                    throws FileNotFoundException {
-                return new FileIterator(new FileInformation[]{fileInfo});
-            }
-
-            @Override public final String getPath() { return null; }
-        });
-
-
-        fixture = new XMLFileFixture();
+        fixture = new XMLFileFixture(wrapper);
         fixture.setParams(new String[] {"pattern=.*", "encoding=utf-16"});
     }
 
-    public final void testParsing() throws ParseException {
+    @Test
+    public void testParsing() throws ParseException {
         final Parse table = new Parse(
                 "<table>"
                         + "<tr><td>ignore</td></tr>"
@@ -79,13 +80,11 @@ public class XMLFileFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertEquals(2, fixture.counts.right);
-        assertEquals(1, fixture.counts.wrong);
-        assertEquals(0, fixture.counts.exceptions);
-        assertEquals(0, fixture.counts.ignores);
+        assertCounts(fixture.counts, table, 2, 1, 0, 0);
     }
 
-    public final void testParsingWithErrors() throws ParseException {
+    @Test
+    public void testParsingWithErrors() throws ParseException {
         final Parse table = new Parse(
                 "<table>"
                         + "<tr><td>ignore</td></tr>"
@@ -95,13 +94,11 @@ public class XMLFileFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.right);
-        assertEquals(0, fixture.counts.wrong);
-        assertEquals(1, fixture.counts.exceptions);
-        assertEquals(0, fixture.counts.ignores);
+        assertCounts(fixture.counts, table, 0, 0, 0, 1);
     }
 
-    public final void testParsingWithIgnores() throws ParseException {
+    @Test
+    public void testParsingWithIgnores() throws ParseException {
         final Parse table = new Parse(
                 "<table>"
                         + "<tr><td>ignore</td></tr>"
@@ -111,10 +108,8 @@ public class XMLFileFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.right);
-        assertEquals(0, fixture.counts.wrong);
-        assertEquals(0, fixture.counts.exceptions);
-        assertEquals("Content", table.parts.more.parts.more.text());
-        assertEquals("x", table.parts.more.more.parts.more.text());
+        assertCounts(fixture.counts, table, 0, 0, 0, 0);
+        assertThat(table.parts.more.parts.more.text(), is(equalTo("Content")));
+        assertThat(table.parts.more.more.parts.more.text(), is(equalTo("x")));
     }
 }

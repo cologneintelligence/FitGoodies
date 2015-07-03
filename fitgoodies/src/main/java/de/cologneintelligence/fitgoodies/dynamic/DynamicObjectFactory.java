@@ -35,7 +35,6 @@ import org.apache.bcel.generic.Type;
  *
  * This class is primary written for internal use.
  *
- * @author jwierum
  */
 public class DynamicObjectFactory {
 	/**
@@ -118,7 +117,7 @@ public class DynamicObjectFactory {
 	 * @param name name of the field
 	 * @throws ClassNotFoundException indicates a problem with <code>type</code>
 	 */
-	public final void add(final Class<?> type, final String name) throws ClassNotFoundException {
+	public void add(final Class<?> type, final String name) throws ClassNotFoundException {
 		FieldGen fg;
 
 		if (result != null) {

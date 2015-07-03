@@ -19,16 +19,23 @@
 
 package de.cologneintelligence.fitgoodies.external;
 
-import java.text.ParseException;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.SystemPropertyProvider;
 import fit.Parse;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.text.ParseException;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class SetupFixtureTest extends FitGoodiesTestCase {
-    SystemPropertyProvider propertyProvider;
+    private SystemPropertyProvider propertyProvider;
 
+    @Before
     public void setUp() {
         DependencyManager.clear();
         propertyProvider = new SystemPropertyProvider() {
@@ -39,8 +46,9 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         };
         DependencyManager.inject(SystemPropertyProvider.class, propertyProvider);
     }
-    
-    public final void testParsing() throws ParseException {
+
+    @Test
+    public void testParsing() throws ParseException {
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>addProperty</td><td>-DtestKey=${System.getProperty(testSetupFixtureKey)}</td></tr>"
                 + "</table>");
@@ -48,9 +56,9 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.exceptions);
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
-        assertEquals("-DtestKey=testValue", helper.getProperties().get(0));
+        assertThat(helper.getProperties().get(0), is(equalTo("-DtestKey=testValue")));
     }
 
 }

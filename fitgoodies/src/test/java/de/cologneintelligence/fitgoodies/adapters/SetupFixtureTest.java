@@ -19,43 +19,46 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import java.math.BigInteger;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Fixture;
 import fit.Parse;
 import fit.TypeAdapter;
+import org.hamcrest.Matcher;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import java.math.BigInteger;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+
 public class SetupFixtureTest extends FitGoodiesTestCase {
     private Fixture fixture;
 
-    @Override
-    public final void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         fixture = new SetupFixture();
     }
 
-    public final void testParse() throws Exception {
+    @Test
+    public void testParse() throws Exception {
         final Parse table = new Parse("<table>"
                 + "<tr><td>ignore</td></tr>"
                 + "<tr><td>load</td><td>de.cologneintelligence.fitgoodies.adapters.DummyTypeAdapter</td></tr>"
                 + "</table>");
 
         fixture.doTable(table);
-        assertEquals(0, fixture.counts.exceptions);
-        assertEquals(0, fixture.counts.wrong);
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
 
         final TypeAdapter ta = new TypeAdapter();
         ta.type = BigInteger.class;
 
         TypeAdapterHelper helper = DependencyManager.getOrCreate(
                 TypeAdapterHelper.class);
-        assertEquals(DummyTypeAdapter.class,
-                helper.getAdapter(ta, null).getClass());
+        assertThat(helper.getAdapter(ta, null).getClass(), (Matcher) is(equalTo(DummyTypeAdapter.class)));
     }
 }

@@ -32,7 +32,6 @@ import java.util.Locale;
  * {@link de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter} or a {@link de.cologneintelligence.fitgoodies.parsers.Parser}
  * parses a date.
  *
- * @author jwierum
  */
 public final class SetupHelper {
     private Locale locale;

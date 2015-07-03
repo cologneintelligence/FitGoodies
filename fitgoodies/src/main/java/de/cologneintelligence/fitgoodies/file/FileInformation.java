@@ -19,59 +19,22 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.regex.Pattern;
 
 /**
  * Represents a file and provides information about it.
  *
- * @author jwierum
  */
-public abstract class FileInformation {
-    /**
-     * The file's name.
-     * @return the filename
-     */
-    public abstract String filename();
+public class FileInformation {
+
+    private final File file;
 
     /**
-     * The file's path.
-     * @return the path to the file without the filename itself.
+     * Generates a new information object.
      */
-    public abstract String pathname();
-
-    /**
-     * The full path to the file.
-     * @return the file path and the filename
-     */
-    public abstract String fullname();
-
-    /**
-     * Opens the file and returns a <code>FileReader</code> object.
-     * @return the open file as <code>FileReader</code>
-     * @throws IOException thrown if the file could not be read
-     */
-    public abstract FileReader openFileReader() throws IOException;
-
-    /**
-     * Opens the file and returns a <code>InputStream</code> object.
-     * @return the open file as <code>InputStream</code>
-     * @throws IOException thrown if the file could not be read
-     */
-    public abstract InputStream openInputStream() throws IOException;
-
-    /**
-     * Opens the file and returns a <code>BufferedReader</code> object.
-     * The encoding is determined by asking {@link FileFixtureHelper#encoding()}.
-     * @param fileFixtureHelper the FileFixtureHelper
-     * @return the open file as <code>BufferdReader</code>
-     * @throws IOException thrown if the file could not be read
-     */
-    public BufferedReader openBufferedReader(final FileFixtureHelper fileFixtureHelper) throws IOException {
-        return openBufferedReader(fileFixtureHelper.getEncoding());
+    public FileInformation(final File file) {
+        this.file = file;
     }
 
     /**
@@ -88,11 +51,54 @@ public abstract class FileInformation {
     }
 
     /**
-     * Alias to {@link #fullname()}.
+     * Alias to {@link #getFile()}.toString().
      * @return the file's path and name
      */
     @Override
-    public final String toString() {
-        return fullname();
+    public String toString() {
+        return file.toString();
     }
+
+    /**
+     * The file's name.
+     * @return the filename
+     */
+    public String filename() {
+        return file.getName();
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+
+
+    /**
+     * Opens the file and returns a <code>InputStream</code> object.
+     * @return the open file as <code>InputStream</code>
+     * @throws IOException thrown if the file could not be read
+     */
+    public InputStream openInputStream() throws IOException {
+        return new FileInputStream(file);
+    }
+
+    public String[] getParts() {
+        return file.getAbsolutePath().split(Pattern.quote(File.separator), -1);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FileInformation that = (FileInformation) o;
+
+        return file.equals(that.file);
+    }
+
+    @Override
+    public int hashCode() {
+        return file.hashCode();
+    }
+
 }

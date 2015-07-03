@@ -24,8 +24,6 @@ import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossRefe
 /**
  * Represents a cross reference match.
  *
- * @author jwierum
- * @version $Id$
  */
 
 public class CrossReference {

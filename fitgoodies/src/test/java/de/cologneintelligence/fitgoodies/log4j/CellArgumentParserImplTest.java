@@ -18,55 +18,59 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import fit.Parse;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.text.ParseException;
 import java.util.Map;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.log4j.CellArgumentParserImpl;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
-import fit.Parse;
 
-/**
- * @author jwierum
- * @version $Id$
- */
 public final class CellArgumentParserImplTest extends FitGoodiesTestCase {
 	private Parse makeCell(final String innerText) throws ParseException {
 		return new Parse("<td>" + innerText + "</td>", new String[]{"td"});
 	}
 
+	@Test
 	public void testRegularParsing() throws ParseException {
 		Parse cell = makeCell("x[a=b, C=d , d =  e]");
 
 		CellArgumentParserImpl parser = new CellArgumentParserImpl(cell);
 		Map<String, String> parameters = parser.getExtractedCommandParameters();
 
-		assertEquals(3, parameters.keySet().size());
-		assertEquals("b", parameters.get("a"));
-		assertEquals("d", parameters.get("c"));
-		assertEquals("e", parameters.get("d"));
-		assertEquals("x", cell.text());
+		assertThat(parameters.keySet().size(), is(equalTo((Object) 3)));
+		assertThat(parameters.get("a"), is(equalTo("b")));
+		assertThat(parameters.get("c"), is(equalTo("d")));
+		assertThat(parameters.get("d"), is(equalTo("e")));
+		assertThat(cell.text(), is(equalTo("x")));
 	}
 
+	@Test
 	public void testRegularParsingWithMultipleEqualSigns() throws ParseException {
 		Parse cell = makeCell("y [some=crazy=command, 1=2=3]");
 
 		CellArgumentParserImpl parser = new CellArgumentParserImpl(cell);
 		Map<String, String> parameters = parser.getExtractedCommandParameters();
 
-		assertEquals(2, parameters.keySet().size());
-		assertEquals("crazy=command", parameters.get("some"));
-		assertEquals("2=3", parameters.get("1"));
-		assertEquals("y", cell.text());
+		assertThat(parameters.keySet().size(), is(equalTo((Object) 2)));
+		assertThat(parameters.get("some"), is(equalTo("crazy=command")));
+		assertThat(parameters.get("1"), is(equalTo("2=3")));
+		assertThat(cell.text(), is(equalTo("y")));
 	}
 
+	@Test
 	public void testError() throws ParseException {
 		Parse cell = makeCell("command[oops...]");
 		CellArgumentParserImpl parser = new CellArgumentParserImpl(cell);
 
 		try {
 			parser.getExtractedCommandParameters();
-			fail("could parse invalid input");
+			Assert.fail("could parse invalid input");
 		} catch (IllegalArgumentException e) {
 		}
 
@@ -75,7 +79,7 @@ public final class CellArgumentParserImplTest extends FitGoodiesTestCase {
 
 		try {
 			parser.getExtractedCommandParameters();
-			fail("could parse invalid input");
+			Assert.fail("could parse invalid input");
 		} catch (IllegalArgumentException e) {
 		}
 	}

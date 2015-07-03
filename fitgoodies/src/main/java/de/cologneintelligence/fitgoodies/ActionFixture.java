@@ -19,8 +19,6 @@
 
 package de.cologneintelligence.fitgoodies;
 
-import java.lang.reflect.Method;
-
 import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
 import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
@@ -30,6 +28,8 @@ import de.cologneintelligence.fitgoodies.util.WaitForResult;
 import fit.Fixture;
 import fit.Parse;
 import fit.TypeAdapter;
+
+import java.lang.reflect.Method;
 
 /**
  * In contrast to <code>fit.ActionFixture</code>, this <code>ActionFixture</code>
@@ -42,8 +42,6 @@ import fit.TypeAdapter;
  * The method is called every <code>sleepTime</code> ms, until it returns true or the timeout is
  * exceeded.
  *
- * @author jwierum
- * @version $Id$
  */
 public class ActionFixture extends fit.ActionFixture {
 
@@ -218,7 +216,7 @@ public class ActionFixture extends fit.ActionFixture {
 	 *
 	 * @param parameters parameters to store in <code>args</code>
 	 */
-	public final void setParams(final String[] parameters) {
+	public void setParams(final String[] parameters) {
 		this.args = parameters;
 	}
 
@@ -273,8 +271,8 @@ public class ActionFixture extends fit.ActionFixture {
      * @param paramName the parameter name to look up
      * @return  the parameter value, if it could be found, <code>null</code> otherwise
      * @see #getParam(String, String) {@link #getParam(String, String)}
-     * @see FixtureTools#getArg(String[], String, String)
-     * 		{@link FixtureTools#getArg(String[], String, String)}
+     * @see FixtureTools#getArg(String[], String, String, de.cologneintelligence.fitgoodies.references.CrossReferenceHelper)
+     * 		{@link FixtureTools#getArg(String[], String, String, de.cologneintelligence.fitgoodies.references.CrossReferenceHelper)}
      */
 	public final String getParam(final String paramName) {
 		return getParam(paramName, null);

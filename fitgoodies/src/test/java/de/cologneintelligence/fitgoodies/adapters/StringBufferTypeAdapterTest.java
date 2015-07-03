@@ -19,16 +19,18 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
-import de.cologneintelligence.fitgoodies.adapters.StringBufferTypeAdapter;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import fit.Fixture;
 import fit.TypeAdapter;
+import org.hamcrest.Matcher;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+
 public class StringBufferTypeAdapterTest extends FitGoodiesTestCase {
 	public class StringBufferContainer extends Fixture {
 		public StringBuffer builder = new StringBuffer();
@@ -39,10 +41,8 @@ public class StringBufferTypeAdapterTest extends FitGoodiesTestCase {
 	private StringBufferContainer container1;
 	private StringBufferContainer container2;
 
-	@Override
-	public final void setUp() throws Exception {
-		super.setUp();
-
+	@Before
+	public void setUp() throws Exception {
 		container1 = new StringBufferContainer();
 		container1.builder.append("Hello World");
 
@@ -58,46 +58,50 @@ public class StringBufferTypeAdapterTest extends FitGoodiesTestCase {
 		ta2 = new StringBufferTypeAdapter(ta, null);
 	}
 
-	public final void testEquals() throws Exception {
-		setUp();
-
-		assertTrue(ta1.equals(ta1.get(), ta2.get()));
-		assertTrue(ta1.equals(ta2.get(), ta1.get()));
-		assertTrue(ta2.equals(ta1.get(), ta2.get()));
+	@Test
+	public void testEquals() throws Exception {
+		assertThat(ta1.equals(ta1.get(), ta2.get()), is(true));
+		assertThat(ta1.equals(ta2.get(), ta1.get()), is(true));
+		assertThat(ta2.equals(ta1.get(), ta2.get()), is(true));
 
 		container1.builder.append("x");
-		assertFalse(ta1.equals(ta1.get(), ta2.get()));
+		assertThat(ta1.equals(ta1.get(), ta2.get()), is(false));
 
 		container1.builder = null;
-		assertFalse(ta1.equals(ta1.get(), ta2.get()));
-		assertFalse(ta1.equals(ta2.get(), ta1.get()));
+		assertThat(ta1.equals(ta1.get(), ta2.get()), is(false));
+
+		assertThat(ta1.equals(ta2.get(), ta1.get()), is(false));
 
 		container2.builder = null;
-		assertTrue(ta1.equals(ta1.get(), ta2.get()));
+		assertThat(ta1.equals(ta1.get(), ta2.get()), is(true));
 	}
 
-	public final void testEqualsWithWhitespaces() throws Exception {
+	@Test
+	public void testEqualsWithWhitespaces() throws Exception {
 		container1.builder.append("  ");
 		container1.builder.insert(0, "  ");
-		assertTrue(ta1.equals(ta1.get(), ta2.get()));
-		assertTrue(ta1.equals(ta2.get(), ta1.get()));
+		assertThat(ta1.equals(ta1.get(), ta2.get()), is(true));
+		assertThat(ta1.equals(ta2.get(), ta1.get()), is(true));
 	}
 
-	public final void testToString() throws Exception {
-		assertEquals("Hello World", ta1.toString(ta1.get()));
+	@Test
+	public void testToString() throws Exception {
+		assertThat(ta1.toString(ta1.get()), is(equalTo("Hello World")));
 		container1.builder.append("xy");
-		assertEquals("Hello Worldxy", ta1.toString(ta1.get()));
+		assertThat(ta1.toString(ta1.get()), is(equalTo("Hello Worldxy")));
 		container1.builder = null;
-		assertEquals("null", ta1.toString(ta1.get()));
+		assertThat(ta1.toString(ta1.get()), is(equalTo("null")));
 	}
 
-	public final void testType() {
-		assertEquals(StringBuffer.class, ta1.getType());
+	@Test
+	public void testType() {
+		assertThat(ta1.getType(), (Matcher) is(equalTo(StringBuffer.class)));
 	}
 
-	public final void testParse() throws Exception {
-		assertEquals("test", ((StringBuffer) ta1.parse("test")).toString());
-		assertEquals("another test", ((StringBuffer)
-				ta1.parse("another test")).toString());
+	@Test
+	public void testParse() throws Exception {
+		assertThat(((StringBuffer) ta1.parse("test")).toString(), is(equalTo("test")));
+		assertThat(((StringBuffer)
+                ta1.parse("another test")).toString(), is(equalTo("another test")));
 	}
 }

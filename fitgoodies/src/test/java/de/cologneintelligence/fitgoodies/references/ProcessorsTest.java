@@ -18,80 +18,86 @@
 
 
 package de.cologneintelligence.fitgoodies.references;
-import java.util.regex.Matcher;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.references.Processors;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
 import de.cologneintelligence.fitgoodies.references.processors.CrossReferenceProcessorMock;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.regex.Matcher;
+
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 
-/**
- *
- * @author jwierum
- *
- */
 public class ProcessorsTest extends FitGoodiesTestCase {
 	private Processors procs;
 
-	@Override
-	public final void setUp() throws Exception {
-		super.setUp();
+	@Before
+	public void setUp() throws Exception {
 		procs = new Processors();
 	}
 
-	public final void testAdd() {
+	@Test
+	public void testAdd() {
 		procs.add(new CrossReferenceProcessorMock("x"));
-		assertEquals(1, procs.count());
+		assertThat(procs.count(), is(equalTo((Object) 1)));
 		procs.add(new CrossReferenceProcessorMock("y"));
-		assertEquals(2, procs.count());
+		assertThat(procs.count(), is(equalTo((Object) 2)));
 	}
 
-	public final void testRemove() {
+	@Test
+	public void testRemove() {
 		AbstractCrossReferenceProcessor mock = new CrossReferenceProcessorMock("z");
 		procs.add(new CrossReferenceProcessorMock("x"));
 		procs.add(new CrossReferenceProcessorMock("y"));
 		procs.add(mock);
 
 		procs.remove(0);
-		assertEquals(2, procs.count());
+		assertThat(procs.count(), is(equalTo((Object) 2)));
 
 		procs.remove(mock);
-		assertEquals(1, procs.count());
+		assertThat(procs.count(), is(equalTo((Object) 1)));
 	}
 
-	public final void testGet() {
+	@Test
+	public void testGet() {
 		AbstractCrossReferenceProcessor mock = new CrossReferenceProcessorMock("z");
 
 		procs.add(mock);
-		assertSame(mock, procs.get(0));
+		assertThat(procs.get(0), is(sameInstance(mock)));
 
 		procs.add(new CrossReferenceProcessorMock("y"));
-		assertSame(mock, procs.get(0));
-		assertNotSame(mock, procs.get(1));
+		assertThat(procs.get(0), is(sameInstance(mock)));
+		assertThat(mock, is(not(sameInstance(procs.get(1)))));
 	}
 
-	public final void testRegex() {
+	@Test
+	public void testRegex() {
 		procs.add(new CrossReferenceProcessorMock("x"));
 		procs.add(new CrossReferenceProcessorMock("y"));
 
 		Matcher m = procs.getSearchPattern().matcher("${x}");
-		assertTrue(m.find());
+		assertThat(m.find(), is(true));
 
 		m = procs.getSearchPattern().matcher("a ${y} b");
-		assertTrue(m.find());
+		assertThat(m.find(), is(true));
 
 		m = procs.getSearchPattern().matcher("a ${z} x");
-		assertFalse(m.find());
+		assertThat(m.find(), is(false));
 
 
 		m = procs.getExtractPattern().matcher("${x}");
-		assertTrue(m.find());
+		assertThat(m.find(), is(true));
 
 		m = procs.getExtractPattern().matcher("a ${y} b");
-		assertFalse(m.find());
+		assertThat(m.find(), is(false));
 
 		m = procs.getExtractPattern().matcher("a ${z} x");
-		assertFalse(m.find());
+		assertThat(m.find(), is(false));
+
 	}
 }

@@ -21,15 +21,15 @@ package de.cologneintelligence.fitgoodies.runners;
 
 import fit.Counts;
 
+import java.io.File;
+
 /**
  * Saves the result count of a specific file.
  *
- * @author jwierum
- * @version $Id$
  */
 public class FileCount {
 	private final Counts result;
-	private final String filename;
+	private final File filename;
 
 	/**
 	 * Initializes a new FileCount object.
@@ -37,7 +37,7 @@ public class FileCount {
 	 * @param file the processed file
 	 * @param counts the results
 	 */
-	public FileCount(final String file, final Counts counts) {
+	public FileCount(final File file, final Counts counts) {
 		filename = file;
 		result = counts;
 	}
@@ -54,7 +54,7 @@ public class FileCount {
 	 * Returns the filename.
 	 * @return filename of the file
 	 */
-	public final String getFile() {
+	public final File getFile() {
 		return filename;
 	}
 

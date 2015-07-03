@@ -19,30 +19,38 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import java.sql.Date;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.date.SetupHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.TypeAdapter;
+import org.junit.Test;
+
+import java.sql.Date;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class SQLDateTypeAdapterTest extends FitGoodiesTestCase {
-    public final void testGetType() {
+    @Test
+    public void testGetType() {
         final TypeAdapter ta = new TypeAdapter();
 
         final SQLDateTypeAdapter p = new SQLDateTypeAdapter(ta, null);
-        assertEquals(Date.class, p.getType());
+        assertThat(p.getType(), is(equalTo(Date.class)));
     }
 
-    public final void testParse() throws Exception {
+    @Test
+    public void testParse() throws Exception {
         final TypeAdapter ta = new TypeAdapter();
 
         final Date d = Date.valueOf("1987-12-01");
         final SQLDateTypeAdapter p = new SQLDateTypeAdapter(ta, null);
-        assertEquals(d, p.parse("1987-12-01"));
+        assertThat(p.parse("1987-12-01"), is(equalTo(d)));
     }
 
-    public final void testDateFormat() throws Exception {
+    @Test
+    public void testDateFormat() throws Exception {
         final TypeAdapter ta = new TypeAdapter();
 
         final SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
@@ -52,9 +60,9 @@ public class SQLDateTypeAdapterTest extends FitGoodiesTestCase {
         final SQLDateTypeAdapter p = new SQLDateTypeAdapter(ta, null);
 
         Date d = Date.valueOf("1987-12-01");
-        assertEquals(d, p.parse("1987-12-01"));
+        assertThat(p.parse("1987-12-01"), is(equalTo(d)));
 
         d = Date.valueOf("1989-03-08");
-        assertEquals(d, p.parse("08.03.1989"));
+        assertThat(p.parse("08.03.1989"), is(equalTo(d)));
     }
 }

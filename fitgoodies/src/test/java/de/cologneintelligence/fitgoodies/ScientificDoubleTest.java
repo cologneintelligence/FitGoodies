@@ -19,29 +19,34 @@
 
 package de.cologneintelligence.fitgoodies;
 
-import de.cologneintelligence.fitgoodies.ScientificDouble;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+
 public final class ScientificDoubleTest extends FitGoodiesTestCase {
+	@Test
 	public void testEquals() {
 		ScientificDouble two = new ScientificDouble(2.0f);
 		ScientificDouble twofour = new ScientificDouble(2.4f);
 		ScientificDouble seven = new ScientificDouble(7.0f);
 
-		assertTrue(two.equals(new ScientificDouble(2.0f)));
-		assertTrue(seven.equals(new ScientificDouble(7.0f)));
-		assertTrue(twofour.equals(new ScientificDouble(2.4f)));
+		assertThat(two.equals(new ScientificDouble(2.0f)), is(true));
+		assertThat(seven.equals(new ScientificDouble(7.0f)), is(true));
+		assertThat(twofour.equals(new ScientificDouble(2.4f)), is(true));
 
-		assertFalse(seven.equals(new ScientificDouble(2.0f)));
-		assertFalse(twofour.equals(new ScientificDouble(7.0f)));
-		assertFalse(two.equals(new ScientificDouble(2.4f)));
+		assertThat(seven.equals(new ScientificDouble(2.0f)), is(false));
 
-		assertEquals(two.hashCode(), new ScientificDouble(2.0f).hashCode());
-		assertEquals(twofour.hashCode(), new ScientificDouble(2.4f).hashCode());
-		assertEquals(seven.hashCode(), new ScientificDouble(7.0f).hashCode());
+		assertThat(twofour.equals(new ScientificDouble(7.0f)), is(false));
+
+		assertThat(two.equals(new ScientificDouble(2.4f)), is(false));
+
+		assertThat(new ScientificDouble(2.0f).hashCode(), is(equalTo((Object) two.hashCode())));
+		assertThat(new ScientificDouble(2.4f).hashCode(), is(equalTo((Object) twofour.hashCode())));
+		assertThat(new ScientificDouble(7.0f).hashCode(), is(equalTo((Object) seven.hashCode())));
 
 		// This would be great!
 		// But how to achieve this while supporting precisions?
@@ -52,11 +57,13 @@ public final class ScientificDoubleTest extends FitGoodiesTestCase {
 		*/
 	}
 
+	@Test
 	public void testConstructor() {
-		assertTrue(new ScientificDouble(2, 1).equals(new ScientificDouble(2.9)));
-		assertFalse(new ScientificDouble(2, 0.3).equals(new ScientificDouble(2.9)));
+		assertThat(new ScientificDouble(2, 1).equals(new ScientificDouble(2.9)), is(true));
+		assertThat(new ScientificDouble(2, 0.3).equals(new ScientificDouble(2.9)), is(false));
 
-		assertTrue(new ScientificDouble(7, 0.5).equals(new ScientificDouble(7.2)));
-		assertFalse(new ScientificDouble(7, 0.3).equals(new ScientificDouble(7.6)));
+		assertThat(new ScientificDouble(7, 0.5).equals(new ScientificDouble(7.2)), is(true));
+		assertThat(new ScientificDouble(7, 0.3).equals(new ScientificDouble(7.6)), is(false));
+
 	}
 }

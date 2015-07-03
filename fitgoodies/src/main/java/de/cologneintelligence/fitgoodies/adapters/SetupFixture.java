@@ -27,8 +27,6 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
  *
  * The load command loads an ActionFixture by its name.
  *
- * @author jwierum
- * @version $Id$
  */
 public class SetupFixture extends ActionFixture {
     /**
@@ -50,7 +48,7 @@ public class SetupFixture extends ActionFixture {
      * 			permission errors, etc.
      */
     @SuppressWarnings("unchecked")
-    public final void load(final String className) throws Exception {
+    public void load(final String className) throws Exception {
         Class<? extends AbstractTypeAdapter<?>> clazz =
                 (Class<? extends AbstractTypeAdapter<?>>) Class.forName(className);
 

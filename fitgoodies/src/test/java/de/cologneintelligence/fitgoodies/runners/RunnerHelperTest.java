@@ -19,47 +19,51 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
-import de.cologneintelligence.fitgoodies.file.DirectoryHelperMock;
-import de.cologneintelligence.fitgoodies.runners.Runner;
-import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
+import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Counts;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
 
-/**
- * @author jwierum
- */
+import java.io.File;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+
 public final class RunnerHelperTest extends FitGoodiesTestCase {
     private RunnerHelper helper;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void prepareMocks()  {
         helper = DependencyManager.getOrCreate(RunnerHelper.class);
     }
 
+    @Test
     public void testFilePath() {
-        helper.setFilePath("/path/to/test1.html");
-        assertEquals("/path/to/test1.html", helper.getFilePath());
+        helper.setFile(new File("/path/to/test1.html"));
+        assertThat(helper.getFile(), is(equalTo(new File("/path/to/test1.html"))));
 
-        helper.setFilePath("/dir/file2.html");
-        assertEquals("/dir/file2.html", helper.getFilePath());
+        helper.setFile(new File("/dir/file2.html"));
+        assertThat(helper.getFile(), is(equalTo(new File("/dir/file2.html"))));
     }
 
+    @Test
     public void testResultPath() {
-        helper.setResultFilePath("/path/to/test1.html");
-        assertEquals("/path/to/test1.html", helper.getResultFilePath());
+        helper.setResultFile(new File("/path/to/test1.html"));
+        assertThat(helper.getResultFile(), is(equalTo(new File("/path/to/test1.html"))));
 
-        helper.setResultFilePath("/dir/file2.html");
-        assertEquals("/dir/file2.html", helper.getResultFilePath());
+        helper.setResultFile(new File("/dir/file2.html"));
+        assertThat(helper.getResultFile(), is(equalTo(new File("/dir/file2.html"))));
     }
 
+    @Test
     public void testEncoding() {
         Runner runner = new Runner() {
             @Override
-            public Counts run(final String inputFile, final String outputFile) {
+            public Counts run(final File inputFile, final File outputFile) {
                 return null;
             }
 
@@ -71,20 +75,22 @@ public final class RunnerHelperTest extends FitGoodiesTestCase {
         };
 
         helper.setRunner(runner);
-        assertSame(runner, helper.getRunner());
+        assertThat(helper.getRunner(), is(sameInstance(runner)));
     }
 
+    @Test
     public void testHelper() {
-        AbstractDirectoryHelper dirHelper = new DirectoryHelperMock();
+        FileSystemDirectoryHelper dirHelper = Mockito.mock(FileSystemDirectoryHelper.class);
         helper.setHelper(dirHelper);
-        assertSame(dirHelper, helper.getHelper());
+        assertThat(helper.getHelper(), is(sameInstance(dirHelper)));
     }
 
+    @Test
     public void testStream() {
         helper.setLog(System.err);
-        assertSame(System.err, helper.getLog());
+        assertThat(helper.getLog(), is(sameInstance(System.err)));
 
         helper.setLog(System.out);
-        assertSame(System.out, helper.getLog());
+        assertThat(helper.getLog(), is(sameInstance(System.out)));
     }
 }

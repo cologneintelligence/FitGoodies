@@ -25,8 +25,6 @@ import java.io.IOException;
  * This exception is thrown by {@link FileSelector#getUniqueFile()} if more than
  * one file matches the pattern.
  *
- * @author jwierum
- * @version $Id$
  */
 public class FilenameNotUniqueException extends IOException {
 	private static final long serialVersionUID = 6290009229751508492L;

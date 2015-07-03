@@ -19,34 +19,24 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.Date;
-
 import de.cologneintelligence.fitgoodies.alias.AliasEnabledFixture;
-import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
 import fit.Counts;
 import fit.Fixture;
 import fit.Parse;
 
+import java.io.*;
+import java.util.Date;
+
 /**
  * Runs a test file using most of fit's default component.
- *
- * @author jwierum
- * @version $Id$
  */
 public class FitFileRunner implements Runner {
     private String encoding;
 
     @Override
-    public final void setEncoding(final String fileEncoding) {
+    public void setEncoding(final String fileEncoding) {
         this.encoding = fileEncoding;
     }
 
@@ -58,27 +48,33 @@ public class FitFileRunner implements Runner {
      * @return resulting counts
      */
     @Override
-    public final Counts run(final String inputFile, final String outputFile) {
-        AbstractDirectoryHelper dirHelper = new FileSystemDirectoryHelper();
-        RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
+    public final Counts run(final File inputFile, final File outputFile) {
+        Counts result = null;
 
-        helper.setFilePath(dirHelper.rel2abs(System.getProperty("user.dir"),
-                inputFile));
-        helper.setResultFilePath(dirHelper.rel2abs(System.getProperty("user.dir"),
-                outputFile));
+        FileSystemDirectoryHelper dirHelper = new FileSystemDirectoryHelper();
+        RunnerHelper currentRunner = DependencyManager.getOrCreate(RunnerHelper.class);
+        RunnerHelper helper = new RunnerHelper();
+
+        DependencyManager.inject(RunnerHelper.class, helper);
+
+        helper.setFile(new File(dirHelper.rel2abs(System.getProperty("user.dir"),
+                inputFile.toString())));
+        helper.setResultFile(new File(dirHelper.rel2abs(System.getProperty("user.dir"),
+                outputFile.toString())));
         helper.setRunner(this);
         helper.setHelper(dirHelper);
 
         try {
-            return process(inputFile, outputFile);
+            result = process(inputFile, outputFile);
         } catch (Exception e) {
-            System.err.println(e + " while processing " + inputFile + " ->"
-                    + outputFile);
+            System.err.printf("%s while processing %s -> %s%n", e, inputFile, outputFile);
             System.err.println(e.getMessage());
             e.printStackTrace();
-
-            return null;
+        } finally {
+            DependencyManager.inject(RunnerHelper.class, currentRunner);
         }
+
+        return result;
     }
 
     /**
@@ -88,6 +84,7 @@ public class FitFileRunner implements Runner {
      * @see #setEncoding(String) setEncoding(String)
      * @throws IOException if the file could not be read
      */
+    // TODO: use apache commons?
     private String read(final File input) throws IOException {
         char[] chars = new char[(int) (input.length())];
 
@@ -105,18 +102,16 @@ public class FitFileRunner implements Runner {
         return encoding;
     }
 
-    private Counts process(final String inputFile, final String outputFile)
+    private Counts process(final File inputFile, final File outputFile)
             throws IOException {
-        File in = new File(inputFile);
-        File out = new File(outputFile);
-        PrintWriter output = new PrintWriter(out, encoding);
-        Fixture fixture = prepareFixture(in, out);
+        PrintWriter output = new PrintWriter(outputFile, encoding);
+        Fixture fixture = prepareFixture(inputFile, outputFile);
 
-        String input = read(in);
+        String input = read(inputFile);
         Parse tables;
 
         try {
-            if (input.indexOf("<wiki>") >= 0) {
+            if (input.contains("<wiki>")) {
                 tables = new Parse(input, new String[]{"wiki", "table", "tr", "td"});
                 fixture.doTables(tables.parts);
             } else {

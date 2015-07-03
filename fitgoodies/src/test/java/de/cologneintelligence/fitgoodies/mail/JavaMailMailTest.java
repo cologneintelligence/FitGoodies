@@ -19,270 +19,235 @@
 
 package de.cologneintelligence.fitgoodies.mail;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.junit.Before;
+import org.junit.Test;
 
+import javax.mail.Flags.Flag;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
-import javax.mail.Flags.Flag;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
 
-import org.jmock.Expectations;
-import org.jmock.lib.legacy.ClassImposteriser;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.mail.JavaMailMail;
 
-
-/**
- *
- * @author jwierum
- */
 public final class JavaMailMailTest extends FitGoodiesTestCase {
-	{
-		setImposteriser(ClassImposteriser.INSTANCE);
-	}
-
 	private Message message;
 	private JavaMailMail mail;
 
-	@Override
+	@Before
 	public void setUp() throws Exception {
-		super.setUp();
-
 		message = mock(Message.class);
 		mail = new JavaMailMail(message);
 	}
 
+	@Test
 	public void testDelete() throws MessagingException {
-		checking(new Expectations() {{
-			oneOf(message).setFlag(Flag.DELETED, true);
-		}});
-
 		mail.delete();
+		verify(message).setFlag(Flag.DELETED, true);
 	}
 
+	@Test
 	public void testGetHeaders() throws MessagingException {
-		checking(new Expectations() {{
-			oneOf(message).getHeader("Received");
-				will(returnValue(new String[]{"server1", "server2", "server3"}));
-			oneOf(message).getHeader("X-My-Status");
-				will(returnValue(new String[]{"test"}));
-			oneOf(message).getHeader("X-Empty");
-				will(returnValue(null));
-		}});
+		when(message.getHeader("Received"))
+				.thenReturn(new String[]{"server1", "server2", "server3"});
+		when(message.getHeader("X-My-Status")).thenReturn(new String[]{"test"});
+		when(message.getHeader("X-Empty")).thenReturn(null);
 
 		String[] actual;
 
 		actual = mail.getHeader("Received");
-		assertArray(actual, new String[]{"server1", "server2", "server3"});
+		assertThat(Arrays.asList(actual), is(equalTo(Arrays.asList("server1", "server2", "server3"))));
 
 		actual = mail.getHeader("X-My-Status");
-		assertArray(actual, new String[]{"test"});
+		assertThat(Arrays.asList(actual), is(equalTo(Arrays.asList("test"))));
 
 		actual = mail.getHeader("X-Empty");
-		assertNull(actual);
+		assertThat(actual, is(nullValue()));
 	}
 
+	@Test
 	public void testHastHTMLContentWithBaseMimeType() throws MessagingException {
-		checking(new Expectations() {{
-			oneOf(message).isMimeType("multipart/*"); will(returnValue(false));
-			oneOf(message).isMimeType("text/html"); will(returnValue(true));
-		}});
+		when(message.isMimeType("multipart/*")).thenReturn(false);
+		when(message.isMimeType("text/html")).thenReturn(true);
 
-		assertTrue(mail.hasHTMLContent());
+		assertThat(mail.hasHTMLContent(), is(true));
 	}
 
+	@Test
 	public void testHastHTMLContentWithWrongMimeType() throws MessagingException {
-		checking(new Expectations() {{
-			oneOf(message).isMimeType("multipart/*"); will(returnValue(false));
-			oneOf(message).isMimeType("text/html"); will(returnValue(false));
-		}});
+		when(message.isMimeType("multipart/*")).thenReturn(false);
+		when(message.isMimeType("text/html")).thenReturn(false);
 
-		assertFalse(mail.hasHTMLContent());
+		assertThat(mail.hasHTMLContent(), is(false));
+
 	}
 
-	public void testHasHTMLContentWithMultipleMimeTypes()
-			throws MessagingException, IOException {
-
+	@Test
+	public void testHasHTMLContentWithMultipleMimeTypes() throws Exception {
 		final Multipart multipart = mock(Multipart.class);
 		final MimeBodyPart mimepart1 = mock(MimeBodyPart.class, "mimepart1");
 		final MimeBodyPart mimepart2 = mock(MimeBodyPart.class, "mimepart2");
 
-		checking(new Expectations() {{
-			oneOf(message).isMimeType("multipart/*"); will(returnValue(true));
-			oneOf(message).getContent(); will(returnValue(multipart));
+		when(message.isMimeType("multipart/*")).thenReturn(true);
+		when(message.getContent()).thenReturn(multipart);
 
-			atLeast(1).of(multipart).getCount(); will(returnValue(2));
-			oneOf(multipart).getBodyPart(0); will(returnValue(mimepart1));
-			oneOf(multipart).getBodyPart(1); will(returnValue(mimepart2));
+		when(multipart.getCount()).thenReturn(2);
+		when(multipart.getBodyPart(0)).thenReturn(mimepart1);
+		when(multipart.getBodyPart(1)).thenReturn(mimepart2);
 
-			oneOf(mimepart1).isMimeType("text/html"); will(returnValue(false));
-			oneOf(mimepart2).isMimeType("text/html"); will(returnValue(true));
+		when(mimepart1.isMimeType("text/html")).thenReturn(false);
+		when(mimepart2.isMimeType("text/html")).thenReturn(true);
 
-			oneOf(mimepart1).getDisposition(); will(returnValue(Part.INLINE.toLowerCase()));
-			oneOf(mimepart2).getDisposition(); will(returnValue(Part.INLINE));
-		}});
+		when(mimepart1.getDisposition()).thenReturn(Part.INLINE.toLowerCase());
+		when(mimepart2.getDisposition()).thenReturn(Part.INLINE);
 
-		assertTrue(mail.hasHTMLContent());
+		assertThat(mail.hasHTMLContent(), is(true));
 	}
 
-	public void testHasHTMLContentWithMultipleMimeTypesNoMatches()
-		throws MessagingException, IOException {
+	@Test
+	public void testHasHTMLContentWithMultipleMimeTypesNoMatches() throws Exception {
 
 		final Multipart multipart = mock(Multipart.class);
 		final MimeBodyPart mimepart1 = mock(MimeBodyPart.class);
 
-		checking(new Expectations() {{
-			oneOf(message).isMimeType("multipart/*"); will(returnValue(true));
-			oneOf(message).getContent(); will(returnValue(multipart));
+			when(message.isMimeType("multipart/*")).thenReturn(true);
+			when(message.getContent()).thenReturn(multipart);
 
-			atLeast(1).of(multipart).getCount(); will(returnValue(1));
-			oneOf(multipart).getBodyPart(0); will(returnValue(mimepart1));
+			when(multipart.getCount()).thenReturn(1);
+			when(multipart.getBodyPart(0)).thenReturn(mimepart1);
 
-			oneOf(mimepart1).isMimeType("text/html"); will(returnValue(false));
+			when(mimepart1.isMimeType("text/html")).thenReturn(false);
 
-			oneOf(mimepart1).getDisposition(); will(returnValue(Part.INLINE));
-		}});
+			when(mimepart1.getDisposition()).thenReturn(Part.INLINE);
 
-		assertFalse(mail.hasHTMLContent());
+		assertThat(mail.hasHTMLContent(), is(false));
+
 	}
 
-	public void testHasPlainContentWithMultipleMimeTypes()
-			throws MessagingException, IOException {
-
+	@Test
+	public void testHasPlainContentWithMultipleMimeTypes() throws Exception {
 		final Multipart multipart = mock(Multipart.class);
 		final MimeBodyPart mimepart1 = mock(MimeBodyPart.class, "mimepart1");
 
-		checking(new Expectations() {{
-			oneOf(message).isMimeType("multipart/*"); will(returnValue(true));
-			oneOf(message).getContent(); will(returnValue(multipart));
+		when(message.isMimeType("multipart/*")).thenReturn(true);
+		when(message.getContent()).thenReturn(multipart);
 
-			atLeast(1).of(multipart).getCount(); will(returnValue(2));
-			oneOf(multipart).getBodyPart(0); will(returnValue(mimepart1));
+		when(multipart.getCount()).thenReturn(2);
+		when(multipart.getBodyPart(0)).thenReturn(mimepart1);
 
-			oneOf(mimepart1).isMimeType("text/plain"); will(returnValue(true));
+		when(mimepart1.isMimeType("text/plain")).thenReturn(true);
+		when(mimepart1.getDisposition()).thenReturn(Part.INLINE.toUpperCase());
 
-			oneOf(mimepart1).getDisposition(); will(returnValue(Part.INLINE.toUpperCase()));
-		}});
-
-		assertTrue(mail.hasPlainContent());
+		assertThat(mail.hasPlainContent(), is(true));
 	}
 
-	public void testHasPlainContentWithAttachments()
-			throws MessagingException, IOException {
-
+	@Test
+	public void testHasPlainContentWithAttachments() throws Exception {
 		final Multipart multipart = mock(Multipart.class);
 		final MimeBodyPart mimepart1 = mock(MimeBodyPart.class, "mimepart1");
 		final MimeBodyPart mimepart2 = mock(MimeBodyPart.class, "mimepart2");
 
-		checking(new Expectations() {{
-			oneOf(message).isMimeType("multipart/*"); will(returnValue(true));
-			oneOf(message).getContent(); will(returnValue(multipart));
+		when(message.isMimeType("multipart/*")).thenReturn(true);
+		when(message.getContent()).thenReturn(multipart);
 
-			atLeast(1).of(multipart).getCount(); will(returnValue(2));
-			oneOf(multipart).getBodyPart(0); will(returnValue(mimepart1));
-			oneOf(multipart).getBodyPart(1); will(returnValue(mimepart2));
+		when(multipart.getCount()).thenReturn(2);
+		when(multipart.getBodyPart(0)).thenReturn(mimepart1);
+		when(multipart.getBodyPart(1)).thenReturn(mimepart2);
 
-			oneOf(mimepart1).isMimeType("text/plain"); will(returnValue(false));
+		when(mimepart1.isMimeType("text/plain")).thenReturn(false);
 
-			oneOf(mimepart1).getDisposition(); will(returnValue(Part.INLINE.toUpperCase()));
-			oneOf(mimepart2).getDisposition(); will(returnValue(Part.ATTACHMENT.toLowerCase()));
-		}});
+		when(mimepart1.getDisposition()).thenReturn(Part.INLINE.toUpperCase());
+		when(mimepart2.getDisposition()).thenReturn(Part.ATTACHMENT.toLowerCase());
 
-		assertFalse(mail.hasPlainContent());
+		assertThat(mail.hasPlainContent(), is(false));
+
 	}
 
-	public void testGetPlainContent()
-			throws MessagingException, IOException {
-
+	@Test
+	public void testGetPlainContent() throws Exception {
 		final String CONTENT = "Hello world";
 		final InputStream content = new ByteArrayInputStream(CONTENT.getBytes("US-ASCII"));
 
-		checking(new Expectations() {{
-			oneOf(message).isMimeType("multipart/*"); will(returnValue(false));
-			oneOf(message).isMimeType("text/plain"); will(returnValue(true));
-			oneOf(message).getSize(); will(returnValue(CONTENT.length()));
-			oneOf(message).getInputStream(); will(returnValue(content));
-		}});
+		when(message.isMimeType("multipart/*")).thenReturn(false);
+		when(message.isMimeType("text/plain")).thenReturn(true);
+		when(message.getSize()).thenReturn(CONTENT.length());
+		when(message.getInputStream()).thenReturn(content);
 
-		assertEquals(CONTENT, mail.getPlainContent());
+		assertThat(mail.getPlainContent(), is(equalTo(CONTENT)));
 	}
 
-	public void testGetHTMLContent()
-			throws MessagingException, IOException {
-
+	@Test
+	public void testGetHTMLContent() throws Exception {
 		final String CONTENT = "Hello www world";
 		final InputStream content = new ByteArrayInputStream(CONTENT.getBytes("US-ASCII"));
 
-		checking(new Expectations() {{
-			oneOf(message).isMimeType("multipart/*"); will(returnValue(false));
-			oneOf(message).isMimeType("text/html"); will(returnValue(true));
-			oneOf(message).getSize(); will(returnValue(CONTENT.length()));
-			oneOf(message).getInputStream(); will(returnValue(content));
-		}});
+		when(message.isMimeType("multipart/*")).thenReturn(false);
+		when(message.isMimeType("text/html")).thenReturn(true);
+		when(message.getSize()).thenReturn(CONTENT.length());
+		when(message.getInputStream()).thenReturn(content);
 
-		assertEquals(CONTENT, mail.getHTMLContent());
+		assertThat(mail.getHTMLContent(), is(equalTo(CONTENT)));
 	}
 
-	public void testGetNonExistingPlainContent()
-			throws MessagingException, IOException {
+	@Test
+	public void testGetNonExistingPlainContent() throws Exception {
 
-		checking(new Expectations() {{
-			oneOf(message).isMimeType("multipart/*"); will(returnValue(false));
-			oneOf(message).isMimeType("text/plain"); will(returnValue(false));
-		}});
+		when(message.isMimeType("multipart/*")).thenReturn(false);
+		when(message.isMimeType("text/plain")).thenReturn(false);
 
-		assertNull(mail.getPlainContent());
+		assertThat(mail.getPlainContent(), is(nullValue()));
 	}
 
-	public void testGetPlainContentWithEncoding()
-			throws MessagingException, IOException {
+	@Test
+	public void testGetPlainContentWithEncoding() throws Exception {
 
 		final String CONTENT = "Hello java world";
 		final byte[] CONTENTBYTES = CONTENT.getBytes("UTF-16");
 		final InputStream content = new ByteArrayInputStream(CONTENTBYTES);
 
 		final MimeMessage mimemessage = mock(MimeMessage.class);
-		checking(new Expectations() {{
-			oneOf(mimemessage).isMimeType("multipart/*"); will(returnValue(false));
-			oneOf(mimemessage).isMimeType("text/plain"); will(returnValue(true));
-			oneOf(mimemessage).getEncoding(); will(returnValue("utf-16"));
-			oneOf(mimemessage).getSize(); will(returnValue(CONTENTBYTES.length));
-			oneOf(mimemessage).getInputStream(); will(returnValue(content));
-		}});
+		when(mimemessage.isMimeType("multipart/*")).thenReturn(false);
+		when(mimemessage.isMimeType("text/plain")).thenReturn(true);
+		when(mimemessage.getEncoding()).thenReturn("utf-16");
+		when(mimemessage.getSize()).thenReturn(CONTENTBYTES.length);
+		when(mimemessage.getInputStream()).thenReturn(content);
 
 		mail = new JavaMailMail(mimemessage);
-		assertEquals(CONTENT, mail.getPlainContent());
+		assertThat(mail.getPlainContent(), is(equalTo(CONTENT)));
 	}
 
-	public void testGetPlainContentWith7BitEncoding()
-			throws MessagingException, IOException {
-
+	@Test
+	public void testGetPlainContentWith7BitEncoding() throws Exception {
 		final String CONTENT = "Hello mail world";
 		final byte[] CONTENTBYTES = CONTENT.getBytes("US-ASCII");
 		final InputStream content = new ByteArrayInputStream(CONTENTBYTES);
 
 		final MimeMessage mimemessage = mock(MimeMessage.class);
-		checking(new Expectations() {{
-			oneOf(mimemessage).isMimeType("multipart/*"); will(returnValue(false));
-			oneOf(mimemessage).isMimeType("text/plain"); will(returnValue(true));
-			oneOf(mimemessage).getEncoding(); will(returnValue("7bit"));
-			oneOf(mimemessage).getSize(); will(returnValue(CONTENTBYTES.length));
-			oneOf(mimemessage).getInputStream(); will(returnValue(content));
-		}});
+		when(mimemessage.isMimeType("multipart/*")).thenReturn(false);
+		when(mimemessage.isMimeType("text/plain")).thenReturn(true);
+		when(mimemessage.getEncoding()).thenReturn("7bit");
+		when(mimemessage.getSize()).thenReturn(CONTENTBYTES.length);
+		when(mimemessage.getInputStream()).thenReturn(content);
 
 		mail = new JavaMailMail(mimemessage);
-		assertEquals(CONTENT, mail.getPlainContent());
+		assertThat(mail.getPlainContent(), is(equalTo(CONTENT)));
 	}
 
-	public void testGetPlainContentWithMultipart()
-			throws MessagingException, IOException {
-
+	@Test
+	public void testGetPlainContentWithMultipart() throws Exception {
 		final Multipart multipart = mock(Multipart.class);
 		final MimeBodyPart mimepart1 = mock(MimeBodyPart.class, "mimepart1");
 		final MimeBodyPart mimepart2 = mock(MimeBodyPart.class, "mimepart2");
@@ -291,24 +256,21 @@ public final class JavaMailMailTest extends FitGoodiesTestCase {
 		final byte[] CONTENTBYTES = CONTENT.getBytes("utf-16");
 		final InputStream content = new ByteArrayInputStream(CONTENTBYTES);
 
-		checking(new Expectations() {{
-			oneOf(message).isMimeType("multipart/*"); will(returnValue(true));
-			oneOf(message).getContent(); will(returnValue(multipart));
+			when(message.isMimeType("multipart/*")).thenReturn(true);
+			when(message.getContent()).thenReturn(multipart);
 
-			atLeast(1).of(multipart).getCount(); will(returnValue(2));
-			oneOf(multipart).getBodyPart(0); will(returnValue(mimepart1));
-			oneOf(multipart).getBodyPart(1); will(returnValue(mimepart2));
+			when(multipart.getCount()).thenReturn(2);
+			when(multipart.getBodyPart(0)).thenReturn(mimepart1);
+			when(multipart.getBodyPart(1)).thenReturn(mimepart2);
 
-			oneOf(mimepart2).isMimeType("text/plain"); will(returnValue(true));
+			when(mimepart1.getDisposition()).thenReturn(Part.ATTACHMENT);
 
-			oneOf(mimepart1).getDisposition(); will(returnValue(Part.ATTACHMENT));
-			oneOf(mimepart2).getDisposition(); will(returnValue(Part.INLINE));
+			when(mimepart2.isMimeType("text/plain")).thenReturn(true);
+			when(mimepart2.getDisposition()).thenReturn(Part.INLINE);
+			when(mimepart2.getSize()).thenReturn(CONTENTBYTES.length);
+			when(mimepart2.getEncoding()).thenReturn("utf-16");
+			when(mimepart2.getInputStream()).thenReturn(content);
 
-			oneOf(mimepart2).getSize(); will(returnValue(CONTENTBYTES.length));
-			oneOf(mimepart2).getEncoding(); will(returnValue("utf-16"));
-			oneOf(mimepart2).getInputStream(); will(returnValue(content));
-		}});
-
-		assertEquals(CONTENT, mail.getPlainContent());
+		assertThat(mail.getPlainContent(), is(equalTo(CONTENT)));
 	}
 }

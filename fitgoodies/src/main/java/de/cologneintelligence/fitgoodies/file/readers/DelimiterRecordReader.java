@@ -26,8 +26,6 @@ import java.util.regex.Pattern;
 /**
  * Reader which is capable to process char-delimited files.
  *
- * @author jwierum
- * @version $Id$
  */
 public class DelimiterRecordReader implements FileRecordReader {
 	private String[] parts;
@@ -77,7 +75,7 @@ public class DelimiterRecordReader implements FileRecordReader {
 	}
 
 	@Override
-	public final void close() throws IOException {
+	public void close() throws IOException {
 		reader.close();
 	}
 

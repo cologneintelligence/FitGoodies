@@ -26,8 +26,6 @@ import de.cologneintelligence.fitgoodies.file.readers.DelimiterRecordReader;
  * delimited files using a {@link de.cologneintelligence.fitgoodies.file.readers.DelimiterRecordReader}.
  * The fixture has one more parameters: delimiter. The delimiter must be set.
  *
- * @author jwierum
- * @version $Id$
  */
 public class DelimiterFileRecordFixture extends AbstractFileRecordReaderFixture {
 	/** for internal use - used to resolve cross references. */

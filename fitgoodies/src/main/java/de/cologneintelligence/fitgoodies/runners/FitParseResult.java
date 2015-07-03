@@ -19,45 +19,42 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import fit.Counts;
+import fit.Fixture;
+import fit.Parse;
+
+import java.io.*;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
-import fit.Counts;
-import fit.Fixture;
-import fit.Parse;
+import static de.cologneintelligence.fitgoodies.util.FixtureTools.htmlSafeFile;
 
 /**
  * Implementation of {@link FitResult} which replaces a Parse-Row with one
  * or more results. The fixture is used with {@link RunFixture}, which uses
  * a dummy cell. This dummy cell is preserved.
  *
- * @author jwierum
- * @version $Id$
  */
 public final class FitParseResult implements FitResult {
 	private final List<FileCount> results = new LinkedList<FileCount>();
 
 	@Override
-	public void print(final String directory, final OutputStream stream)
+	public void print(final File directory, final OutputStream stream)
 			throws IOException {
 		Writer writer = new OutputStreamWriter(stream);
 		BufferedWriter bufferedWriter = new BufferedWriter(writer);
 
 		bufferedWriter.write("<table><tr><th colspan=\"2\">");
-		bufferedWriter.write(directory);
+		bufferedWriter.write(directory.getName());
 		bufferedWriter.write("</th></tr>");
 
 		for (FileCount fileCount : results) {
 			bufferedWriter.write("<tr><td><a href=\"");
-			bufferedWriter.write(fileCount.getFile());
+            String file = htmlSafeFile(fileCount.getFile());
+            bufferedWriter.write(file);
 			bufferedWriter.write("\">");
-			bufferedWriter.write(fileCount.getFile());
+			bufferedWriter.write(file);
 			bufferedWriter.write("</a>");
 			bufferedWriter.write("</td><td bgcolor=\"");
 			bufferedWriter.write(color(fileCount.getCounts()));
@@ -71,8 +68,8 @@ public final class FitParseResult implements FitResult {
 		writer.close();
 	}
 
-	@Override
-	public void put(final String file, final Counts result) {
+    @Override
+	public void put(final File file, final Counts result) {
 		FileCount fileCount = new FileCount(file, result);
 		if (results.contains(fileCount)) {
 			results.remove(fileCount);
@@ -105,8 +102,8 @@ public final class FitParseResult implements FitResult {
 				return null;
 			}
 
-			row.parts.body = "<a href=\"" + fileCount.getFile() + "\">"
-				+ fileCount.getFile() + "</a>";
+			row.parts.body = "<a href=\"" + htmlSafeFile(fileCount.getFile()) + "\">"
+				+ htmlSafeFile(fileCount.getFile()) + "</a>";
 			row.parts.more.addToBody(fileCount.getCounts().toString());
 			row.parts.more.addToTag(" bgcolor=\"" + color(fileCount.getCounts()) + "\"");
 
@@ -116,15 +113,15 @@ public final class FitParseResult implements FitResult {
 	}
 
 	/**
-	 * Replaces a line which one or more results.
-	 * @param line the line to replace
+	 * Replaces a row which one or more results.
+	 * @param row the row to replace
 	 */
-	public void replaceLine(final Parse line) {
+	public void replaceLastIn(final Parse row) {
 		Parse table = makeTable();
 
-		table.last().more = line.more;
-		line.more = table.more;
-		line.parts.more = table.parts;
+		table.last().more = row.more;
+		row.more = table.more;
+		row.parts.more = table.parts;
 	}
 
 	/**

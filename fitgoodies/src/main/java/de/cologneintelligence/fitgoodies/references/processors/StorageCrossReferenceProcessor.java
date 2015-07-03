@@ -37,8 +37,6 @@ import de.cologneintelligence.fitgoodies.references.CrossReference;
  * <li>${ns.get(var3, /Password: ([^\s]+)/}
  * </ul>
  *
- * @author jwierum
- * @version $Id$
  */
 
 public class StorageCrossReferenceProcessor extends AbstractCrossReferenceProcessor {

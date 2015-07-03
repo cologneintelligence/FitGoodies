@@ -41,8 +41,6 @@ import fit.Parse;
  * <tr><td>clear</td><td>org.example.myclass</td><td>stderr</td></tr>
  * </table>
  *
- * @author jwierum
- * @version $Id$
  */
 public class SetupFixture extends Fixture {
     private final LoggerProvider loggerProvider;
@@ -89,8 +87,7 @@ public class SetupFixture extends Fixture {
         String appenderName = row.more.more.text();
 
         LogHelper helper = DependencyManager.getOrCreate(LogHelper.class);
-        helper.clear(loggerProvider.getLogger(className),
-                appenderName);
+        helper.clear(loggerProvider.getLogger(className), appenderName);
     }
 
     private void processRowWithMonitor(final Parse row) {

@@ -25,8 +25,6 @@ import java.util.NoSuchElementException;
 /**
  * Converts a list of {@link FileInformation}.
  *
- * @author jwierum
- * @version $Id$
  */
 public class FileIterator implements Iterator<FileInformation> {
 	private final FileInformation[] files;
@@ -66,7 +64,7 @@ public class FileIterator implements Iterator<FileInformation> {
 	 * Not implemented.
 	 */
 	@Override
-	public final void remove() {
+	public void remove() {
 		throw new UnsupportedOperationException();
 	}
 

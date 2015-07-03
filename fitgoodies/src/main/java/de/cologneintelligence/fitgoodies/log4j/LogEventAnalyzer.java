@@ -25,8 +25,6 @@ import java.util.Map;
  * The implementation should be initialized with a cell (expected) and a number
  * of log messages.
  *
- * @author jwierum
- * @version $Id$
  */
 public interface LogEventAnalyzer {
 

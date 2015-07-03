@@ -18,50 +18,50 @@
 
 package de.cologneintelligence.fitgoodies.selenium.command;
 
-import org.jmock.Expectations;
-
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.SeleniumException;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
-import de.cologneintelligence.fitgoodies.selenium.command.CommandFactory;
-import de.cologneintelligence.fitgoodies.selenium.command.WrappedCommand;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class OpenCommandTest extends FitGoodiesTestCase {
 
     private CommandProcessor commandProcessor;
-    private WrappedCommand openCommand;
     private SetupHelper helper;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         RunnerHelper runnerHelper = DependencyManager.getOrCreate(RunnerHelper.class);
         helper = DependencyManager.getOrCreate(SetupHelper.class);
 
         commandProcessor = mock(CommandProcessor.class);
         helper.setCommandProcessor(commandProcessor);
-        runnerHelper.setResultFilePath("fixture.html");
+        runnerHelper.setResultFile(new File("fixture.html"));
     }
 
+    @Test
     public void testDoCommand() {
         final String[] args = new String[]{"arg1", "arg2"};
-        openCommand = CommandFactory.createCommand("openSomething", args, helper);
+        WrappedCommand openCommand = CommandFactory.createCommand("openSomething", args, helper);
 
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("openSomething", args);
-            will(throwException(new SeleniumException("Error")));
-        }});
+        when(commandProcessor.doCommand("openSomething", args))
+                .thenThrow(new SeleniumException("Error"));
 
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("waitForPageToLoad", new String[] { "50000", });
-            will(returnValue("OK"));
-        }});
+        when(commandProcessor.doCommand("waitForPageToLoad", new String[] { "50000", }))
+                .thenReturn("OK");
 
-        assertEquals("OK", openCommand.execute());
+        assertThat(openCommand.execute(), is(equalTo("OK")));
     }
 }

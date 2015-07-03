@@ -19,42 +19,54 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.junit.Test;
+
 import java.io.File;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.SimpleRegexFilter;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
-/**
- *
- * @author jwierum
- */
 public final class SimpleRegexFilterTest extends FitGoodiesTestCase {
+	@Test
 	public void testConstructor() {
 		SimpleRegexFilter filter = new SimpleRegexFilter("xy");
-		assertEquals("xy", filter.getPattern());
+		assertThat(filter.getPattern(), is(equalTo("xy")));
 
 		filter = new SimpleRegexFilter(".*\\.txt");
-		assertEquals(".*\\.txt", filter.getPattern());
-
-		try {
-			new SimpleRegexFilter(null);
-			fail("Could set invalid pattern");
-		} catch (RuntimeException e) {
-		}
+		assertThat(filter.getPattern(), is(equalTo(".*\\.txt")));
 	}
 
+	@Test(expected = RuntimeException.class)
+	public void testNullConstructor() {
+		new SimpleRegexFilter(null);
+	}
+
+	private File makeFile(String name, boolean isFile) {
+		File file = mock(File.class);
+		when(file.getName()).thenReturn(name);
+		when(file.isFile()).thenReturn(isFile);
+		when(file.isDirectory()).thenReturn(!isFile);
+		return file;
+	}
+
+	@Test
 	public void testAccept() {
 		SimpleRegexFilter filter = new SimpleRegexFilter(".*\\.txt");
-		assertTrue(filter.accept(null, "test.txt"));
-		assertTrue(filter.accept(null, "file.txt"));
-		assertFalse(filter.accept(null, "test.java"));
+
+		assertThat(filter.accept(makeFile("dir.txt", false)), is(false));
+		assertThat(filter.accept(makeFile("other dir.txt", false)), is(false));
+
+		assertThat(filter.accept(makeFile("test.txt", true)), is(true));
+		assertThat(filter.accept(makeFile("file.txt", true)), is(true));
+		assertThat(filter.accept(makeFile("test.java", true)), is(false));
 
 		filter = new SimpleRegexFilter(".*\\.java");
-		assertFalse(filter.accept(null, "test.txt"));
-		assertFalse(filter.accept(null, "file.txt"));
-		assertTrue(filter.accept(null, "test.java"));
-
-		assertFalse(filter.accept(new File("test.java"), "file.class"));
+		assertThat(filter.accept(makeFile("test.txt", true)), is(false));
+		assertThat(filter.accept(makeFile("test.java", true)), is(true));
 	}
 }

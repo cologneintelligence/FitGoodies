@@ -69,9 +69,9 @@ import fit.Parse;
  * <td></td>
  * </tr>
  * </table>
- * 
+ *
  * @author kmussawisade
- * 
+ *
  */
 public class SeleniumFixture extends ActionFixture {
     private int screenshotIndex = 0;
@@ -115,10 +115,10 @@ public class SeleniumFixture extends ActionFixture {
 
     private String createSnapshotFilename(final int index) {
         RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
-        return helper.getResultFilePath() + ".screenshot" + index + ".png";
+        return helper.getResultFile() + ".screenshot" + index + ".png";
     }
 
-    private final String getColumnOrEmptyString(final Parse cells, final int column) throws CrossReferenceProcessorShortcutException {
+    private String getColumnOrEmptyString(final Parse cells, final int column) throws CrossReferenceProcessorShortcutException {
         Parse parse = cells;
         for (int i = 0; i < column; ++i) {
             if (parse.more == null) {

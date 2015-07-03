@@ -27,9 +27,8 @@ import java.io.File;
  * Usage: <code>java -classpath /path/to/fit.jar:/path/to/fitgoodies.jar:...
  * fitgoodies.runners.AutoRunner input output [encoding]</code>
  *
- * @author jwierum
- * @version $Id$
  */
+@Deprecated
 public final class AutoRunner {
 	private AutoRunner() { }
 
@@ -50,7 +49,7 @@ public final class AutoRunner {
 	 *
 	 * @param args program parameters
 	 */
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws Exception {
 		if (args.length < 2 || args.length > 3) {
 			error();
 		}

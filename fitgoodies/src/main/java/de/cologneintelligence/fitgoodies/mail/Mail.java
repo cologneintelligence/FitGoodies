@@ -24,8 +24,6 @@ import javax.mail.MessagingException;
 /**
  * Interface to access mail information.
  *
- * @author jwierum
- * @version $Id$
  */
 public interface Mail {
 	/**

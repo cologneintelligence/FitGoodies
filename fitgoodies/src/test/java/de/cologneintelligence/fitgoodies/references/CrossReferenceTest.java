@@ -18,17 +18,17 @@
 
 
 package de.cologneintelligence.fitgoodies.references;
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.references.CrossReference;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
 
 public class CrossReferenceTest extends FitGoodiesTestCase {
-	public final void testCrossReference() {
+	@Test
+	public void testCrossReference() {
 		AbstractCrossReferenceProcessor p = new AbstractCrossReferenceProcessor(null) {
 			@Override public String getPattern() {
 				return null;
@@ -43,15 +43,15 @@ public class CrossReferenceTest extends FitGoodiesTestCase {
 		};
 
 		CrossReference c1 = new CrossReference("empty", null, null, p);
-		assertEquals("empty", c1.getCommand());
-		assertNull(c1.getNamespace());
-		assertNull(c1.getParameter());
-		assertSame(p, c1.getProcessor());
+		assertThat(c1.getCommand(), is(equalTo("empty")));
+		assertThat(c1.getNamespace(), is(nullValue()));
+		assertThat(c1.getParameter(), is(nullValue()));
+		assertThat(c1.getProcessor(), is(sameInstance(p)));
 
 		CrossReference c2 = new CrossReference("put", "ns", "param", p);
-		assertEquals("put", c2.getCommand());
-		assertEquals("ns", c2.getNamespace());
-		assertEquals("param", c2.getParameter());
-		assertSame(p, c2.getProcessor());
+		assertThat(c2.getCommand(), is(equalTo("put")));
+		assertThat(c2.getNamespace(), is(equalTo("ns")));
+		assertThat(c2.getParameter(), is(equalTo("param")));
+		assertThat(c2.getProcessor(), is(sameInstance(p)));
 	}
 }

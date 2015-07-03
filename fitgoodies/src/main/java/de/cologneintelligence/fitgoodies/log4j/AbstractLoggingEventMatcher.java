@@ -33,8 +33,6 @@ import org.apache.log4j.spi.LoggingEvent;
  * level or higher are analyzed. If thread is set, only log entries produced by
  * the given thread are analyzed.
  *
- * @author jwierum
- * @version $Id$
  */
 public abstract class AbstractLoggingEventMatcher {
 	/**

@@ -18,22 +18,19 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Appender which caches all appended log entries.
  * It copies the filters from a given parent Appender
- *
- * @author jwierum
- * @version $Id$
  */
-public final class CaptureAppender extends AppenderSkeleton {
+public class CaptureAppender extends AppenderSkeleton {
 	private final List<LoggingEvent> events = new LinkedList<LoggingEvent>();
 	private final Appender parent;
 

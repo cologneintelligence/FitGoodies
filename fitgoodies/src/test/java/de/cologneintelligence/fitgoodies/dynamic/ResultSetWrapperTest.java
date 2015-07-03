@@ -19,339 +19,300 @@
 
 package de.cologneintelligence.fitgoodies.dynamic;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.ScientificDouble;
+import org.hamcrest.Matcher;
+import org.junit.Test;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-import org.jmock.Expectations;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.ScientificDouble;
-import de.cologneintelligence.fitgoodies.dynamic.ResultSetWrapper;
 
-
-/**
- *
- * @author jwierum
- */
 public class ResultSetWrapperTest extends FitGoodiesTestCase {
-	public final void testGetTypesWithOneRow() throws Exception {
+	@Test
+	public void testGetTypesWithOneRow() throws Exception {
 		final ResultSet rs = mock(ResultSet.class);
 		final ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-		checking(new Expectations() {{
-			oneOf(rs).getMetaData(); will(returnValue(meta));
-
-			oneOf(meta).getColumnCount(); will(returnValue(3));
-			oneOf(meta).getColumnName(1); will(returnValue("id"));
-			oneOf(meta).getColumnName(2); will(returnValue("name"));
-			oneOf(meta).getColumnName(3); will(returnValue("surname"));
-
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(Integer.valueOf(42)));
-			oneOf(rs).getObject(2); will(returnValue("Angela"));
-			oneOf(rs).getObject(3); will(returnValue("Bennett"));
-		}});
+		when(rs.getMetaData()).thenReturn(meta);
+		when(meta.getColumnCount()).thenReturn(3);
+		when(meta.getColumnName(1)).thenReturn("id");
+		when(meta.getColumnName(2)).thenReturn("name");
+		when(meta.getColumnName(3)).thenReturn("surname");
+		when(rs.next()).thenReturn(true);
+		when(rs.getObject(1)).thenReturn(42);
+		when(rs.getObject(2)).thenReturn("Angela");
+		when(rs.getObject(3)).thenReturn("Bennett");
 
 		ResultSetWrapper reader = new ResultSetWrapper(rs);
 		Class<?> clazz = reader.getClazz();
 
-		assertEquals(3, clazz.getFields().length);
-		assertEquals(Integer.class, clazz.getField("id").getType());
-		assertEquals(String.class, clazz.getField("name").getType());
-		assertEquals(String.class, clazz.getField("surname").getType());
+		assertThat(clazz.getFields().length, is(equalTo((Object) 3)));
+		assertThat(clazz.getField("id").getType(), (Matcher) is(equalTo(Integer.class)));
+		assertThat(clazz.getField("name").getType(), (Matcher) is(equalTo(String.class)));
+		assertThat(clazz.getField("surname").getType(), (Matcher) is(equalTo(String.class)));
 	}
 
-	public final void testGetTypesWithThreeRows() throws Exception {
+	@Test
+	public void testGetTypesWithThreeRows() throws Exception {
 		final ResultSet rs = mock(ResultSet.class);
 		final ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-		checking(new Expectations() {{
-			oneOf(rs).getMetaData(); will(returnValue(meta));
+		when(rs.getMetaData()).thenReturn(meta);
 
-			oneOf(meta).getColumnCount(); will(returnValue(2));
-			oneOf(meta).getColumnName(1); will(returnValue("name"));
-			oneOf(meta).getColumnName(2); will(returnValue("age"));
+		when(meta.getColumnCount()).thenReturn(2);
+		when(meta.getColumnName(1)).thenReturn("name");
+		when(meta.getColumnName(2)).thenReturn("age");
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(null));
-			oneOf(rs).getObject(2); will(returnValue(null));
+		when(rs.next()).thenReturn(true, true, true);
+		when(rs.getObject(1)).thenReturn(null);
+		when(rs.getObject(2)).thenReturn(null);
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(new StringBuilder("Angela")));
-			oneOf(rs).getObject(2); will(returnValue(null));
+		when(rs.getObject(1)).thenReturn(new StringBuilder("Angela"));
+		when(rs.getObject(2)).thenReturn(null);
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(new StringBuilder("Anika")));
-			oneOf(rs).getObject(2); will(returnValue(new BigInteger("31")));
-		}});
+		when(rs.getObject(1)).thenReturn(new StringBuilder("Anika"));
+		when(rs.getObject(2)).thenReturn(new BigInteger("31"));
 
 		ResultSetWrapper reader = new ResultSetWrapper(rs);
 		Class<?> clazz = reader.getClazz();
 
-		assertEquals(2, clazz.getFields().length);
-		assertEquals(StringBuilder.class, clazz.getField("name").getType());
-		assertEquals(BigInteger.class, clazz.getField("age").getType());
+		assertThat(clazz.getFields().length, is(equalTo((Object) 2)));
+		assertThat(clazz.getField("name").getType(), (Matcher) is(equalTo(StringBuilder.class)));
+		assertThat(clazz.getField("age").getType(), (Matcher) is(equalTo(BigInteger.class)));
 	}
 
-	public final void testGetTypesWithIncompleteRows() throws Exception {
+	@Test
+	public void testGetTypesWithIncompleteRows() throws Exception {
 		final ResultSet rs = mock(ResultSet.class);
 		final ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-		checking(new Expectations() {{
-			oneOf(rs).getMetaData(); will(returnValue(meta));
+		when(rs.getMetaData()).thenReturn(meta);
 
-			oneOf(meta).getColumnCount(); will(returnValue(2));
-			oneOf(meta).getColumnName(1); will(returnValue("name"));
-			oneOf(meta).getColumnName(2); will(returnValue("age"));
+		when(meta.getColumnCount()).thenReturn(2);
+		when(meta.getColumnName(1)).thenReturn("name");
+		when(meta.getColumnName(2)).thenReturn("age");
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(null));
-			oneOf(rs).getObject(2); will(returnValue(null));
+		when(rs.next()).thenReturn(true, true, true, false);
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(new StringBuilder("Angela")));
-			oneOf(rs).getObject(2); will(returnValue(null));
+		when(rs.getObject(1)).thenReturn(null);
+		when(rs.getObject(2)).thenReturn(null);
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(new StringBuilder("Anika")));
-			oneOf(rs).getObject(2); will(returnValue(null));
+		when(rs.getObject(1)).thenReturn(new StringBuilder("Angela"));
+		when(rs.getObject(2)).thenReturn(null);
 
-			oneOf(rs).next(); will(returnValue(false));
-		}});
+		when(rs.getObject(1)).thenReturn(new StringBuilder("Anika"));
+		when(rs.getObject(2)).thenReturn(null);
 
 		ResultSetWrapper reader = new ResultSetWrapper(rs);
 		Class<?> clazz = reader.getClazz();
 
-		assertEquals(2, clazz.getFields().length);
-		assertEquals(StringBuilder.class, clazz.getField("name").getType());
-		assertEquals(Object.class, clazz.getField("age").getType());
+		assertThat(clazz.getFields().length, is(equalTo((Object) 2)));
+		assertThat(clazz.getField("name").getType(), (Matcher) is(equalTo(StringBuilder.class)));
+		assertThat(clazz.getField("age").getType(), (Matcher) is(equalTo(Object.class)));
 	}
 
-	public final void testCreateObjectOne() throws Exception {
+	@Test
+	public void testCreateObjectOne() throws Exception {
 		final ResultSet rs = mock(ResultSet.class);
 		final ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-		checking(new Expectations() {{
-			oneOf(rs).getMetaData(); will(returnValue(meta));
+		when(rs.getMetaData()).thenReturn(meta);
 
-			oneOf(meta).getColumnCount(); will(returnValue(2));
-			oneOf(meta).getColumnName(1); will(returnValue("name"));
-			oneOf(meta).getColumnName(2); will(returnValue("age"));
+		when(meta.getColumnCount()).thenReturn(2);
+		when(meta.getColumnName(1)).thenReturn("name");
+		when(meta.getColumnName(2)).thenReturn("age");
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(new StringBuilder("Anika")));
-			oneOf(rs).getObject(2); will(returnValue(new BigInteger("31")));
-		}});
+		when(rs.next()).thenReturn(true);
+		when(rs.getObject(1)).thenReturn(new StringBuilder("Anika"));
+		when(rs.getObject(2)).thenReturn(new BigInteger("31"));
 
 		ResultSetWrapper reader = new ResultSetWrapper(rs);
 
 		Object o = reader.createContainerObject();
-		assertEquals(StringBuilder.class, o.getClass().getField("name").getType());
-		assertEquals(BigInteger.class, o.getClass().getField("age").getType());
+		assertThat(o.getClass().getField("name").getType(), (Matcher) is(equalTo(StringBuilder.class)));
+		assertThat(o.getClass().getField("age").getType(), (Matcher) is(equalTo(BigInteger.class)));
 	}
 
-	public final void testCreateObjectTwo() throws Exception {
+	@Test
+	public void testCreateObjectTwo() throws Exception {
 		final ResultSet rs = mock(ResultSet.class);
 		final ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-		checking(new Expectations() {{
-			oneOf(rs).getMetaData(); will(returnValue(meta));
+		when(rs.getMetaData()).thenReturn(meta);
 
-			oneOf(meta).getColumnCount(); will(returnValue(4));
-			oneOf(meta).getColumnName(1); will(returnValue("id"));
-			oneOf(meta).getColumnName(2); will(returnValue("fullname"));
-			oneOf(meta).getColumnName(3); will(returnValue("age"));
-			oneOf(meta).getColumnName(4); will(returnValue("problem"));
+		when(meta.getColumnCount()).thenReturn(4);
+		when(meta.getColumnName(1)).thenReturn("id");
+		when(meta.getColumnName(2)).thenReturn("fullname");
+		when(meta.getColumnName(3)).thenReturn("age");
+		when(meta.getColumnName(4)).thenReturn("problem");
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(42));
-			oneOf(rs).getObject(2); will(returnValue(new StringBuffer("Angela Bennett")));
-			oneOf(rs).getObject(3); will(returnValue(new BigDecimal("31")));
-			oneOf(rs).getObject(4); will(returnValue(null));
+		when(rs.next()).thenReturn(true, false);
 
-			oneOf(rs).next(); will(returnValue(false));
-		}});
+		when(rs.getObject(1)).thenReturn(42);
+		when(rs.getObject(2)).thenReturn(new StringBuffer("Angela Bennett"));
+		when(rs.getObject(3)).thenReturn(new BigDecimal("31"));
+		when(rs.getObject(4)).thenReturn(null);
 
 		ResultSetWrapper reader = new ResultSetWrapper(rs);
 
 		Object o = reader.createContainerObject();
-		assertEquals(StringBuffer.class, o.getClass().getField("fullname").getType());
-		assertEquals(BigDecimal.class, o.getClass().getField("age").getType());
-		assertEquals(Integer.class, o.getClass().getField("id").getType());
-		assertEquals(Object.class, o.getClass().getField("problem").getType());
+		assertThat(o.getClass().getField("fullname").getType(), (Matcher) is(equalTo(StringBuffer.class)));
+		assertThat(o.getClass().getField("age").getType(), (Matcher) is(equalTo(BigDecimal.class)));
+		assertThat(o.getClass().getField("id").getType(), (Matcher) is(equalTo(Integer.class)));
+		assertThat(o.getClass().getField("problem").getType(), (Matcher) is(equalTo(Object.class)));
 	}
 
-	public final void testGetObject() throws Exception {
+	@Test
+	public void testGetObject() throws Exception {
 		final ResultSet rs = mock(ResultSet.class);
 		final ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-		checking(new Expectations() {{
-			oneOf(rs).getMetaData(); will(returnValue(meta));
+		when(rs.getMetaData()).thenReturn(meta);
 
-			oneOf(meta).getColumnCount(); will(returnValue(3));
-			oneOf(meta).getColumnName(1); will(returnValue("id"));
-			oneOf(meta).getColumnName(2); will(returnValue("fullname"));
-			oneOf(meta).getColumnName(3); will(returnValue("age"));
+		when(meta.getColumnCount()).thenReturn(3);
+		when(meta.getColumnName(1)).thenReturn("id");
+		when(meta.getColumnName(2)).thenReturn("fullname");
+		when(meta.getColumnName(3)).thenReturn("age");
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(42));
-			oneOf(rs).getObject(2); will(returnValue(new StringBuffer("Angela Bennett")));
-			oneOf(rs).getObject(3); will(returnValue(new BigDecimal("31")));
+		when(rs.next()).thenReturn(true, true, false);
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(23));
-			oneOf(rs).getObject(2); will(returnValue(new StringBuffer("Anika Hanson")));
-			oneOf(rs).getObject(3); will(returnValue(new BigDecimal("32")));
-
-			oneOf(rs).next(); will(returnValue(false));
-		}});
+		when(rs.getObject(1)).thenReturn(42, 23);
+		when(rs.getObject(2)).thenReturn(new StringBuffer("Angela Bennett"), new StringBuffer("Anika Hanson"));
+		when(rs.getObject(3)).thenReturn(new BigDecimal("31"), new BigDecimal("32"));
 
 		ResultSetWrapper reader = new ResultSetWrapper(rs);
 		Object[] o = reader.getRows();
 
 		Object expected = "Angela Bennett";
 		Object actual = o[0].getClass().getField("fullname").get(o[0]).toString();
-		assertEquals(expected, actual);
+		assertThat(actual, is(equalTo(expected)));
 
 		expected = new BigDecimal(31);
 		actual = o[0].getClass().getField("age").get(o[0]);
-		assertEquals(expected, actual);
+		assertThat(actual, is(equalTo(expected)));
 
 		expected = 23;
 		actual = o[1].getClass().getField("id").get(o[1]);
-		assertEquals(expected, actual);
+		assertThat(actual, is(equalTo(expected)));
 
 		expected = new BigDecimal(32);
 		actual = o[1].getClass().getField("age").get(o[1]);
-		assertEquals(expected, actual);
+		assertThat(actual, is(equalTo(expected)));
 	}
 
-	public final void testGetObjectWithIncompleteData() throws Exception {
+	@Test
+	public void testGetObjectWithIncompleteData() throws Exception {
 		final ResultSet rs = mock(ResultSet.class);
 		final ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-		checking(new Expectations() {{
-			oneOf(rs).getMetaData(); will(returnValue(meta));
+		when(rs.getMetaData()).thenReturn(meta);
 
-			oneOf(meta).getColumnCount(); will(returnValue(3));
-			oneOf(meta).getColumnName(1); will(returnValue("id"));
-			oneOf(meta).getColumnName(2); will(returnValue("name"));
-			oneOf(meta).getColumnName(3); will(returnValue("age"));
+		when(meta.getColumnCount()).thenReturn(3);
+		when(meta.getColumnName(1)).thenReturn("id");
+		when(meta.getColumnName(2)).thenReturn("name");
+		when(meta.getColumnName(3)).thenReturn("age");
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(1));
-			oneOf(rs).getObject(2); will(returnValue(new StringBuilder("Anika Hanson")));
-			oneOf(rs).getObject(3); will(returnValue(null));
+		when(rs.next()).thenReturn(true, true, false);
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(2));
-			oneOf(rs).getObject(2); will(returnValue(new StringBuilder("Angela Bennett")));
-			oneOf(rs).getObject(3); will(returnValue(new BigDecimal("25")));
-
-			oneOf(rs).next(); will(returnValue(false));
-		}});
+		when(rs.getObject(1)).thenReturn(1, 2);
+		when(rs.getObject(2)).thenReturn(new StringBuilder("Anika Hanson"), new StringBuilder("Angela Bennett"));
+		when(rs.getObject(3)).thenReturn(null, new BigDecimal("25"));
 
 		ResultSetWrapper reader = new ResultSetWrapper(rs);
 		Object[] o = reader.getRows();
 
 		Object expected = "Anika Hanson";
 		Object actual = o[0].getClass().getField("name").get(o[0]).toString();
-		assertEquals(expected, actual);
+		assertThat(actual, is(equalTo(expected)));
 
 		expected = new BigDecimal(25);
 		actual =  o[1].getClass().getField("age").get(o[1]);
-		assertEquals(expected, actual);
+		assertThat(actual, is(equalTo(expected)));
 
 		expected = 1;
 		actual = o[0].getClass().getField("id").get(o[0]);
-		assertEquals(expected, actual);
+		assertThat(actual, is(equalTo(expected)));
 
 		expected = 2;
 		actual = o[1].getClass().getField("id").get(o[1]);
-		assertEquals(expected, actual);
+		assertThat(actual, is(equalTo(expected)));
 	}
 
-	public final void testGetObjectWithMissingColumn() throws Exception {
+	@Test
+	public void testGetObjectWithMissingColumn() throws Exception {
 		final ResultSet rs = mock(ResultSet.class);
 		final ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-		checking(new Expectations() {{
-			oneOf(rs).getMetaData(); will(returnValue(meta));
+		when(rs.getMetaData()).thenReturn(meta);
 
-			oneOf(meta).getColumnCount(); will(returnValue(3));
-			oneOf(meta).getColumnName(1); will(returnValue("id"));
-			oneOf(meta).getColumnName(2); will(returnValue("name"));
-			oneOf(meta).getColumnName(3); will(returnValue("age"));
+		when(meta.getColumnCount()).thenReturn(3);
+		when(meta.getColumnName(1)).thenReturn("id");
+		when(meta.getColumnName(2)).thenReturn("name");
+		when(meta.getColumnName(3)).thenReturn("age");
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(1));
-			oneOf(rs).getObject(2); will(returnValue(new StringBuilder("Anika Hanson")));
-			oneOf(rs).getObject(3); will(returnValue(null));
+		when(rs.next()).thenReturn(true, true, false);
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(2));
-			oneOf(rs).getObject(2); will(returnValue(new StringBuilder("Angela Bennett")));
-			oneOf(rs).getObject(3); will(returnValue(null));
-
-			oneOf(rs).next(); will(returnValue(false));
-			oneOf(rs).next(); will(returnValue(false));
-		}});
+		when(rs.getObject(1)).thenReturn(1, 2);
+		when(rs.getObject(2)).thenReturn(new StringBuilder("Anika Hanson"), new StringBuilder("Angela Bennett"));
+		when(rs.getObject(3)).thenReturn(null);
 
 		ResultSetWrapper reader = new ResultSetWrapper(rs);
 		Object[] o = reader.getRows();
 
 		Object expected = "Anika Hanson";
 		Object actual = o[0].getClass().getField("name").get(o[0]).toString();
-		assertEquals(expected, actual);
+		assertThat(actual, is(equalTo(expected)));
 
-		expected = null;
 		actual = o[1].getClass().getField("age").get(o[1]);
-		assertEquals(expected, actual);
+		assertThat(actual, is(nullValue()));
 	}
 
-	public final void testGetObjectWithEmptyTable() throws SQLException {
+	@Test
+	public void testGetObjectWithEmptyTable() throws SQLException {
 		final ResultSet rs = mock(ResultSet.class);
 		final ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-		checking(new Expectations() {{
-			oneOf(rs).getMetaData(); will(returnValue(meta));
+		when(rs.getMetaData()).thenReturn(meta);
 
-			oneOf(meta).getColumnCount(); will(returnValue(3));
-			oneOf(meta).getColumnName(1); will(returnValue("id"));
-			oneOf(meta).getColumnName(2); will(returnValue("name"));
-			oneOf(meta).getColumnName(3); will(returnValue("age"));
+		when(meta.getColumnCount()).thenReturn(3);
+		when(meta.getColumnName(1)).thenReturn("id");
+		when(meta.getColumnName(2)).thenReturn("name");
+		when(meta.getColumnName(3)).thenReturn("age");
 
-			oneOf(rs).next(); will(returnValue(false));
-			oneOf(rs).next(); will(returnValue(false));
-		}});
+		when(rs.next()).thenReturn(false);
 
 		ResultSetWrapper reader = new ResultSetWrapper(rs);
 		Object[] o = reader.getRows();
 
-		assertEquals(0, o.length);
+		assertThat(o.length, is(equalTo((Object) 0)));
 	}
 
-	public final void testCreateObjectWithFloat() throws Exception {
+	@Test
+	public void testCreateObjectWithFloat() throws Exception {
 		final ResultSet rs = mock(ResultSet.class);
 		final ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-		checking(new Expectations() {{
-			oneOf(rs).getMetaData(); will(returnValue(meta));
+		when(rs.getMetaData()).thenReturn(meta);
 
-			oneOf(meta).getColumnCount(); will(returnValue(2));
-			oneOf(meta).getColumnName(1); will(returnValue("id"));
-			oneOf(meta).getColumnName(2); will(returnValue("value"));
+		when(meta.getColumnCount()).thenReturn(2);
+		when(meta.getColumnName(1)).thenReturn("id");
+		when(meta.getColumnName(2)).thenReturn("value");
 
-			oneOf(rs).next(); will(returnValue(true));
-			oneOf(rs).getObject(1); will(returnValue(2));
-			oneOf(rs).getObject(2); will(returnValue(Float.valueOf(2.5f)));
-		}});
+		when(rs.next()).thenReturn(true);
+		when(rs.getObject(1)).thenReturn(2);
+		when(rs.getObject(2)).thenReturn(2.5);
 
 		ResultSetWrapper reader = new ResultSetWrapper(rs);
 		Object o = reader.createContainerObject();
-		assertEquals(ScientificDouble.class, o.getClass().getField("value").getType());
+		assertThat(o.getClass().getField("value").getType(), (Matcher) is(equalTo(ScientificDouble.class)));
 	}
 }

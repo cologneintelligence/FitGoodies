@@ -19,31 +19,33 @@
 
 package de.cologneintelligence.fitgoodies.references.processors;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.references.CrossReference;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.references.CrossReference;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
-import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
-import de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
-
-/**
- *
- * @author jwierum
- */
 
 public class EmptyCrossReferenceProcessorTest extends FitGoodiesTestCase {
     private AbstractCrossReferenceProcessor processor;
 
-    @Override
-    public final void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         processor = new EmptyCrossReferenceProcessor();
     }
 
-    public final void testPattern() {
+    @Test
+    public void testPattern() {
         String pattern = processor.getPattern();
         pattern = "^\\$\\{" + pattern + "\\}$";
 
@@ -51,30 +53,32 @@ public class EmptyCrossReferenceProcessorTest extends FitGoodiesTestCase {
         Matcher m;
 
         m = regex.matcher("${empty()}");
-        assertTrue(m.find());
+        assertThat(m.find(), is(true));
 
         m = regex.matcher("${nonEmpty()}");
-        assertTrue(m.find());
+        assertThat(m.find(), is(true));
 
         m = regex.matcher("${testEmpty()}");
-        assertFalse(m.find());
+        assertThat(m.find(), is(false));
+
     }
 
     private void checkCr(final CrossReference cr, final String cmd) {
-        assertNull(cr.getParameter());
-        assertNull(cr.getNamespace());
-        assertEquals(cmd, cr.getCommand());
-        assertSame(processor, cr.getProcessor());
+        assertThat(cr.getParameter(), is(nullValue()));
+        assertThat(cr.getNamespace(), is(nullValue()));
+        assertThat(cr.getCommand(), is(equalTo(cmd)));
+        assertThat(cr.getProcessor(), is(sameInstance(processor)));
     }
 
-    public final void testExtraction() {
+    @Test
+    public void testExtraction() {
         CrossReference cr;
 
         cr = processor.extractCrossReference("empty()");
         checkCr(cr, "empty");
 
         cr = processor.extractCrossReference("empty2()");
-        assertNull(cr);
+        assertThat(cr, is(nullValue()));
 
         cr = processor.extractCrossReference("nonEmpty()");
         checkCr(cr, "nonEmpty");
@@ -84,14 +88,14 @@ public class EmptyCrossReferenceProcessorTest extends FitGoodiesTestCase {
             final String expected) {
 
         CrossReference cr = new CrossReference(command, null, null, null);
-        String actual = null;
+        String actual;
         try {
             processor.processMatch(cr, input);
-            fail("Expected CrossReferenceProcessorException");
+            Assert.fail("Expected CrossReferenceProcessorException");
         } catch (CrossReferenceProcessorShortcutException e) {
-            assertTrue(e.isOk());
+            assertThat(e.isOk(), is(true));
             actual = e.getMessage();
-            assertEquals(expected, actual);
+            assertThat(actual, is(equalTo(expected)));
         }
     }
 
@@ -99,18 +103,20 @@ public class EmptyCrossReferenceProcessorTest extends FitGoodiesTestCase {
             final String expected) {
 
         CrossReference cr = new CrossReference(command, null, null, null);
-        String actual = null;
+        String actual;
         try {
             processor.processMatch(cr, input);
-            fail("Expected CrossReferenceProcessorException");
+            Assert.fail("Expected CrossReferenceProcessorException");
         } catch (CrossReferenceProcessorShortcutException e) {
-            assertFalse(e.isOk());
+            assertThat(e.isOk(), is(false));
+
             actual = e.getMessage();
-            assertEquals(expected, actual);
+            assertThat(actual, is(equalTo(expected)));
         }
     }
 
-    public final void testReplacement() throws CrossReferenceProcessorShortcutException {
+    @Test
+    public void testReplacement() throws CrossReferenceProcessorShortcutException {
         checkProcessMatch("empty", "", "value is empty");
         checkProcessMatch("nonEmpty", "x", "value is non-empty");
         checkProcessMatch("nonEmpty", "y", "value is non-empty");
@@ -120,8 +126,9 @@ public class EmptyCrossReferenceProcessorTest extends FitGoodiesTestCase {
         checkProcessMatchWithError("nonEmpty", "", "value must not be empty!");
     }
 
-    public final void testWrongMatch() throws CrossReferenceProcessorShortcutException {
+    @Test
+    public void testWrongMatch() throws CrossReferenceProcessorShortcutException {
         CrossReference cr = new CrossReference("wrongCommand", null, null, null);
-        assertNull(processor.processMatch(cr, "nothing"));
+        assertThat(processor.processMatch(cr, "nothing"), is(nullValue()));
     }
 }

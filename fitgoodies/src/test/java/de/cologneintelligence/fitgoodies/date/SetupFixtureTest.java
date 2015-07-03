@@ -19,29 +19,30 @@
 
 package de.cologneintelligence.fitgoodies.date;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import fit.Parse;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.text.ParseException;
 import java.util.Locale;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.date.SetupFixture;
-import de.cologneintelligence.fitgoodies.date.SetupHelper;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
-import fit.Parse;
 
-/**
- * @author jwierum
- */
 public class SetupFixtureTest extends FitGoodiesTestCase {
     private SetupFixture fixture;
 
-    @Override
-    public final void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         fixture = new SetupFixture();
     }
 
-    public final void testSetup() throws ParseException {
+    @Test
+    public void testSetup() throws ParseException {
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
 
         Parse table = new Parse("<table>"
@@ -52,9 +53,9 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.exceptions);
-        assertEquals("hh:mm:ss", helper.getFormat());
-        assertEquals(Locale.GERMANY, helper.getLocale());
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(helper.getFormat(), is(equalTo("hh:mm:ss")));
+        assertThat(helper.getLocale(), is(equalTo(Locale.GERMANY)));
 
         table = new Parse("<table>"
                 + "<tr><td>ignore</td></tr>"
@@ -64,8 +65,8 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.exceptions);
-        assertEquals("MM/dd/yyyy", helper.getFormat());
-        assertEquals(Locale.US, helper.getLocale());
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(helper.getFormat(), is(equalTo("MM/dd/yyyy")));
+        assertThat(helper.getLocale(), is(equalTo(Locale.US)));
     }
 }

@@ -18,21 +18,23 @@
 
 
 package de.cologneintelligence.fitgoodies.references.processors;
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.references.processors.NamespaceHashMap;
 
-/**
- *
- * @author jwierum
- */
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+
+
 
 public class NamespaceHashMapTest extends FitGoodiesTestCase {
 	private final NamespaceHashMap<String> hm = new NamespaceHashMap<String>();
 
-	@Override
-	public final void setUp() throws Exception {
-		super.setUp();
-
+	@Before
+	public void setUp() throws Exception {
 		hm.put("ns1", "key1", "val1");
 		hm.put("ns1", "key2", "val2");
 		hm.put("ns1", "key1", "val3");
@@ -40,30 +42,33 @@ public class NamespaceHashMapTest extends FitGoodiesTestCase {
 		hm.put("ns2", "key1", "val7");
 	}
 
-	public final void testSize() {
-		assertEquals(3, hm.size());
+	@Test
+	public void testSize() {
+		assertThat(hm.size(), is(equalTo((Object) 3)));
 
 		hm.put("ns1", "key3", "val4");
-		assertEquals(4, hm.size());
+		assertThat(hm.size(), is(equalTo((Object) 4)));
 	}
 
-	public final void testDelete() {
+	@Test
+	public void testDelete() {
 		String actual = hm.delete("ns1", "key1");
-		assertEquals("val3", actual);
-		assertEquals(2, hm.size());
+		assertThat(actual, is(equalTo("val3")));
+		assertThat(hm.size(), is(equalTo((Object) 2)));
 
 		actual = hm.delete("neverbeenhere", "neverbeenthere");
-		assertNull(actual);
+		assertThat(actual, is(nullValue()));
 	}
 
-	public final void testGet() {
+	@Test
+	public void testGet() {
 		String actual = hm.get("ns1", "key1");
-		assertEquals("val3", actual);
+		assertThat(actual, is(equalTo("val3")));
 
 		actual = hm.get("ns2", "key1");
-		assertEquals("val7", actual);
+		assertThat(actual, is(equalTo("val7")));
 
 		actual = hm.get("ns9", "key99");
-		assertNull(actual);
+		assertThat(actual, is(nullValue()));
 	}
 }

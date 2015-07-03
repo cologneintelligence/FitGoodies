@@ -19,18 +19,25 @@
 
 package de.cologneintelligence.fitgoodies.util;
 
-import java.text.ParseException;
-
 import de.cologneintelligence.fitgoodies.ColumnFixture;
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.adapters.CachingTypeAdapter;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import fit.Parse;
 import fit.TypeAdapter;
+import org.hamcrest.Matcher;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * @author jwierum
- */
+import java.text.ParseException;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+
+
 public final class FixtureToolsParserTest extends FitGoodiesTestCase {
 	public static class DummyFixture extends ColumnFixture {
 		public String value = "xyz";
@@ -44,9 +51,8 @@ public final class FixtureToolsParserTest extends FitGoodiesTestCase {
 	private TypeAdapter taMethod;
 	private TypeAdapter taField;
 
-	@Override
+	@Before
 	public void setUp() throws Exception {
-		super.setUp();
 		dummy = new DummyFixture();
 		taMethod = TypeAdapter.on(dummy,
 				DummyFixture.class.getMethod("getValue", new Class<?>[]{}));
@@ -54,51 +60,54 @@ public final class FixtureToolsParserTest extends FitGoodiesTestCase {
 				DummyFixture.class.getField("value"));
 	}
 
+	@Test
 	public void testCachedAdapter() throws ParseException {
 		Parse cell = new Parse("<td>x</td>", new String[]{"td"});
 		TypeAdapter ta = FixtureTools.processCell(cell, taMethod, dummy, new CrossReferenceHelper());
-		assertEquals(ta.getClass(), CachingTypeAdapter.class);
+		assertThat(CachingTypeAdapter.class, (Matcher) is(equalTo(ta.getClass())));
 
 		cell = new Parse("<td>another value</td>", new String[]{"td"});
 		ta = FixtureTools.processCell(cell, taMethod, dummy, new CrossReferenceHelper());
-		assertEquals(ta.getClass(), CachingTypeAdapter.class);
+		assertThat(CachingTypeAdapter.class, (Matcher) is(equalTo(ta.getClass())));
 	}
 
+	@Test
 	public void testProcessWithPositiveShortcuts() throws ParseException {
 		Parse cell = new Parse("<td>${nonEmpty()}</td>", new String[]{"td"});
 		TypeAdapter ta = FixtureTools.processCell(cell, taField, dummy, new CrossReferenceHelper());
 
-		assertNull(ta);
-		assertContains("empty",  cell.text());
+		assertThat(ta, is(nullValue()));
+		assertThat(cell.text(), containsString("empty"));
 
 		cell = new Parse("<td>${nonEmpty()}</td>", new String[]{"td"});
 		dummy.value = null;
 		ta = FixtureTools.processCell(cell, taField, dummy, new CrossReferenceHelper());
 
-		assertNull(ta);
-		assertContains("(null)", cell.text());
-		assertContains("value must not be empty", cell.text());
+		assertThat(ta, is(nullValue()));
+		assertThat(cell.text(), containsString("(null)"));
+		assertThat(cell.text(), containsString("value must not be empty"));
 	}
 
+	@Test
 	public void testProcessWithNegativeShortcuts()  throws ParseException {
 		Parse cell = new Parse("<td>${empty()}</td>", new String[]{"td"});
 		TypeAdapter ta = FixtureTools.processCell(cell, taField, dummy, new CrossReferenceHelper());
 
-		assertNull(ta);
-		assertContains("value must be empty", cell.text());
+		assertThat(ta, is(nullValue()));
+		assertThat(cell.text(), containsString("value must be empty"));
 
 		cell = new Parse("<td>${empty()}</td>", new String[]{"td"});
 		dummy.value = null;
 		ta = FixtureTools.processCell(cell, taField, dummy, new CrossReferenceHelper());
-		assertNull(ta);
-		assertTrue(cell.text().startsWith("(null)"));
-		assertContains("value is empty", cell.text());
+		assertThat(ta, is(nullValue()));
+		assertThat(cell.text().startsWith("(null)"), is(true));
+		assertThat(cell.text(), containsString("value is empty"));
 
 
 		cell = new Parse("<td>${empty()}</td>", new String[]{"td"});
 		dummy.value = "";
 		ta = FixtureTools.processCell(cell, taField, dummy, new CrossReferenceHelper());
-		assertNull(ta);
-		assertContains("value is empty", cell.text());
+		assertThat(ta, is(nullValue()));
+		assertThat(cell.text(), containsString("value is empty"));
 	}
 }

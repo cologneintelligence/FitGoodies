@@ -28,19 +28,17 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.jmock.Mockery;
+import static org.mockito.Mockito.mock;
 
 public class DriverMock implements Driver {
     private static Connection lastReturnedConnection;
-    private final Mockery context;
 
     public static void setLastReturnedConnection(final Connection connection) {
         lastReturnedConnection = connection;
     }
 
     public DriverMock() {
-        context = new Mockery();
-        Connection connection = context.mock(Connection.class);
+        Connection connection = mock(Connection.class);
         setLastReturnedConnection(connection);
     }
 

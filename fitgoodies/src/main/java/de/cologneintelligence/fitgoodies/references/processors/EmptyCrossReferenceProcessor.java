@@ -26,8 +26,6 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShort
  * Processes ${empty()} and ${nonEmpty()}.
  * It just checks whether the object contains any value.
  *
- * @author jwierum
- * @version $Id$
  */
 public class EmptyCrossReferenceProcessor extends AbstractCrossReferenceProcessor {
 	private static final String PATTERN = "(nonEmpty|empty)\\(\\)";

@@ -61,7 +61,6 @@ import fit.TypeAdapter;
  * <tr><td>subject</td><td>regex</td><td>sp.m</td></tr>
  * </table>
  *
- * @author jwierum
  */
 public class MailFixture extends Fixture {
     private final MessageProvider provider;

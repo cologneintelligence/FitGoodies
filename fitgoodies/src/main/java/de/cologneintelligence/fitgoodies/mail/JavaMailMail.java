@@ -35,8 +35,6 @@ import javax.mail.internet.MimePart;
 /**
  * Implementation of {@link Mail} which processes JavaMail mails.
  *
- * @author jwierum
- * @version $Id$
  */
 public class JavaMailMail implements Mail {
 	private final Message message;

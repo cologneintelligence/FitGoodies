@@ -24,8 +24,6 @@ import de.cologneintelligence.fitgoodies.ScientificDouble;
 /**
  * Parser which is able to convert a string into a <code>ScientificDoubleParser</code>.
  *
- * @author jwierum
- * @version $Id$
  */
 public class ScientificDoubleParser implements Parser<ScientificDouble> {
 	/**

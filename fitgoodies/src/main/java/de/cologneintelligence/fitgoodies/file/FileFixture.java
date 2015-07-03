@@ -22,6 +22,8 @@ package de.cologneintelligence.fitgoodies.file;
 import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
+import java.io.File;
+
 /**
  * The file fixture is used to select files via HTML:
  *
@@ -35,14 +37,13 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
  * The fixture sets the values in {@link FileFixtureHelper}.
  *
  * @see FileFixtureHelper FileFixtureHelper
- * @author jwierum
  */
 public class FileFixture extends ActionFixture {
     /**
      * Sets the filename pattern to <code>pattern</code>.
      * @param pattern pattern to use
      */
-    public final void pattern(final String pattern) {
+    public void pattern(final String pattern) {
         FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         helper.setPattern(pattern);
     }
@@ -75,16 +76,16 @@ public class FileFixture extends ActionFixture {
      * Sets the directory to <code>directory</code>.
      * @param directory directory to use
      */
-    public final void directory(final String directory) {
+    public void directory(final String directory) {
         FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-        helper.setProvider(new FileSystemDirectoryProvider(directory));
+        helper.setDirectory(new File(directory));
     }
 
     /**
      * Sets the encoding to <code>encoding</code>.
      * @param encoding encoding to use
      */
-    public final void encoding(final String encoding) {
+    public void encoding(final String encoding) {
         FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         helper.setEncoding(encoding);
     }

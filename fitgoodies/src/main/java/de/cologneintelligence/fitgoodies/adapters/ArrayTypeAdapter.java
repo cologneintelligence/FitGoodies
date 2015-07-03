@@ -29,8 +29,6 @@ import fit.TypeAdapter;
  * If the destination type is an array, this adapter handles it.
  * It splits the input at commas and converts each part into an array element.
  *
- * @author jwierum
- * @version $Id$
  */
 public class ArrayTypeAdapter extends TypeAdapter {
     private final String parameter;

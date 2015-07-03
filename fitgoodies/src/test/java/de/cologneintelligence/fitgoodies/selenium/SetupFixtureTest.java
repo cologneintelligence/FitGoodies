@@ -19,39 +19,40 @@
 
 package de.cologneintelligence.fitgoodies.selenium;
 
-import org.jmock.Expectations;
-
 import com.thoughtworks.selenium.CommandProcessor;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.selenium.command.SeleniumFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * @author kmussawisade
- */
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
 public class SetupFixtureTest extends FitGoodiesTestCase {
     private SetupHelper helper;
     private SeleniumFactory factory;
     private CommandProcessor commandProcessor;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
         helper = DependencyManager.getOrCreate(SetupHelper.class);
         factory = mock(SeleniumFactory.class);
         commandProcessor = mock(CommandProcessor.class);
         DependencyManager.inject(SeleniumFactory.class, factory);
 
-        checking(new Expectations() {{
-            allowing(factory).createCommandProcessor("localhost", 4444, "*firefox", "http://localhost");
-            will(returnValue(commandProcessor));
-        }});
+        when(factory.createCommandProcessor("localhost", 4444, "*firefox", "http://localhost"))
+            .thenReturn(commandProcessor);
     }
 
-    public final void testHelperInteraction() throws Exception {
+    @Test
+    public void testHelperInteraction() throws Exception {
         final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>serverHost</td><td>server-host</td></tr>"
                 + "<tr><td>serverPort</td><td>4444</td></tr>"
@@ -67,46 +68,43 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
                 + "</table>"
                 );
 
-        checking(new Expectations(){{
-            oneOf(commandProcessor).start("start config");
-            oneOf(commandProcessor).doCommand("setTimeout", new String[]{"3000"});
-        }});
-
-        helper.setCommandProcessor(commandProcessor );
+        helper.setCommandProcessor(commandProcessor);
 
         final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.exceptions);
-        assertEquals("server-host", helper.getServerHost());
-        assertEquals(4444, helper.getServerPort());
-        assertEquals("browser-Start-Command", helper.getBrowserStartCommand());
-        assertEquals("browser-URL", helper.getBrowserURL());
-        assertEquals(Integer.valueOf(400), helper.getSpeed());
-        assertEquals(3000L, helper.getTimeout());
-        assertEquals(40L, helper.getRetryTimeout());
-        assertEquals(10L, helper.getRetryInterval());
-        assertEquals(true, helper.getTakeScreenshots());
-        assertEquals(500L, helper.sleepBeforeScreenshot());
-        assertNotNull(helper.getCommandProcessor());
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(helper.getServerHost(), is(equalTo("server-host")));
+        assertThat(helper.getServerPort(), is(equalTo((Object) 4444)));
+        assertThat(helper.getBrowserStartCommand(), is(equalTo("browser-Start-Command")));
+        assertThat(helper.getBrowserURL(), is(equalTo("browser-URL")));
+        assertThat(helper.getSpeed(), is(equalTo(Integer.valueOf(400))));
+        assertThat(helper.getTimeout(), is(equalTo((Object) 3000L)));
+        assertThat(helper.getRetryTimeout(), is(equalTo((Object) 40L)));
+        assertThat(helper.getRetryInterval(), is(equalTo((Object) 10L)));
+        assertThat(helper.getTakeScreenshots(), is(true));
+        assertThat(helper.sleepBeforeScreenshot(), is(equalTo((Object) 500L)));
+        assertThat(helper.getCommandProcessor(), not(CoreMatchers.is(nullValue())));
+
+        verify(commandProcessor).start("start config");
+        verify(commandProcessor).doCommand("setTimeout", new String[]{"3000"});
     }
 
-    public final void testHelperInteractionStopProcessor() throws Exception {
+    @Test
+    public void testHelperInteractionStopProcessor() throws Exception {
         final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>stop</td><td></td></tr>"
                 + "</table>"
                 );
 
-        checking(new Expectations(){{
-            oneOf(commandProcessor).stop();
-        }});
-
         helper.setCommandProcessor(commandProcessor );
 
         final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.exceptions);
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+
+        verify(commandProcessor).stop();
     }
 
 }

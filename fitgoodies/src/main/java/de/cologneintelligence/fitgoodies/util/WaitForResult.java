@@ -29,7 +29,6 @@ import java.lang.reflect.Method;
  * The method must have the signature <code>boolean method()</code>.
  *
  * @author kmussawisade
- * @version $Id$
  */
 public final class WaitForResult {
 	private final SystemTime systemTime;

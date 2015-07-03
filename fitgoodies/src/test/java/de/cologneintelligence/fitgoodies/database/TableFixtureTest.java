@@ -19,30 +19,31 @@
 
 package de.cologneintelligence.fitgoodies.database;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.ScientificDouble;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import fit.Parse;
+import org.hamcrest.Matcher;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.ScientificDouble;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
 
-/**
- *
- * @author jwierum
- */
 public class TableFixtureTest extends FitGoodiesTestCase {
     private TableFixture fixture;
     private SetupHelper helper;
 
-    @Override
-    public final void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setUser("user");
         helper.setPassword("pw");
@@ -52,41 +53,38 @@ public class TableFixtureTest extends FitGoodiesTestCase {
         fixture = new TableFixture();
     }
 
-    public final void testGetResultSet() throws SQLException {
+    @Test
+    public void testGetResultSet() throws SQLException {
         final Connection conn = mock(Connection.class);
         final Statement statement = mock(Statement.class);
         final ResultSet resultSet = mock(ResultSet.class);
 
-        checking(new Expectations() {{
-            oneOf(conn).createStatement(); will(returnValue(statement));
-            oneOf(statement).executeQuery("SELECT * FROM table");
-            will(returnValue(resultSet));
-        }});
+        when(conn.createStatement()).thenReturn(statement);
+        when(statement.executeQuery("SELECT * FROM table")).thenReturn(resultSet);
 
         fixture.setConnection(conn);
         final ResultSet actual = fixture.getResultSet("table", null);
 
-        assertSame(resultSet, actual);
+        assertThat(actual, is(sameInstance(resultSet)));
     }
 
-    public final void testGetResultSetWithWhere() throws SQLException {
+    @Test
+    public void testGetResultSetWithWhere() throws SQLException {
         final Connection conn = mock(Connection.class);
         final Statement statement = mock(Statement.class);
         final ResultSet resultSet = mock(ResultSet.class);
 
-        checking(new Expectations() {{
-            oneOf(conn).createStatement(); will(returnValue(statement));
-            oneOf(statement).executeQuery("SELECT * FROM tbl2 WHERE x > 3");
-            will(returnValue(resultSet));
-        }});
+        when(conn.createStatement()).thenReturn(statement);
+        when(statement.executeQuery("SELECT * FROM tbl2 WHERE x > 3")).thenReturn(resultSet);
 
         fixture.setConnection(conn);
         final ResultSet actual = fixture.getResultSet("tbl2", "x > 3");
 
-        assertSame(resultSet, actual);
+        assertThat(actual, is(sameInstance(resultSet)));
     }
 
-    public final void testDoTable() throws Exception {
+    @Test
+    public void testDoTable() throws Exception {
         final Parse table = new Parse(
                 "<table>"
                         + "<tr><td>ignore</td></tr>"
@@ -94,31 +92,31 @@ public class TableFixtureTest extends FitGoodiesTestCase {
                         + "<tr><td>Anika Hanson</td><td>30</td></tr>"
                         + "</table>");
 
-        final Mockery context = new Mockery();
         fixture.setParams(new String[]{"table=tbl7"});
-        fixture.setConnection(ResultSetMockGenerator.mkConnection(context,
+        ResultSetMockGenerator mocker = new ResultSetMockGenerator(
                 "tbl7",
                 new String[]{"name", "age"},
                 new Object[][]{
-                new Object[] {"Angela Bennett", 32},
-                new Object[] {"Anika Hanson", 30}
-        }
-                ));
+                        new Object[]{"Angela Bennett", 32},
+                        new Object[]{"Anika Hanson", 30}});
+
+        fixture.setConnection(mocker.getConnection());
         fixture.doTable(table);
-        assertEquals("tbl7", fixture.getTable());
+        assertThat(fixture.getTable(), is(equalTo("tbl7")));
 
         final Class<?> c = fixture.getTargetClass();
 
-        assertSame(String.class, c.getField("name").getType());
-        assertSame(Integer.class, c.getField("age").getType());
+        assertThat(c.getField("name").getType(), (Matcher) is(sameInstance(String.class)));
+        assertThat(c.getField("age").getType(), (Matcher) is(sameInstance(Integer.class)));
 
-        assertEquals(1, fixture.counts.wrong);
-        assertEquals(2, fixture.counts.right);
+        assertThat(fixture.counts.wrong, is(equalTo((Object) 1)));
+        assertThat(fixture.counts.right, is(equalTo((Object) 2)));
 
-        context.assertIsSatisfied();
+        mocker.verifyInteractions();
     }
 
-    public final void testDoTable2() throws Exception {
+    @Test
+    public void testDoTable2() throws Exception {
         final Parse table = new Parse(
                 "<table>"
                         + "<tr><td>ignore</td></tr>"
@@ -126,69 +124,70 @@ public class TableFixtureTest extends FitGoodiesTestCase {
                         + "<tr><td>42.3</td></tr>"
                         + "</table>");
 
-        final Mockery context = new Mockery();
         fixture.setParams(new String[]{"table=table1"});
-        fixture.setConnection(ResultSetMockGenerator.mkConnection(context,
+        ResultSetMockGenerator mocker = new ResultSetMockGenerator(
                 "table1",
                 new String[]{"age"},
                 new Object[][]{
-                new Object[] {42.3}
-        }
-                ));
+                        new Object[]{42.3}
+                });
+
+        fixture.setConnection(mocker.getConnection());
         fixture.doTable(table);
-        assertEquals("table1", fixture.getTable());
+        assertThat(fixture.getTable(), is(equalTo("table1")));
 
         final Class<?> c = fixture.getTargetClass();
-        assertSame(ScientificDouble.class, c.getField("age").getType());
-        assertEquals(1, fixture.counts.right);
-        context.assertIsSatisfied();
+        assertThat(c.getField("age").getType(), (Matcher) is(sameInstance(ScientificDouble.class)));
+        assertThat(fixture.counts.right, is(equalTo((Object) 1)));
+        mocker.verifyInteractions();
     }
 
-    public final void testConstructor() {
-        final Mockery context = new Mockery();
-        final Connection conn = (ResultSetMockGenerator.mkConnection(context,
+    @Test
+    public void testConstructor() {
+        ResultSetMockGenerator mocker = new ResultSetMockGenerator(
                 null,
                 new String[]{},
                 new Object[][]{}
-                ));
+        );
 
-        fixture = new TableFixture(conn);
-        assertSame(conn, fixture.getConnection());
+        fixture = new TableFixture(mocker.getConnection());
+        assertThat(fixture.getConnection(), is(sameInstance(mocker.getConnection())));
     }
 
-    public final void testHelperInteraction() throws Exception {
-        assertSame(helper.getConnection(), fixture.getConnection());
+    @Test
+    public void testHelperInteraction() throws Exception {
+        assertThat(fixture.getConnection(), is(sameInstance(helper.getConnection())));
         DriverMock.cleanup();
     }
 
-    public final void testWhereClause() throws Exception {
+    @Test
+    public void testWhereClause() throws Exception {
         final Parse table = new Parse(
                 "<table>"
                         + "<tr><td>ignore</td></tr>"
                         + "<tr><td>x</td></tr>"
                         + "</table>");
 
-        final Mockery context = new Mockery();
-        final Connection conn = (ResultSetMockGenerator.mkConnection(context,
+        ResultSetMockGenerator mocker = new ResultSetMockGenerator(
                 "tbl4", "x > 7",
                 new String[]{},
-                new Object[][]{}
-                ));
+                new Object[][]{});
 
-        fixture.setConnection(conn);
+        fixture.setConnection(mocker.getConnection());
         fixture.setParams(new String[]{"table=tbl4", "where=x > 7"});
         fixture.doTable(table);
         fixture.getConnection();
-        context.assertIsSatisfied();
+        mocker.verifyInteractions();
     }
 
-    public final void testError() throws Exception {
+    @Test
+    public void testError() throws Exception {
         final Parse table = new Parse(
                 "<table>"
                         + "<tr><td>ignore</td></tr>"
                         + "<tr><td>x</td></tr>"
                         + "</table>");
         fixture.doTable(table);
-        assertEquals(1, fixture.counts.exceptions);
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
     }
 }

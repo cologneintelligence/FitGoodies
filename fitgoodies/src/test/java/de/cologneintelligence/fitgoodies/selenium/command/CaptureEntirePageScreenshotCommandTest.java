@@ -18,23 +18,28 @@
 
 package de.cologneintelligence.fitgoodies.selenium.command;
 
-import org.jmock.Expectations;
-
 import com.thoughtworks.selenium.CommandProcessor;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class CaptureEntirePageScreenshotCommandTest extends FitGoodiesTestCase {
     private CommandProcessor commandProcessor;
-    private WrappedCommand command;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         commandProcessor = mock(CommandProcessor.class);
     }
 
+    @Test
     public void testDoCommand() {
         SetupHelper helper = new SetupHelper();
 
@@ -42,13 +47,10 @@ public class CaptureEntirePageScreenshotCommandTest extends FitGoodiesTestCase {
         helper.setSleepBeforeScreenshotMillis(1L);
 
         final String[] args = new String[]{"arg1", "arg2"};
-        command = CommandFactory.createCommand("captureEntirePageScreenshot", args, helper);
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("captureEntirePageScreenshot", args);
-            will(returnValue("OK"));
-        }});
+        WrappedCommand command = CommandFactory.createCommand("captureEntirePageScreenshot", args, helper);
+        when(commandProcessor.doCommand("captureEntirePageScreenshot", args)).thenReturn("OK");
 
-        assertEquals("OK", command.execute());
+        assertThat(command.execute(), is(equalTo("OK")));
     }
 
 }
