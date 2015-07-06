@@ -84,8 +84,8 @@ public class FitRunner {
         RunConfiguration runConfiguration = new RunConfiguration();
         List<FileInformation> files = parser.getFiles();
         runConfiguration.setSource(files.toArray(new FileInformation[files.size()]));
-        runConfiguration.setDestination(canonical(directoryHelper, parser.getDestinationDir()));
         runConfiguration.setEncoding(parser.getEncoding());
+        runConfiguration.setDestination(parser.getDestinationDir().getAbsolutePath());
         runConfiguration.setBaseDir(parser.getBaseDir());
 
         final FitRunner fitRunner = new FitRunner(directoryHelper, runConfiguration);
@@ -112,44 +112,34 @@ public class FitRunner {
     public boolean run(FitResultTable resultTable) throws IOException {
         boolean error = false;
 
+        //noinspection ResultOfMethodCallIgnored
         new File(runConfiguration.getDestination()).mkdirs();
 
         for (FileInformation file : runConfiguration.getSources()) {
 
             File outputFile;
-            if (directoryHelper.isSubDir(runConfiguration.getBaseDir(), file.getFile().getAbsoluteFile())) {
-                 String relPath = directoryHelper.abs2rel(runConfiguration.getBaseDir().getAbsolutePath(),
-                         file.getFile().getAbsolutePath());
-                 outputFile = new File(runConfiguration.getDestination(), relPath);
-             } else {
-                 outputFile = new File(runConfiguration.getDestination(), file.getFile().getAbsolutePath());
-             }
+            String relativeDestination;
+
+            if (directoryHelper.isSubDir(file.getFile().getAbsoluteFile(), runConfiguration.getBaseDir())) {
+                String baseDir = runConfiguration.getBaseDir().getAbsolutePath();
+                relativeDestination = directoryHelper.abs2rel(baseDir, file.getFile().getAbsolutePath());
+                outputFile = new File(runConfiguration.getDestination(), relativeDestination);
+            } else {
+                relativeDestination = file.getFile().getName();
+                outputFile = new File(runConfiguration.getDestination(), relativeDestination);
+            }
+
+            //noinspection ResultOfMethodCallIgnored
             outputFile.getParentFile().mkdirs();
-
-            String filePath = directoryHelper.abs2rel(System.getProperty("user.dir"), file.getFile().getAbsolutePath());
-
-            System.out.println(directoryHelper.abs2rel(System.getProperty("user.dir"), outputFile.getAbsolutePath()));
 
             FitFileRunner runner = new FitFileRunner();
             runner.setEncoding(runConfiguration.getEncoding());
             Counts result = runner.run(file.getFile(), outputFile);
 
             System.out.println(result);
+            resultTable.put(new File(relativeDestination), result);
 
-
-            System.out.println("This was: ");
-            System.out.println("filePath: " + filePath);
-            System.out.println("outputFile: " + outputFile.getPath());
-            System.out.println("file: " + file.getFile().getPath());
-
-
-            if (result != null && (result.exceptions > 0 || result.wrong > 0)) {
-                error = true;
-            }
-
-            String path = directoryHelper.abs2rel(filePath, file.getFile().getAbsolutePath());
-            System.out.println("path (result): " + path);
-            resultTable.put(new File(path), result);
+            error = error || (result != null && (result.exceptions > 0 || result.wrong > 0));
         }
 
         return error;

@@ -244,30 +244,6 @@ public class FileSystemDirectoryHelper {
     }
 
 
-    /**
-     * Checks whether a path is an absolute one.
-     * @param dirOrFile path to analyze
-     * @return <code>true</code> if the given path is absolute
-     */
-    public FileInformation[] getFileList(String dirOrFile) {
-        List<FileInformation> found = new LinkedList<FileInformation>();
-        recursiveAddFiles(new File(dirOrFile), found);
-        return found.toArray(new FileInformation[found.size()]);
-    }
-
-    private void recursiveAddFiles(File dirOrFile, List<FileInformation> found) {
-        if (dirOrFile.isFile()) {
-            found.add(new FileInformation(dirOrFile.getAbsoluteFile()));
-        } else if (dirOrFile.isDirectory()) {
-            final File[] children = dirOrFile.listFiles();
-            if (children != null) {
-                for (File child : children) {
-                    recursiveAddFiles(child, found);
-                }
-            }
-        }
-    }
-
     // FIXME: this method only exists for mocking in tests
     public File subdir(File baseDir, String file) {
         return new File(baseDir, file);

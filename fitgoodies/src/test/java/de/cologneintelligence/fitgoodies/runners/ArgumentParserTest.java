@@ -47,7 +47,7 @@ public class ArgumentParserTest extends FitGoodiesTestCase {
     public void simpleCall() {
         testParser(null, new String[]{"-d", "outdir", "-f", "in.html"},
                 "outdir", "utf-8",
-                "in.html");
+                new File("in.html").getAbsolutePath());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -59,35 +59,36 @@ public class ArgumentParserTest extends FitGoodiesTestCase {
     public void fileLong() {
         testParser(null, new String[]{"-d", "outdir", "--file", "in.html"},
                 "outdir", "utf-8",
-                "in.html");
+                new File("in.html").getAbsolutePath());
     }
 
     @Test
     public void outputLong() {
         testParser(null, new String[]{"--destination", "outdir", "--file", "in.html"},
                 "outdir", "utf-8",
-                "in.html");
+                new File("in.html").getAbsolutePath());
     }
 
     @Test
     public void multipleFiles() {
         testParser(null, new String[]{"-d", "outdir", "--file", "in.html", "-f", "file1.html", "--file", "other file.html"},
                 "outdir", "utf-8",
-                "in.html", "file1.html", "other file.html");
+                new File("in.html").getAbsolutePath(), new File("file1.html").getAbsolutePath(),
+                new File("other file.html").getAbsolutePath());
     }
 
     @Test
     public void setEncoding() {
         testParser(null, new String[]{"-d", "outdir", "-f", "in.html", "-e", "latin-1"},
                 "outdir", "latin-1",
-                "in.html");
+                new File("in.html").getAbsolutePath());
     }
 
     @Test
     public void setEncodingLong() {
         testParser(null, new String[]{"-d", "outdir", "-f", "in.html", "--encoding", "latin-1"},
                 "outdir", "latin-1",
-                "in.html");
+                new File("in.html").getAbsolutePath());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -111,8 +112,10 @@ public class ArgumentParserTest extends FitGoodiesTestCase {
         when(fsHelper.rel2abs(dir.getAbsolutePath(), "dir1")).thenReturn(dir1);
         when(fsHelper.rel2abs(dir.getAbsolutePath(), "dir2")).thenReturn(dir2);
 
-        testParser(dir, new String[]{"-d", "outdir", "-s", "dir2"},
-                "outdir", "utf-8", "dir2/f2.html", "dir2/f3.html");
+        ArgumentParser parser = testParser(dir, new String[]{"-d", "outdir2", "-s", "dir1"},
+                "outdir2", "utf-8", "dir1/f1.html");
+        assertThat(parser.getBaseDir().getName(), equalTo("dir1"));
+
     }
 
     @Test
@@ -124,8 +127,9 @@ public class ArgumentParserTest extends FitGoodiesTestCase {
         when(fsHelper.rel2abs(dir.getAbsolutePath(), "dir1")).thenReturn(dir1);
         when(fsHelper.rel2abs(dir.getAbsolutePath(), "dir2")).thenReturn(dir2);
 
-        testParser(dir, new String[]{"-d", "outdir", "--source", "dir2"},
+        ArgumentParser parser = testParser(dir, new String[]{"-d", "outdir", "--source", "dir2"},
                 "outdir", "utf-8", "dir2/f2.html", "dir2/f3.html");
+        assertThat(parser.getBaseDir().getName(), equalTo("dir2"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -166,11 +170,11 @@ public class ArgumentParserTest extends FitGoodiesTestCase {
         new ArgumentParser(dir, fsHelper).parse(new String[]{"-d", "outdir", "-s", "dir", "--file", "file1", "-o", "limit"});
     }
 
-    private void testParser(File baseDir, String[] arguments, String destinationDir, String encoding, String ... files) {
+    private ArgumentParser testParser(File baseDir, String[] arguments, String destinationDir, String encoding, String... files) {
         ArgumentParser parser = new ArgumentParser(baseDir, fsHelper);
         parser.parse(arguments);
 
-        assertThat(parser.getDestinationDir().getAbsolutePath(), is(equalTo(destinationDir)));
+        assertThat(parser.getDestinationDir().getAbsolutePath(), is(equalTo(new File(destinationDir).getAbsolutePath())));
         assertThat(parser.getEncoding(), is(equalTo(encoding)));
 
         List<Matcher<FileInformation>> matchers = new ArrayList<Matcher<FileInformation>>();
@@ -179,6 +183,7 @@ public class ArgumentParserTest extends FitGoodiesTestCase {
         }
 
         assertThat(parser.getFiles(), contains(matchers.toArray(new Matcher[matchers.size()])));
+        return parser;
     }
 
 

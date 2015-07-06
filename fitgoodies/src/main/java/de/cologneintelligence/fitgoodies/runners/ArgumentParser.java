@@ -28,7 +28,7 @@ import java.util.List;
 public class ArgumentParser {
     private static final String DEFAULT_ENCODING = "utf-8";
 
-    private final File baseDir;
+    private final File pwd;
     private File destinationDir;
     private String encoding;
     private List<FileInformation> files = new LinkedList<FileInformation>();
@@ -37,8 +37,8 @@ public class ArgumentParser {
     private File sourceDir;
     private boolean noExit;
 
-    public ArgumentParser(File baseDir, FileSystemDirectoryHelper fsHelper) {
-        this.baseDir = baseDir;
+    public ArgumentParser(File pwd, FileSystemDirectoryHelper fsHelper) {
+        this.pwd = pwd;
         this.fsHelper = fsHelper;
     }
 
@@ -87,7 +87,7 @@ public class ArgumentParser {
 
     private void addDirectory(String file) {
         finishDir();
-        sourceDir = fsHelper.rel2abs(baseDir.getAbsolutePath(), file);
+        sourceDir = fsHelper.rel2abs(pwd.getAbsolutePath(), file);
         currentDirFilter = new DirectoryFilter(sourceDir, fsHelper);
     }
 
@@ -125,7 +125,7 @@ public class ArgumentParser {
     }
 
     public File getBaseDir() {
-        return baseDir;
+        return sourceDir;
     }
 
     public boolean isNoExit() {
