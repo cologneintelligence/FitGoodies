@@ -127,7 +127,6 @@ public final class FitParseResult implements FitResult {
     public void replaceLastIn(final Parse row) {
         Parse table = makeTable();
 
-        System.out.println("Table: " + table + ", " + results);
         if (table != null) {
             table.last().more = row.more;
             row.more = table.more;
