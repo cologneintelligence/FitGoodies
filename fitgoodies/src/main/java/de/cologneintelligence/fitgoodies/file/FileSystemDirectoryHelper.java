@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 
 /**
@@ -46,7 +45,7 @@ public class FileSystemDirectoryHelper {
         if (pathWithoutPrefix.startsWith(prefix)) {
             pathWithoutPrefix = pathWithoutPrefix.substring(prefix.length());
 
-            while (pathWithoutPrefix.startsWith(File.separator)) {
+            while (pathWithoutPrefix.startsWith("/") || pathWithoutPrefix.startsWith("\\")) {
                 pathWithoutPrefix = pathWithoutPrefix.substring(1);
             }
         }
@@ -171,20 +170,20 @@ public class FileSystemDirectoryHelper {
     }
 
     private boolean isAbsolutePath(String path) {
-        return isWindowsDrive(path) || path.startsWith(File.separator);
+        return isWindowsDrive(path) || path.startsWith("\\") || path.startsWith("/");
     }
 
     private String[] getParts(final String path) {
         String newPath = path;
-        if (newPath.startsWith(File.separator)) {
+        if (newPath.startsWith("/") || newPath.startsWith("\\")) {
             newPath = newPath.substring(1);
         }
 
-        if (newPath.endsWith(File.separator)) {
+        if (newPath.endsWith("/") || newPath.endsWith("\\")) {
             newPath = newPath.substring(0, newPath.length() - 1);
         }
 
-        return newPath.split(Pattern.quote(File.separator));
+        return newPath.split("[/\\\\]");
     }
 
     /**
@@ -240,7 +239,7 @@ public class FileSystemDirectoryHelper {
      */
     public int dirDepth(final File path) {
         final String stringPath = path.getPath();
-        return stringPath.length() - stringPath.replaceAll(Pattern.quote(File.separator), "").length();
+        return stringPath.length() - stringPath.replaceAll("[/\\\\]", "").length();
     }
 
 

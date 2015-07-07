@@ -109,7 +109,7 @@ public class FitRunner {
         throw t;
     }
 
-    public boolean run(FitResultTable resultTable) throws IOException {
+    public boolean run(FitResult resultTable) throws IOException {
         boolean error = false;
 
         //noinspection ResultOfMethodCallIgnored

@@ -117,15 +117,17 @@ public class RunFixture extends ActionFixture {
      * @throws Exception propagated to fit
      */
     public void file(final String fileName) throws Exception {
-        File in = thisDir.getAbsoluteFile();
+        String in = thisDir.getAbsolutePath();
         File out = outDir.getAbsoluteFile();
 
-        // TODO: this is not tested
+        //noinspection ResultOfMethodCallIgnored
         out.mkdirs();
-        Counts result = runner.run(dirHelper.subdir(in, fileName),
-                dirHelper.subdir(out, fileName));
 
-        generateResultRow(cells, fileName, result);
+        File inputFile = dirHelper.rel2abs(in, fileName);
+        File outputFile = dirHelper.subdir(out, inputFile.getName());
+        Counts result = runner.run(inputFile, outputFile);
+
+        generateResultRow(cells, inputFile.getName(), result);
         counts.tally(result);
     }
 
@@ -137,25 +139,21 @@ public class RunFixture extends ActionFixture {
      */
     // TODO: not tested?
     public void directory(final String dir) throws Exception {
-        File srcDir = new File(dir);
-        if (!srcDir.isAbsolute()) {
-            srcDir = new File(thisDir, dir);
-        }
+        File srcDir = dirHelper.rel2abs(thisDir.getAbsolutePath(), dir);
 
-        srcDir = srcDir.getAbsoluteFile();
-
-        FitParseResult results = new FitParseResult();
+        List<FileInformation> files = new DirectoryFilter(srcDir, dirHelper).getSelectedFiles();
 
         RunConfiguration runConfiguration = new RunConfiguration();
-
         runConfiguration.setEncoding(runner.getEncoding());
+        runConfiguration.setBaseDir(srcDir);
         runConfiguration.setDestination(outDir.getPath());
-        List<FileInformation> files = new DirectoryFilter(srcDir, dirHelper).getSelectedFiles();
         runConfiguration.setSource(files.toArray(new FileInformation[files.size()]));
+        System.out.println("Run: " + files + " in " + srcDir + " to " + outDir);
 
         final FitRunner fitRunner = new FitRunner(dirHelper, runConfiguration);
-        FitResultTable result = new FitResultTable(dirHelper);
-        fitRunner.run(result);
+
+        FitParseResult results = new FitParseResult();
+        fitRunner.run(results);
         results.replaceLastIn(thisRow);
         counts.tally(results.getCounts());
     }

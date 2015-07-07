@@ -20,7 +20,6 @@
 package de.cologneintelligence.fitgoodies.file;
 
 import java.io.*;
-import java.util.regex.Pattern;
 
 /**
  * Represents a file and provides information about it.
@@ -83,7 +82,7 @@ public class FileInformation {
     }
 
     public String[] getParts() {
-        return file.getAbsolutePath().split(Pattern.quote(File.separator), -1);
+        return file.getAbsolutePath().split("[/\\\\]", -1);
     }
 
     @Override

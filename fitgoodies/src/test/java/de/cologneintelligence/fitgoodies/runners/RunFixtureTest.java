@@ -45,10 +45,10 @@ public final class RunFixtureTest extends FitGoodiesTestCase {
         RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
         final Runner runner = mock(Runner.class);
 
-        File f1 = mock(File.class);
-        File f2 = mock(File.class);
-        File f3 = mock(File.class);
-        File f4 = mock(File.class);
+        File f1 = mock(File.class, "f1");
+        File f2 = mock(File.class, "f2");
+        File f3 = mock(File.class, "f3");
+        File f4 = mock(File.class, "f4");
 
         when(runner.run(f1, f2)).thenReturn(mkCounts(1, 2, 3, 0));
         when(runner.run(f3, f4)).thenReturn(mkCounts(5, 0, 7, 0));
@@ -59,23 +59,25 @@ public final class RunFixtureTest extends FitGoodiesTestCase {
         helper.setHelper(dirHelper);
         helper.setRunner(runner);
 
-        File inputDir = mock(File.class);
-        File outputDir = mock(File.class);
+        File inputDir = mock(File.class, "inputDir");
+        File outputDir = mock(File.class, "outputDir");
 
         when(helper.getResultFile().getParentFile()).thenReturn(outputDir);
         when(helper.getFile().getParentFile()).thenReturn(inputDir);
 
-        when(inputDir.getAbsoluteFile()).thenReturn(inputDir);
+        when(inputDir.getAbsolutePath()).thenReturn("abspath");
         when(outputDir.getAbsoluteFile()).thenReturn(outputDir);
 
-        when(dirHelper.subdir(inputDir, "file1.html")).thenReturn(f1);
+        when(f1.getName()).thenReturn("file1.html");
+        when(f3.getName()).thenReturn("file2.html");
+        when(dirHelper.rel2abs("abspath", "file1.html")).thenReturn(f1);
         when(dirHelper.subdir(outputDir, "file1.html")).thenReturn(f2);
-        when(dirHelper.subdir(inputDir, "../tests2/test2.html")).thenReturn(f3);
-        when(dirHelper.subdir(outputDir, "../tests2/test2.html")).thenReturn(f4);
+        when(dirHelper.rel2abs("abspath", "../tests2/file2.html")).thenReturn(f3);
+        when(dirHelper.subdir(outputDir, "file2.html")).thenReturn(f4);
 
         table = new Parse("<table><tr><td>ignored</td></tr>"
                 + "<tr><td>file</td><td>file1.html</td></tr>"
-                + "<tr><td>file</td><td>../tests2/test2.html</td></tr></table>");
+                + "<tr><td>file</td><td>../tests2/file2.html</td></tr></table>");
     }
 
     @Test
@@ -96,7 +98,7 @@ public final class RunFixtureTest extends FitGoodiesTestCase {
 
         assertThat(table.parts.more.parts.body, is(equalTo("<a href=\"file1.html\">file1.html</a>")));
         assertThat(table.parts.more.parts.more.body, is(equalTo("1 right, 2 wrong, 3 ignored, 0 exceptions")));
-        assertThat(table.parts.more.more.parts.body, is(equalTo("<a href=\"../tests2/test2.html\">../tests2/test2.html</a>")));
+        assertThat(table.parts.more.more.parts.body, is(equalTo("<a href=\"file2.html\">file2.html</a>")));
         assertThat(table.parts.more.more.parts.more.body, is(equalTo("5 right, 0 wrong, 7 ignored, 0 exceptions")));
 
         assertThat(table.parts.more.parts.more.tag.contains("ffcfcf"), is(true));
