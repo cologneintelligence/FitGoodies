@@ -56,30 +56,15 @@ public class FitRunner {
     }
 
     public static void main(final String[] args) throws Throwable {
-        ArgumentParser parser = new ArgumentParser(new File(System.getProperty("user.dir")),
-                new FileSystemDirectoryHelper());
+        FileSystemDirectoryHelper directoryHelper = new FileSystemDirectoryHelper();
+        ArgumentParser parser = new ArgumentParser(new File(System.getProperty("user.dir")), directoryHelper);
 
         try {
             parser.parse(args);
         } catch (IllegalArgumentException e) {
-            System.err.println("Error: " + e.getMessage());
-            System.err.println("");
-            System.err.println("Usage: FitRunner -d dir [-e encoding] [-f file] [-s dir [-o file1 ... fileN]]");
-            System.err.println("");
-            System.err.println("-d or --directory  Output directory");
-            System.err.println("-e or --encoding   Input and output encoding [default: utf-8]");
-            System.err.println("-f or --file       Parse a single file");
-            System.err.println("-s or --source     Source Directory");
-            System.err.println("-l or --limit      Only execute these files (in the last source)");
-            System.err.println("                   Automatically includes setup and teardown");
-            System.err.println("");
-            System.err.println("-f, -s and -l can be applied multiple times");
-            System.err.println("At least one -f or -s must be provided");
-
-            abort(parser, new IllegalArgumentException(e.getMessage()));
+            dieWithUsage(e);
         }
 
-        FileSystemDirectoryHelper directoryHelper = new FileSystemDirectoryHelper();
 
         RunConfiguration runConfiguration = new RunConfiguration();
         List<FileInformation> files = parser.getFiles();
@@ -95,16 +80,32 @@ public class FitRunner {
         fitRunner.writeResults(result);
 
         if (error) {
-            abort(parser, new AssertionError("Tests failed"));
+            abort(new AssertionError("Tests failed"));
         }
     }
 
-    private static void abort(ArgumentParser parser, Throwable t) throws Throwable {
-        if (!parser.isNoExit()) {
-            try {
-                System.exit(1);
-            } catch (SecurityException ignored) {
-            }
+    private static void dieWithUsage(IllegalArgumentException e) throws Throwable {
+        System.err.println("Error: " + e.getMessage());
+        System.err.println("");
+        System.err.println("Usage: FitRunner -d dir [-e encoding] [-f file] [-s dir [-o file1 ... fileN]]");
+        System.err.println("");
+        System.err.println("-d or --directory  Output directory");
+        System.err.println("-e or --encoding   Input and output encoding [default: utf-8]");
+        System.err.println("-f or --file       Parse a single file");
+        System.err.println("-s or --source     Source Directory");
+        System.err.println("-o or --inly       Only execute these files (in combination with -s)");
+        System.err.println("                   Automatically includes setup and teardown");
+        System.err.println("");
+        System.err.println("-f, -s and -l can be applied multiple times");
+        System.err.println("At least one -f or -s must be provided");
+
+        abort(new IllegalArgumentException(e.getMessage()));
+    }
+
+    private static void abort(Throwable t) throws Throwable {
+        try {
+            System.exit(1);
+        } catch (SecurityException ignored) {
         }
         throw t;
     }

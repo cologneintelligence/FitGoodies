@@ -52,6 +52,11 @@
       <artifactId>plexus-utils</artifactId>
       <version>3.0.17</version>
     </dependency>
+    <dependency>
+      <groupId>ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.7.0</version>
+    </dependency>
   </dependencies>
 
   <build>

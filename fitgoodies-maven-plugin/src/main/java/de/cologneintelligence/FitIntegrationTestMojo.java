@@ -10,30 +10,45 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.apache.tools.ant.util.JavaEnvUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 @Mojo(name = "integration-test",
         defaultPhase = LifecyclePhase.INTEGRATION_TEST,
         requiresDependencyResolution = ResolutionScope.TEST)
 public class FitIntegrationTestMojo extends AbstractMojo {
     public static final String FIT_MOJO_RESULT_FAILURE = "fit.mojo.result.failure";
+    public static final String MAIN_CLASS = "de.cologneintelligence.fitgoodies.runners.FitRunner";
 
-    @Parameter(defaultValue = "target/fit", property = "outputDir", required = true )
+    @Parameter(defaultValue = "target/fit", property = "outputDir", required = true)
     private File outputDirectory;
 
-    @Parameter(defaultValue = "src/test/fixtures", property="fixturesDir", required = true)
+    @Parameter(defaultValue = "src/test/fixtures", property = "fixturesDir", required = true)
     private File fixturesDirectory;
 
-    @Parameter(defaultValue = "UTF-8", property="project.build.sourceEncoding", required = false)
+    @Parameter(property = "limits", required = false)
+    private String[] limits = new String[0];
+
+    @Parameter(property = "additionalClasspathElements", required = false)
+    private File[] additionalClasspathElements = new File[0];
+
+    @Parameter(property = "forkJvmArgs", required = false)
+    private String[] jvmArgs = new String[0];
+
+    @Parameter(defaultValue = "UTF-8", property = "project.build.sourceEncoding", required = false)
     private String encoding;
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
@@ -43,8 +58,9 @@ public class FitIntegrationTestMojo extends AbstractMojo {
         getLog().info("Copy static resources into output directory");
         copyNonTestFiles(fixturesDirectory, outputDirectory);
         getLog().info("Running Tests");
-        ClassLoader loader = createClassloader();
-        runFit(loader);
+
+        URL[] classpath = createClasspath();
+        runFit(classpath);
     }
 
     private void copyNonTestFiles(File sourceDir, File targetDir) throws MojoExecutionException {
@@ -71,7 +87,7 @@ public class FitIntegrationTestMojo extends AbstractMojo {
         return !name.matches("(?i).*\\.html?$");
     }
 
-    private ClassLoader createClassloader() throws MojoExecutionException {
+    private URL[] createClasspath() throws MojoExecutionException {
         List<String> classpathElements = getClasspath();
         classpathElements.add(project.getBuild().getOutputDirectory());
         classpathElements.add(project.getBuild().getTestOutputDirectory());
@@ -82,20 +98,20 @@ public class FitIntegrationTestMojo extends AbstractMojo {
             try {
                 urls[i] = file.toURI().toURL();
             } catch (MalformedURLException e) {
-                throw new MojoExecutionException("Could not build classpath with '"+file+"'", e);
+                throw new MojoExecutionException("Could not build classpath with '" + file + "'", e);
             }
         }
 
-        return new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
+        return urls;
     }
 
-    private List<String> getClasspath() {
+    private List<String> getClasspath() throws MojoExecutionException {
         try {
             @SuppressWarnings("unchecked")
             final List<String> temp = project.getTestClasspathElements();
             return temp;
         } catch (DependencyResolutionRequiredException e) {
-            throw new RuntimeException("Could not determine runtime classpath", e);
+            throw new MojoExecutionException("Could not determine runtime classpath", e);
         }
     }
 
@@ -105,37 +121,118 @@ public class FitIntegrationTestMojo extends AbstractMojo {
         context.put(FIT_MOJO_RESULT_FAILURE, result);
     }
 
-    private void runFit(ClassLoader loader) throws MojoExecutionException, MojoFailureException {
-        Class<?> runner;
+    private void runFit(URL[] classpath) throws MojoExecutionException, MojoFailureException {
+        File bootJar;
         try {
-            runner = loader.loadClass("de.cologneintelligence.fitgoodies.runners.FitRunner");
-        } catch (ClassNotFoundException e) {
-            throw new MojoFailureException("FitGoodies must be in the projects test scope!", e);
+            bootJar = writeBootJar(createClassPathString(classpath));
+        } catch (IOException e) {
+            throw new MojoExecutionException("Could not write boot jar", e);
         }
 
-        final String[] methodArgs = {
-                "-e", encoding,
-                "-s", fixturesDirectory.getPath(),
-                "-d", outputDirectory.getPath(),
-                "--ne"
-        };
-
         try {
-            Method mainMethod = runner.getMethod("main", String[].class);
-            mainMethod.invoke(null, new Object[] {methodArgs});
-            saveResult(true);
-        } catch (NoSuchMethodException e) {
-            throw new MojoExecutionException("Error while running fit", e);
-        } catch (InvocationTargetException e) {
-            if (e.getTargetException() instanceof AssertionError) {
-                saveResult(false);
-                getLog().info("One or more fit test(s) failed. Will fail in verify phase!");
-            } else {
-                e.getTargetException().printStackTrace();
-                throw new MojoExecutionException("Error while running fit", e);
+            ProcessBuilder builder = prepareProcess(bootJar);
+            startProcess(builder);
+        } finally {
+            bootJar.delete();
+        }
+    }
+
+    private void startProcess(ProcessBuilder builder) throws MojoExecutionException {
+        try {
+            Process process = builder.start();
+
+            new StreamLogger(process.getErrorStream(), true, getLog()).start();
+            new StreamLogger(process.getInputStream(), false, getLog()).start();
+
+            int result = process.waitFor();
+
+            boolean success = result == 0;
+            saveResult(success);
+
+            if (success) {
+                getLog().info("One or more fit test(s) failed with return code " + result + ". Will fail in verify phase!");
             }
-        } catch (IllegalAccessException e) {
+
+        } catch (Exception e) {
             throw new MojoExecutionException("Error while running fit", e);
         }
+    }
+
+    private ProcessBuilder prepareProcess(File bootJar) throws MojoExecutionException {
+        try {
+            String executable = JavaEnvUtils.getJreExecutable("java");
+            List<String> args = createJavaArgs(executable, bootJar);
+            getLog().debug("Running process: " + args.toString());
+            System.out.println("Running process: " + args.toString());
+            return new ProcessBuilder(args)
+                    .directory(project.getBasedir());
+        } catch (Exception e) {
+            throw new MojoExecutionException("Error while preparing java process", e);
+        }
+    }
+
+    private List<String> createJavaArgs(String executable, File bootJar) throws URISyntaxException {
+
+        List<String> args = new LinkedList<String>();
+        args.add(executable);
+        args.add("-cp");
+        args.add(bootJar.getAbsolutePath());
+
+        args.addAll(Arrays.asList(jvmArgs));
+
+        args.add(MAIN_CLASS);
+
+        args.add("-d");
+        args.add(outputDirectory.getPath());
+        args.add("-e");
+        args.add(encoding);
+        args.add("-s");
+        args.add(fixturesDirectory.getPath());
+
+        for (String limit : limits) {
+            args.add("-o");
+            args.add(limit);
+        }
+
+        return args;
+    }
+
+    private String createClassPathString(URL[] classpath) {
+        StringBuilder classPathBuilder = new StringBuilder();
+
+        for (URL url : classpath) {
+            appendToClasspath(url, classPathBuilder);
+        }
+
+        for (File element : additionalClasspathElements) {
+            try {
+                appendToClasspath(element.toURI().toURL(), classPathBuilder);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Cannot convert file to url: " + element, e);
+            }
+        }
+
+        return classPathBuilder.toString();
+    }
+
+    private void appendToClasspath(URL url, StringBuilder classPathBuilder) {
+        if (classPathBuilder.length() > 0) {
+            classPathBuilder.append(' ');
+        }
+
+        classPathBuilder.append(url.toString());
+    }
+
+    public File writeBootJar(String classpath) throws IOException {
+        File bootJar = new File(outputDirectory, "boot.jar");
+
+        Manifest manifest = new Manifest();
+        manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        manifest.getMainAttributes().put(Attributes.Name.CLASS_PATH, classpath);
+
+        JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(bootJar), manifest);
+        jarOutputStream.close();
+
+        return bootJar;
     }
 }

@@ -35,7 +35,6 @@ public class ArgumentParser {
     private FileSystemDirectoryHelper fsHelper;
     private DirectoryFilter currentDirFilter;
     private File sourceDir;
-    private boolean noExit;
 
     public ArgumentParser(File pwd, FileSystemDirectoryHelper fsHelper) {
         this.pwd = pwd;
@@ -61,8 +60,8 @@ public class ArgumentParser {
                     throw new IllegalArgumentException("Limit must follow -s or -o");
                 }
                 addLimit(getOption(args, i, "l", null));
-            } else if ("--ne".equals(arg)) {
-                noExit = true;
+            } else {
+                throw new IllegalArgumentException("Unknown argument: " + arg);
             }
         }
 
@@ -78,7 +77,8 @@ public class ArgumentParser {
     }
 
     private void addLimit(String limit) {
-        currentDirFilter.addLimit(fsHelper.rel2abs(sourceDir.getAbsolutePath(), limit));
+        File absFile = fsHelper.rel2abs(sourceDir.getAbsolutePath(), limit);
+        currentDirFilter.addLimit(absFile);
     }
 
     private void addFile(String file) {
@@ -126,9 +126,5 @@ public class ArgumentParser {
 
     public File getBaseDir() {
         return sourceDir;
-    }
-
-    public boolean isNoExit() {
-        return noExit;
     }
 }
