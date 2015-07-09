@@ -27,7 +27,6 @@ import de.cologneintelligence.fitgoodies.file.readers.CSVRecordReader;
  * The fixture has two more parameters: delimiter and mask. The delimiter
  * defaults to comma, the mask defaults to the quotation mark.
  *
- * @author jwierum
  */
 public class CSVFileRecordFixture extends AbstractFileRecordReaderFixture {
     @Override

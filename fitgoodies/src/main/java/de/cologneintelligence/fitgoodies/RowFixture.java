@@ -32,8 +32,6 @@ import fit.TypeAdapter;
  * enables all fitgoodies features (for example custom type adapters, custom
  * parsers and cross references).
  *
- * @author jwierum
- * @version $Id$
  */
 public abstract class RowFixture extends fit.RowFixture {
 
@@ -213,13 +211,15 @@ public abstract class RowFixture extends fit.RowFixture {
     protected void match(List expected, List computed, int col) {
         final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 
-        for (Object row : expected) {
-            Parse cell = ((Parse) row).parts.at(col);
-            TypeAdapter typeAdapter = columnBindings[col];
-            if (typeAdapter != null) {
-                typeAdapter.target = computed.get(0);
+        if (col < columnBindings.length) {
+            for (Object row : expected) {
+                Parse cell = ((Parse) row).parts.at(col);
+                TypeAdapter typeAdapter = columnBindings[col];
+                if (typeAdapter != null) {
+                    typeAdapter.target = computed.get(0);
+                }
+                FixtureTools.processCell(cell, typeAdapter, this, helper);
             }
-            FixtureTools.processCell(cell, typeAdapter, this, helper);
         }
 
         super.match(expected, computed, col);

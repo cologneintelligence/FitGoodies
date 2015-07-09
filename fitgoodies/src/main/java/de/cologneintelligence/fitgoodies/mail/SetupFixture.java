@@ -49,8 +49,6 @@ import de.cologneintelligence.fitgoodies.util.FixtureTools;
  * <tr><td>password</td><td>pass</td></tr>
  * </table>
  *
- * @author jwierum
- * @version $Id$
  */
 public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixture {
 
@@ -115,7 +113,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @param ssl indicates whether SSL shall be used
      * @see SetupHelper#setSSL(boolean) SetupHelper.setSSL(boolean)
      */
-    public final void ssl(final String ssl) {
+    public void ssl(final String ssl) {
         DependencyManager.getOrCreate(SetupHelper.class)
         .setSSL(FixtureTools.convertToBoolean(ssl));
     }
@@ -125,7 +123,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @param port port to use
      * @see SetupHelper#setPort(int) SetupHelper.setPort(int)
      */
-    public final void port(final String port) {
+    public void port(final String port) {
         DependencyManager.getOrCreate(SetupHelper.class)
         .setPort(Integer.parseInt(port));
     }
@@ -135,7 +133,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @param inbox inbox to use
      * @see SetupHelper#setInbox(String) SetupHelper.setInbox(String)
      */
-    public final void inbox(final String inbox) {
+    public void inbox(final String inbox) {
         DependencyManager.getOrCreate(SetupHelper.class)
         .setInbox(inbox);
     }
@@ -145,7 +143,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @param host host to use
      * @see SetupHelper#setHost(String) SetupHelper.setHost(String)
      */
-    public final void host(final String host) {
+    public void host(final String host) {
         DependencyManager.getOrCreate(SetupHelper.class)
         .setHost(host);
     }
@@ -155,7 +153,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @param username user name to use
      * @see SetupHelper#setUsername(String) SetupHelper.setUsername(String)
      */
-    public final void username(final String username) {
+    public void username(final String username) {
         DependencyManager.getOrCreate(SetupHelper.class)
         .setUsername(username);
     }
@@ -165,7 +163,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @param password password to use
      * @see SetupHelper#setPassword(String) SetupHelper.setPassword(String)
      */
-    public final void password(final String password) {
+    public void password(final String password) {
         DependencyManager.getOrCreate(SetupHelper.class)
         .setPassword(password);
     }
@@ -175,7 +173,7 @@ public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixtur
      * @param protocol protocol to use
      * @see SetupHelper#setProtocol(String) SetupHelper.setProtocol(String)
      */
-    public final void protocol(final String protocol) {
+    public void protocol(final String protocol) {
         DependencyManager.getOrCreate(SetupHelper.class)
         .setProtocol(protocol);
     }

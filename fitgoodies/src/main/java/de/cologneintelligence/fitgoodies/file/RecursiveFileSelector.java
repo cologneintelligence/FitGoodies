@@ -19,7 +19,7 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,54 +28,46 @@ import java.util.NoSuchElementException;
 /**
  * Browses a directory recursively for files which match a given filter.
  *
- * @author jwierum
- * @version $Id$
  */
-public class RecursiveFileSelector implements Iterator<FileInformation> {
-	private final List<DirectoryProvider> dirs = new LinkedList<DirectoryProvider>();
-	private FilterDirectoryIterator files;
+public class RecursiveFileSelector implements Iterator<File> {
+	private final List<File> dirs = new LinkedList<File>();
 	private final String pattern;
+	private File[] files;
+	private int fileIndex = 0;
 
 	/**
 	 * Creates a new iterator.
-	 * @param directoryProvider directory to browse
+	 * @param directory directory to browse
 	 * @param filenamePattern filter to use. Must be a regular expression.
 	 */
-	public RecursiveFileSelector(
-			final DirectoryProvider directoryProvider,
-			final String filenamePattern) {
+	public RecursiveFileSelector(final File directory, final String filenamePattern) {
 		this.pattern = filenamePattern;
-		dirs.add(directoryProvider);
-		prepareList();
+		dirs.add(directory);
+		cacheNext();
 	}
 
-	private boolean prepareList() {
-		if (dirs.size() == 0) {
-			return false;
-		}
+	private boolean cacheNext() {
+		fileIndex = 0;
+		do {
+			if (dirs.size() > 0) {
+				File dir = dirs.remove(0);
 
-		while ((files == null || !files.hasNext()) && dirs.size() > 0) {
-			DirectoryProvider dir = dirs.remove(0);
-			try {
-				for (DirectoryProvider dirprov
-						: new IteratorHelper<DirectoryProvider>(dir.getDirectories())) {
-					dirs.add(dirprov);
+				final File[] children = dir.listFiles();
+				if (children != null) {
+					for (File child : children) {
+						if (child.isDirectory()) {
+							dirs.add(child);
+						}
+					}
 				}
-			} catch (FileNotFoundException e) {
-			}
 
-			try {
-				files = new FilterDirectoryIterator(dir.getFiles(),
-						new SimpleRegexFilter(pattern));
-			} catch (FileNotFoundException e) {
+				files = dir.listFiles(new SimpleRegexFilter(pattern));
+			} else {
+				return false;
 			}
-		}
+		} while (files == null || files.length == 0);
 
-		if (files == null) {
-			return false;
-		} else {
-			return files.hasNext();
-		}
+		return true;
 	}
 
 	/**
@@ -89,10 +81,10 @@ public class RecursiveFileSelector implements Iterator<FileInformation> {
 	public final boolean hasNext() {
 		if (files == null) {
 			return false;
-		} else if (files.hasNext()) {
+		} else if (fileIndex < files.length) {
 			return true;
 		} else {
-			return prepareList();
+			return cacheNext();
 		}
 	}
 
@@ -102,20 +94,20 @@ public class RecursiveFileSelector implements Iterator<FileInformation> {
      * @throws NoSuchElementException iteration has no more elements
 	 */
 	@Override
-	public final FileInformation next() {
-		if (files.hasNext()) {
-			return files.next();
-		} else {
-			prepareList();
-			return files.next();
+	public final File next() {
+		if (files == null || fileIndex >= files.length) {
+			if (!cacheNext()) {
+				throw new NoSuchElementException();
+			}
 		}
+		return files[fileIndex++];
 	}
 
 	/**
 	 * Not implemented.
 	 */
 	@Override
-	public final void remove() {
+	public void remove() {
 		throw new UnsupportedOperationException();
 	}
 }

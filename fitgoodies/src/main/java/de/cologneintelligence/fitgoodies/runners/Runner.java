@@ -21,11 +21,11 @@ package de.cologneintelligence.fitgoodies.runners;
 
 import fit.Counts;
 
+import java.io.File;
+
 /**
  * Interface which is used to check a single test file.
  *
- * @author jwierum
- * @version $Id$
  */
 public interface Runner {
 	/**
@@ -35,7 +35,7 @@ public interface Runner {
 	 * @param outputFile file to write output to
 	 * @return resulting counts
 	 */
-	Counts run(String inputFile, String outputFile);
+	Counts run(File inputFile, File outputFile);
 
 	/**
 	 * Sets the encoding of all input/output files to <code>encoding</code>.

@@ -38,7 +38,6 @@ public class EnvironmentPropertyCrossReferenceProcessor extends AbstractCrossRef
 
 	@Override
 	public String info() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -19,26 +19,25 @@
 
 package de.cologneintelligence.fitgoodies.file.readers;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.junit.Test;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import de.cologneintelligence.fitgoodies.file.readers.DelimiterRecordReader;
-import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
+import static com.thoughtworks.selenium.SeleneseTestBase.assertFalse;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
 
-/**
- *
- * @author jwierum
- */
-public class DelimiterRecordReaderTest extends TestCase {
+public class DelimiterRecordReaderTest extends FitGoodiesTestCase {
 	public final BufferedReader mkReader(final String content) {
 		StringReader sr = new StringReader(content);
 		return new BufferedReader(sr);
 	}
 
-	public final void testReading() throws IOException {
+	@Test
+	public void testReading() throws IOException {
 		FileRecordReader reader = new DelimiterRecordReader(
 				mkReader("this|is|a|test\nwith|four|columns|and\nthree|rows"), "|");
 

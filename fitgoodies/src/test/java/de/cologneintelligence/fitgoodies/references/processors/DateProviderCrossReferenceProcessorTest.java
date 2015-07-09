@@ -18,27 +18,25 @@
 
 package de.cologneintelligence.fitgoodies.references.processors;
 
+import de.cologneintelligence.fitgoodies.references.CrossReference;
+import de.cologneintelligence.fitgoodies.util.DateProviderImpl;
+import org.junit.Test;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
+public class DateProviderCrossReferenceProcessorTest {
 
-import de.cologneintelligence.fitgoodies.references.CrossReference;
-import de.cologneintelligence.fitgoodies.util.DateProviderImpl;
-
-public class DateProviderCrossReferenceProcessorTest extends TestCase {
-
+    @Test
     public void testGetCurrentDate() throws Exception {
-        Mockery mockery = new Mockery();
         final String date = "21.01.2009";
-        final DateProvider dateProvider = mockery.mock(DateProvider.class);
-        mockery.checking(new Expectations() {{
-           oneOf(dateProvider).getCurrentDate();
-           will(returnValue(date));
-        }});
+        final DateProvider dateProvider = mock(DateProvider.class);
+
+       when(dateProvider.getCurrentDate()).thenReturn(date);
 
         DateProviderCrossReferenceProcessor processor = new DateProviderCrossReferenceProcessor(dateProvider);
 
@@ -47,11 +45,12 @@ public class DateProviderCrossReferenceProcessorTest extends TestCase {
 
     }
 
+    @Test
     public void testGetCurrentDateWithFormat() throws Exception {
         String format = "yyyy-MM-dd";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
         final String date = simpleDateFormat.format(new Date());
-        
+
         final DateProvider dateProvider = new DateProviderImpl();
         DateProviderCrossReferenceProcessor processor = new DateProviderCrossReferenceProcessor(dateProvider);
 
@@ -60,11 +59,12 @@ public class DateProviderCrossReferenceProcessorTest extends TestCase {
 
     }
 
+    @Test
     public void testGetCurrentDateWithDefaultFormat() throws Exception {
         String format = "dd.MM.yyyy";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
         final String date = simpleDateFormat.format(new Date());
-        
+
         final DateProvider dateProvider = new DateProviderImpl();
         DateProviderCrossReferenceProcessor processor = new DateProviderCrossReferenceProcessor(dateProvider);
 

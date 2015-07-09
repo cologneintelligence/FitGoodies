@@ -19,11 +19,11 @@
 
 package de.cologneintelligence.fitgoodies.references.processors;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import de.cologneintelligence.fitgoodies.references.CrossReference;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -32,8 +32,6 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShort
  * pattern that matches the reference, extract a reference, resolve a reference
  * and give a small user output.
  *
- * @author jwierum
- * @version $Id$
  */
 public abstract class AbstractCrossReferenceProcessor {
 	private final String plainPattern;

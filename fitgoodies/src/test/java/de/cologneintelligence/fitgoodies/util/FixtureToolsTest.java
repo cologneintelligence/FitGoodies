@@ -19,10 +19,7 @@
 
 package de.cologneintelligence.fitgoodies.util;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
 import de.cologneintelligence.fitgoodies.adapters.DummyTypeAdapter;
 import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
@@ -32,10 +29,22 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import fit.Fixture;
 import fit.Parse;
 import fit.TypeAdapter;
+import org.hamcrest.Matcher;
+import org.junit.Test;
 
-/**
- * @author jwierum
- */
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Arrays;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
+
+
 public class FixtureToolsTest extends FitGoodiesTestCase {
     public static class DummyValueFixture extends Fixture {
         public int x;
@@ -50,42 +59,45 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
                 new BigInteger("3")};
     }
 
-    public final void testParse() throws Exception {
+    @Test
+    public void testParse() throws Exception {
         final ParserHelper helper = new ParserHelper();
-        final Integer intExpected = Integer.valueOf(42);
-        assertNull(FixtureTools.parse("42", intExpected.getClass(), null, helper));
+        final Integer intExpected = 42;
+        assertThat(FixtureTools.parse("42", intExpected.getClass(), null, helper), is(nullValue()));
 
         BigInteger biExpected = new BigInteger("123");
-        assertEquals(biExpected, FixtureTools.parse("123", biExpected.getClass(), null, helper));
+        assertThat(FixtureTools.parse("123", biExpected.getClass(), null, helper), (Matcher) is(equalTo(biExpected)));
         biExpected = new BigInteger("7");
-        assertEquals(biExpected, FixtureTools.parse("7", biExpected.getClass(), null, helper));
+        assertThat(FixtureTools.parse("7", biExpected.getClass(), null, helper), (Matcher) is(equalTo(biExpected)));
 
         BigDecimal bdExpected = new BigDecimal("312.45");
-        assertEquals(bdExpected, FixtureTools.parse("312.45", bdExpected.getClass(), null, helper));
+        assertThat(FixtureTools.parse("312.45", bdExpected.getClass(), null, helper), (Matcher) is(equalTo(bdExpected)));
         bdExpected = new BigDecimal("331.0");
-        assertEquals(bdExpected, FixtureTools.parse("331.0", bdExpected.getClass(), null, helper));
+        assertThat(FixtureTools.parse("331.0", bdExpected.getClass(), null, helper), (Matcher) is(equalTo(bdExpected)));
 
         helper.registerParser(new LongParserMock());
-        assertEquals(Long.valueOf(7), FixtureTools.parse("7", Long.class, "x", helper));
+        assertThat(FixtureTools.parse("7", Long.class, "x", helper), (Matcher) is(equalTo((long) 7)));
     }
 
-    public final void testRebindTypeAdapter() {
+    @Test
+    public void testRebindTypeAdapter() {
         final TypeAdapter ta = new TypeAdapter();
         final TypeAdapterHelper helper = new TypeAdapterHelper();
         TypeAdapter actual;
 
         ta.type = BigInteger.class;
         actual = FixtureTools.rebindTypeAdapter(ta, null, helper);
-        assertSame(ta, actual);
+        assertThat(actual, is(sameInstance(ta)));
 
         helper.register(DummyTypeAdapter.class);
 
         actual = FixtureTools.rebindTypeAdapter(ta, null, helper);
-        assertNotSame(ta, actual);
-        assertEquals(DummyTypeAdapter.class, actual.getClass());
+        assertThat(ta, is(not(sameInstance(actual))));
+        assertThat(actual, is(instanceOf(DummyTypeAdapter.class)));
     }
 
-    public final void testRebingTypeAdapterWithParameter() throws Exception {
+    @Test
+    public void testRebingTypeAdapterWithParameter() throws Exception {
         final TypeAdapter ta = new TypeAdapter();
         AbstractTypeAdapter<?> actual;
 
@@ -95,52 +107,54 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
 
         actual = (AbstractTypeAdapter<?>)
                 FixtureTools.rebindTypeAdapter(ta, "test", helper);
-        assertEquals("test", actual.getParameter());
+        assertThat(actual.getParameter(), is(equalTo("test")));
 
         actual = (AbstractTypeAdapter<?>)
                 FixtureTools.rebindTypeAdapter(ta, "parameter", helper);
-        assertEquals("parameter", actual.getParameter());
+        assertThat(actual.getParameter(), is(equalTo("parameter")));
     }
 
-    public final void testGetParameter() throws Exception {
+    @Test
+    public void testGetParameter() throws Exception {
         final CrossReferenceHelper helper = new CrossReferenceHelper();
         String[] args = new String[]{
                 "x = y", " param = value "
         };
 
-        assertEquals("y", FixtureTools.getArg(args, "x", null, helper));
-        assertEquals("value", FixtureTools.getArg(args, "param", null, helper));
-        assertEquals("good", FixtureTools.getArg(args, "not-good", "good", helper));
+        assertThat(FixtureTools.getArg(args, "x", null, helper), is(equalTo("y")));
+        assertThat(FixtureTools.getArg(args, "param", null, helper), is(equalTo("value")));
+        assertThat(FixtureTools.getArg(args, "not-good", "good", helper), is(equalTo("good")));
 
 
         args = new String[]{
                 "x =z", " a b=test "
         };
 
-        assertEquals("bad", FixtureTools.getArg(args, "param", "bad", helper));
-        assertEquals("z", FixtureTools.getArg(args, "X", null, helper));
-        assertEquals("test", FixtureTools.getArg(args, "A B", null, helper));
+        assertThat(FixtureTools.getArg(args, "param", "bad", helper), is(equalTo("bad")));
+        assertThat(FixtureTools.getArg(args, "X", null, helper), is(equalTo("z")));
+        assertThat(FixtureTools.getArg(args, "A B", null, helper), is(equalTo("test")));
 
-        assertEquals("null", FixtureTools.getArg(null, "x", "null", helper));
-        assertEquals("error", FixtureTools.getArg(null, "y", "error", helper));
+        assertThat(FixtureTools.getArg(null, "x", "null", helper), is(equalTo("null")));
+        assertThat(FixtureTools.getArg(null, "y", "error", helper), is(equalTo("error")));
 
         args = new String[]{
                 "y = a${tests.get(x)}b", " a b=test "
         };
 
         helper.parseBody("${tests.put(x)}", "x");
-        assertEquals("axb", FixtureTools.getArg(args, "y", null, helper));
+        assertThat(FixtureTools.getArg(args, "y", null, helper), is(equalTo("axb")));
     }
 
-    public final void testGetParameters() {
+    @Test
+    public void testGetParameters() {
         String[] args = new String[]{
                 "x = y", " param = value "
         };
 
         String[] actual = FixtureTools.getArgs(args);
-        assertEquals(2, actual.length);
-        assertEquals("x", actual[0]);
-        assertEquals("param", actual[1]);
+        assertThat(actual.length, is(equalTo((Object) 2)));
+        assertThat(actual[0], is(equalTo("x")));
+        assertThat(actual[1], is(equalTo("param")));
 
 
         args = new String[]{
@@ -148,43 +162,45 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
         };
 
         actual = FixtureTools.getArgs(args);
-        assertEquals(2, actual.length);
-        assertEquals("x", actual[0]);
-        assertEquals("a b", actual[1]);
+        assertThat(actual.length, is(equalTo((Object) 2)));
+        assertThat(actual[0], is(equalTo("x")));
+        assertThat(actual[1], is(equalTo("a b")));
 
         actual = FixtureTools.getArgs(null);
-        assertEquals(0, actual.length);
+        assertThat(actual.length, is(equalTo((Object) 0)));
 
         actual = FixtureTools.getArgs(new String[]{});
-        assertEquals(0, actual.length);
+        assertThat(actual.length, is(equalTo((Object) 0)));
     }
 
 
-    public final void testResolveQuestionMarks() throws Exception {
+    @Test
+    public void testResolveQuestionMarks() throws Exception {
         Parse table = new Parse("<table>"
                 + "<tr><td>ok</td><td>good()</td>"
                 + "<td>works?</td><td>y?n</td></tr>"
                 + "<tr><td>alone?</td></tr></table>");
 
         FixtureTools.resolveQuestionMarks(table.parts);
-        assertEquals("ok", table.parts.parts.text());
-        assertEquals("good()", table.parts.parts.more.text());
-        assertEquals("works()", table.parts.parts.more.more.text());
-        assertEquals("y?n", table.parts.parts.more.more.more.text());
-        assertEquals("alone?", table.parts.more.parts.text());
+        assertThat(table.parts.parts.text(), is(equalTo("ok")));
+        assertThat(table.parts.parts.more.text(), is(equalTo("good()")));
+        assertThat(table.parts.parts.more.more.text(), is(equalTo("works()")));
+        assertThat(table.parts.parts.more.more.more.text(), is(equalTo("y?n")));
+        assertThat(table.parts.more.parts.text(), is(equalTo("alone?")));
 
         table = new Parse("<table>"
                 + "<tr><td>alone?</td><td>ok()</td><td>x</td></tr>"
                 + "<tr><td>works?</td></tr></table>");
 
         FixtureTools.resolveQuestionMarks(table.parts);
-        assertEquals("alone()", table.parts.parts.text());
-        assertEquals("ok()", table.parts.parts.more.text());
-        assertEquals("x", table.parts.parts.more.more.text());
-        assertEquals("works?", table.parts.more.parts.text());
+        assertThat(table.parts.parts.text(), is(equalTo("alone()")));
+        assertThat(table.parts.parts.more.text(), is(equalTo("ok()")));
+        assertThat(table.parts.parts.more.more.text(), is(equalTo("x")));
+        assertThat(table.parts.more.parts.text(), is(equalTo("works?")));
     }
 
-    public final void testCopyParamsToFixture() {
+    @Test
+    public void testCopyParamsToFixture() {
         final CrossReferenceHelper crHelper = new CrossReferenceHelper();
         final TypeAdapterHelper taHelper = new TypeAdapterHelper();
 
@@ -193,52 +209,52 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
 
         fixture.a = 9;
         FixtureTools.copyParamsToFixture(args, fixture, crHelper, taHelper);
-        assertEquals(9, fixture.a);
-        assertEquals(8, fixture.x);
-        assertEquals("string", fixture.y);
+        assertThat(fixture.a, is(equalTo((Object) 9)));
+        assertThat(fixture.x, is(equalTo((Object) 8)));
+        assertThat(fixture.y, is(equalTo("string")));
 
         fixture = new DummyValueFixture();
         args = new String[]{" a = 42 ", "b=c"};
 
         FixtureTools.copyParamsToFixture(args, fixture, crHelper, taHelper);
-        assertEquals(42, fixture.a);
-        assertEquals("c", fixture.b);
+        assertThat(fixture.a, is(equalTo((Object) 42)));
+        assertThat(fixture.b, is(equalTo("c")));
     }
 
-    public final void testColumnParameters() throws Exception {
+    @Test
+    public void testColumnParameters() throws Exception {
         Parse table = new Parse("<table>"
                 + "<tr><td>x[1 2]</td><td>y[3 4]</td><td>z</td></tr>"
                 + "<tr><td>a[7]</td><td>b</td><td>c</td></tr>"
                 + "</table>");
 
         String[] actual = FixtureTools.extractColumnParameters(table.parts);
-        assertArray(new String[]{"1 2", "3 4", null}, actual);
-        assertEquals("x", table.parts.parts.text());
-        assertEquals("y", table.parts.parts.more.text());
-        assertEquals("a[7]", table.parts.more.parts.text());
+        assertThat(Arrays.asList("1 2", "3 4", null), is(equalTo(Arrays.asList(actual))));
+        assertThat(table.parts.parts.text(), is(equalTo("x")));
+        assertThat(table.parts.parts.more.text(), is(equalTo("y")));
+        assertThat(table.parts.more.parts.text(), is(equalTo("a[7]")));
 
         table = new Parse("<table>"
                 + "<tr><td>name</td><td>date [ de_DE, dd.MM.yyyy ] </td></tr>"
                 + "</table>");
 
         actual = FixtureTools.extractColumnParameters(table.parts);
-        assertArray(new String[]{null, "de_DE, dd.MM.yyyy"}, actual);
-        assertEquals("name", table.parts.parts.text());
-        assertEquals("date", table.parts.parts.more.text());
+        assertThat(Arrays.asList(null, "de_DE, dd.MM.yyyy"), is(equalTo(Arrays.asList(actual))));
+        assertThat(table.parts.parts.text(), is(equalTo("name")));
+        assertThat(table.parts.parts.more.text(), is(equalTo("date")));
     }
 
-    public final void testConvertBoolean() {
-        assertTrue(FixtureTools.convertToBoolean("TrUe"));
-        assertTrue(FixtureTools.convertToBoolean("1"));
-        assertTrue(FixtureTools.convertToBoolean("yes"));
-        assertFalse(FixtureTools.convertToBoolean("false"));
-        assertFalse(FixtureTools.convertToBoolean("no"));
-        assertFalse(FixtureTools.convertToBoolean("0"));
+    @Test(expected = IllegalArgumentException.class)
+    public void testConvertBoolean() {
+        assertThat(FixtureTools.convertToBoolean("TrUe"), is(true));
+        assertThat(FixtureTools.convertToBoolean("1"), is(true));
+        assertThat(FixtureTools.convertToBoolean("yes"), is(true));
+        assertThat(FixtureTools.convertToBoolean("false"), is(false));
 
-        try {
-            FixtureTools.convertToBoolean("non-bool");
-            fail("invalid string should be recognized");
-        } catch (final IllegalArgumentException e) {
-        }
+        assertThat(FixtureTools.convertToBoolean("no"), is(false));
+
+        assertThat(FixtureTools.convertToBoolean("0"), is(false));
+
+        FixtureTools.convertToBoolean("non-bool");
     }
 }

@@ -26,9 +26,6 @@ import java.util.Iterator;
  * used as an <code>Iterable</code>.
  *
  * @param <T> type of elements returned by the iterator
- *
- * @version $Id$
- * @author jwierum
  */
 public class IteratorHelper<T> implements Iterable<T> {
 	private final Iterator<T> it;

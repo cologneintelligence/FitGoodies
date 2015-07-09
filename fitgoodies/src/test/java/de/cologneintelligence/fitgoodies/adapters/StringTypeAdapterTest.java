@@ -19,16 +19,17 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
-import de.cologneintelligence.fitgoodies.adapters.StringTypeAdapter;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import fit.Fixture;
 import fit.TypeAdapter;
+import org.hamcrest.Matcher;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- *
- * @author kmussawisade
- */
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 public class StringTypeAdapterTest extends FitGoodiesTestCase {
 	public class StringContainer extends Fixture {
 		public String string = "";
@@ -39,10 +40,8 @@ public class StringTypeAdapterTest extends FitGoodiesTestCase {
 	private StringContainer container1;
 	private StringContainer container2;
 
-	@Override
-	public final void setUp() throws Exception {
-		super.setUp();
-
+	@Before
+	public void setUp() throws Exception {
 		container1 = new StringContainer();
 		container1.string = "Hello World";
 
@@ -58,38 +57,43 @@ public class StringTypeAdapterTest extends FitGoodiesTestCase {
 		ta2 = new StringTypeAdapter(ta, null);
 	}
 
-	public final void testEquals() throws Exception {
-		assertTrue(ta1.equals(ta1.get(), ta2.get()));
-		assertTrue(ta1.equals(ta2.get(), ta1.get()));
-		assertTrue(ta2.equals(ta1.get(), ta2.get()));
+	@Test
+	public void testEquals() throws Exception {
+		assertThat(ta1.equals(ta1.get(), ta2.get()), is(true));
+		assertThat(ta1.equals(ta2.get(), ta1.get()), is(true));
+		assertThat(ta2.equals(ta1.get(), ta2.get()), is(true));
 
 		container1.string = "x";
-		assertFalse(ta1.equals(ta1.get(), ta2.get()));
+		assertThat(ta1.equals(ta1.get(), ta2.get()), is(false));
 
 		container1.string = null;
-		assertFalse(ta1.equals(ta1.get(), ta2.get()));
-		assertFalse(ta1.equals(ta2.get(), ta1.get()));
+		assertThat(ta1.equals(ta1.get(), ta2.get()), is(false));
+
+		assertThat(ta1.equals(ta2.get(), ta1.get()), is(false));
 
 		container2.string = null;
-		assertTrue(ta1.equals(ta1.get(), ta2.get()));
+		assertThat(ta1.equals(ta1.get(), ta2.get()), is(true));
 	}
 
-	public final void testEqualsWithWhitespaces() throws Exception {
+	@Test
+	public void testEqualsWithWhitespaces() throws Exception {
 		container1.string += "  ";
 		container2.string +=  "  ";
-		assertTrue(ta1.equals(ta1.get(), ta2.get()));
-		assertTrue(ta1.equals(ta2.get(), ta1.get()));
+		assertThat(ta1.equals(ta1.get(), ta2.get()), is(true));
+		assertThat(ta1.equals(ta2.get(), ta1.get()), is(true));
 	}
 
-	public final void testToString() throws Exception {
-		assertEquals("Hello World", ta1.toString(ta1.get()));
+	@Test
+	public void testToString() throws Exception {
+		assertThat(ta1.toString(ta1.get()), is(equalTo("Hello World")));
 		container1.string += "xy";
-		assertEquals("Hello Worldxy", ta1.toString(ta1.get()));
+		assertThat(ta1.toString(ta1.get()), is(equalTo("Hello Worldxy")));
 		container1.string = null;
-		assertEquals("null", ta1.toString(ta1.get()));
+		assertThat(ta1.toString(ta1.get()), is(equalTo("null")));
 	}
 
-	public final void testType() {
-		assertEquals(String.class, ta1.getType());
+	@Test
+	public void testType() {
+		assertThat(ta1.getType(), (Matcher) is(equalTo(String.class)));
 	}
 }

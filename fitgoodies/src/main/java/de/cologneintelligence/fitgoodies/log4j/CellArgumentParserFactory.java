@@ -23,8 +23,6 @@ import fit.Parse;
 /**
  * Factory interface which creates CellArgumentParsers.
  *
- * @author jwierum
- * @version $Id$
  */
 public interface CellArgumentParserFactory {
 	/**

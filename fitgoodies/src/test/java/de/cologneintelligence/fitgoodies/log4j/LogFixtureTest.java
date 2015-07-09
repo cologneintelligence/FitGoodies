@@ -18,39 +18,38 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import fit.Fixture;
+import fit.Parse;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
+
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.jmock.Expectations;
-import org.jmock.Sequence;
-import org.jmock.lib.legacy.ClassImposteriser;
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.log4j.CaptureAppender;
-import de.cologneintelligence.fitgoodies.log4j.CellArgumentParser;
-import de.cologneintelligence.fitgoodies.log4j.CellArgumentParserFactory;
-import de.cologneintelligence.fitgoodies.log4j.LogEventAnalyzer;
-import de.cologneintelligence.fitgoodies.log4j.LogEventAnalyzerFactory;
-import de.cologneintelligence.fitgoodies.log4j.LogFixture;
-import de.cologneintelligence.fitgoodies.log4j.LoggerProvider;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
-import fit.Parse;
-
-/**
- * @author jwierum
- * @version $Id$
- *
- */
 public final class LogFixtureTest extends FitGoodiesTestCase {
-    public LogFixtureTest() {
-        setImposteriser(ClassImposteriser.INSTANCE);
-    }
+    private static final String NAMESPACE = "com.myproject.class1";
 
     private LoggerProvider logs;
     private Logger rootLogger;
@@ -70,10 +69,8 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
         @Override public boolean requiresLayout() { return false; }
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
         logs = mock(LoggerProvider.class);
         logger = mock(Logger.class, "logger");
         rootLogger = mock(Logger.class, "rootLogger");
@@ -88,37 +85,47 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
         parameterMap = new HashMap<String, String>();
     }
 
-    private void prepareFactories(final int numberOfCallsToRootLogger,
-            final int numberOfCallsToClassLogger) {
-        checking(new Expectations() {{
-            exactly(numberOfCallsToClassLogger).of(logs).getLogger("com.myproject.class1");
-            will(returnValue(logger));
-            exactly(numberOfCallsToRootLogger).of(logs).getRootLogger();
-            will(returnValue(rootLogger));
+    private void prepareFactories() {
+        when(logs.getLogger(NAMESPACE)).thenReturn(logger);
+        when(logs.getRootLogger()).thenReturn(rootLogger);
+        when(rootLogger.getAppender(CaptureAppender.getAppenderNameFor("R")))
+                .thenReturn(rootAppender);
+        when(logger.getAppender(CaptureAppender.getAppenderNameFor("stdout"))).thenReturn(appender);
 
-            atLeast(numberOfCallsToRootLogger).of(rootLogger).getAppender(
-                    CaptureAppender.getAppenderNameFor("R"));
-            will(returnValue(rootAppender));
-            atLeast(numberOfCallsToClassLogger).of(logger).getAppender(
-                    CaptureAppender.getAppenderNameFor("stdout"));
-            will(returnValue(appender));
+        when(cellArgumentParserFactory.getParserFor(argThat(any(Parse.class))))
+                .thenReturn(cellArgumentParser);
 
-            exactly(numberOfCallsToRootLogger + numberOfCallsToClassLogger).of(
-                    cellArgumentParserFactory).getParserFor(with(any(Parse.class)));
-            will(returnValue(cellArgumentParser));
+        when(cellArgumentParser.getExtractedCommandParameters())
+                .thenReturn(parameterMap);
 
-            exactly(numberOfCallsToRootLogger + numberOfCallsToClassLogger).of(
-                    cellArgumentParser).getExtractedCommandParameters();
-            will(returnValue(parameterMap));
-
-            exactly(numberOfCallsToRootLogger + numberOfCallsToClassLogger).of(
-                    logEventAnalyzerFactory).getLogEventAnalyzerFor(
-                            with(any(LogFixture.class)), with(any(Parse.class)),
-                            with(any(LoggingEvent[].class)));
-            will(returnValue(logEventAnalyzer));
-        }});
+        when(logEventAnalyzerFactory.getLogEventAnalyzerFor(
+                argThat(any(LogFixture.class)), argThat(any(Parse.class)),
+                argThat(any(LoggingEvent[].class))))
+                .thenReturn(logEventAnalyzer);
     }
 
+
+    private void verifyFactories(final int numberOfCallsToRootLogger,
+                                  final int numberOfCallsToClassLogger) {
+
+        verify(logs, times(numberOfCallsToClassLogger)).getLogger(NAMESPACE);
+        verify(logger, atLeast(numberOfCallsToClassLogger))
+                    .getAppender(CaptureAppender.getAppenderNameFor("stdout"));
+
+        verify(logs, times(numberOfCallsToRootLogger)).getRootLogger();
+        verify(rootLogger, atLeast(numberOfCallsToRootLogger))
+                .getAppender(CaptureAppender.getAppenderNameFor("R"));
+
+        verify(cellArgumentParserFactory, times(numberOfCallsToRootLogger + numberOfCallsToClassLogger))
+                .getParserFor(argThat(any(Parse.class)));
+        verify(cellArgumentParser, times(numberOfCallsToRootLogger + numberOfCallsToClassLogger))
+                .getExtractedCommandParameters();
+        verify(logEventAnalyzerFactory, times(numberOfCallsToRootLogger + numberOfCallsToClassLogger))
+                .getLogEventAnalyzerFor(argThat(any(Fixture.class)), argThat(any(Parse.class)),
+                        argThat(any(LoggingEvent[].class)));
+    }
+
+    @Test
     public void testParseContains() throws ParseException {
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>com.myproject.class1</td><td>stdout</td>"
@@ -135,28 +142,25 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
 
         final int NO_OF_CLASS_CALLS = 2;
         final int NO_OF_ROOT_CALLS = 3;
-        prepareFactories(NO_OF_ROOT_CALLS, NO_OF_CLASS_CALLS);
+        prepareFactories();
 
-        final Sequence sequence = sequence("analyzer");
-        checking(new Expectations() {{
-            oneOf(logEventAnalyzer).processContains(parameterMap);
-            inSequence(sequence);
-            oneOf(logEventAnalyzer).processNotContains(parameterMap);
-            inSequence(sequence);
-            oneOf(logEventAnalyzer).processContainsException(parameterMap);
-            inSequence(sequence);
-            oneOf(logEventAnalyzer).processContains(parameterMap);
-            inSequence(sequence);
-            oneOf(logEventAnalyzer).processNotContainsException(parameterMap);
-            inSequence(sequence);
-        }});
 
         LogFixture fixture = new LogFixture(logs, cellArgumentParserFactory,
                 logEventAnalyzerFactory);
 
         fixture.doTable(table);
+
+        InOrder order = inOrder(logEventAnalyzer);
+        order.verify(logEventAnalyzer).processContains(parameterMap);
+        order.verify(logEventAnalyzer).processNotContains(parameterMap);
+        order.verify(logEventAnalyzer).processContainsException(parameterMap);
+        order.verify(logEventAnalyzer).processContains(parameterMap);
+        order.verify(logEventAnalyzer).processNotContainsException(parameterMap);
+
+        verifyFactories(NO_OF_ROOT_CALLS, NO_OF_CLASS_CALLS);
     }
 
+    @Test
     public void testIllegalCommand() throws ParseException {
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>rootLogger</td><td>R</td>"
@@ -165,16 +169,19 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
 
         final int NO_OF_CLASS_CALLS = 0;
         final int NO_OF_ROOT_CALLS = 1;
-        prepareFactories(NO_OF_ROOT_CALLS, NO_OF_CLASS_CALLS);
+        prepareFactories();
 
         LogFixture fixture = new LogFixture(logs, cellArgumentParserFactory,
                 logEventAnalyzerFactory);
 
         fixture.doTable(table);
-        assertEquals(1, fixture.counts.exceptions);
-        assertContains("unknown command", table.parts.more.parts.more.more.text());
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+        assertThat(table.parts.more.parts.more.more.text(), containsString("unknown command"));
+
+        verifyFactories(NO_OF_ROOT_CALLS, NO_OF_CLASS_CALLS);
     }
 
+    @Test
     public void testIllegalParameters() throws ParseException {
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>com.myproject.class1</td><td>stdout</td>"
@@ -184,23 +191,19 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
         LogFixture fixture = new LogFixture(logs, cellArgumentParserFactory,
                 logEventAnalyzerFactory);
 
-        checking(new Expectations() {{
-            oneOf(logs).getLogger("com.myproject.class1");
-            will(returnValue(logger));
-            oneOf(logger).getAppender(
-                    CaptureAppender.getAppenderNameFor("stdout"));
-            will(returnValue(appender));
-
-            oneOf(cellArgumentParserFactory).getParserFor(with(any(Parse.class)));
-            will(throwException(new IllegalArgumentException("")));
-        }});
+        when(logs.getLogger("com.myproject.class1")).thenReturn(logger);
+        when(logger.getAppender(CaptureAppender.getAppenderNameFor("stdout")))
+            .thenReturn(appender);
+        when(cellArgumentParserFactory.getParserFor(argThat(any(Parse.class))))
+            .thenThrow(new IllegalArgumentException(""));
 
         fixture.doTable(table);
 
-        assertEquals(1, fixture.counts.exceptions);
-        assertContains("Illegal format", table.parts.more.parts.more.more.text());
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+        assertThat(table.parts.more.parts.more.more.text(), containsString("Illegal format"));
     }
 
+    @Test
     @SuppressWarnings("static-access")
     public void testIllegalLogger() throws ParseException {
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
@@ -210,23 +213,19 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
                 + "<td>contains</td><td>error</td></tr>"
                 + "</table>");
 
-        checking(new Expectations() {{
-            oneOf(logs).getLogger("nonsense"); will(returnValue(null));
-            oneOf(logs).getRootLogger(); will(returnValue(rootLogger));
-            oneOf(rootLogger).getLogger("nonsense-fitgoodiescapture");
-            will(returnValue(null));
-        }});
+        when(logs.getRootLogger()).thenReturn(rootLogger);
 
         LogFixture fixture = new LogFixture(logs, cellArgumentParserFactory,
                 logEventAnalyzerFactory);
 
         fixture.doTable(table);
 
-        assertEquals(2, fixture.counts.exceptions);
-        assertContains("Invalid logger", table.parts.more.parts.text());
-        assertContains("Invalid appender", table.parts.more.more.parts.more.text());
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 2)));
+        assertThat(table.parts.more.parts.text(), containsString("Invalid logger"));
+        assertThat(table.parts.more.more.parts.more.text(), containsString("Invalid appender"));
     }
 
+    @Test
     public void testCrossReferences() throws Exception {
         CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.parseBody("${a.put(message)}", "a message");
@@ -237,16 +236,15 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
 
         final int NO_OF_CLASS_CALLS = 1;
         final int NO_OF_ROOT_CALLS = 0;
-        prepareFactories(NO_OF_ROOT_CALLS, NO_OF_CLASS_CALLS);
-
-        checking(new Expectations() {{
-            oneOf(logEventAnalyzer).processContains(parameterMap);
-        }});
+        prepareFactories();
 
         LogFixture fixture = new LogFixture(logs, cellArgumentParserFactory,
                 logEventAnalyzerFactory);
 
         fixture.doTable(table);
-        assertEquals("a message", table.parts.more.parts.more.more.more.text());
+        assertThat(table.parts.more.parts.more.more.more.text(), is(equalTo("a message")));
+
+        verifyFactories(NO_OF_ROOT_CALLS, NO_OF_CLASS_CALLS);
+        verify(logEventAnalyzer).processContains(parameterMap);
     }
 }

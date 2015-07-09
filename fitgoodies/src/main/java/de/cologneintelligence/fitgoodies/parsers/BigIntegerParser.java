@@ -25,8 +25,6 @@ import java.math.BigInteger;
 /**
  * Parser which is able to convert a string into a <code>BigInteger</code>.
  *
- * @author jwierum
- * @version $Id$
  */
 public class BigIntegerParser implements Parser<BigInteger> {
 	/**

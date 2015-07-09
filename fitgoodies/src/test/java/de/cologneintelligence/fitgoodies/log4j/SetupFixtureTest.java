@@ -18,24 +18,26 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import java.text.ParseException;
-
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import fit.Parse;
 import org.apache.log4j.Appender;
 import org.apache.log4j.spi.AppenderAttachable;
-import org.jmock.Expectations;
+import org.junit.Test;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.log4j.CaptureAppender;
-import de.cologneintelligence.fitgoodies.log4j.LoggerProvider;
-import de.cologneintelligence.fitgoodies.log4j.SetupFixture;
+import java.text.ParseException;
 
-import fit.Parse;
+import static org.hamcrest.CoreMatchers.any;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-/**
- * @author jwierum
- * @version $Id$
- */
+
 public final class SetupFixtureTest extends FitGoodiesTestCase {
+	@Test
 	public void testParse() throws Exception {
 		final LoggerProvider provider = mock(LoggerProvider.class);
 		final AppenderAttachable attachable1 =
@@ -55,36 +57,27 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 				+ "<tr><td>monitor</td><td>com.example.testclass2</td><td>stdout</td></tr>"
 				+ "<tr><td>monitorRoot</td><td>R</td></tr></table>");
 
-		checking(new Expectations() {{
-			oneOf(provider).getLogger("com.example.class1");
-				will(returnValue(attachable1));
-			oneOf(attachable1).getAppender("R");
-				will(returnValue(appender1));
-			oneOf(appender1).getName();
-				will(returnValue("BaseAppender3"));
-			oneOf(attachable1).addAppender(with(any(CaptureAppender.class)));
+		when(provider.getLogger("com.example.class1")).thenReturn(attachable1);
+		when(attachable1.getAppender("R")).thenReturn(appender1);
+		when(appender1.getName()).thenReturn("BaseAppender3");
 
-			oneOf(provider).getLogger("com.example.testclass2");
-				will(returnValue(attachable2));
-			oneOf(attachable2).getAppender("stdout");
-				will(returnValue(appender2));
-			oneOf(appender2).getName();
-				will(returnValue("BaseAppender3"));
-			oneOf(attachable2).addAppender(with(any(CaptureAppender.class)));
+		when(provider.getLogger("com.example.testclass2")).thenReturn(attachable2);
+		when(attachable2.getAppender("stdout")).thenReturn(appender2);
+		when(appender2.getName()).thenReturn("BaseAppender3");
 
-			oneOf(provider).getRootLogger();
-				will(returnValue(attachable3));
-			oneOf(attachable3).getAppender("R");
-				will(returnValue(appender3));
-			oneOf(appender3).getName();
-				will(returnValue("BaseAppender3"));
-			oneOf(attachable3).addAppender(with(any(CaptureAppender.class)));
-		}});
+		when(provider.getRootLogger()).thenReturn(attachable3);
+		when(attachable3.getAppender("R")).thenReturn(appender3);
+		when(appender3.getName()).thenReturn("BaseAppender3");
 
 		fixture.doTable(table);
-		assertEquals(0, fixture.counts.exceptions);
+
+		verify(attachable1).addAppender(argThat(any(CaptureAppender.class)));
+		verify(attachable2).addAppender(argThat(any(CaptureAppender.class)));
+		verify(attachable3).addAppender(argThat(any(CaptureAppender.class)));
+		assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
 	}
 
+	@Test
 	public void testParse2() throws Exception {
 		final LoggerProvider provider = mock(LoggerProvider.class);
 		final AppenderAttachable attachable1 =
@@ -94,22 +87,14 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 		final Appender appender1 = mock(Appender.class, "appender1");
 		final Appender appender2 = mock(Appender.class, "appender2");
 
-		checking(new Expectations() {{
-			oneOf(appender1).getName(); will(returnValue("BaseAppender1"));
-			oneOf(appender2).getName(); will(returnValue("BaseAppender2"));
+		when(appender1.getName()).thenReturn("BaseAppender1");
+		when(appender2.getName()).thenReturn("BaseAppender2");
 
-			oneOf(provider).getLogger("com.example.class2");
-				will(returnValue(attachable1));
-			oneOf(attachable1).getAppender("stderr");
-				will(returnValue(appender1));
-			oneOf(attachable1).addAppender(with(any(CaptureAppender.class)));
+		when(provider.getLogger("com.example.class2")).thenReturn(attachable1);
+		when(attachable1.getAppender("stderr")).thenReturn(appender1);
 
-			oneOf(provider).getLogger("com.example.testclass1");
-				will(returnValue(attachable2));
-			oneOf(attachable2).getAppender("R");
-				will(returnValue(appender2));
-			oneOf(attachable2).addAppender(with(any(CaptureAppender.class)));
-		}});
+		when(provider.getLogger("com.example.testclass1")).thenReturn(attachable2);
+		when(attachable2.getAppender("R")).thenReturn(appender2);
 
 		SetupFixture fixture = new SetupFixture(provider);
 
@@ -119,45 +104,32 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 				+ "</table>");
 
 		fixture.doTable(table);
-		assertEquals(0, fixture.counts.exceptions);
+		assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+
+		verify(attachable1).addAppender(argThat(any(CaptureAppender.class)));
+		verify(attachable2).addAppender(argThat(any(CaptureAppender.class)));
 	}
 
+	@Test
 	public void testClear() throws ParseException {
 		final LoggerProvider provider = mock(LoggerProvider.class, "provider");
-		final AppenderAttachable logger =
-			mock(AppenderAttachable.class, "logger");
-		final Appender appender = mock(Appender.class, "appender");
+		final AppenderAttachable logger = mock(AppenderAttachable.class, "logger");
+		final CaptureAppender appender = mock(CaptureAppender.class, "appender");
 
-		checking(new Expectations() {{
-			oneOf(appender).getName(); will(returnValue("stderr"));
-		}});
-
-		final CaptureAppender dummyCaptureAppender =
-			CaptureAppender.newAppenderFrom(appender);
-
-		checking(new Expectations() {{
-			oneOf(appender).getName();
-				will(returnValue("stderr"));
-
-			exactly(2).of(provider).getLogger("com.example.class2");
-				will(returnValue(logger));
-			oneOf(logger).getAppender("stderr");
-				will(returnValue(appender));
-			oneOf(logger).addAppender(with(any(CaptureAppender.class)));
-
-			oneOf(logger).getAppender(CaptureAppender.getAppenderNameFor("stderr"));
-				will(returnValue(dummyCaptureAppender));
-		}});
+		when(provider.getLogger("com.example.class2")).thenReturn(logger);
+		when(logger.getAppender(CaptureAppender.getAppenderNameFor("stderr")))
+				.thenReturn(appender);
 
 		SetupFixture fixture = new SetupFixture(provider);
 
 		Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-				+ "<tr><td>monitor</td><td>com.example.class2</td><td>stderr</td></tr>"
 				+ "<tr><td>clear</td><td>com.example.class2</td><td>stderr</td></tr>"
 				+ "</table>");
 
 		fixture.doTable(table);
 
-		assertEquals(0, fixture.counts.exceptions);
+		assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+
+		verify(appender).clear();
 	}
 }

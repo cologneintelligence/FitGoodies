@@ -27,8 +27,6 @@ import fit.Parse;
  * Implementation of LogEventAnalyzerFactory which provides {@link LogEventAnalyzerImpl}
  * objects.
  *
- * @author jwierum
- * @version $Id$
  */
 public final class LogEventAnalyzerFactoryImpl implements LogEventAnalyzerFactory {
 	@Override

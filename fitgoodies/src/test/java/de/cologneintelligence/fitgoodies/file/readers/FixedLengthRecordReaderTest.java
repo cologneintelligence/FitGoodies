@@ -19,26 +19,24 @@
 
 package de.cologneintelligence.fitgoodies.file.readers;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.junit.Test;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
-import de.cologneintelligence.fitgoodies.file.readers.FixedLengthRecordReader;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
 
-/**
- *
- * @author jwierum
- */
-public class FixedLengthRecordReaderTest extends TestCase {
+public class FixedLengthRecordReaderTest extends FitGoodiesTestCase {
 	public final BufferedReader mkReader(final String content) {
 		StringReader sr = new StringReader(content);
 		return new BufferedReader(sr);
 	}
 
-	public final void testReadingWithoutNewlines() throws IOException {
+	@Test
+	public void testReadingWithoutNewlines() throws IOException {
 		FileRecordReader reader = new FixedLengthRecordReader(
 				//        1       8    12      18
 				mkReader("this    is   record  1"
@@ -75,7 +73,8 @@ public class FixedLengthRecordReaderTest extends TestCase {
 		reader.close();
 	}
 
-	public final void testReadingWithNewlines() throws IOException {
+	@Test
+	public void testReadingWithNewlines() throws IOException {
 		FileRecordReader reader = new FixedLengthRecordReader(
 				mkReader("x y\n2 4\nj w"),
 				new int[]{2, 1}, true);

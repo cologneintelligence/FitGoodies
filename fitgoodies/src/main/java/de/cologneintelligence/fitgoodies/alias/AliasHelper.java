@@ -25,8 +25,6 @@ import java.util.Map;
 /**
  * Singleton class to manage aliases.
  *
- * @author jwierum
- * @version $Id$
  */
 public final class AliasHelper {
     private final Map<String, String> classMapper = new HashMap<String, String>();

@@ -24,8 +24,6 @@ import fit.Parse;
  * Implementation of {@link CellArgumentParserFactory} which generates a
  * {@link CellArgumentParserImpl} for each cell.
  *
- * @author jwierum
- * @version $Id$
  */
 public final class CellArgumentParserFactoryImpl implements CellArgumentParserFactory {
 	@Override

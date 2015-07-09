@@ -29,8 +29,6 @@ import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossRefe
 /**
  * Class to manage registered processors.
  *
- * @author jwierum
- * @version $Id$
  */
 public class Processors {
 	private final List<AbstractCrossReferenceProcessor> processors =
@@ -50,7 +48,7 @@ public class Processors {
 	 * Adds a processor to the list of available processors.
 	 * @param processor processor to add
 	 */
-	public final void add(final AbstractCrossReferenceProcessor processor) {
+	public void add(final AbstractCrossReferenceProcessor processor) {
 		processors.add(processor);
 		rebuildPattern();
 	}
@@ -67,7 +65,7 @@ public class Processors {
 	 * Remove the <code>i</code>-th processor from the processors list.
 	 * @param i number of element to remove
 	 */
-	public final void remove(final int i) {
+	public void remove(final int i) {
 		processors.remove(i);
 		rebuildPattern();
 
@@ -77,7 +75,7 @@ public class Processors {
 	 * Remove the processor <code>processor</code> from the processor list.
 	 * @param processor instance to remove
 	 */
-	public final void remove(final AbstractCrossReferenceProcessor processor) {
+	public void remove(final AbstractCrossReferenceProcessor processor) {
 		processors.remove(processor);
 		rebuildPattern();
 	}

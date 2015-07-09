@@ -18,22 +18,25 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import java.util.Enumeration;
-
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.apache.log4j.Appender;
 import org.apache.log4j.spi.AppenderAttachable;
-import org.jmock.Expectations;
+import org.junit.Before;
+import org.junit.Test;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.log4j.CaptureAppender;
-import de.cologneintelligence.fitgoodies.log4j.LogHelper;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import java.util.Enumeration;
+
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
-/**
- * @author jwierum
- * @version $Id$
- */
 public final class LogHelperTest extends FitGoodiesTestCase {
     private static class DummyLogger implements AppenderAttachable {
         private Appender app1;
@@ -77,67 +80,54 @@ public final class LogHelperTest extends FitGoodiesTestCase {
 
     private LogHelper helper;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         helper = DependencyManager.getOrCreate(LogHelper.class);
     }
 
+    @Test
     public void testAppender() {
         final Appender baseAppender = mock(Appender.class);
         DummyLogger logger = new DummyLogger(baseAppender);
 
-        checking(new Expectations() {{
-            exactly(2).of(baseAppender).getName();
-            will(returnValue("BaseAppender"));
-        }});
+        when(baseAppender.getName()).thenReturn("BaseAppender");
 
         helper.addCaptureToLogger(logger, "R");
         helper.addCaptureToLogger(logger, "stderr");
-        assertSame(logger.getExpected1(),
-                helper.getCaptureAppender(logger, "R"));
-        assertSame(logger.getExpected2(),
-                helper.getCaptureAppender(logger, "stderr"));
+        assertThat(helper.getCaptureAppender(logger, "R"), is(sameInstance(logger.getExpected1())));
+        assertThat(helper.getCaptureAppender(logger, "stderr"), is(sameInstance(logger.getExpected2())));
     }
 
+    @Test
     public void testRegister() {
         final AppenderAttachable logger = mock(AppenderAttachable.class);
         final Appender appender = mock(Appender.class);
 
-        checking(new Expectations() {{
-            oneOf(appender).getName();
-            will(returnValue("BaseAppender3"));
-            oneOf(logger).getAppender("stdout"); will(returnValue(appender));
-            oneOf(logger).addAppender(with(aNonNull(CaptureAppender.class)));
-        }});
+        when(appender.getName()).thenReturn("BaseAppender3");
+        when(logger.getAppender("stdout")).thenReturn(appender);
 
         helper.addCaptureToLogger(logger, "stdout");
+        verify(logger).addAppender(argThat(any(CaptureAppender.class)));
     }
 
+    @Test
     public void testUnregister() {
         final AppenderAttachable logger = mock(AppenderAttachable.class);
 
-        checking(new Expectations() {{
-            oneOf(logger).removeAppender(CaptureAppender.getAppenderNameFor("R"));
-        }});
-
         helper.remove(logger, "R");
+        verify(logger).removeAppender(CaptureAppender.getAppenderNameFor("R"));
     }
 
+    @Test
     public void testClear() {
         final AppenderAttachable logger = mock(AppenderAttachable.class);
         final Appender appender = mock(Appender.class);
 
-        checking(new Expectations() {{
-            oneOf(appender).getName(); will(returnValue("R"));
-        }});
+        when(appender.getName()).thenReturn("R");
 
         final CaptureAppender dummyAppender = CaptureAppender.newAppenderFrom(appender);
 
-        checking(new Expectations() {{
-            oneOf(logger).getAppender(CaptureAppender.getAppenderNameFor("R"));
-            will(returnValue(dummyAppender));
-        }});
-
+        when(logger.getAppender(CaptureAppender.getAppenderNameFor("R"))).thenReturn(dummyAppender);
         helper.clear(logger, "R");
     }
 }

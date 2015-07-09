@@ -19,20 +19,26 @@
 
 package de.cologneintelligence.fitgoodies.parsers;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Fixture;
 import fit.Parse;
+import org.hamcrest.CoreMatchers;
+import org.junit.Test;
 
-/**
- * @author jwierum
- */
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
+
 public class SetupFixtureTest extends FitGoodiesTestCase {
-	public final void testSetup() throws Exception {
+	@Test
+	public void testSetup() throws Exception {
 	    final ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
 
-		assertNull(FixtureTools.parse("42", Long.class, null, helper));
+		assertThat(FixtureTools.parse("42", Long.class, null, helper), is(nullValue()));
 		final Fixture fixture = new SetupFixture();
 
 		final Parse table = new Parse("<table>"
@@ -41,6 +47,6 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 				+ "</table>");
 
 		fixture.doTable(table);
-		assertNotNull(FixtureTools.parse("42", Long.class, null, helper));
+		assertThat(FixtureTools.parse("42", Long.class, null, helper), not(CoreMatchers.is(nullValue())));
 	}
 }

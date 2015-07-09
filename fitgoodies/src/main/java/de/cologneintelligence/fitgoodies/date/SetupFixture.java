@@ -39,7 +39,6 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
  * <tr><td>format</td><td>dd.MM.yyyy hh:mm:ss</td></tr>
  * </table>
  *
- * @author jwierum
  */
 public class SetupFixture extends ActionFixture {
     /**
@@ -64,7 +63,7 @@ public class SetupFixture extends ActionFixture {
      * @see de.cologneintelligence.fitgoodies.date.SetupHelper#setLocale(String) SetupHelper.setLocale(String)
      * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getLocale() SetupHelper.getLocale()
      */
-    public final void locale(final String locale) {
+    public void locale(final String locale) {
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setLocale(locale);
     }
@@ -75,7 +74,7 @@ public class SetupFixture extends ActionFixture {
      * @see de.cologneintelligence.fitgoodies.date.SetupHelper#setFormat(String) SetupHelper.setFormat(String)
      * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getFormat() SetupHelper.getFormat()
      */
-    public final void format(final String format) {
+    public void format(final String format) {
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setFormat(format);
     }

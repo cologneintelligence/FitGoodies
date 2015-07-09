@@ -30,8 +30,6 @@ import fit.TypeAdapter;
  * This class takes a {@link de.cologneintelligence.fitgoodies.file.readers.FileRecordReader} and compares
  * the value of this reader with the content of the HTML table.
  *
- * @author jwierum
- * @version $Id$
  */
 public abstract class AbstractFileRecordReaderFixture extends
 		AbstractFileReaderFixture {
@@ -59,7 +57,7 @@ public abstract class AbstractFileRecordReaderFixture extends
 	 * Sets the underlying <code>FileRecordReader</code>.
 	 * @param recordReader the reader to use
 	 */
-	public final void setRecordReader(final FileRecordReader recordReader) {
+	public void setRecordReader(final FileRecordReader recordReader) {
 		reader = recordReader;
 	}
 

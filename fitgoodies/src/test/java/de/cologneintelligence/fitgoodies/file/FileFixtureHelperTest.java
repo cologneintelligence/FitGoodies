@@ -19,61 +19,89 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
-import de.cologneintelligence.fitgoodies.file.FileSelector;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.when;
 
 
-/**
- * @author jwierum
- */
 public class FileFixtureHelperTest extends FitGoodiesTestCase {
     private FileFixtureHelper helper;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         helper = new FileFixtureHelper();
     }
 
-    public final void testSelector() throws FileNotFoundException {
+    @Test
+    public void testSelector() throws FileNotFoundException {
         helper.setEncoding("utf-8");
         helper.setPattern(".*");
-        helper.setProvider(new DirectoryProviderMock());
+
+        File directory = mockDirectory(null,
+                "file1.txt",
+                "file2.txt",
+                "f.txt.bat");
+
+        when(directory.listFiles(argThat(any(FilenameFilter.class))))
+                .thenReturn(new File[]{
+                        new File("file1.txt"),
+                        new File("file2.txt"),
+                });
+
+        helper.setDirectory(directory);
 
         FileSelector fs = helper.getSelector();
-        assertEquals("file1.txt", fs.getFirstFile().filename());
+        assertThat(fs.getFirstFile().toString(), is(equalTo("file1.txt")));
 
         fs = helper.getSelector();
-        assertEquals("file1.txt", fs.getFirstFile().filename());
-
-        helper.setPattern(".*\\.bat");
-        fs = helper.getSelector();
-        assertEquals("f.txt.bat", fs.getFirstFile().filename());
-
-        fs = helper.getSelector();
-        assertEquals("f.txt.bat", fs.getFirstFile().filename());
+        assertThat(fs.getFirstFile().toString(), is(equalTo("file1.txt")));
     }
 
-    public final void testEncoding() {
+    @Test
+    public void testSelectorWithRegex() throws FileNotFoundException {
+        final String pattern = ".*\\.bat";
+        final File directory = mockDirectory(pattern, "f.txt.bat");
+
+        helper.setDirectory(directory);
+
+        helper.setPattern(pattern);
+        FileSelector fs = helper.getSelector();
+        assertThat(fs.getFirstFile().toString(), is(equalTo("f.txt.bat")));
+
+        fs = helper.getSelector();
+        assertThat(fs.getFirstFile().toString(), is(equalTo("f.txt.bat")));
+    }
+
+    @Test
+    public void testEncoding() {
         helper.setEncoding("utf-8");
-        assertEquals("utf-8", helper.getEncoding());
+        assertThat(helper.getEncoding(), is(equalTo("utf-8")));
 
         helper.setEncoding("latin-1");
-        assertEquals("latin-1", helper.getEncoding());
+        assertThat(helper.getEncoding(), is(equalTo("latin-1")));
     }
 
-    public final void testPattern() {
+    @Test
+    public void testPattern() {
         helper.setPattern("*\\.txt");
-        assertEquals("*\\.txt", helper.getPattern());
+        assertThat(helper.getPattern(), is(equalTo("*\\.txt")));
 
         helper.setPattern("*\\.bat");
-        assertEquals("*\\.bat", helper.getPattern());
+        assertThat(helper.getPattern(), is(equalTo("*\\.bat")));
     }
 
-    public final void testDirectory() {
-        helper.setProvider(new DirectoryProviderMock());
-        assertEquals("/test", helper.getProvider().getPath());
+    @Test
+    public void testDirectory() {
+        helper.setDirectory(new File("test"));
+        assertThat(helper.getDirectory().getPath(), is(equalTo("test")));
     }
 }

@@ -19,42 +19,48 @@
 
 package de.cologneintelligence.fitgoodies.mail;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.Properties;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.mail.SetupHelper;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 
-/**
- * @author jwierum
- */
 public final class SetupHelperTest extends FitGoodiesTestCase {
     private SetupHelper helper;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         helper = DependencyManager.getOrCreate(SetupHelper.class);
     }
 
+    @Test
     public void testErrors() {
         try {
             helper.generateProperties();
-            fail("Expected error: no protocol set");
+            Assert.fail("Expected error: no protocol set");
         } catch (RuntimeException e) {
-            assertContains("protocol", e.getMessage());
+            assertThat(e.getMessage(), containsString("protocol"));
         }
 
         helper.setProtocol("imap");
         try {
             helper.generateProperties();
-            fail("Expected error: no inbox set");
+            Assert.fail("Expected error: no inbox set");
         } catch (RuntimeException e) {
-            assertContains("inbox", e.getMessage());
+            assertThat(e.getMessage(), containsString("inbox"));
         }
     }
 
+    @Test
     public void testPOP3Setters1() {
         helper.setProtocol("pOp3");
         helper.setUsername("user");
@@ -65,14 +71,15 @@ public final class SetupHelperTest extends FitGoodiesTestCase {
 
         Properties p = helper.generateProperties();
 
-        assertEquals("pop3", p.getProperty("mail.store.protocol"));
-        assertEquals("127.0.0.1", p.getProperty("mail.pop3.host"));
-        assertEquals("42", p.getProperty("mail.pop3.port"));
-        assertEquals("user", p.getProperty("mail.username"));
-        assertEquals("password", p.getProperty("mail.password"));
-        assertEquals("INBOX", p.getProperty("mail.inbox"));
+        assertThat(p.getProperty("mail.store.protocol"), is(equalTo("pop3")));
+        assertThat(p.getProperty("mail.pop3.host"), is(equalTo("127.0.0.1")));
+        assertThat(p.getProperty("mail.pop3.port"), is(equalTo("42")));
+        assertThat(p.getProperty("mail.username"), is(equalTo("user")));
+        assertThat(p.getProperty("mail.password"), is(equalTo("password")));
+        assertThat(p.getProperty("mail.inbox"), is(equalTo("INBOX")));
     }
 
+    @Test
     public void testPOP3Setters2() {
         helper.setProtocol("POP3");
         helper.setUsername("jw");
@@ -82,14 +89,15 @@ public final class SetupHelperTest extends FitGoodiesTestCase {
 
         Properties p = helper.generateProperties();
 
-        assertEquals("pop3", p.getProperty("mail.store.protocol"));
-        assertEquals("mail.mycompany.xx", p.getProperty("mail.pop3.host"));
-        assertEquals("jw", p.getProperty("mail.username"));
-        assertEquals("secret", p.getProperty("mail.password"));
-        assertEquals("INBOX", p.getProperty("mail.inbox"));
-        assertNull(p.getProperty("mail.pop3.port"));
+        assertThat(p.getProperty("mail.store.protocol"), is(equalTo("pop3")));
+        assertThat(p.getProperty("mail.pop3.host"), is(equalTo("mail.mycompany.xx")));
+        assertThat(p.getProperty("mail.username"), is(equalTo("jw")));
+        assertThat(p.getProperty("mail.password"), is(equalTo("secret")));
+        assertThat(p.getProperty("mail.inbox"), is(equalTo("INBOX")));
+        assertThat(p.getProperty("mail.pop3.port"), is(nullValue()));
     }
 
+    @Test
     public void testIMAPSetters1() {
         helper.setProtocol("imap");
         helper.setUsername("u");
@@ -101,15 +109,16 @@ public final class SetupHelperTest extends FitGoodiesTestCase {
 
         Properties p = helper.generateProperties();
 
-        assertEquals("imap", p.getProperty("mail.store.protocol"));
-        assertEquals("localhost", p.getProperty("mail.imap.host"));
-        assertEquals("u", p.getProperty("mail.username"));
-        assertEquals("p", p.getProperty("mail.password"));
-        assertEquals("inbx", p.getProperty("mail.inbox"));
-        assertEquals("23", p.getProperty("mail.imap.port"));
-        assertNull(p.getProperty("mail.imap.ssl"));
+        assertThat(p.getProperty("mail.store.protocol"), is(equalTo("imap")));
+        assertThat(p.getProperty("mail.imap.host"), is(equalTo("localhost")));
+        assertThat(p.getProperty("mail.username"), is(equalTo("u")));
+        assertThat(p.getProperty("mail.password"), is(equalTo("p")));
+        assertThat(p.getProperty("mail.inbox"), is(equalTo("inbx")));
+        assertThat(p.getProperty("mail.imap.port"), is(equalTo("23")));
+        assertThat(p.getProperty("mail.imap.ssl"), is(nullValue()));
     }
 
+    @Test
     public void testIMAPSetters2() {
         helper.setProtocol("IMAP");
         helper.setUsername("user");
@@ -120,14 +129,15 @@ public final class SetupHelperTest extends FitGoodiesTestCase {
 
         Properties p = helper.generateProperties();
 
-        assertEquals("imap", p.getProperty("mail.store.protocol"));
-        assertEquals("mail", p.getProperty("mail.imap.host"));
-        assertEquals("user", p.getProperty("mail.username"));
-        assertEquals("pass", p.getProperty("mail.password"));
-        assertEquals("home", p.getProperty("mail.inbox"));
-        assertEquals("true", p.getProperty("mail.imap.ssl"));
+        assertThat(p.getProperty("mail.store.protocol"), is(equalTo("imap")));
+        assertThat(p.getProperty("mail.imap.host"), is(equalTo("mail")));
+        assertThat(p.getProperty("mail.username"), is(equalTo("user")));
+        assertThat(p.getProperty("mail.password"), is(equalTo("pass")));
+        assertThat(p.getProperty("mail.inbox"), is(equalTo("home")));
+        assertThat(p.getProperty("mail.imap.ssl"), is(equalTo("true")));
     }
 
+    @Test
     public void testUnset() {
         helper.setProtocol("IMAP");
         helper.setUsername("user");
@@ -136,6 +146,6 @@ public final class SetupHelperTest extends FitGoodiesTestCase {
 
         Properties p = helper.generateProperties();
 
-        assertNull(p.getProperty("mail.password"));
+        assertThat(p.getProperty("mail.password"), is(nullValue()));
     }
 }

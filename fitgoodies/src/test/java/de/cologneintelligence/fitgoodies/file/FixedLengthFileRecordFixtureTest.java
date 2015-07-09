@@ -19,21 +19,21 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import java.text.ParseException;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.FixedLengthFileRecordFixture;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
 import fit.Parse;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import java.text.ParseException;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+
 public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {
-    public final void testExtractWidth() throws ParseException {
+    @Test
+    public void testExtractWidth() throws ParseException {
         FixedLengthFileRecordFixture fixture = new FixedLengthFileRecordFixture();
 
         Parse row = new Parse("<tr><td>1</td><td>7</td><td>4</td></tr>",
@@ -41,24 +41,25 @@ public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {
 
         int[] actual = fixture.extractWidth(row);
 
-        assertEquals(3, actual.length);
-        assertEquals(1, actual[0]);
-        assertEquals(7, actual[1]);
-        assertEquals(4, actual[2]);
+        assertThat(actual.length, is(equalTo((Object) 3)));
+        assertThat(actual[0], is(equalTo((Object) 1)));
+        assertThat(actual[1], is(equalTo((Object) 7)));
+        assertThat(actual[2], is(equalTo((Object) 4)));
 
         row = new Parse("<tr><td>3</td><td>1</td><td>9</td><td>0</td></tr>",
                 new String[]{"tr", "td"});
 
         actual = fixture.extractWidth(row);
 
-        assertEquals(4, actual.length);
-        assertEquals(3, actual[0]);
-        assertEquals(1, actual[1]);
-        assertEquals(9, actual[2]);
-        assertEquals(0, actual[3]);
+        assertThat(actual.length, is(equalTo((Object) 4)));
+        assertThat(actual[0], is(equalTo((Object) 3)));
+        assertThat(actual[1], is(equalTo((Object) 1)));
+        assertThat(actual[2], is(equalTo((Object) 9)));
+        assertThat(actual[3], is(equalTo((Object) 0)));
     }
 
-    public final void testExtractWidthWithCrossRefs() throws Exception {
+    @Test
+    public void testExtractWidthWithCrossRefs() throws Exception {
         FixedLengthFileRecordFixture fixture = new FixedLengthFileRecordFixture();
 
         Parse row = new Parse("<tr><td>1</td><td>${width.get(col2)}</td></tr>",
@@ -68,12 +69,13 @@ public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {
         helper.parseBody("${width.put(col2)}", 23);
         int[] actual = fixture.extractWidth(row);
 
-        assertEquals(2, actual.length);
-        assertEquals(1, actual[0]);
-        assertEquals(23, actual[1]);
+        assertThat(actual.length, is(equalTo((Object) 2)));
+        assertThat(actual[0], is(equalTo((Object) 1)));
+        assertThat(actual[1], is(equalTo((Object) 23)));
     }
 
-    public final void testErrors() throws ParseException {
+    @Test
+    public void testErrors() throws ParseException {
         FixedLengthFileRecordFixture fixture = new FixedLengthFileRecordFixture();
 
         Parse row = new Parse("<tr><td>1</td><td>error</td><td>4</td></tr>",
@@ -81,8 +83,8 @@ public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {
 
         int[] actual = fixture.extractWidth(row);
 
-        assertNull(actual);
-        assertEquals(1, fixture.counts.exceptions);
-        assertContains("NumberFormatException", row.parts.more.text());
+        assertThat(actual, is(nullValue()));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+        assertThat(row.parts.more.text(), containsString("NumberFormatException"));
     }
 }

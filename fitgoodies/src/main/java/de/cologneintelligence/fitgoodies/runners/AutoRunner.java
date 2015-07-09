@@ -26,43 +26,40 @@ import java.io.File;
  * Useful for command line invokes.<br /><br />
  * Usage: <code>java -classpath /path/to/fit.jar:/path/to/fitgoodies.jar:...
  * fitgoodies.runners.AutoRunner input output [encoding]</code>
- *
- * @author jwierum
- * @version $Id$
  */
+@Deprecated
 public final class AutoRunner {
-	private AutoRunner() { }
+    private AutoRunner() {
+    }
 
-	private static void error() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("Usage:\n");
-		msg.append("AutoRunner input output [encoding]\n");
-		msg.append("input    - input file or directory\n");
-		msg.append("output   - output file or directory\n");
-		msg.append("encoding - encoding to use\n");
-		throw new IllegalArgumentException(msg.toString());
-	}
+    private static void error() {
+        throw new IllegalArgumentException("Usage:\n" +
+                "AutoRunner input output [encoding]\n" +
+                "input    - input file or directory\n" +
+                "output   - output file or directory\n" +
+                "encoding - encoding to use\n");
+    }
 
-	/**
-	 * Entry point.
-	 * Calls either a {@link DirectoryRunner} or a {@link FileRunner}, depending
-	 * of the type of the first parameter (directory / file).
-	 *
-	 * @param args program parameters
-	 */
-	public static void main(final String[] args) {
-		if (args.length < 2 || args.length > 3) {
-			error();
-		}
+    /**
+     * Entry point.
+     * Calls either a {@link DirectoryRunner} or a {@link FileRunner}, depending
+     * of the type of the first parameter (directory / file).
+     *
+     * @param args program parameters
+     */
+    public static void main(final String[] args) throws Throwable {
+        if (args.length < 2 || args.length > 3) {
+            error();
+        }
 
-		File input = new File(args[0]);
+        File input = new File(args[0]);
 
-		if (input.isDirectory()) {
-			DirectoryRunner.main(args);
-		} else if (input.isFile()) {
-			FileRunner.main(args);
-		} else {
-			error();
-		}
-	}
+        if (input.isDirectory()) {
+            DirectoryRunner.main(args);
+        } else if (input.isFile()) {
+            FileRunner.main(args);
+        } else {
+            error();
+        }
+    }
 }

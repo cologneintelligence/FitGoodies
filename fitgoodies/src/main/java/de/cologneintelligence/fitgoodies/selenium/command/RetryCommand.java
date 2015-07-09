@@ -36,6 +36,8 @@ public class RetryCommand extends WrappedCommand {
 
     @Override
     public String execute() {
+        // FIXME: move the creation of Retry into a abstract factory! We do not want sleep() calls or any time
+        // dependent source in our tests
         final Retry retry = new Retry(helper.getRetryTimeout(), helper.getRetryInterval()) {
             private String result;
             @Override

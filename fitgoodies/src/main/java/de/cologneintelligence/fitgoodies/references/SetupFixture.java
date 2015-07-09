@@ -35,8 +35,6 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
  *  <tr><td>remove</td><td>com.example.MyOtherReferenceProcessor</td></tr>
  * </table>
  *
- * @author jwierum
- * @version $Id$
  */
 public class SetupFixture extends ActionFixture {
     private final Processors processors;
@@ -87,7 +85,7 @@ public class SetupFixture extends ActionFixture {
      * 		casted or initialized
      * @see #remove() remove()
      */
-    public final void remove(final String module) throws Exception {
+    public void remove(final String module) throws Exception {
         Class<?> c = null;
         c = Class.forName(module);
 
@@ -106,7 +104,7 @@ public class SetupFixture extends ActionFixture {
      * 		casted or initialized
      * @see #remove() remove()
      */
-    public final void use(final String module) throws Exception {
+    public void use(final String module) throws Exception {
         AbstractCrossReferenceProcessor processor;
         processor = (AbstractCrossReferenceProcessor)
                 Class.forName(module).newInstance();

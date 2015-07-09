@@ -29,8 +29,6 @@ import fit.Parse;
 /**
  * Analyzes log events using an {@link AbstractLoggingEventMatcher}.
  *
- * @author jwierum
- * @version $Id$
  */
 public final class LogEventAnalyzerImpl implements LogEventAnalyzer {
 	private final Fixture parent;

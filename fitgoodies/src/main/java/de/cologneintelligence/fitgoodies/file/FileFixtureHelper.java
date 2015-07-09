@@ -19,16 +19,17 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
+import java.io.File;
+
 /**
  * Helper class to provide a possibility to select files.
  *
  * @see FileFixture FileFixture
- * @author jwierum
  */
 public final class FileFixtureHelper {
     private String encoding;
     private String pattern;
-    private DirectoryProvider provider;
+    private File directory;
 
     /**
      * Sets the encoding.
@@ -43,7 +44,7 @@ public final class FileFixtureHelper {
      * Gets the encoding.
      * @return the encoding
      * @see #setEncoding(String) setEncoding()
-     * @see #encoding() encoding()
+     * @see #getEncoding getEncoding()
      */
     public String getEncoding() {
         return encoding;
@@ -54,22 +55,19 @@ public final class FileFixtureHelper {
      * the matching files.
      * @return instance of <code>FileSelector</code> which provides all matching
      * 		files
-     *
-     * @see #selector() selector()
      */
     public FileSelector getSelector() {
-        FileSelector fs = new FileSelector(provider, pattern);
-        return fs;
+        return new FileSelector(directory, pattern);
     }
 
     /**
      * Sets the directory provider. The directory provider is used to browse
      * for matching files.
-     * @param directoryProvider selected directory
-     * @see #getProvider() getProvider
+     * @param directory selected directory
+     * @see #getDirectory() getProvider
      */
-    public void setProvider(final DirectoryProvider directoryProvider) {
-        this.provider = directoryProvider;
+    public void setDirectory(final File directory) {
+        this.directory = directory;
     }
 
     /**
@@ -86,7 +84,6 @@ public final class FileFixtureHelper {
      * @return the selected pattern
      *
      * @see #setPattern(String) setPattern()
-     * @see #pattern() pattern()
      */
     public String getPattern() {
         return pattern;
@@ -95,9 +92,9 @@ public final class FileFixtureHelper {
     /**
      * Returns the selected directory.
      * @return the selected directory
-     * @see #setProvider(DirectoryProvider) setProvider
+     * @see #setDirectory(File) setProvider
      */
-    public DirectoryProvider getProvider() {
-        return provider;
+    public File getDirectory() {
+        return directory;
     }
 }

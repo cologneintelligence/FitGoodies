@@ -19,36 +19,40 @@
 
 package de.cologneintelligence.fitgoodies.dynamic;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.hamcrest.Matcher;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.lang.reflect.Field;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.dynamic.DynamicObjectFactory;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 
-/**
- *
- * @author jwierum
- */
 public class DynamicObjectFactoryTest extends FitGoodiesTestCase {
 	private DynamicObjectFactory factory;
 
-	@Override
-	public final void setUp() throws Exception {
-		super.setUp();
+	@Before
+	public void setUp() throws Exception {
 		factory = new DynamicObjectFactory();
 	}
 
-	public final void testCreation() throws Exception {
+	@Test
+	public void testCreation() throws Exception {
 		factory.add(String.class, "value");
 		factory.add(Integer.TYPE, "number");
 		Class<?> c = factory.compile();
 
 		Object o = c.newInstance();
-		assertEquals(Integer.TYPE, o.getClass().getField("number").getType());
-		assertEquals(String.class, o.getClass().getField("value").getType());
+		assertThat(o.getClass().getField("number").getType(), (Matcher) is(equalTo(Integer.TYPE)));
+		assertThat(o.getClass().getField("value").getType(), (Matcher) is(equalTo(String.class)));
 	}
 
-	public final void testComplexCreationTest() throws Exception {
+	@Test
+	public void testComplexCreationTest() throws Exception {
 		factory.add(StringBuilder.class, "text");
 		Object o = factory.compile().newInstance();
 
@@ -59,18 +63,19 @@ public class DynamicObjectFactoryTest extends FitGoodiesTestCase {
 		sb.append("Hello ");
 		sb.append("World!");
 
-		assertEquals("Hello World!", sbField.get(o).toString());
+		assertThat(sbField.get(o).toString(), is(equalTo("Hello World!")));
 	}
 
-	public final void testMultipleCreations() throws Exception {
+	@Test
+	public void testMultipleCreations() throws Exception {
 		// no tests here, it just must not fail
 		factory.add(Integer.TYPE, "number");
 		factory.compile();
 
 		try {
 			factory.add(Integer.TYPE, "count");
-			fail("Could modify compiled class");
-		} catch (IllegalStateException e) {
+			Assert.fail("Could modify compiled class");
+		} catch (IllegalStateException ignored) {
 		}
 
 		factory = new DynamicObjectFactory();

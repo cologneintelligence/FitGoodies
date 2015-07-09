@@ -19,23 +19,24 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.IteratorHelper;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 
-/**
- *
- * @author jwierum
- */
 public class IteratorHelperTest extends FitGoodiesTestCase {
-	public final void testIterator() {
+	@Test
+	public void testIterator() {
 		ArrayList<Object> al = new ArrayList<Object>();
 		Iterator<Object> iterator = al.iterator();
 		Iterable<Object> iterable = new IteratorHelper<Object>(iterator);
 
-		assertSame(iterator, iterable.iterator());
+		assertThat(iterable.iterator(), is(sameInstance(iterator)));
 	}
 }

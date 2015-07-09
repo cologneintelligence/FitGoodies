@@ -19,25 +19,34 @@
 
 package de.cologneintelligence.fitgoodies.alias;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 public final class AliasHelperTest extends FitGoodiesTestCase {
     private AliasHelper helper;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         helper = new AliasHelper();
     }
 
+    @Test
     public void testGetDefaultClass()  {
         String actual = helper.getClazz("java.lang.String");
-        assertEquals("java.lang.String", actual);
+        assertThat(actual, is(equalTo("java.lang.String")));
 
         actual = helper.getClazz("java.lang.Integer");
-        assertEquals("java.lang.Integer", actual);
+        assertThat(actual, is(equalTo("java.lang.Integer")));
     }
 
+    @Test
     public void testGetFitgoodiesMapping() {
         assertMapping("fitgoodies.ActionFixture");
         assertMapping("fitgoodies.ColumnFixture");
@@ -72,34 +81,36 @@ public final class AliasHelperTest extends FitGoodiesTestCase {
     private void assertMapping(final String className) {
         final String actual = helper.getClazz(className);
         final String expected = "de.cologneintelligence." + className;
-        assertEquals(expected, actual);
+        assertThat(actual, is(equalTo(expected)));
         try {
-            assertNotNull(Class.forName(actual));
+            assertThat(Class.forName(actual), not(CoreMatchers.is(nullValue())));
         } catch (final ClassNotFoundException e) {
-            fail("The referenced fixture " + actual + " does not exist");
+            Assert.fail("The referenced fixture " + actual + " does not exist");
         }
     }
 
+    @Test
     public void testAddAlias() throws ClassNotFoundException {
-        assertEquals("test", helper.getClazz("test"));
+        assertThat(helper.getClazz("test"), is(equalTo("test")));
 
         helper.register("test", "fitgoodies.MyFixture");
-        assertEquals("fitgoodies.MyFixture", helper.getClazz("test"));
+        assertThat(helper.getClazz("test"), is(equalTo("fitgoodies.MyFixture")));
 
         helper.register("test", "fitgoodies.MyActionFixture");
-        assertEquals("fitgoodies.MyActionFixture", helper.getClazz("test"));
+        assertThat(helper.getClazz("test"), is(equalTo("fitgoodies.MyActionFixture")));
 
-        assertEquals("test2", helper.getClazz("test2"));
+        assertThat(helper.getClazz("test2"), is(equalTo("test2")));
 
         helper.register("test2", "fitgoodies.MyRowFixture");
-        assertEquals("fitgoodies.MyRowFixture", helper.getClazz("test2"));
+        assertThat(helper.getClazz("test2"), is(equalTo("fitgoodies.MyRowFixture")));
     }
 
+    @Test
     public void testRecursiveAliases() {
         helper.register("test", "test2");
         helper.register("test2", "test3");
         helper.register("test3", "ok");
 
-        assertEquals("ok", helper.getClazz("test"));
+        assertThat(helper.getClazz("test"), is(equalTo("ok")));
     }
 }

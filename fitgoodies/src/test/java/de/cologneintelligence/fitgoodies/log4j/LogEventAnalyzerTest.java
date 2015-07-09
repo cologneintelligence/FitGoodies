@@ -18,41 +18,33 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import fit.Fixture;
+import fit.Parse;
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.spi.ThrowableInformation;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.spi.ThrowableInformation;
-import org.jmock.Expectations;
-import org.jmock.lib.legacy.ClassImposteriser;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.log4j.LogEventAnalyzer;
-import de.cologneintelligence.fitgoodies.log4j.LogEventAnalyzerImpl;
 
-import fit.Fixture;
-import fit.Parse;
-
-/**
- * @author jwierum
- * @version $Id$
- *
- */
 public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
-	public LogEventAnalyzerTest() {
-		setImposteriser(ClassImposteriser.INSTANCE);
-	}
-
 	private LoggingEvent[] list;
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-
+	@Before
+	public void setUp() throws Exception {
 		list = prepareCheckForGreenTest();
 	}
 
@@ -70,28 +62,19 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 				new ThrowableInformation(new RuntimeException("yyy")),
 				null, null, null));
 
-		return list.toArray(new LoggingEvent[]{});
+		return list.toArray(new LoggingEvent[list.size()]);
 	}
 
 	private Parse makeCell(final String string) throws ParseException {
 		return new Parse("<td>" + string + "</td>", new String[]{"td"});
 	}
 
+	@Test
 	public void testParseContains() throws ParseException {
 		final Fixture fixture = mock(Fixture.class);
 		final Parse cell1 = makeCell("a message");
 		final Parse cell2 = makeCell("rOOt");
 		final Parse cell3 = makeCell("non existing message");
-
-		checking(new Expectations() {{
-			oneOf(fixture).right(cell1);
-			oneOf(fixture).right(cell2);
-			oneOf(fixture).wrong(cell3);
-			oneOf(fixture).info(cell1, "(expected)");
-			oneOf(fixture).info(cell1, "(actual)");
-			oneOf(fixture).info(cell2, "(expected)");
-			oneOf(fixture).info(cell2, "(actual)");
-		}});
 
 		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(
 				fixture, cell1, list);
@@ -103,26 +86,26 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		analyzer = new LogEventAnalyzerImpl(fixture, cell3, list);
 		analyzer.processContains(new HashMap<String, String>());
 
-		assertEquals("a messagea message", cell1.text());
-		assertEquals("rOOta root message", cell2.text());
-		assertEquals("non existing message", cell3.text());
+		assertThat(cell1.text(), is(equalTo("a messagea message")));
+		assertThat(cell2.text(), is(equalTo("rOOta root message")));
+		assertThat(cell3.text(), is(equalTo("non existing message")));
+
+		verify(fixture).right(cell1);
+		verify(fixture).right(cell2);
+		verify(fixture).wrong(cell3);
+		verify(fixture).info(cell1, "(expected)");
+		verify(fixture).info(cell1, "(actual)");
+		verify(fixture).info(cell2, "(expected)");
+		verify(fixture).info(cell2, "(actual)");
 	}
 
+	@Test
 	public void testParseWithParameters() throws ParseException {
 		final Fixture fixture = mock(Fixture.class);
 		final Parse cell1 = makeCell("no error");
 		final Parse cell2 = makeCell("root");
 		final Parse cell3 = makeCell("no error");
 		final Parse cell4 = makeCell("no error");
-
-		checking(new Expectations() {{
-			oneOf(fixture).right(cell1);
-			oneOf(fixture).right(cell2);
-			oneOf(fixture).right(cell3);
-			oneOf(fixture).wrong(cell4);
-			oneOf(fixture).info(cell1, "(expected)");
-			oneOf(fixture).info(cell1, "(actual)");
-		}});
 
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("minlevel", "Info");
@@ -145,26 +128,26 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		analyzer = new LogEventAnalyzerImpl(fixture, cell4, list);
 		analyzer.processContains(parameters);
 
-		assertEquals("no errorno error", cell1.text());
-		assertEquals("root", cell2.text());
-		assertEquals("no error", cell3.text());
-		assertEquals("no error", cell4.text());
+		assertThat(cell1.text(), is(equalTo("no errorno error")));
+		assertThat(cell2.text(), is(equalTo("root")));
+		assertThat(cell3.text(), is(equalTo("no error")));
+		assertThat(cell4.text(), is(equalTo("no error")));
+
+		verify(fixture).right(cell1);
+		verify(fixture).right(cell2);
+		verify(fixture).right(cell3);
+		verify(fixture).wrong(cell4);
+		verify(fixture).info(cell1, "(expected)");
+		verify(fixture).info(cell1, "(actual)");
 	}
 
+	@Test
 	public void testNotContains() throws ParseException {
 		final Fixture fixture = mock(Fixture.class);
 		final Parse cell1 = makeCell("an error");
 		final Parse cell2 = makeCell("toor");
 		final Parse cell3 = makeCell("root");
 
-		checking(new Expectations() {{
-			oneOf(fixture).right(cell1);
-			oneOf(fixture).right(cell2);
-			oneOf(fixture).wrong(cell3);
-			oneOf(fixture).info(cell3, "(expected)");
-			oneOf(fixture).info(cell3, "(actual)");
-		}});
-
 		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(
 				fixture, cell1, list);
 		analyzer.processNotContains(new HashMap<String, String>());
@@ -175,27 +158,24 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		analyzer = new LogEventAnalyzerImpl(fixture, cell3, list);
 		analyzer.processNotContains(new HashMap<String, String>());
 
-		assertEquals("an error", cell1.text());
-		assertEquals("toor", cell2.text());
-		assertEquals("roota root message", cell3.text());
+		assertThat(cell1.text(), is(equalTo("an error")));
+		assertThat(cell2.text(), is(equalTo("toor")));
+		assertThat(cell3.text(), is(equalTo("roota root message")));
+
+		verify(fixture).right(cell1);
+		verify(fixture).right(cell2);
+		verify(fixture).wrong(cell3);
+		verify(fixture).info(cell3, "(expected)");
+		verify(fixture).info(cell3, "(actual)");
 	}
 
+	@Test
 	public void testContainsException() throws ParseException {
 		final Fixture fixture = mock(Fixture.class);
 		final Parse cell1 = makeCell("xXx");
 		final Parse cell2 = makeCell("RuntiMEException");
 		final Parse cell3 = makeCell("IllegalStateException");
 
-		checking(new Expectations() {{
-			oneOf(fixture).right(cell1);
-			oneOf(fixture).right(cell2);
-			oneOf(fixture).wrong(cell3);
-			oneOf(fixture).info(cell1, "(expected)");
-			oneOf(fixture).info(cell1, "(actual)");
-			oneOf(fixture).info(cell2, "(expected)");
-			oneOf(fixture).info(cell2, "(actual)");
-		}});
-
 		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(
 				fixture, cell1, list);
 		analyzer.processContainsException(new HashMap<String, String>());
@@ -206,27 +186,27 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		analyzer = new LogEventAnalyzerImpl(fixture, cell3, list);
 		analyzer.processContainsException(new HashMap<String, String>());
 
-		assertEquals("xXxjava.lang.RuntimeException: xxx", cell1.text());
-		assertEquals("RuntiMEExceptionjava.lang.RuntimeException: xxx", cell2.text());
-		assertEquals("IllegalStateException", cell3.text());
+		assertThat(cell1.text(), is(equalTo("xXxjava.lang.RuntimeException: xxx")));
+		assertThat(cell2.text(), is(equalTo("RuntiMEExceptionjava.lang.RuntimeException: xxx")));
+		assertThat(cell3.text(), is(equalTo("IllegalStateException")));
+
+		verify(fixture).right(cell1);
+		verify(fixture).right(cell2);
+		verify(fixture).wrong(cell3);
+		verify(fixture).info(cell1, "(expected)");
+		verify(fixture).info(cell1, "(actual)");
+		verify(fixture).info(cell2, "(expected)");
+		verify(fixture).info(cell2, "(actual)");
 	}
 
+	@Test
 	public void testNotContainsException() throws ParseException {
 		final Fixture fixture = mock(Fixture.class);
 		final Parse cell1 = makeCell("Error message");
 		final Parse cell2 = makeCell("IllegalStateException");
 		final Parse cell3 = makeCell("Exception");
 
-		checking(new Expectations() {{
-			oneOf(fixture).right(cell1);
-			oneOf(fixture).right(cell2);
-			oneOf(fixture).wrong(cell3);
-			oneOf(fixture).info(cell3, "(expected)");
-			oneOf(fixture).info(cell3, "(actual)");
-		}});
-
-		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(
-				fixture, cell1, list);
+		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(fixture, cell1, list);
 		analyzer.processNotContainsException(new HashMap<String, String>());
 
 		analyzer = new LogEventAnalyzerImpl(fixture, cell2, list);
@@ -235,8 +215,14 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		analyzer = new LogEventAnalyzerImpl(fixture, cell3, list);
 		analyzer.processNotContainsException(new HashMap<String, String>());
 
-		assertEquals("Error message", cell1.text());
-		assertEquals("IllegalStateException", cell2.text());
-		assertEquals("Exceptionjava.lang.RuntimeException: xxx", cell3.text());
+		assertThat(cell1.text(), is(equalTo("Error message")));
+		assertThat(cell2.text(), is(equalTo("IllegalStateException")));
+		assertThat(cell3.text(), is(equalTo("Exceptionjava.lang.RuntimeException: xxx")));
+
+		verify(fixture).right(cell1);
+		verify(fixture).right(cell2);
+		verify(fixture).wrong(cell3);
+		verify(fixture).info(cell3, "(expected)");
+		verify(fixture).info(cell3, "(actual)");
 	}
 }

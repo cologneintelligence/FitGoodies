@@ -30,8 +30,6 @@ package de.cologneintelligence.fitgoodies;
  * So <code>1</code> is returned, which does not boost the performance, but
  * at least, it works.
  *
- * @author jwierum
- * @version $Id$
  */
 public class ScientificDouble extends fit.ScientificDouble {
 	private static final long serialVersionUID = 516631298066483532L;

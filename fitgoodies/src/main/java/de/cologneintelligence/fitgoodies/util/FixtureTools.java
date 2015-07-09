@@ -19,12 +19,6 @@
 
 package de.cologneintelligence.fitgoodies.util;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import de.cologneintelligence.fitgoodies.adapters.CachingTypeAdapter;
 import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
 import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
@@ -34,10 +28,16 @@ import fit.Fixture;
 import fit.Parse;
 import fit.TypeAdapter;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Helper class with static methods which provides functions for all fixtures.
  *
- * @author jwierum
  */
 public final class FixtureTools {
     private static Pattern parameterPattern = Pattern.compile("^(.*)\\s*\\[\\s*(.*?)\\s*\\]\\s*$");
@@ -78,7 +78,6 @@ public final class FixtureTools {
      * @param cell the cell to parse
      * @param ta the type bound adapter which is used to compare the cell content
      * @param parent the parent fixture
-     * @param crossReferenceHelper
      * @return a cached <code>TypeAdapter</code>, whether the cell should be
      * 		<code>check</code>'ed, <code>null</code> if no more processing is
      * 		required (the cell is then marked as right or wrong from
@@ -166,7 +165,6 @@ public final class FixtureTools {
      * If no suitable TypeAdapter could be found, the old one is returned.
      * @param ta the <code>TypeAdapter</code> to replace.
      * @param parameter column/row parameter
-     * @param taHelper
      * @return a TypeAdapter
      */
     public static TypeAdapter rebindTypeAdapter(final TypeAdapter ta,
@@ -191,7 +189,7 @@ public final class FixtureTools {
      * @return the argument's value without namespaces, or defaultValue
      *
      * @see #getArgs(String[]) getArgs
-     * @see #copyParamsToFixture(String[], Fixture) copyParamsToFixture
+     * @see #copyParamsToFixture(String[], Fixture, CrossReferenceHelper, TypeAdapterHelper) copyParamsToFixture
      */
     public static String getArg(final String[] args, final String argName,
             final String defaultValue, final CrossReferenceHelper crossReferenceHelper) {
@@ -237,8 +235,8 @@ public final class FixtureTools {
      * @param args argument list to process (this is usually fixture.args)
      * @return a list of all given argument names.
      *
-     * @see #getArg(String[], String, String) getArg
-     * @see #copyParamsToFixture(String[], Fixture) copyParamsToFixture
+     * @see #getArg(String[], String, String, CrossReferenceHelper) getArg
+     * @see #copyParamsToFixture(String[], Fixture, CrossReferenceHelper, TypeAdapterHelper) copyParamsToFixture
      */
     public static String[] getArgs(final String[] args) {
         final List<String> result = new ArrayList<String>();
@@ -254,7 +252,7 @@ public final class FixtureTools {
             }
         }
 
-        return result.toArray(new String[]{});
+        return result.toArray(new String[result.size()]);
     }
 
     /**
@@ -262,14 +260,12 @@ public final class FixtureTools {
      * with the same name.
      *
      * If these members do not exist, the argument is skipped. You can still
-     * read the values using {@link FixtureTools#getArg(String[], String, String)}.
+     * read the values using {@link FixtureTools#getArg(String[], String, String, CrossReferenceHelper)}.
      *
      * @param args argument list to process
      * @param fixture fixture to copy the values to
-     * @param crossReferenceHelper
-     * @param taHelper
      *
-     * @see #getArg(String[], String, String) getArg
+     * @see #getArg(String[], String, String, CrossReferenceHelper) getArg
      * @see #getArgs(String[]) getArgs
      */
     public static void copyParamsToFixture(final String[] args, final Fixture fixture,
@@ -284,7 +280,7 @@ public final class FixtureTools {
                 final String fieldValueString = getArg(args, fieldName, null, crossReferenceHelper);
                 final Object fieldValue = ta.parse(fieldValueString);
                 ta.set(fieldValue);
-            } catch (final Exception e) {
+            } catch (final Exception ignored) {
             }
         }
     }
@@ -303,7 +299,7 @@ public final class FixtureTools {
             cell = cell.more;
         }
 
-        return result.toArray(new String[]{});
+        return result.toArray(new String[result.size()]);
     }
 
     /**
@@ -319,5 +315,13 @@ public final class FixtureTools {
         } else {
             return null;
         }
+    }
+
+    public static String htmlSafeFile(File file) {
+        return htmlSafeFile(file.getPath());
+    }
+
+    public static String htmlSafeFile(String file) {
+        return file.replace(File.separatorChar, '/');
     }
 }

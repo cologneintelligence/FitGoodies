@@ -28,8 +28,6 @@ import fit.TypeAdapter;
  * This is important if you use a database which returns something like CHAR(20)
  * and you don't want to type in all spaces into yout HTML table.
  *
- * @author jwierum
- * @version $Id$
  */
 public class StringTypeAdapter extends AbstractTypeAdapter<String> {
 	/**

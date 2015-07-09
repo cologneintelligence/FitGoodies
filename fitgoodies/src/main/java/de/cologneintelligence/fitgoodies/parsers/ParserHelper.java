@@ -26,7 +26,6 @@ import java.util.HashMap;
  * Singleton class which manages registered parsers.
  *
  * @see SetupFixture SetupFixture
- * @author jwierum
  */
 public final class ParserHelper {
     private final HashMap<Class<?>, Parser<?>> parsers =

@@ -19,15 +19,17 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.adapters.ArrayTypeAdapter;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import fit.Fixture;
 import fit.TypeAdapter;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+
 public class ArrayTypeAdapterTest extends FitGoodiesTestCase {
     public class StringBuilderContainer extends Fixture {
         public StringBuilder[] builder = new StringBuilder[10];
@@ -38,10 +40,8 @@ public class ArrayTypeAdapterTest extends FitGoodiesTestCase {
     private StringBuilderContainer container1;
     private StringBuilderContainer container2;
 
-    @Override
-    public final void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         container1 = new StringBuilderContainer();
         container1.builder[0] = new StringBuilder("Hello World");
 
@@ -57,77 +57,80 @@ public class ArrayTypeAdapterTest extends FitGoodiesTestCase {
         ta2 = new ArrayTypeAdapter(ta, null, new TypeAdapterHelper());
     }
 
-    public final void testEquals() throws Exception {
-        assertTrue(ta1.equals(ta1.get(), ta2.get()));
-        assertTrue(ta1.equals(ta2.get(), ta1.get()));
-        assertTrue(ta2.equals(ta1.get(), ta2.get()));
+    @Test
+    public void testEquals() throws Exception {
+        assertThat(ta1.equals(ta1.get(), ta2.get()), is(true));
+        assertThat(ta1.equals(ta2.get(), ta1.get()), is(true));
+        assertThat(ta2.equals(ta1.get(), ta2.get()), is(true));
 
         container1.builder[0].append("x");
-        assertFalse(ta1.equals(ta1.get(), ta2.get()));
+        assertThat(ta1.equals(ta1.get(), ta2.get()), is(false));
 
         container1.builder[0] = null;
-        assertFalse(ta1.equals(ta1.get(), ta2.get()));
-        assertFalse(ta1.equals(ta2.get(), ta1.get()));
+        assertThat(ta1.equals(ta1.get(), ta2.get()), is(false));
+
+        assertThat(ta1.equals(ta2.get(), ta1.get()), is(false));
 
         container2.builder[0] = null;
-        assertTrue(ta1.equals(ta1.get(), ta2.get()));
+        assertThat(ta1.equals(ta1.get(), ta2.get()), is(true));
 
         container1.builder[1] = new StringBuilder("test");
         container2.builder[1] = new StringBuilder("test2");
-        assertFalse(ta1.equals(ta1.get(), ta2.get()));
+        assertThat(ta1.equals(ta1.get(), ta2.get()), is(false));
 
         container1.builder[1].append("2");
-        assertTrue(ta1.equals(ta1.get(), ta2.get()));
+        assertThat(ta1.equals(ta1.get(), ta2.get()), is(true));
     }
 
-    public final void testEqualsWithLength() throws Exception {
+    @Test
+    public void testEqualsWithLength() throws Exception {
         container1.builder = new StringBuilder[9];
         container2.builder = new StringBuilder[9];
-        assertTrue(ta1.equals(ta1.get(), ta2.get()));
+        assertThat(ta1.equals(ta1.get(), ta2.get()), is(true));
 
         container1.builder = new StringBuilder[7];
         container2.builder = new StringBuilder[9];
-        assertFalse(ta1.equals(ta1.get(), ta2.get()));
+        assertThat(ta1.equals(ta1.get(), ta2.get()), is(false));
 
         container1.builder = new StringBuilder[9];
         container2.builder = new StringBuilder[7];
-        assertFalse(ta1.equals(ta1.get(), ta2.get()));
+        assertThat(ta1.equals(ta1.get(), ta2.get()), is(false));
 
         container1.builder = new StringBuilder[7];
         container2.builder = new StringBuilder[7];
-        assertTrue(ta1.equals(ta1.get(), ta2.get()));
+        assertThat(ta1.equals(ta1.get(), ta2.get()), is(true));
     }
 
-    public final void testToString() throws Exception {
+    @Test
+    public void testToString() throws Exception {
         container1.builder[1] = new StringBuilder("a test");
-        assertEquals("Hello World, a test, null, null, null, null, null, null, null, null",
-                ta1.toString(ta1.get()));
+        assertThat(ta1.toString(ta1.get()), is(equalTo("Hello World, a test, null, null, null, null, null, null, null, null")));
 
         container1.builder[1].append("x");
         container1.builder[2] = new StringBuilder("a");
         container1.builder[3] = new StringBuilder("b");
         container1.builder[4] = new StringBuilder("c");
-        assertEquals("Hello World, a testx, a, b, c, null, null, null, null, null",
-                ta1.toString(ta1.get()));
+        assertThat(ta1.toString(ta1.get()), is(equalTo("Hello World, a testx, a, b, c, null, null, null, null, null")));
 
         container1.builder = null;
-        assertEquals("", ta1.toString(ta1.get()));
+        assertThat(ta1.toString(ta1.get()), is(equalTo("")));
     }
 
-    public final void testParse() throws Exception {
+    @Test
+    public void testParse() throws Exception {
         String toParse = "this, is, a, test";
         StringBuilder[] array = (StringBuilder[]) ta1.parse(toParse);
 
-        assertEquals(4, array.length);
-        assertEquals(array[0].toString(), "this");
-        assertEquals(array[1].toString(), "is");
-        assertEquals(array[2].toString(), "a");
-        assertEquals(array[3].toString(), "test");
+        assertThat(array.length, is(equalTo((Object) 4)));
+        assertThat("this", is(equalTo(array[0].toString())));
+        assertThat("is", is(equalTo(array[1].toString())));
+        assertThat("a", is(equalTo(array[2].toString())));
+        assertThat("test", is(equalTo(array[3].toString())));
 
         toParse = "single";
         array = (StringBuilder[]) ta1.parse(toParse);
 
-        assertEquals(1, array.length);
-        assertEquals(array[0].toString(), "single");
+        assertThat(array.length, is(equalTo((Object) 1)));
+        assertThat("single", is(equalTo(array[0].toString())));
     }
 }

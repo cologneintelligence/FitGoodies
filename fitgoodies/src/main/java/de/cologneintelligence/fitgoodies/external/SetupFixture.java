@@ -32,7 +32,6 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
  * to pass it to the external command. Example: ant target -Dtestkey=testvalue.
  *
  * @author kia
- * @version $Id$
  */
 public class SetupFixture extends ActionFixture {
 

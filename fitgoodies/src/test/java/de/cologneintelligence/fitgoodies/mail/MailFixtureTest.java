@@ -19,44 +19,52 @@
 
 package de.cologneintelligence.fitgoodies.mail;
 
-import org.jmock.Expectations;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.mail.Mail;
-import de.cologneintelligence.fitgoodies.mail.MailFixture;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
 import fit.Parse;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import javax.mail.MessagingException;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+
 public final class MailFixtureTest extends FitGoodiesTestCase {
-    private MailFixture prepareFixture(final Mail mail, final boolean expectDelete)
+    private MessageProvider provider;
+
+    private MailFixture prepareFixture(final Mail mail)
             throws Exception {
-        final MessageProvider provider = mock(MessageProvider.class);
+        provider = mock(MessageProvider.class);
 
-        checking(new Expectations() {{
-            oneOf(provider).connect();
-            oneOf(provider).getLatestMessage(); will(returnValue(mail));
-            oneOf(provider).disconnect();
+        when(provider.getLatestMessage()).thenReturn(mail);
 
-            if (expectDelete) {
-                oneOf(mail).delete();
-            }
-        }});
-
-        MailFixture fixture = new MailFixture(provider);
-
-        return fixture;
+        return new MailFixture(provider);
     }
 
+    public void verifyCalls(Mail mail, boolean expectDelete) {
+        try {
+            verify(provider).connect();
+            verify(provider).getLatestMessage();
+            verify(provider).disconnect();
+            if (expectDelete) {
+                verify(mail).delete();
+            }
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
     public void testProcessing() throws Exception {
         final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail, true);
+        MailFixture fixture = prepareFixture(mail);
 
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>body</td><td>contains</td><td>Text</td></tr>"
@@ -68,38 +76,30 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
                 );
 
 
-        checking(new Expectations() {{
-            oneOf(mail).getHTMLContent();
-            will(returnValue("A mail!\nThis is a simple TEXT"));
-            oneOf(mail).getPlainContent();
-            will(returnValue("Another view"));
-            oneOf(mail).getHeader("subject");
-            will(returnValue(new String[]{null, "A Simple test mail", "uuh"}));
-            oneOf(mail).getHeader("to");
-            will(returnValue(new String[]{"me@myserver.com"}));
-            oneOf(mail).getHeader("received");
-            will(returnValue(new String[]{"by gateway.tld now"}));
-            oneOf(mail).getHeader("date");
-            will(returnValue(new String[]{"a423b"}));
-        }});
+        when(mail.getHTMLContent()).thenReturn("A mail!\nThis is a simple TEXT");
+        when(mail.getPlainContent()).thenReturn("Another view");
+        when(mail.getHeader("subject")).thenReturn(new String[]{null, "A Simple test mail", "uuh"});
+        when(mail.getHeader("to")).thenReturn(new String[]{"me@myserver.com"});
+        when(mail.getHeader("received")).thenReturn(new String[]{"by gateway.tld now"});
+        when(mail.getHeader("date")).thenReturn(new String[]{"a423b"});
 
         fixture.doTable(table);
 
-        assertEquals(5, fixture.counts.right);
-        assertEquals(0, fixture.counts.wrong);
-        assertEquals(0, fixture.counts.exceptions);
+        assertThat(fixture.counts.right, is(equalTo((Object) 5)));
+        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
 
-        assertEquals("Text<hr />This is a simple TEXT",
-                table.parts.more.parts.more.more.body);
-        assertEquals("server<hr />me@myserver.com",
-                table.parts.more.more.more.parts.more.more.body);
-        assertEquals("\\d{3}<hr />423",
-                table.parts.more.more.more.more.more.parts.more.more.body);
+        assertThat(table.parts.more.parts.more.more.body, is(equalTo("Text<hr />This is a simple TEXT")));
+        assertThat(table.parts.more.more.more.parts.more.more.body, is(equalTo("server<hr />me@myserver.com")));
+        assertThat(table.parts.more.more.more.more.more.parts.more.more.body, is(equalTo("\\d{3}<hr />423")));
+
+        verifyCalls(mail, true);
     }
 
+    @Test
     public void testProcessingWithErrors() throws Exception {
         final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail, true);
+        MailFixture fixture = prepareFixture(mail);
 
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>body</td><td>contains</td><td>some text</td></tr>"
@@ -119,73 +119,66 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
         final int PREVIEW_SIZE = 128;
 
 
-        checking(new Expectations() {{
-            oneOf(mail).getHTMLContent();
-            will(returnValue("Another view"));
-            oneOf(mail).getPlainContent();
-            will(returnValue(mailText));
-            oneOf(mail).getHeader("subject");
-            will(returnValue(new String[]{"A Simple test mail"}));
-            oneOf(mail).getHeader("to");
-            will(returnValue(new String[]{}));
-            oneOf(mail).getHeader("date");
-            will(returnValue(new String[]{"4235", "1234", "xzy?"}));
-            oneOf(mail).getHeader("custom");
-            will(returnValue(new String[]{null}));
-            oneOf(mail).getHeader("x-myheader");
-            will(returnValue(new String[]{null, null, "3", "2", "1", "4"}));
-            oneOf(mail).getHeader("x-null");
-            will(returnValue(null));
-        }});
+        when(mail.getHTMLContent()).thenReturn("Another view");
+        when(mail.getPlainContent()).thenReturn(mailText);
+        when(mail.getHeader("subject")).thenReturn(new String[]{"A Simple test mail"});
+        when(mail.getHeader("to")).thenReturn(new String[]{});
+        when(mail.getHeader("date")).thenReturn(new String[]{"4235", "1234", "xzy?"});
+        when(mail.getHeader("custom")).thenReturn(new String[]{null});
+        when(mail.getHeader("x-myheader")).thenReturn(new String[]{null, null, "3", "2", "1", "4"});
+        when(mail.getHeader("x-null")).thenReturn(null);
 
         fixture.doTable(table);
 
-        assertEquals(6, fixture.counts.wrong);
-        assertEquals(0, fixture.counts.right);
-        assertEquals(1, fixture.counts.ignores);
-        assertEquals(0, fixture.counts.exceptions);
+        assertThat(fixture.counts.wrong, is(equalTo((Object) 6)));
+        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
+        assertThat(fixture.counts.ignores, is(equalTo((Object) 1)));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
 
-        assertEquals("some text expected"
+        assertThat(table.parts.more.parts.more.more.text(), is(equalTo("some text expected"
                 + mailText.substring(0, PREVIEW_SIZE)
-                + "... actual (+ 1 more)",
-                table.parts.more.parts.more.more.text());
-        assertEquals("empty?! expected(unset) actual",
-                table.parts.more.more.more.parts.more.more.text());
-        assertEquals("^\\d{3}$ expected4235 actual (+ 2 more)",
-                table.parts.more.more.more.more.parts.more.more.text());
-        assertEquals("x expected(unset) actual",
-                table.parts.more.more.more.more.more.parts.more.more.text());
-        assertEquals("7 expected3 actual (+ 5 more)",
-                table.parts.more.more.more.more.more.more.parts.more.more.text());
-        assertEquals("7 expected(unset) actual",
-                table.parts.more.more.more.more.more.more.more.parts.more.more.text());
+                + "... actual (+ 1 more)")));
+        assertThat(table.parts.more.more.more.parts.more.more.text(), is(equalTo("empty?! expected(unset) actual")));
+        assertThat(table.parts.more.more.more.more.parts.more.more.text(), is(equalTo("^\\d{3}$ expected4235 actual (+ 2 more)")));
+        assertThat(table.parts.more.more.more.more.more.parts.more.more.text(), is(equalTo("x expected(unset) actual")));
+        assertThat(table.parts.more.more.more.more.more.more.parts.more.more.text(), is(equalTo("7 expected3 actual (+ 5 more)")));
+        assertThat(table.parts.more.more.more.more.more.more.more.parts.more.more.text(), is(equalTo("7 expected(unset) actual")));
+
+        verifyCalls(mail, true);
     }
 
+    @Test
     public void testNoMail() throws Exception {
-        MailFixture fixture = prepareFixture(null, false);
+        MailFixture fixture = prepareFixture(null);
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>body</td><td>contains</td><td>some text</td></tr>"
                 + "</table>"
                 );
 
         fixture.doTable(table);
-        assertEquals(1, fixture.counts.exceptions);
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+
+        verifyCalls(null, false);
     }
 
+    @Test
     public void testNoDelete() throws Exception {
         final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail, false);
+        MailFixture fixture = prepareFixture(mail);
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "</table>"
                 );
 
         fixture.setParams(new String[]{"delete=no"});
         fixture.doTable(table);
+
+        verifyCalls(mail, false);
     }
 
+    @Test
     public void testPlainBody() throws Exception {
         final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail, true);
+        MailFixture fixture = prepareFixture(mail);
 
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>plainbody</td><td>contains</td><td>TEXT</td></tr>"
@@ -194,26 +187,24 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
                 );
 
 
-        checking(new Expectations() {{
-            atLeast(1).of(mail).getPlainContent();
-            will(returnValue("Something different"));
-        }});
+        when(mail.getPlainContent()).thenReturn("Something different");
 
         fixture.doTable(table);
 
-        assertEquals(1, fixture.counts.right);
-        assertEquals(1, fixture.counts.wrong);
-        assertEquals(0, fixture.counts.exceptions);
+        assertThat(fixture.counts.right, is(equalTo((Object) 1)));
+        assertThat(fixture.counts.wrong, is(equalTo((Object) 1)));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
 
-        assertEquals("TEXT expectedSomething different actual",
-                table.parts.more.parts.more.more.text());
-        assertEquals("different<hr />Something different",
-                table.parts.more.more.parts.more.more.body);
+        assertThat(table.parts.more.parts.more.more.text(), is(equalTo("TEXT expectedSomething different actual")));
+        assertThat(table.parts.more.more.parts.more.more.body, is(equalTo("different<hr />Something different")));
+
+        verifyCalls(mail, true);
     }
 
+    @Test
     public void testHTMLBody() throws Exception {
         final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail, true);
+        MailFixture fixture = prepareFixture(mail);
 
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>htmlbody</td><td>contains</td><td>TEXT</td></tr>"
@@ -222,26 +213,24 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
                 );
 
 
-        checking(new Expectations() {{
-            atLeast(1).of(mail).getHTMLContent();
-            will(returnValue("Something different"));
-        }});
+        when(mail.getHTMLContent()).thenReturn("Something different");
 
         fixture.doTable(table);
 
-        assertEquals(1, fixture.counts.right);
-        assertEquals(1, fixture.counts.wrong);
-        assertEquals(0, fixture.counts.exceptions);
+        assertThat(fixture.counts.right, is(equalTo((Object) 1)));
+        assertThat(fixture.counts.wrong, is(equalTo((Object) 1)));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
 
-        assertEquals("TEXT expectedSomething different actual",
-                table.parts.more.parts.more.more.text());
-        assertEquals("different<hr />Something different",
-                table.parts.more.more.parts.more.more.body);
+        assertThat(table.parts.more.parts.more.more.text(), is(equalTo("TEXT expectedSomething different actual")));
+        assertThat(table.parts.more.more.parts.more.more.body, is(equalTo("different<hr />Something different")));
+
+        verifyCalls(mail, true);
     }
 
+    @Test
     public void testCRF() throws Exception {
         final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail, true);
+        MailFixture fixture = prepareFixture(mail);
 
         CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.parseBody("${tests.put(body)}", "this goes to the body");
@@ -249,12 +238,11 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
                 + "<tr><td>plainbody</td><td>contains</td><td>${tests.get(body)}</td></tr>"
                 + "</table>");
 
-        checking(new Expectations() {{
-            atLeast(1).of(mail).getPlainContent();
-            will(returnValue("this goes to the body"));
-        }});
+        when(mail.getPlainContent()).thenReturn("this goes to the body");
 
         fixture.doTable(table);
-        assertEquals(1, fixture.counts.right);
+        assertThat(fixture.counts.right, is(equalTo((Object) 1)));
+
+        verifyCalls(mail, true);
     }
 }

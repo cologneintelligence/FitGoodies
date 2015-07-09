@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="style.css" />
+<title>ISBNs</title>
+</head>
+<body>
+<h1>ISBNs</h1>
+
+<p>
+A ISBN consists of 10 digits and hyphens. The position of the hyphens may
+vary. A ISBN is valid if the the following equation is true:
+<kbd>sum(i = 1 to 10: t * digit[i]) mod 11 = 0</kbd>
+</p>
+
+<table>
+<tr><td>ISBNFixture</td></tr>
+<tr><td>isbn</td><td>stripped?</td><td>valid?</td></tr>
+<tr><td>3-86680-192-0</td><td>3866801920</td><td>true</td></tr>
+<tr><td>3-86680-192-2</td><td>3866801922</td><td>false</td></tr>
+<tr><td>3-680-08783-7</td><td>3680087837</td><td>true</td></tr>
+<tr><td>193239480X</td><td>193239480X</td><td>true</td></tr>
+</table>
+
+</body>
+</html>

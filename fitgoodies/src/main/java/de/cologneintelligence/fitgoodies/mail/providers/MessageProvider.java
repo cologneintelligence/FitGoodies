@@ -27,8 +27,6 @@ import de.cologneintelligence.fitgoodies.mail.Mail;
 /**
  * Interface for a provider that can receive Mails.
  *
- * @author jwierum
- * @version $Id$
  */
 public interface MessageProvider {
 	/**

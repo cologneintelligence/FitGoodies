@@ -18,27 +18,29 @@
 
 package de.cologneintelligence.fitgoodies.selenium.command;
 
-import org.jmock.Expectations;
-
 import com.thoughtworks.selenium.CommandProcessor;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.junit.Test;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.selenium.command.SeleniumCommand;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SeleniumCommandTest extends FitGoodiesTestCase {
 
+    @Test
     public void testDoCommand() {
         final CommandProcessor commandProcessor = mock(CommandProcessor.class);
 
         final String[] args = new String[]{"arg1", "arg2"};
         final SeleniumCommand wrappedCommand = new SeleniumCommand("command", args, commandProcessor);
 
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("command", args);
-            will(returnValue("OK"));
-        }});
+        when(commandProcessor.doCommand("command", args)).thenReturn("OK");
 
-        assertEquals("OK", wrappedCommand.execute());
+        assertThat(wrappedCommand.execute(), is(equalTo("OK")));
     }
 
 }

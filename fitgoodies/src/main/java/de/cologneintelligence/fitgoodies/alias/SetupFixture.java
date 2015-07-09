@@ -29,8 +29,6 @@ import fit.TypeAdapter;
 /**
  * Fixture to register aliases at runtime.
  *
- * @author jwierum
- * @version $Id$
  */
 public class SetupFixture extends Fixture {
     /** alias name to use. */

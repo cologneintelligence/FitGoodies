@@ -23,8 +23,6 @@ import java.util.HashMap;
 /**
  * @param <T> value type of the HashMap
  *
- * @author jwierum
- * @version $Id$
  */
 
 class NamespaceHashMap<T> {

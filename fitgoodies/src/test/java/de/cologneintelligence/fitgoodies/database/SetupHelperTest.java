@@ -19,58 +19,65 @@
 
 package de.cologneintelligence.fitgoodies.database;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 
-/**
- *
- * @author jwierum
- */
 public class SetupHelperTest extends FitGoodiesTestCase {
     private SetupHelper helper;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         helper = new SetupHelper();
     }
 
-    public final void testProvider() throws Exception {
+    @Test
+    public void testProvider() throws Exception {
         SetupHelper.setProvider("de.cologneintelligence.fitgoodies.database.DriverMock");
-        assertNotNull(DriverManager.getDriver("jdbc://test"));
+        assertThat(DriverManager.getDriver("jdbc://test"), not(CoreMatchers.is(nullValue())));
     }
 
-    public final void testUser() {
+    @Test
+    public void testUser() {
         helper.setUser("test");
-        assertEquals("test", helper.getUser());
+        assertThat(helper.getUser(), is(equalTo("test")));
         helper.setUser("user");
-        assertEquals("user", helper.getUser());
+        assertThat(helper.getUser(), is(equalTo("user")));
     }
 
-    public final void testPassword() {
+    @Test
+    public void testPassword() {
         helper.setPassword("pass");
-        assertEquals("pass", helper.getPassword());
+        assertThat(helper.getPassword(), is(equalTo("pass")));
         helper.setPassword("pw2");
-        assertEquals("pw2", helper.getPassword());
+        assertThat(helper.getPassword(), is(equalTo("pw2")));
     }
 
-    public final void testSetConnectionString() {
+    @Test
+    public void testSetConnectionString() {
         helper.setConnectionString("text");
-        assertEquals("text", helper.getConnectionString());
+        assertThat(helper.getConnectionString(), is(equalTo("text")));
         helper.setConnectionString("t2");
-        assertEquals("t2", helper.getConnectionString());
+        assertThat(helper.getConnectionString(), is(equalTo("t2")));
     }
 
-    public final void testGetConnection() throws Exception {
+    @Test
+    public void testGetConnection() throws Exception {
         SetupHelper.setProvider("de.cologneintelligence.fitgoodies.database.DriverMock");
         helper.setUser("username");
         helper.setPassword("pw1");
         helper.setConnectionString("jdbc://test/url");
         final Connection conn = helper.getConnection();
-        assertNotNull(conn);
-        assertEquals(DriverMock.getLastReturnedConnection(), conn);
+        assertThat(conn, not(CoreMatchers.is(nullValue())));
+        assertThat(conn, is(equalTo(DriverMock.getLastReturnedConnection())));
     }
 }

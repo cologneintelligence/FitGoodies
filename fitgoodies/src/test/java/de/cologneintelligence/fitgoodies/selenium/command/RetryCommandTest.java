@@ -18,15 +18,24 @@
 
 package de.cologneintelligence.fitgoodies.selenium.command;
 
-import org.jmock.Expectations;
-
 import com.thoughtworks.selenium.CommandProcessor;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
-import de.cologneintelligence.fitgoodies.selenium.RetryException;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class RetryCommandTest extends FitGoodiesTestCase {
     private SetupHelper helper;
@@ -35,10 +44,8 @@ public class RetryCommandTest extends FitGoodiesTestCase {
 
     private final String[] args = new String[]{"arg1", "arg2"};
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         final RunnerHelper runnerHelper = DependencyManager.getOrCreate(
                 RunnerHelper.class);
 
@@ -47,57 +54,47 @@ public class RetryCommandTest extends FitGoodiesTestCase {
         helper.setCommandProcessor(commandProcessor);
         helper.setTakeScreenshots(false);
         helper.setSleepBeforeScreenshotMillis(1L);
-        runnerHelper.setResultFilePath("fixture.html");
+        runnerHelper.setResultFile(new File("fixture.html"));
         retryCommand = CommandFactory.createCommand("commandAndRetry", args, helper);
 
     }
 
+    @Test
     public void testDoCommand4Times() {
         helper.setRetryTimeout(200);
         helper.setRetryInterval(50);
 
-        checking(new Expectations() {{
-            exactly(4).of(commandProcessor).doCommand("command", args);
-            will(returnValue("NOK"));
-        }});
-        try {
-            retryCommand.execute();
-        } catch (final RetryException e) {
-            assertEquals("TimeoutError!; attempts: 4/4 times", e.getMessage());
-        }
+        when(commandProcessor.doCommand("command", args)).thenReturn("NOK");
+
+        assertThat(retryCommand.execute(), is(equalTo("NOK; attempts: 4 times")));
+
+        verify(commandProcessor, times(4)).doCommand("command", args);
+        verifyNoMoreInteractions(commandProcessor);
     }
 
+    @Test
     public void testDoCommand6Times() {
 
         final String[] args = new String[]{"arg1", "arg2"};
         helper.setRetryTimeout(600);
         helper.setRetryInterval(100);
 
-        checking(new Expectations() {{
-            exactly(6).of(commandProcessor).doCommand("command", args);
-            will(returnValue("NOK"));
-        }});
+        when(commandProcessor.doCommand("command", args)).thenReturn("NOK");
 
-        try {
-            retryCommand.execute();
-        } catch (final RetryException e) {
-            assertEquals("TimeoutError!; attempts: 6/6 times", e.getMessage());
-        }
+        assertThat(retryCommand.execute(), is(equalTo("NOK; attempts: 6 times")));
+
+        verify(commandProcessor, times(6)).doCommand("command", args);
+        verifyNoMoreInteractions(commandProcessor);
     }
 
+    @Test
     public void testDoCommandFirst5ReturnsNOKThenOK() {
 
         final String[] args = new String[]{"arg1", "arg2"};
         helper.setRetryTimeout(1600);
         helper.setRetryInterval(100);
 
-        checking(new Expectations() {{
-            exactly(3).of(commandProcessor).doCommand("command", args);
-            will(returnValue("NOK"));
-            oneOf(commandProcessor).doCommand("command", args);
-            will(returnValue("OK"));
-        }});
-
-        assertEquals("OK; attempts: 4 times", retryCommand.execute());
+        when(commandProcessor.doCommand("command", args)).thenReturn("NOK", "NOK", "NOK", "OK");
+        assertThat(retryCommand.execute(), is(equalTo("OK; attempts: 4 times")));
     }
 }

@@ -18,23 +18,22 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.log4j.LogEventAnalyzer;
-import de.cologneintelligence.fitgoodies.log4j.LogEventAnalyzerFactory;
-import de.cologneintelligence.fitgoodies.log4j.LogEventAnalyzerFactoryImpl;
-import de.cologneintelligence.fitgoodies.log4j.LogEventAnalyzerImpl;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.hamcrest.Matcher;
+import org.junit.Test;
 
-/**
- * @author jwierum
- * @version $Id$
- *
- */
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+
 public final class LogEventAnalyzerFactoryImplTest extends FitGoodiesTestCase {
+	@Test
 	public void testReturnType() {
 		LogEventAnalyzerFactory factory = new LogEventAnalyzerFactoryImpl();
 		LogEventAnalyzer analyzer = factory.getLogEventAnalyzerFor(null,
 				null, null);
 
-		assertEquals(LogEventAnalyzerImpl.class, analyzer.getClass());
+		assertThat(analyzer.getClass(), (Matcher) is(equalTo(LogEventAnalyzerImpl.class)));
 	}
 }

@@ -30,8 +30,6 @@ package de.cologneintelligence.fitgoodies.references;
  * See {@link de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor} for
  * an example.
  *
- * @author jwierum
- * @version $Id$
  */
 public class CrossReferenceProcessorShortcutException extends Exception {
 	private static final long serialVersionUID = -8237888733374923655L;

@@ -18,28 +18,22 @@
 
 package de.cologneintelligence.fitgoodies.references.processors;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-
 import de.cologneintelligence.fitgoodies.references.CrossReference;
-import de.cologneintelligence.fitgoodies.references.processors.EnvironmentPropertyCrossReferenceProcessor;
-import de.cologneintelligence.fitgoodies.references.processors.PropertyProvider;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public class EnvironmentPropertyCrossReferenceProcessorTest extends TestCase {
-
+public class EnvironmentPropertyCrossReferenceProcessorTest {
+	@Test
 	public void testGetJavaHome() throws Exception {
-		Mockery mockery = new Mockery();
-		final PropertyProvider propertyProvider = mockery.mock(PropertyProvider.class);
-		mockery.checking(new Expectations(){{
-			oneOf(propertyProvider).getProperty("key"); will(returnValue("testProperty"));
-		}});
-		
+		final PropertyProvider propertyProvider = mock(PropertyProvider.class);
+		when(propertyProvider.getProperty("key")).thenReturn("testProperty");
+
 		EnvironmentPropertyCrossReferenceProcessor processor = new EnvironmentPropertyCrossReferenceProcessor(propertyProvider);
-		
+
 		CrossReference cr = new CrossReference("getProperty", "System", "key", processor);
 		assertEquals("testProperty", processor.processMatch(cr  , null));
-		
 	}
 }

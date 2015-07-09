@@ -19,43 +19,44 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import java.math.BigInteger;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
-
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import fit.Fixture;
 import fit.TypeAdapter;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import java.math.BigInteger;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+
 public class AbstractTypeAdapterTest extends FitGoodiesTestCase {
-	public final void testConstructor() throws Exception {
+	@Test
+	public void testConstructor() throws Exception {
 		TypeAdapter expected = new TypeAdapter();
 		Object target = new Object();
 
 		expected.field = expected.getClass().getField("field");
 		expected.fixture = new Fixture();
-		expected.method = expected.getClass().getMethod("get", new Class<?>[]{});
+		expected.method = expected.getClass().getMethod("get");
 		expected.target = target;
 		expected.type = String.class;
 
 		AbstractTypeAdapter<BigInteger> actual = new DummyTypeAdapter(expected, null);
-		assertSame(expected.field, actual.field);
-		assertSame(expected.fixture, actual.fixture);
-		assertSame(expected.method, actual.method);
-		assertSame(expected.target, actual.target);
-		assertSame(expected.type, actual.type);
+		assertThat(actual.field, is(sameInstance(expected.field)));
+		assertThat(actual.fixture, is(sameInstance(expected.fixture)));
+		assertThat(actual.method, is(sameInstance(expected.method)));
+		assertThat(actual.target, is(sameInstance(expected.target)));
+		assertThat(actual.type, is(sameInstance(expected.type)));
 	}
 
-	public final void testParameters() {
+	@Test
+	public void testParameters() {
 		TypeAdapter ta = new TypeAdapter();
 		AbstractTypeAdapter<BigInteger> actual = new DummyTypeAdapter(ta, "xy");
-		assertEquals("xy", actual.getParameter());
+		assertThat(actual.getParameter(), is(equalTo("xy")));
 
 		actual = new DummyTypeAdapter(ta, "testformat");
-		assertEquals("testformat", actual.getParameter());
+		assertThat(actual.getParameter(), is(equalTo("testformat")));
 	}
 }

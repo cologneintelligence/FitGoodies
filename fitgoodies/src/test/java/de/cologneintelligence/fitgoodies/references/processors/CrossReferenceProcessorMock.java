@@ -20,6 +20,7 @@ package de.cologneintelligence.fitgoodies.references.processors;
 import de.cologneintelligence.fitgoodies.references.CrossReference;
 
 /**
+ *
  * @author jwierum
  */
 public class CrossReferenceProcessorMock extends AbstractCrossReferenceProcessor {
@@ -53,10 +54,6 @@ public class CrossReferenceProcessorMock extends AbstractCrossReferenceProcessor
 
     public final boolean isCalledProcess() {
         return calledProcess;
-    }
-
-    public final boolean isCalledInfo() {
-        return calledInfo;
     }
 
     public final CrossReference getCachedResult() {

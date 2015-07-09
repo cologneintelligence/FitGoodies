@@ -32,8 +32,6 @@ import fit.Parse;
  * This class is used by {@link de.cologneintelligence.fitgoodies.runners#FitFileRunner} to
  * resolve aliases.
  *
- * @author jwierum
- * @version $Id$
  */
 public final class AliasEnabledFixture extends Fixture {
     /**

@@ -24,8 +24,6 @@ package de.cologneintelligence.fitgoodies.parsers;
  * This class provides a fallback mechanism. If a destination Object has just
  * the type object, the parser compares their <code>toString()</code> value.
  *
- * @author jwierum
- * @version $Id$
  */
 public class ObjectParser implements Parser<Object> {
 	/**

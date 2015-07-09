@@ -19,31 +19,33 @@
 
 package de.cologneintelligence.fitgoodies.references.processors;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.references.CrossReference;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.references.CrossReference;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
-import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
-import de.cologneintelligence.fitgoodies.references.processors.StorageCrossReferenceProcessor;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
-
-/**
- *
- * @author jwierum
- */
 
 public class StorageCrossReferenceProcessorTest extends FitGoodiesTestCase {
     private AbstractCrossReferenceProcessor processor;
 
-    @Override
-    public final void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         processor = new StorageCrossReferenceProcessor();
     }
 
-    public final void testPattern() {
+    @Test
+    public void testPattern() {
         String pattern = processor.getPattern();
         pattern = "^\\$\\{" + pattern + "\\}$";
 
@@ -51,25 +53,26 @@ public class StorageCrossReferenceProcessorTest extends FitGoodiesTestCase {
         Matcher m;
 
         m = regex.matcher("${ns.get(one)}");
-        assertTrue(m.find());
+        assertThat(m.find(), is(true));
 
         m = regex.matcher("${ns.get(two)}");
-        assertTrue(m.find());
+        assertThat(m.find(), is(true));
 
         m = regex.matcher("${x.get(three)}");
-        assertTrue(m.find());
+        assertThat(m.find(), is(true));
 
         m = regex.matcher("${xy.put(four)}");
-        assertTrue(m.find());
+        assertThat(m.find(), is(true));
 
         m = regex.matcher("${six.containsValue(five)}");
-        assertTrue(m.find());
+        assertThat(m.find(), is(true));
 
         m = regex.matcher("${six.containsValue(five, /a\\/(b)\\/c/)}");
-        assertTrue(m.find());
+        assertThat(m.find(), is(true));
     }
 
-    public final void testNegativePattern() {
+    @Test
+    public void testNegativePattern() {
         String pattern = processor.getPattern();
         pattern = "^\\$\\{" + pattern + "\\}$";
 
@@ -77,31 +80,33 @@ public class StorageCrossReferenceProcessorTest extends FitGoodiesTestCase {
         Matcher m;
 
         m = regex.matcher("${six.containsValue()}");
-        assertFalse(m.find());
+        assertThat(m.find(), is(false));
 
         m = regex.matcher("${.put(x)}");
-        assertFalse(m.find());
+        assertThat(m.find(), is(false));
 
         m = regex.matcher("${put(x)}");
-        assertFalse(m.find());
+        assertThat(m.find(), is(false));
 
         m = regex.matcher("${x.putput(y)}");
-        assertFalse(m.find());
+        assertThat(m.find(), is(false));
 
         m = regex.matcher("${x.put(y, /a/b/)}");
-        assertFalse(m.find());
+        assertThat(m.find(), is(false));
+
     }
 
     private void checkCr(final CrossReference cr, final String cmd,
             final String namespace, final String parameter) {
-        assertNotNull(cr);
-        assertEquals(cmd, cr.getCommand());
-        assertEquals(namespace, cr.getNamespace());
-        assertEquals(parameter, cr.getParameter());
-        assertSame(processor, cr.getProcessor());
+        assertThat(cr, not(is(nullValue())));
+        assertThat(cr.getCommand(), is(equalTo(cmd)));
+        assertThat(cr.getNamespace(), is(equalTo(namespace)));
+        assertThat(cr.getParameter(), is(equalTo(parameter)));
+        assertThat(cr.getProcessor(), is(sameInstance(processor)));
     }
 
-    public final void testExtraction() {
+    @Test
+    public void testExtraction() {
         CrossReference cr;
 
         cr = processor.extractCrossReference("ns1.put(x)");
@@ -116,20 +121,21 @@ public class StorageCrossReferenceProcessorTest extends FitGoodiesTestCase {
         cr = processor.extractCrossReference("n.containsValue(param)");
         checkCr(cr, "containsValue", "n", "param");
 
-        assertNull(processor.extractCrossReference("ns3.err(param)"));
+        assertThat(processor.extractCrossReference("ns3.err(param)"), is(nullValue()));
     }
 
-    public final void checkProcessing(
+    public void checkProcessing(
             final String cmd, final String ns, final String param,
             final Object object, final String expected)
                     throws CrossReferenceProcessorShortcutException {
 
         String actual = processor.processMatch(
                 new CrossReference(cmd, ns, param, null), object);
-        assertEquals(expected, actual);
+        assertThat(actual, is(equalTo(expected)));
     }
 
-    public final void testProcessing()
+    @Test
+    public void testProcessing()
             throws CrossReferenceProcessorShortcutException {
 
         checkProcessing("put", "one", "x", 42, "42");
@@ -147,7 +153,8 @@ public class StorageCrossReferenceProcessorTest extends FitGoodiesTestCase {
                 "good");
     }
 
-    public final void testRegexExtraction()
+    @Test
+    public void testRegexExtraction()
             throws CrossReferenceProcessorShortcutException {
 
         checkProcessing("put", "retest", "val1, /my\\/([^\\/]+)\\/test/",
