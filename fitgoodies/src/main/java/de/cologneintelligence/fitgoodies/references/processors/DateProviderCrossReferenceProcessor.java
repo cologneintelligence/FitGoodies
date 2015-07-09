@@ -18,8 +18,6 @@
 
 package de.cologneintelligence.fitgoodies.references.processors;
 
-import com.google.common.base.Strings;
-
 import de.cologneintelligence.fitgoodies.references.CrossReference;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
 
@@ -42,7 +40,7 @@ public class DateProviderCrossReferenceProcessor extends AbstractCrossReferenceP
     @Override
     public String processMatch(CrossReference cr, Object object) throws CrossReferenceProcessorShortcutException {
         String parameter = cr.getParameter();
-        if ( Strings.isNullOrEmpty(parameter) ) {
+        if (parameter == null || parameter.isEmpty()) {
             return dateProvider.getCurrentDate();
         }
         return dateProvider.getCurrentDate(parameter);
@@ -76,7 +74,7 @@ public class DateProviderCrossReferenceProcessor extends AbstractCrossReferenceP
         return true;
     }
 
-    
-    
+
+
 
 }

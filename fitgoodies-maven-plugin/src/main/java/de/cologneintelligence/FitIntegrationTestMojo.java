@@ -163,7 +163,6 @@ public class FitIntegrationTestMojo extends AbstractMojo {
             String executable = JavaEnvUtils.getJreExecutable("java");
             List<String> args = createJavaArgs(executable, bootJar);
             getLog().debug("Running process: " + args.toString());
-            System.out.println("Running process: " + args.toString());
             return new ProcessBuilder(args)
                     .directory(project.getBasedir());
         } catch (Exception e) {

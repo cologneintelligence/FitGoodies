@@ -53,7 +53,7 @@
       <version>3.0.17</version>
     </dependency>
     <dependency>
-      <groupId>ant</groupId>
+      <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
       <version>1.7.0</version>
     </dependency>
