@@ -19,26 +19,19 @@
 
 package de.cologneintelligence.fitgoodies.references;
 
-import java.util.regex.Matcher;
-
 import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
-import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
-import de.cologneintelligence.fitgoodies.references.processors.DateProviderCrossReferenceProcessor;
-import de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor;
-import de.cologneintelligence.fitgoodies.references.processors.EnvironmentPropertyCrossReferenceProcessor;
-import de.cologneintelligence.fitgoodies.references.processors.FileFixtureCrossReferenceProcessor;
-import de.cologneintelligence.fitgoodies.references.processors.PropertyCrossReferenceProcessor;
-import de.cologneintelligence.fitgoodies.references.processors.StorageCrossReferenceProcessor;
+import de.cologneintelligence.fitgoodies.references.processors.*;
 import de.cologneintelligence.fitgoodies.util.DateProviderImpl;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.SystemPropertyProvider;
+
+import java.util.regex.Matcher;
 
 
 /**
  * Singleton class to manage registered {@link AbstractCrossReferenceProcessor}s.
  *
  * @see SetupFixture SetupFixture
- * @author jwierum
  */
 
 public final class CrossReferenceHelper {

@@ -25,8 +25,6 @@ import java.io.IOException;
 /**
  * Reader which is capable to process files with fixed length records.
  *
- * @author jwierum
- * @version $Id$
  */
 public class FixedLengthRecordReader implements FileRecordReader {
 	private final BufferedReader reader;
@@ -57,7 +55,7 @@ public class FixedLengthRecordReader implements FileRecordReader {
 	}
 
 	@Override
-	public final void close() throws IOException {
+	public void close() throws IOException {
 		reader.close();
 	}
 

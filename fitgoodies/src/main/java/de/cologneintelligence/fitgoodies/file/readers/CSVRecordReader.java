@@ -27,8 +27,6 @@ import java.util.List;
 /**
  * Reader which is capable to process comma separated value files.
  *
- * @author jwierum
- * @version $Id$
  */
 public class CSVRecordReader implements FileRecordReader {
 	private static class ParserState {
@@ -81,7 +79,7 @@ public class CSVRecordReader implements FileRecordReader {
 	 * Closes the underlying stream.
 	 */
 	@Override
-	public final void close() throws IOException {
+	public void close() throws IOException {
 		reader.close();
 	}
 

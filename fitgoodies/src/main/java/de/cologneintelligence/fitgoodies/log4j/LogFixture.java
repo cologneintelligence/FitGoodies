@@ -66,8 +66,6 @@ import fit.TypeAdapter;
  * </tr>
  * </table>
  *
- * @author jwierum
- * @version $Id$
  */
 public class LogFixture extends Fixture {
 	private final LoggerProvider loggerProvider;

@@ -19,31 +19,27 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * This class takes a filter pattern and a {@link DirectoryProvider} and returns
+ * This class takes a filter pattern and a File and returns
  * matching files.
  *
- * @author jwierum
- * @version $Id$
  */
 public class FileSelector {
 	private final SimpleRegexFilter filter;
-	private final DirectoryProvider provider;
+	private final File directory;
 
 	/**
 	 * Initializes a new selector.
-	 * @param directoryProvider directory to use
+	 * @param directory directory to use
 	 * @param pattern filename filter pattern
 	 */
-	public FileSelector(final DirectoryProvider directoryProvider,
+	public FileSelector(final File directory,
 			final String pattern) {
 		filter = new SimpleRegexFilter(pattern);
-		this.provider = directoryProvider;
+		this.directory = directory;
 	}
 
 	/**
@@ -54,21 +50,18 @@ public class FileSelector {
 	 * @throws FilenameNotUniqueException more than one file matched the pattern
 	 * @throws FileNotFoundException thrown, if the directory does not exist.
 	 */
-	public final FileInformation getUniqueFile()
+	public File getUniqueFile()
 			throws FilenameNotUniqueException, FileNotFoundException {
-		Iterator<FileInformation> it = provider.getFiles();
-		it = new FilterDirectoryIterator(it, filter);
+		File[] files = directory.listFiles(filter);
 
-		if (!it.hasNext()) {
+		if (files == null || files.length == 0) {
 			throw new FileNotFoundException();
 		}
 
-		FileInformation result = it.next();
-
-		if (it.hasNext()) {
+		if (files.length > 1) {
 			throw new FilenameNotUniqueException(filter.getPattern());
 		}
-		return result;
+		return files[0];
 	}
 
 	/**
@@ -76,38 +69,27 @@ public class FileSelector {
 	 * @return the matching file or <code>null</code> if no file matches
 	 * @throws FileNotFoundException thrown, if the directory does not exist
 	 */
-	public final FileInformation getFirstFile() throws FileNotFoundException {
-		Iterator<FileInformation> it = provider.getFiles();
-		it = new FilterDirectoryIterator(it, filter);
+	public File getFirstFile() throws FileNotFoundException {
+		File[] files = directory.listFiles(filter);
 
-		if (!it.hasNext()) {
+		if (files == null || files.length == 0) {
 			throw new FileNotFoundException();
 		}
 
-		return it.next();
+		return files[0];
 	}
 
 	/**
 	 * Returns a list of all matching files.
 	 * @return all files which match the pattern
 	 */
-	public final FileInformation[] getFiles()  {
-		List<FileInformation> files = new LinkedList<FileInformation>();
-		Iterator<FileInformation> it;
-
-		try {
-			it = provider.getFiles();
-		} catch (FileNotFoundException e) {
-			return new FileInformation[]{};
+	public File[] getFiles() {
+		final File[] files = directory.listFiles(filter);
+		if (files == null) {
+			return new File[0];
+		} else {
+			return files;
 		}
-
-		it = new FilterDirectoryIterator(it, filter);
-
-		while (it.hasNext()) {
-			files.add(it.next());
-		}
-
-		return files.toArray(new FileInformation[]{});
 	}
 
 	/**
@@ -115,19 +97,12 @@ public class FileSelector {
 	 * @return the matching file or <code>null</code> if no file matches
 	 * @throws FileNotFoundException thrown, if the directory does not exist
 	 */
-    public final FileInformation getLastFile() throws FileNotFoundException {
-        Iterator<FileInformation> it = provider.getFiles();
-        it = new FilterDirectoryIterator(it, filter);
-
-        if (!it.hasNext()) {
+    public File getLastFile() throws FileNotFoundException {
+		File[] files = directory.listFiles(filter);
+        if (files == null || files.length == 0) {
             throw new FileNotFoundException();
         }
 
-        FileInformation result = null;
-        while (it.hasNext()) {
-            result = it.next();
-        }
-
-        return result;
+        return files[files.length - 1];
     }
 }

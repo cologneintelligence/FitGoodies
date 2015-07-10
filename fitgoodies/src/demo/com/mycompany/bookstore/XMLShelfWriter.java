@@ -49,7 +49,6 @@ public final class XMLShelfWriter implements ShelfWriter {
 
 	@Override
 	public Bookshelf load() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

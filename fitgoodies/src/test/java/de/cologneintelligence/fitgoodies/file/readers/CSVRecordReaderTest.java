@@ -19,25 +19,23 @@
 
 package de.cologneintelligence.fitgoodies.file.readers;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.junit.Test;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import de.cologneintelligence.fitgoodies.file.readers.CSVRecordReader;
-import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
 
-/**
- *
- * @author jwierum
- */
-public final class CSVRecordReaderTest extends TestCase {
+public final class CSVRecordReaderTest extends FitGoodiesTestCase {
 	public BufferedReader mkReader(final String content) {
 		final StringReader sr = new StringReader(content);
 		return new BufferedReader(sr);
 	}
 
+    @Test
 	public void testReading() throws IOException {
 		final FileRecordReader reader = new CSVRecordReader(
 				mkReader("this|is|a|test\n"
@@ -70,7 +68,8 @@ public final class CSVRecordReaderTest extends TestCase {
 		reader.close();
 	}
 
-    public final void testReadingNoTrim() throws IOException {
+    @Test
+    public void testReadingNoTrim() throws IOException {
         final CSVRecordReader reader = new CSVRecordReader(
                 mkReader("this; is ;' a ';test\n"), ';', '\'');
 
@@ -85,7 +84,8 @@ public final class CSVRecordReaderTest extends TestCase {
         reader.close();
     }
 
-    public final void testReadingNewlines() throws IOException {
+    @Test
+    public void testReadingNewlines() throws IOException {
         final CSVRecordReader reader = new CSVRecordReader(
                 mkReader("this;is;\"more\ntricky\"\nthan;it;looks"), ';', '"');
 
@@ -99,22 +99,17 @@ public final class CSVRecordReaderTest extends TestCase {
         reader.close();
     }
 
-    public final void testReadingWithErrors() throws IOException {
-        try {
-            new CSVRecordReader(mkReader("this;is;\"more\ntricky\nthan;it;looks"),
-                    ';', '"');
-            fail("could read invalid csv");
-        } catch (final RuntimeException e) {
-        }
+    @Test(expected = RuntimeException.class)
+    public void testReadingWithErrors1() throws IOException {
+        new CSVRecordReader(mkReader("this;is;\"more\ntricky\nthan;it;looks"), ';', '"');
+    }
 
+    @Test(expected = RuntimeException.class)
+    public void testReadingWithErrors2() throws IOException {
         final CSVRecordReader reader = new CSVRecordReader(mkReader(
                 "x\nthis;is;\"more\ntricky\nthan;it;looks"), ';', '"');
 
         reader.nextField();
-        try {
-            reader.nextRecord();
-            fail("could read invalid csv");
-        } catch (final RuntimeException e) {
-        }
+        reader.nextRecord();
     }
 }

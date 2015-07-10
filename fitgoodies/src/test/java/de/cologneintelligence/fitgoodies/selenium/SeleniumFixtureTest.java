@@ -18,22 +18,28 @@
 
 package de.cologneintelligence.fitgoodies.selenium;
 
-import java.text.ParseException;
-
-import org.jmock.Expectations;
-import org.jmock.Sequence;
-import org.jmock.internal.NamedSequence;
-
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.SeleniumException;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.processors.DateProvider;
 import de.cologneintelligence.fitgoodies.references.processors.DateProviderCrossReferenceProcessor;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+import java.text.ParseException;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SeleniumFixtureTest extends FitGoodiesTestCase {
     private CommandProcessor commandProcessor;
@@ -43,10 +49,8 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
     private SetupHelper helper;
 
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUpMocks() throws Exception {
         final RunnerHelper runnerHelper = DependencyManager.getOrCreate(RunnerHelper.class);
         helper = DependencyManager.getOrCreate(SetupHelper.class);
 
@@ -57,7 +61,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         helper.setTakeScreenshots(false);
         helper.setSleepBeforeScreenshotMillis(1L);
 
-        runnerHelper.setResultFilePath("fixture.html");
+        runnerHelper.setResultFile(new File("fixture.html"));
         fixture = new SeleniumFixture();
 
         table = new Parse(
@@ -67,86 +71,93 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
                         + "</table>");
     }
 
+    @Test
     public void testInvokeSeleniumCommandReturnsOK() throws Exception {
-        doCommandReturnsOK();
+        doCommandReturnsOKs();
         fixture.doTable(table);
         assertRightCell("arg2");
     }
 
 
+    @Test
     public void testInvokeSeleniumCommandReturnsNOKWithScreenshot() throws Exception {
         helper.setTakeScreenshots(true);
-        doCommandReturnsNOK();
-        checkTakingScreenshot(0);
+        doCommandReturnsNOKs();
         fixture.doTable(table);
         assertWrongCell("arg2");
+        checkTakingScreenshot(0);
     }
 
+    @Test
     public void testInvokeSeleniumCommandReturnsNOKWithTwoScreenshots() throws Exception {
         helper.setTakeScreenshots(true);
         createTwoCommandsTable();
-        doCommandReturnsNOK();
-        checkTakingScreenshot(0);
-        doCommandReturnsNOK();
-        checkTakingScreenshot(1);
+        doCommandReturnsNOKs();
         fixture.doTable(table);
-        assertCell(0,2,0);
+        assertCell(0, 2, 0);
+        checkTakingScreenshot(0);
+        checkTakingScreenshot(1);
     }
 
 
+    @Test
     public void testInvokeSeleniumCommandReturnsNOK() throws Exception {
-        doCommandReturnsNOK();
+        doCommandReturnsNOKs();
         fixture.doTable(table);
         assertWrongCell("arg2");
     }
 
+    @Test
     public void testInvokeSeleniumCommandThrowsSeleniumExceptionTakeScreenshot() throws Exception {
         helper.setTakeScreenshots(true);
-        doCommandThrowsException();
+        doCommandThrowsExceptions();
+        fixture.doTable(table);
         checkTakingScreenshot(0);
-        fixture.doTable(table);
-        assertWrongCell("Error: something is wrong!");
-        assertTrue(thirdCell().body, thirdCell().body.contains("<a href=\"file:///fixture.html.screenshot0.png\">screenshot</a>"));
+        assertWrongCell("Error");
+        assertThat(thirdCell().body, containsString("<a href=\"file:///fixture.html.screenshot0.png\">screenshot</a>"));
     }
 
+    @Test
     public void testInvokeSeleniumCommandThrowsSeleniumException() throws Exception {
-        doCommandThrowsException();
+        doCommandThrowsExceptions();
         fixture.doTable(table);
-        assertWrongCell("Error: something is wrong!");
+        assertWrongCell("Error");
     }
 
+    @Test
     public void testInvokeSeleniumCommandReturnsNOKAndRetry() throws Exception {
-        doCommandCalled4TimesReturnsEachTimeNOK();
+        doCommandReturnsNOKs();
+        createCommandAndRetryTable();
         fixture.doTable(table);
         assertWrongCell("NOK; attempts: ");
     }
 
-
-
+    @Test
     public void testInvokeSeleniumCommandThrowsSeleniumExceptionAndRetry() throws Exception {
         createCommandAndRetryTable();
-        doCommandCalled4TimesEachTimeThrowsException();
+        doCommandThrowsExceptions();
         fixture.doTable(table);
         assertWrongCell("NOK; attempts: ");
     }
 
-
-
+    @Test
     public void testInvokeSeleniumCommandThrowsSeleniumExceptionAndRetryWithSuccessAfterThree() throws Exception {
         createCommandAndRetryTable();
         doCommandCalled4TimesLastTimeReturnsOK();
         fixture.doTable(table);
-        assertRightCell("arg2 OK; attempts: 3 times");
+        assertRightCell("arg2 OK; attempts: 4 times");
     }
 
 
+    @Test
     public void testInvokeSeleniumCommandThrowsException() throws Exception {
-        assertEquals(0, fixture.counts.exceptions);
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
         doCommandThrowsRuntimeException();
         fixture.doTable(table);
         assertExceptionCell("java.lang.RuntimeException: Error");
     }
 
+    @Test
     public void testInvokeSeleniumWithCrossReference() throws Exception {
         final Parse table = new Parse(
                 "<table>"
@@ -159,24 +170,17 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.getProcessors().remove(processor);
         helper.getProcessors().add(processor);
-        checking(new Expectations() {{
-            oneOf(dateProvider).getCurrentDate();
-            will(returnValue(date));
-        }});
+        when(dateProvider.getCurrentDate()).thenReturn(date);
 
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("command", new String[]{"arg1", date});
-            will(returnValue("OK"));
-        }});
+        when(commandProcessor.doCommand("command", new String[]{"arg1", date})).thenReturn("OK");
+
         fixture.doTable(table);
         assertRightCell();
     }
 
+    @Test
     public void testInvokeSeleniumWithoutParameters() throws Exception {
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("command", new String[]{"", ""});
-            will(returnValue("OK"));
-        }});
+        when(commandProcessor.doCommand("command", new String[]{"", ""})).thenReturn("OK");
 
         table = new Parse(
                 "<table>"
@@ -188,15 +192,10 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         assertRightCell();
     }
 
+    @Test
     public void testInvokeSeleniumOpenCommand() throws Exception {
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("open", new String[]{"", ""});
-            will(throwException(new SeleniumException("Error")));
-        }});
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("waitForPageToLoad", new String[] { "50000", });
-            will(returnValue("OK"));
-        }});
+        when(commandProcessor.doCommand("open", new String[]{"", ""})).thenThrow(new SeleniumException("Error"));
+        when(commandProcessor.doCommand("waitForPageToLoad", new String[] { "50000", })).thenReturn("OK");
 
         table = new Parse(
                 "<table>"
@@ -219,22 +218,16 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 
     private void doCommandThrowsRuntimeException() {
         final RuntimeException runtimeException = new RuntimeException("Error");
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("command", args);
-            will(throwException(runtimeException));
-        }});
+        when(commandProcessor.doCommand("command", args)).thenThrow(runtimeException);
     }
 
     private void doCommandCalled4TimesLastTimeReturnsOK() {
-        checking(new Expectations() {{
-            final Sequence sequence = new NamedSequence("sequence");
-            oneOf(commandProcessor).doCommand("command", args);
-            will(throwException(new SeleniumException("Error")));inSequence(sequence);
-            oneOf(commandProcessor).doCommand("command", args);
-            will(throwException(new SeleniumException("Error")));inSequence(sequence);
-            oneOf(commandProcessor).doCommand("command", args);
-            will(returnValue("OK"));inSequence(sequence);
-        }});
+        when(commandProcessor.doCommand("command", args))
+                .thenThrow(
+                        new SeleniumException("Error"),
+                        new SeleniumException("Error"),
+                        new SeleniumException("Error"))
+                .thenReturn("OK");
     }
 
     private void createCommandAndRetryTable() throws ParseException {
@@ -245,48 +238,21 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
                         + "</table>");
     }
 
-    private void doCommandCalled4TimesEachTimeThrowsException() throws Exception {
-        checking(new Expectations() {{
-            atLeast(4).of(commandProcessor).doCommand("command", args);
-            will(throwException(new SeleniumException("Error")));
-        }});
+    private void doCommandThrowsExceptions() {
+        when(commandProcessor.doCommand("command", args)).thenThrow(new SeleniumException("Error"));
     }
 
-    private void doCommandCalled4TimesReturnsEachTimeNOK() throws Exception {
-        createCommandAndRetryTable();
-
-        checking(new Expectations() {{
-            atLeast(4).of(commandProcessor).doCommand("command", args);
-            will(returnValue("NOK"));
-        }});
+    private void doCommandReturnsNOKs() throws ParseException {
+        when(commandProcessor.doCommand("command", args)).thenReturn("NOK");
     }
 
-    private void doCommandReturnsOK() {
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("command", args);
-            will(returnValue("OK"));
-        }});
-    }
-
-    private void doCommandThrowsException() {
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("command", args);
-            will(throwException(new SeleniumException("Error: something is wrong!")));
-        }});
-    }
-
-    private void doCommandReturnsNOK() {
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("command", args);
-            will(returnValue("NOK"));
-        }});
+    private void doCommandReturnsOKs() {
+        when(commandProcessor.doCommand("command", args)).thenReturn("OK");
     }
 
     private void checkTakingScreenshot(final int index) {
-        checking(new Expectations() {{
-            oneOf(commandProcessor).doCommand("captureEntirePageScreenshot",
-                    new String[]{"fixture.html.screenshot" + index +".png", ""});
-        }});
+        verify(commandProcessor).doCommand("captureEntirePageScreenshot",
+                new String[]{"fixture.html.screenshot" + index + ".png", ""});
     }
 
     private void assertRightCell(final String text) {
@@ -309,14 +275,14 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
     }
 
     private void assertCell(final int right, final int wrong, final int exceptions) {
-        assertEquals(right, fixture.counts.right);
-        assertEquals(wrong, fixture.counts.wrong);
-        assertEquals(exceptions, fixture.counts.exceptions);
+        assertThat(fixture.counts.right, is(equalTo((Object) right)));
+        assertThat(fixture.counts.wrong, is(equalTo((Object) wrong)));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) exceptions)));
     }
 
     private void thirdCellContains(final String text) {
         final Parse cell = thirdCell();
-        assertTrue("expected to contain [" + text + "] but was [" + cell.text() + "]" , cell.text().contains(text));
+        assertThat(cell.text(), containsString(text));
     }
 
     private Parse thirdCell() {

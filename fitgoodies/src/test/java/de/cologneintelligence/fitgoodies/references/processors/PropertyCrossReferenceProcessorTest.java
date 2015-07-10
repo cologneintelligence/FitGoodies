@@ -19,6 +19,13 @@
 
 package de.cologneintelligence.fitgoodies.references.processors;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.references.CrossReference;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.MissingResourceException;
@@ -27,26 +34,24 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.references.CrossReference;
-import de.cologneintelligence.fitgoodies.references.processors.PropertyCrossReferenceProcessor;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
-
-/**
- *
- * @author jwierum
- */
 
 public class PropertyCrossReferenceProcessorTest extends FitGoodiesTestCase {
 	private PropertyCrossReferenceProcessor processor;
 
-	@Override
-	public final void setUp() throws Exception {
-		super.setUp();
+	@Before
+	public void setUp() throws Exception {
 		processor = new PropertyCrossReferenceProcessor();
 	}
 
-	public final void testPattern() {
+	@Test
+	public void testPattern() {
 		String pattern = processor.getPattern();
 		pattern = "^\\$\\{" + pattern + "\\}$";
 
@@ -54,40 +59,43 @@ public class PropertyCrossReferenceProcessorTest extends FitGoodiesTestCase {
 		Matcher m;
 
 		m = regex.matcher("${ns.getValue(one)}");
-		assertTrue(m.find());
+		assertThat(m.find(), is(true));
 	}
 
-	public final void testExtraction() {
+	@Test
+	public void testExtraction() {
 	    CrossReference cr =
 	    	processor.extractCrossReference("test-suite.getValue(fit.propertyName)");
 
-        assertNotNull(cr);
-        assertEquals("getValue", cr.getCommand());
-        assertEquals("test-suite", cr.getNamespace());
-        assertEquals("fit.propertyName", cr.getParameter());
-        assertSame(processor, cr.getProcessor());
+		assertThat(cr, not(is(nullValue())));
+		assertThat(cr.getCommand(), is(equalTo("getValue")));
+		assertThat(cr.getNamespace(), is(equalTo("test-suite")));
+		assertThat(cr.getParameter(), is(equalTo("fit.propertyName")));
+		assertThat(cr.getProcessor(), (org.hamcrest.Matcher)is(sameInstance(processor)));
 	}
 
-	public final void testProcessingIgnoringNamespace() throws Exception {
+	@Test
+	public void testProcessingIgnoringNamespace() throws Exception {
 	    CrossReference cr =
 	    	processor.extractCrossReference("test-suite.getValue(fit.propertyName)");
 	    InputStream inputStream =
 	    	new ByteArrayInputStream("fit.propertyName=propertyValue\n".getBytes());
 	    ResourceBundle mockResourceBundle =	new PropertyResourceBundle(inputStream);
 	    processor.setResourceBundle("test-suite", mockResourceBundle);
-		assertEquals("propertyValue", processor.processMatch(cr, null));
+		assertThat(processor.processMatch(cr, null), is(equalTo("propertyValue")));
 	}
 
-    public final void testProcessingWithFilename() throws Exception {
+    @Test
+	public void testProcessingWithFilename() throws Exception {
         CrossReference cr1 =
         	processor.extractCrossReference("test-suite.getValue(fit.propertyName)");
         try {
             processor.processMatch(cr1, null);
-            fail("should have thrown some exception, because the resource "
-            		+ "test-suite.properties can not be found");
-        } catch (MissingResourceException e) {
-            assertTrue("test-suite should be missing", e.getMessage().contains("test-suite"));
-        }
+			Assert.fail("should have thrown some exception, because the resource "
+                        + "test-suite.properties can not be found");
+		} catch (MissingResourceException e) {
+			assertThat(e.getMessage().contains("test-suite"), is(true));
+		}
         InputStream inputStream =
         	new ByteArrayInputStream("fit.propertyName=propertyValue\n".getBytes());
         ResourceBundle mockResourceBundle = new PropertyResourceBundle(inputStream);
@@ -96,14 +104,15 @@ public class PropertyCrossReferenceProcessorTest extends FitGoodiesTestCase {
         	processor.extractCrossReference("test-1648.getValue(fit.propertyName)");
         try {
             processor.processMatch(cr2, null);
-            fail("should have thrown some exception, because the resource"
-            		+ "test-1648.properties can not be found");
-        } catch (MissingResourceException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("test-1648"));
-        }
+			Assert.fail("should have thrown some exception, because the resource"
+					+ "test-1648.properties can not be found");
+		} catch (MissingResourceException e) {
+			assertThat(e.getMessage().contains("test-1648"), is(true));
+		}
     }
 
-    public final void testInfo() {
-    	assertNotNull(processor.info());
-    }
+    @Test
+	public void testInfo() {
+		assertThat(processor.info(), not(CoreMatchers.is(nullValue())));
+	}
 }

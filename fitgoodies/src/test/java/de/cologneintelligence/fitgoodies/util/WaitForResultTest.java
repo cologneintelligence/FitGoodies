@@ -18,11 +18,17 @@
 
 package de.cologneintelligence.fitgoodies.util;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.hamcrest.CoreMatchers;
+import org.junit.Test;
+
 import java.lang.reflect.Method;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.util.SystemTime;
-import de.cologneintelligence.fitgoodies.util.WaitForResult;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 
 public final class WaitForResultTest extends FitGoodiesTestCase {
@@ -53,29 +59,34 @@ public final class WaitForResultTest extends FitGoodiesTestCase {
     	}
     }
 
+    @Test
     public void testWaitForConstructor() throws Exception {
-        Method method = Actor.class.getMethod("myTestMethodReturnsTrue", new Class[0]);
+        Method method = Actor.class.getMethod("myTestMethodReturnsTrue");
         WaitForResult waitForResult = new WaitForResult(method, new Actor(), 0L);
-        assertNotNull(waitForResult);
+        assertThat(waitForResult, not(CoreMatchers.is(nullValue())));
     }
 
+    @Test
     public void testInvokeMethodReturnsTrue() throws Exception {
-        Method method = Actor.class.getMethod("myTestMethodReturnsTrue", new Class[0]);
+        Method method = Actor.class.getMethod("myTestMethodReturnsTrue");
         WaitForResult waitForResult = new WaitForResult(method, new Actor(), 0L);
         waitForResult.invokeMethod();
-        assertTrue(waitForResult.lastCallWasSuccessfull());
+        assertThat(waitForResult.lastCallWasSuccessfull(), is(true));
     }
 
+    @Test
     public void testInvokeMethodReturnsFalse() throws Exception {
-        Method method = Actor.class.getMethod("myTestMethodReturnsFalse", new Class[0]);
+        Method method = Actor.class.getMethod("myTestMethodReturnsFalse");
         WaitForResult waitForResult = new WaitForResult(method, new WaitForResultTest.Actor(), 0L);
         waitForResult.invokeMethod();
-        assertFalse(waitForResult.lastCallWasSuccessfull());
+        assertThat(waitForResult.lastCallWasSuccessfull(), is(false));
+
     }
 
+    @Test
     public void testInvokeWithoutTimeout() throws Exception {
     	Actor actor = new Actor();
-        Method method = actor.getClass().getMethod("myTestMethod", new Class[0]);
+        Method method = actor.getClass().getMethod("myTestMethod");
         final long timeout = 2000L;
 
         WaitForResult waitForResult =
@@ -84,14 +95,15 @@ public final class WaitForResultTest extends FitGoodiesTestCase {
 
         waitForResult.setSleepTime(20L);
         waitForResult.repeatInvokeWithTimeout();
-        assertEquals(12, actor.getCalls());
-        assertEquals(220L, waitForResult.getLastElapsedTime());
-        assertTrue(waitForResult.lastCallWasSuccessfull());
+        assertThat(actor.getCalls(), is(equalTo((Object) 12)));
+        assertThat(waitForResult.getLastElapsedTime(), is(equalTo((Object) 220L)));
+        assertThat(waitForResult.lastCallWasSuccessfull(), is(true));
     }
 
+    @Test
     public void testInvokeWithTimeout() throws Exception {
     	Actor actor = new Actor();
-        Method method = actor.getClass().getMethod("myTestMethod", new Class[0]);
+        Method method = actor.getClass().getMethod("myTestMethod");
         final long timeout = 51L;
 
         WaitForResult waitForResult =
@@ -100,8 +112,9 @@ public final class WaitForResultTest extends FitGoodiesTestCase {
 
         waitForResult.setSleepTime(10L);
         waitForResult.repeatInvokeWithTimeout();
-        assertEquals(7, actor.getCalls());
-        assertEquals(60L, waitForResult.getLastElapsedTime());
-        assertFalse(waitForResult.lastCallWasSuccessfull());
+        assertThat(actor.getCalls(), is(equalTo((Object) 7)));
+        assertThat(waitForResult.getLastElapsedTime(), is(equalTo((Object) 60L)));
+        assertThat(waitForResult.lastCallWasSuccessfull(), is(false));
+
     }
 }

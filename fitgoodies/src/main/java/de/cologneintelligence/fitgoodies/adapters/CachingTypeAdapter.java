@@ -28,8 +28,6 @@ import fit.TypeAdapter;
  * and caches the return value. This is important, because it can be dangerous
  * to call a method multiple times. So the first result is cached.
  *
- * @author jwierum
- * @version $Id$
  */
 public final class CachingTypeAdapter extends TypeAdapter {
 	private final TypeAdapter parent;

@@ -26,11 +26,6 @@ import org.apache.log4j.PatternLayout;
 
 import fitgoodies.ActionFixture;
 
-/**
- * @author jwierum
- * @version $Id: LogPrepareFixture.java 192 2009-08-20 14:41:05Z jwierum $
- *
- */
 public final class LogPrepareFixture extends ActionFixture {
 	public void initializeLogging() {
 		ConsoleAppender appender = new ConsoleAppender();

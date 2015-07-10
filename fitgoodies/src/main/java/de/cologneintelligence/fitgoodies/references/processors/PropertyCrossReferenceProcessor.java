@@ -32,7 +32,6 @@ import de.cologneintelligence.fitgoodies.references.CrossReference;
  * The namespace is interpreted as the filename without its extension.
  *
  * @author kmussawisade
- * @version $Id$
  */
 public class PropertyCrossReferenceProcessor extends AbstractCrossReferenceProcessor {
 	private static final String PATTERN =
@@ -77,7 +76,7 @@ public class PropertyCrossReferenceProcessor extends AbstractCrossReferenceProce
      * @param name namespace to use
      * @param resourceBundle the resourceBundle to set
      */
-    public final void setResourceBundle(final String name,
+    public void setResourceBundle(final String name,
     		final ResourceBundle resourceBundle) {
         this.resourceBundleMap.put(name, resourceBundle);
     }

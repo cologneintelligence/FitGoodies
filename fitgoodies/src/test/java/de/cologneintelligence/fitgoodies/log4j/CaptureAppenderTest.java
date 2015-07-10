@@ -18,9 +18,7 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
@@ -28,16 +26,17 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
-import org.jmock.Expectations;
+import org.junit.Before;
+import org.junit.Test;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.log4j.CaptureAppender;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-/**
- * @author jwierum
- * @version $Id$
- */
 public final class CaptureAppenderTest extends FitGoodiesTestCase {
 	private static class TestFilter extends Filter {
 		@Override public int decide(final LoggingEvent arg0) { return 0; }
@@ -46,20 +45,15 @@ public final class CaptureAppenderTest extends FitGoodiesTestCase {
 	private Appender appenderMock;
 	private Filter filterMock;
 
-	@Override
+	@Before
 	public void setUp() throws Exception {
-		super.setUp();
-
 		appenderMock = mock(Appender.class);
 		filterMock = new TestFilter();
 	}
 
+	@Test
 	public void testStorage() {
-		checking(new Expectations() {{
-			oneOf(appenderMock).getName(); will(returnValue("BaseAppender"));
-			oneOf(appenderMock).getFilter();
-			oneOf(appenderMock).getFilter();
-		}});
+		when(appenderMock.getName()).thenReturn("BaseAppender");
 
 		CaptureAppender appender = CaptureAppender.newAppenderFrom(appenderMock);
 
@@ -78,16 +72,13 @@ public final class CaptureAppenderTest extends FitGoodiesTestCase {
 		appender.doAppend(ev2);
 
 		LoggingEvent[] events = appender.getAllEvents();
-		assertSame(ev1, events[0]);
-		assertSame(ev2, events[1]);
+		assertThat(events[0], is(sameInstance(ev1)));
+		assertThat(events[1], is(sameInstance(ev2)));
 	}
 
+	@Test
 	public void testReset() {
-		checking(new Expectations() {{
-			oneOf(appenderMock).getName(); will(returnValue("BaseAppender"));
-			oneOf(appenderMock).getFilter();
-			oneOf(appenderMock).getFilter();
-		}});
+		when(appenderMock.getName()).thenReturn("BaseAppender");
 
 		CaptureAppender appender = CaptureAppender.newAppenderFrom(appenderMock);
 
@@ -107,25 +98,23 @@ public final class CaptureAppenderTest extends FitGoodiesTestCase {
 
 		appender.clear();
 		LoggingEvent[] events = appender.getAllEvents();
-		assertEquals(0, events.length);
+		assertThat(events.length, is(equalTo((Object) 0)));
 	}
 
+	@Test
 	public void testParentValues() {
-		checking(new Expectations() {{
-			oneOf(appenderMock).getName(); will(returnValue("BaseAppender"));
-			oneOf(appenderMock).getFilter(); will(returnValue(filterMock));
-		}});
+			when(appenderMock.getName()).thenReturn("BaseAppender");
+			when(appenderMock.getFilter()).thenReturn(filterMock);
 
 		CaptureAppender appender = CaptureAppender.newAppenderFrom(appenderMock);
 
-		assertSame(filterMock, appender.getFilter());
-		assertEquals("BaseAppender-fitgoodiescapture", appender.getName());
+		assertThat(appender.getFilter(), is(sameInstance(filterMock)));
+		assertThat(appender.getName(), is(equalTo("BaseAppender-fitgoodiescapture")));
 	}
 
+	@Test
 	public void testDefaultValues() {
-		checking(new Expectations() {{
-			oneOf(appenderMock).getName(); will(returnValue("BaseAppender"));
-		}});
+			when(appenderMock.getName()).thenReturn("BaseAppender");
 
 		CaptureAppender appender = CaptureAppender.newAppenderFrom(appenderMock);
 
@@ -142,12 +131,14 @@ public final class CaptureAppenderTest extends FitGoodiesTestCase {
 			@Override public void activateOptions() { }
 		});
 
-		assertEquals(CaptureAppender.getAppenderNameFor("BaseAppender"), appender.getName());
-		assertFalse(appender.requiresLayout());
+		assertThat(appender.getName(), is(equalTo(CaptureAppender.getAppenderNameFor("BaseAppender"))));
+		assertThat(appender.requiresLayout(), is(false));
+
 	}
 
+	@Test
 	public void testAppenderName() {
-		assertEquals("test-fitgoodiescapture", CaptureAppender.getAppenderNameFor("test"));
-		assertEquals("test2-fitgoodiescapture", CaptureAppender.getAppenderNameFor("test2"));
+		assertThat(CaptureAppender.getAppenderNameFor("test"), is(equalTo("test-fitgoodiescapture")));
+		assertThat(CaptureAppender.getAppenderNameFor("test2"), is(equalTo("test2-fitgoodiescapture")));
 	}
 }

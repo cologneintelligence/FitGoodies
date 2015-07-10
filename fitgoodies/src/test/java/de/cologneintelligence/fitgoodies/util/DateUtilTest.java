@@ -18,18 +18,22 @@
 
 package de.cologneintelligence.fitgoodies.util;
 
+import org.junit.Test;
+
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import de.cologneintelligence.fitgoodies.util.DateUtil;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-import junit.framework.TestCase;
+public class DateUtilTest {
 
-public class DateUtilTest extends TestCase {
-
+    @Test
     public void testGetDateAsString(){
         Date date = new GregorianCalendar(2009, 1, 14).getTime();
-        assertEquals("14.02.2009", DateUtil.getDateAsString(date, DateUtil.DATE_PATTERN_DD_MM_YYYY));
+        assertThat(DateUtil.getDateAsString(date, DateUtil.DATE_PATTERN_DD_MM_YYYY),
+                is(equalTo("14.02.2009")));
     }
 
 }

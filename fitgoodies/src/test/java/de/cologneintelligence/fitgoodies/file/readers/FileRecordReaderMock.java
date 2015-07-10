@@ -19,8 +19,6 @@
 
 package de.cologneintelligence.fitgoodies.file.readers;
 
-import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
-
 public class FileRecordReaderMock implements FileRecordReader {
 	private final String[][] table;
 	private int row;
@@ -31,7 +29,7 @@ public class FileRecordReaderMock implements FileRecordReader {
 	}
 
 	@Override
-	public final void close() { }
+	public void close() { }
 
 	@Override
 	public final String nextField() {

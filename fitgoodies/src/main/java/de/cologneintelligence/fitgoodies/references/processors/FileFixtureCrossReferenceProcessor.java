@@ -19,10 +19,10 @@
 
 package de.cologneintelligence.fitgoodies.references.processors;
 
-import java.io.FileNotFoundException;
-
 import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReference;
+
+import java.io.FileNotFoundException;
 
 
 /**
@@ -31,8 +31,6 @@ import de.cologneintelligence.fitgoodies.references.CrossReference;
  * {@link de.cologneintelligence.fitgoodies.file.FileFixture}.<br /><br />
  * This class provide ${selectedFile()} and ${selectedEncoding()}.
  *
- * @author jwierum
- * @version $Id$
  */
 public class FileFixtureCrossReferenceProcessor extends
 AbstractCrossReferenceProcessor {
@@ -52,7 +50,7 @@ AbstractCrossReferenceProcessor {
      * @return a description.
      */
     @Override
-    public final String info() {
+    public String info() {
         return "provides selectedFile() and selectedEncoding()";
     }
 
@@ -64,12 +62,12 @@ AbstractCrossReferenceProcessor {
      * 		if it was selectedEncoding, the selected encoding is returned
      */
     @Override
-    public final String processMatch(final CrossReference cr, final Object object) {
+    public String processMatch(final CrossReference cr, final Object object) {
         if (cr.getCommand().equals("selectedEncoding")) {
             return fileFixtureHelper.getEncoding();
         } else {
             try {
-                return fileFixtureHelper.getSelector().getFirstFile().filename();
+                return fileFixtureHelper.getSelector().getFirstFile().getPath();
             } catch (final FileNotFoundException e) {
                 throw new RuntimeException("no file found");
             }

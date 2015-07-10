@@ -19,21 +19,19 @@
 
 package de.cologneintelligence.fitgoodies.dynamic;
 
+import de.cologneintelligence.fitgoodies.ScientificDouble;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cologneintelligence.fitgoodies.ScientificDouble;
-
 
 /**
  * Maps a ResultSet to an Array of dynamic generated objects.
  * These objects can be read from fit.
  *
- * @author jwierum
- * @version $Id$
  */
 public class ResultSetWrapper {
 	private final List<String> names = new ArrayList<String>();

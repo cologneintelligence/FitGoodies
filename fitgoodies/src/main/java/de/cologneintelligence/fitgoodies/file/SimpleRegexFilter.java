@@ -20,15 +20,13 @@
 package de.cologneintelligence.fitgoodies.file;
 
 import java.io.File;
-import java.io.FilenameFilter;
+import java.io.FileFilter;
 
 /**
  * Simple filter that checks, whether the filename matches a given regex.
  *
- * @author jwierum
- * @version $Id$
  */
-public class SimpleRegexFilter implements FilenameFilter {
+public class SimpleRegexFilter implements FileFilter {
 	private final String regex;
 
 	/**
@@ -46,12 +44,12 @@ public class SimpleRegexFilter implements FilenameFilter {
 	 * Returns the saved pattern.
 	 * @return the used pattern
 	 */
-	public final String getPattern() {
+	public String getPattern() {
 		return regex;
 	}
 
 	@Override
-	public final boolean accept(final File dir, final String name) {
-		return name.matches(regex);
+	public boolean accept(File pathname) {
+		return pathname.isFile() && pathname.getName().matches(regex);
 	}
 }

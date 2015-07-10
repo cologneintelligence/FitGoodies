@@ -19,89 +19,94 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import java.math.BigInteger;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureToolsTest.DummyValueFixture;
 import fit.Fixture;
 import fit.TypeAdapter;
+import org.hamcrest.Matcher;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import java.math.BigInteger;
+import java.util.Arrays;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+
 public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
     private TypeAdapterHelper helper;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
         helper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
     }
 
+    @Test
     public void testRegister() throws Exception {
         final Object target = new Object();
         final TypeAdapter typeAdapter = new TypeAdapter();
         typeAdapter.field = typeAdapter.getClass().getField("field");
         typeAdapter.fixture = new Fixture();
-        typeAdapter.method = typeAdapter.getClass().getMethod("get", new Class<?>[]{});
+        typeAdapter.method = typeAdapter.getClass().getMethod("get");
         typeAdapter.target = target;
         typeAdapter.type = BigInteger.class;
 
         TypeAdapter actual = helper.getAdapter(typeAdapter, null);
-        assertSame(typeAdapter, actual);
+        assertThat(actual, is(sameInstance(typeAdapter)));
 
         helper.register(DummyTypeAdapter.class);
 
         actual = helper.getAdapter(typeAdapter, null);
-        assertEquals(DummyTypeAdapter.class, actual.getClass());
+        assertThat(actual.getClass(), (Matcher) is(equalTo(DummyTypeAdapter.class)));
 
         typeAdapter.type = java.math.BigDecimal.class;
         actual = helper.getAdapter(typeAdapter, null);
-        assertSame(typeAdapter, actual);
+        assertThat(actual, is(sameInstance(typeAdapter)));
     }
 
+    @Test
     public void testDefaults() throws Exception {
         final TypeAdapter typeAdapter = new TypeAdapter();
         typeAdapter.type = StringBuilder.class;
 
         AbstractTypeAdapter<?> actual = (AbstractTypeAdapter<?>)
                 helper.getAdapter(typeAdapter, null);
-        assertEquals(StringBuilder.class, actual.getType());
+        assertThat(actual.getType(), (Matcher) is(equalTo(StringBuilder.class)));
 
         typeAdapter.type = StringBuffer.class;
 
         actual = (AbstractTypeAdapter<?>)
                 helper.getAdapter(typeAdapter, null);
-        assertEquals(StringBuffer.class, actual.getType());
+        assertThat(actual.getType(), (Matcher) is(equalTo(StringBuffer.class)));
 
         typeAdapter.type = java.sql.Date.class;
 
         actual = (AbstractTypeAdapter<?>)
                 helper.getAdapter(typeAdapter, null);
-        assertEquals(java.sql.Date.class, actual.getType());
+        assertThat(actual.getType(), (Matcher)is(equalTo(java.sql.Date.class)));
 
         typeAdapter.type = java.util.Date.class;
 
         actual = (AbstractTypeAdapter<?>)
                 helper.getAdapter(typeAdapter, null);
-        assertEquals(java.util.Date.class, actual.getType());
+        assertThat(actual.getType(), (Matcher) is(equalTo(java.util.Date.class)));
 
         typeAdapter.type = java.sql.Timestamp.class;
 
         actual = (AbstractTypeAdapter<?>)
                 helper.getAdapter(typeAdapter, null);
-        assertEquals(java.sql.Timestamp.class, actual.getType());
+        assertThat(actual.getType(), (Matcher) is(equalTo(java.sql.Timestamp.class)));
     }
 
+    @Test
     public void testParameter() throws Exception {
         final Object target = new Object();
         final TypeAdapter typeAdapter = new TypeAdapter();
         typeAdapter.field = typeAdapter.getClass().getField("field");
         typeAdapter.fixture = new Fixture();
-        typeAdapter.method = typeAdapter.getClass().getMethod("get", new Class<?>[]{});
+        typeAdapter.method = typeAdapter.getClass().getMethod("get");
         typeAdapter.target = target;
         typeAdapter.type = BigInteger.class;
 
@@ -109,13 +114,14 @@ public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
 
         AbstractTypeAdapter<?> actual = (AbstractTypeAdapter<?>)
                 helper.getAdapter(typeAdapter, "hello");
-        assertSame("hello", actual.getParameter());
+        assertThat(actual.getParameter(), is(sameInstance("hello")));
 
         actual = (AbstractTypeAdapter<?>)
                 helper.getAdapter(typeAdapter, "test");
-        assertSame("test", actual.getParameter());
+        assertThat(actual.getParameter(), is(sameInstance("test")));
     }
 
+    @Test
     public void testRebindTypeAdapterWithArray() throws Exception {
         TypeAdapter ta;
         TypeAdapter actual;
@@ -126,17 +132,12 @@ public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
 
         actual = helper.getAdapter(ta, null);
 
-        assertEquals(ArrayTypeAdapter.class, actual.getClass());
-        assertArray(new BigInteger[]{
-                new BigInteger("1"), new BigInteger("2"), new BigInteger("3"),
-        }, (BigInteger[]) actual.get());
+        assertThat(actual.getClass(), (Matcher) is(equalTo(ArrayTypeAdapter.class)));
+        assertThat(Arrays.asList(new BigInteger("1"), new BigInteger("2"), new BigInteger("3")), is(equalTo(Arrays.asList((BigInteger[]) actual.get()))));
 
-        assertArray(new BigInteger[]{
-                new BigInteger("42"), new BigInteger("42")
-        }, (BigInteger[]) actual.parse("x, y"));
+        assertThat(Arrays.asList(new BigInteger("42"), new BigInteger("42")), is(equalTo(Arrays.asList((BigInteger[]) actual.parse("x, y")))));
 
         actual = helper.getAdapter(ta, "parameter");
-        assertArray(new BigInteger[]{new BigInteger("23")},
-                (BigInteger[]) actual.parse("z"));
+        assertThat(Arrays.asList(new BigInteger("23")), is(equalTo(Arrays.asList((BigInteger[]) actual.parse("z")))));
     }
 }

@@ -19,26 +19,30 @@
 
 package de.cologneintelligence.fitgoodies.parsers;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.hamcrest.CoreMatchers;
+import org.junit.Test;
+
 import java.math.BigInteger;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.parsers.BigIntegerParser;
-import de.cologneintelligence.fitgoodies.parsers.Parser;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 
-/**
- *
- * @author jwierum
- */
 public class BigIntegerParserTest extends FitGoodiesTestCase {
-	public final void testParser() throws Exception {
+	@Test
+	public void testParser() throws Exception {
 		Parser<BigInteger> p = new BigIntegerParser();
 
-		assertEquals(new BigInteger("42"), p.parse("42", null));
-		assertEquals(new BigInteger("21"), p.parse("21", null));
+		assertThat(p.parse("42", null), is(equalTo(new BigInteger("42"))));
+		assertThat(p.parse("21", null), is(equalTo(new BigInteger("21"))));
 	}
 
-	public final void testType() {
-		assertNotNull(new BigIntegerParser().getType());
+	@Test
+	public void testType() {
+		assertThat(new BigIntegerParser().getType(), not(CoreMatchers.is(nullValue())));
 	}
 }

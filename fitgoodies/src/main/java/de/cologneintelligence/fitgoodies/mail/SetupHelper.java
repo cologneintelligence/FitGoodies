@@ -25,7 +25,6 @@ import java.util.Properties;
  * Singleton class that holds information on how to access mails.
  * Can be set via HTML using the {@link SetupFixture}.
  *
- * @author jwierum
  */
 public final class SetupHelper {
     private String user;

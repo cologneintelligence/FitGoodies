@@ -18,45 +18,44 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import fit.Parse;
+import org.hamcrest.Matcher;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.text.ParseException;
 import java.util.Map;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.log4j.CellArgumentParser;
-import de.cologneintelligence.fitgoodies.log4j.CellArgumentParserFactory;
-import de.cologneintelligence.fitgoodies.log4j.CellArgumentParserFactoryImpl;
-import de.cologneintelligence.fitgoodies.log4j.CellArgumentParserImpl;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
-import fit.Parse;
 
-/**
- * @author jwierum
- * @version $Id$
- *
- */
 public final class CellArgumentParserFactoryImplTest extends FitGoodiesTestCase {
 	private CellArgumentParserFactory factory;
 
-	@Override
+	@Before
 	public void setUp() throws Exception {
-		super.setUp();
 		factory = new CellArgumentParserFactoryImpl();
 	}
 
+	@Test
 	public void testReturn() throws ParseException {
 		Parse cell = new Parse("<td>cell[x=y]</td>", new String[]{"td"});
 		CellArgumentParser parser = factory.getParserFor(cell);
 
-		assertEquals(CellArgumentParserImpl.class, parser.getClass());
+		assertThat(parser.getClass(), (Matcher) is(equalTo(CellArgumentParserImpl.class)));
 	}
 
+	@Test
 	public void testParameterProcessing() throws ParseException {
 		Parse cell = new Parse("<td>cell[x=y]</td>", new String[]{"td"});
 		CellArgumentParser parser = factory.getParserFor(cell);
 
 		Map<String, String> parameters = parser.getExtractedCommandParameters();
 
-		assertEquals("cell", cell.text());
-		assertEquals("y", parameters.get("x"));
+		assertThat(cell.text(), is(equalTo("cell")));
+		assertThat(parameters.get("x"), is(equalTo("y")));
 	}
 }

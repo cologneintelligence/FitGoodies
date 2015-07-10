@@ -19,69 +19,78 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.runners.FileCount;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import fit.Counts;
+import org.hamcrest.Matcher;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import java.io.File;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
+
+
 public class FileCountTest extends FitGoodiesTestCase {
-	public final void testGetters() {
+	@Test
+	public void testGetters() {
 		Counts expectedCounts = new Counts();
-		String expectedFile = "x";
+		File expectedFile = new File("x");
 		FileCount actual = new FileCount(expectedFile, expectedCounts);
-		assertEquals(expectedFile, actual.getFile());
-		assertSame(expectedCounts, actual.getCounts());
+		assertThat(actual.getFile(), is(equalTo(expectedFile)));
+		assertThat(actual.getCounts(), is(sameInstance(expectedCounts)));
 
 		expectedCounts = new Counts();
-		expectedFile = "y";
+		expectedFile = new File("y");
 		actual = new FileCount(expectedFile, expectedCounts);
-		assertEquals(expectedFile, actual.getFile());
-		assertSame(expectedCounts, actual.getCounts());
+		assertThat(actual.getFile(), is(equalTo(expectedFile)));
+		assertThat(actual.getCounts(), is(sameInstance(expectedCounts)));
 	}
 
-	public final void testEquals() {
+	@Test
+	public void testEquals() {
 		Counts counts = new Counts();
-		FileCount fc1 = new FileCount("asdf", counts);
-		FileCount fc2 = new FileCount("fdsa", counts);
+		FileCount fc1 = new FileCount(new File("asdf"), counts);
+		FileCount fc2 = new FileCount(new File("fdsa"), counts);
 
-		assertFalse(fc1.equals(fc2));
+		assertThat(fc1.equals(fc2), is(false));
 
-		fc1 = new FileCount("asdf", counts);
-		fc2 = new FileCount("asdf", counts);
-		assertTrue(fc1.equals(fc2));
+		fc1 = new FileCount(new File("asdf"), counts);
+		fc2 = new FileCount(new File("asdf"), counts);
+		assertThat(fc1.equals(fc2), is(true));
 
-		fc1 = new FileCount("x", counts);
-		fc2 = new FileCount("y", counts);
-		assertFalse(fc1.equals(fc2));
+		fc1 = new FileCount(new File("x"), counts);
+		fc2 = new FileCount(new File("y"), counts);
+		assertThat(fc1.equals(fc2), is(false));
 
-		fc1 = new FileCount("a", counts);
-		fc2 = new FileCount("a", counts);
-		assertTrue(fc1.equals(fc2));
+		fc1 = new FileCount(new File("a"), counts);
+		fc2 = new FileCount(new File("a"), counts);
+		assertThat(fc1.equals(fc2), is(true));
 
-		fc1 = new FileCount("a", counts);
-		assertFalse(fc1.equals("a"));
+		fc1 = new FileCount(new File("a"), counts);
+		assertThat(fc1, (Matcher) not(equalTo("a")));
 	}
 
-	public final void testHash() {
+	@Test
+	public void testHash() {
 		Counts counts = new Counts();
-		FileCount fc1 = new FileCount("asdf", counts);
-		FileCount fc2 = new FileCount("fdsa", counts);
+		FileCount fc1 = new FileCount(new File("asdf"), counts);
+		FileCount fc2 = new FileCount(new File("fdsa"), counts);
 
-		assertTrue(fc1.hashCode() != fc2.hashCode());
+		assertThat(fc1.hashCode(), is(not(fc2.hashCode())));
 
-		fc1 = new FileCount("asdf", counts);
-		fc2 = new FileCount("asdf", counts);
-		assertTrue(fc1.hashCode() == fc2.hashCode());
+		fc1 = new FileCount(new File("asdf"), counts);
+		fc2 = new FileCount(new File("asdf"), counts);
+		assertThat(fc1.hashCode(), is(fc2.hashCode()));
 
-		fc1 = new FileCount("x", counts);
-		fc2 = new FileCount("y", counts);
-		assertTrue(fc1.hashCode() != fc2.hashCode());
+		fc1 = new FileCount(new File("x"), counts);
+		fc2 = new FileCount(new File("y"), counts);
+		assertThat(fc1.hashCode(), is(not(fc2.hashCode())));
 
-		fc1 = new FileCount("a", counts);
-		fc2 = new FileCount("a", counts);
-		assertTrue(fc1.hashCode() == fc2.hashCode());
+		fc1 = new FileCount(new File("a"), counts);
+		fc2 = new FileCount(new File("a"), counts);
+		assertThat(fc1.hashCode(), is(fc2.hashCode()));
 	}
 }

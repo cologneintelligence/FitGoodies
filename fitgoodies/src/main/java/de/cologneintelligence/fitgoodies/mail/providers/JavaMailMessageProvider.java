@@ -32,8 +32,6 @@ import de.cologneintelligence.fitgoodies.mail.Mail;
 /**
  * Implementation of MessageProvider which uses the JavaMail libraries.
  *
- * @author jwierum
- * @version $Id$
  */
 public class JavaMailMessageProvider implements MessageProvider {
 	private final Session session;

@@ -23,8 +23,6 @@ package de.cologneintelligence.fitgoodies.parsers;
  * Interface which provides a parser.
  * @param <T> data type which the parser is responsible for.
  *
- * @author jwierum
- * @version $Id$
  */
 public interface Parser<T> {
 	/**

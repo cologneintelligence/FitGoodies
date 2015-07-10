@@ -18,52 +18,60 @@
 
 package de.cologneintelligence.fitgoodies.selenium;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 public class SetupHelperTest extends FitGoodiesTestCase {
     private SetupHelper helper;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         helper = DependencyManager.getOrCreate(SetupHelper.class);
     }
 
+    @Test
     public void testDefaultValues() {
-        assertEquals(4444, helper.getServerPort());
-        assertEquals("*firefox", helper.getBrowserStartCommand());
-        assertEquals("http://localhost", helper.getBrowserURL());
-        assertEquals("localhost", helper.getServerHost());
-        assertNull(helper.getSpeed());
+        assertThat(helper.getServerPort(), is(equalTo((Object) 4444)));
+        assertThat(helper.getBrowserStartCommand(), is(equalTo("*firefox")));
+        assertThat(helper.getBrowserURL(), is(equalTo("http://localhost")));
+        assertThat(helper.getServerHost(), is(equalTo("localhost")));
+        assertThat(helper.getSpeed(), is(nullValue()));
     }
 
+    @Test
     public void testGettersAndSetters() {
         helper.setBrowserStartCommand("*chrome");
-        assertEquals("*chrome", helper.getBrowserStartCommand());
+        assertThat(helper.getBrowserStartCommand(), is(equalTo("*chrome")));
         helper.setBrowserStartCommand("*opera");
-        assertEquals("*opera", helper.getBrowserStartCommand());
+        assertThat(helper.getBrowserStartCommand(), is(equalTo("*opera")));
 
         helper.setBrowserURL("http://example.org");
-        assertEquals("http://example.org", helper.getBrowserURL());
+        assertThat(helper.getBrowserURL(), is(equalTo("http://example.org")));
         helper.setBrowserURL("http://example.com");
-        assertEquals("http://example.com", helper.getBrowserURL());
+        assertThat(helper.getBrowserURL(), is(equalTo("http://example.com")));
 
         helper.setServerHost("127.0.0.1");
-        assertEquals("127.0.0.1", helper.getServerHost());
+        assertThat(helper.getServerHost(), is(equalTo("127.0.0.1")));
         helper.setServerHost("192.168.0.1");
-        assertEquals("192.168.0.1", helper.getServerHost());
+        assertThat(helper.getServerHost(), is(equalTo("192.168.0.1")));
 
         helper.setServerPort(1234);
-        assertEquals(1234, helper.getServerPort());
+        assertThat(helper.getServerPort(), is(equalTo((Object) 1234)));
         helper.setServerPort(4321);
-        assertEquals(4321, helper.getServerPort());
+        assertThat(helper.getServerPort(), is(equalTo((Object) 4321)));
 
         helper.setSpeed(123);
-        assertEquals(Integer.valueOf(123), helper.getSpeed());
+        assertThat(helper.getSpeed(), is(equalTo(123)));
         helper.setSpeed(321);
-        assertEquals(Integer.valueOf(321), helper.getSpeed());
+        assertThat(helper.getSpeed(), is(equalTo(321)));
         helper.setSpeed(null);
-        assertEquals(null, helper.getSpeed());
+        assertThat(helper.getSpeed(), is(equalTo(null)));
     }
 }

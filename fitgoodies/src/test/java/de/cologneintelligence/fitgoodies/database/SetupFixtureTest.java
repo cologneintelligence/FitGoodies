@@ -19,27 +19,30 @@
 
 package de.cologneintelligence.fitgoodies.database;
 
-import java.sql.DriverManager;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import java.sql.DriverManager;
+
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+
 public class SetupFixtureTest extends FitGoodiesTestCase {
     private SetupHelper helper;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
         helper = DependencyManager.getOrCreate(SetupHelper.class);
     }
 
-    public final void testHelperInteraction1() throws Exception {
+    @Test
+    public void testHelperInteraction1() throws Exception {
         final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>provider</td><td>"
                 + "de.cologneintelligence.fitgoodies.database.DriverMock</td></tr>"
@@ -52,14 +55,15 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.exceptions);
-        assertEquals("username", helper.getUser());
-        assertEquals("pass", helper.getPassword());
-        assertEquals("db", helper.getConnectionString());
-        assertNotNull(DriverManager.getDriver("jdbc://test"));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(helper.getUser(), is(equalTo("username")));
+        assertThat(helper.getPassword(), is(equalTo("pass")));
+        assertThat(helper.getConnectionString(), is(equalTo("db")));
+        assertThat(DriverManager.getDriver("jdbc://test"), not(CoreMatchers.is(nullValue())));
     }
 
-    public final void testHelperInteraction2() throws Exception {
+    @Test
+    public void testHelperInteraction2() throws Exception {
         final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>provider</td><td>"
                 + "de.cologneintelligence.fitgoodies.database.DriverMock</td></tr>"
@@ -72,10 +76,10 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.exceptions);
-        assertEquals("user2", helper.getUser());
-        assertEquals("pw2", helper.getPassword());
-        assertEquals("jdbc://test/db", helper.getConnectionString());
-        assertNotNull(DriverManager.getDriver("jdbc://test"));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(helper.getUser(), is(equalTo("user2")));
+        assertThat(helper.getPassword(), is(equalTo("pw2")));
+        assertThat(helper.getConnectionString(), is(equalTo("jdbc://test/db")));
+        assertThat(DriverManager.getDriver("jdbc://test"), not(CoreMatchers.is(nullValue())));
     }
 }

@@ -19,15 +19,17 @@
 
 package de.cologneintelligence.fitgoodies.references.processors;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.references.CrossReference;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
-import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossReferenceProcessor;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
+
 public final class AbstractCrossReferenceProcessorTest extends FitGoodiesTestCase {
 	private static class TestProcessor extends AbstractCrossReferenceProcessor {
 		public TestProcessor(final String pattern) {
@@ -38,57 +40,58 @@ public final class AbstractCrossReferenceProcessorTest extends FitGoodiesTestCas
 				throws CrossReferenceProcessorShortcutException { return null; }
 	}
 
+	@Test
 	public void testExtraction() {
 		TestProcessor proc = new TestProcessor("(x)\\(\\)");
 		CrossReference cr = proc.extractCrossReference("x()");
 
-		assertEquals("x", cr.getCommand());
-		assertNull(cr.getNamespace());
-		assertNull(cr.getParameter());
+		assertThat(cr.getCommand(), is(equalTo("x")));
+		assertThat(cr.getNamespace(), is(nullValue()));
+		assertThat(cr.getParameter(), is(nullValue()));
 
 		proc = new TestProcessor("(y)\\(\\)");
 		cr = proc.extractCrossReference("y()");
 
-		assertEquals("y", cr.getCommand());
-		assertNull(cr.getNamespace());
-		assertNull(cr.getParameter());
+		assertThat(cr.getCommand(), is(equalTo("y")));
+		assertThat(cr.getNamespace(), is(nullValue()));
+		assertThat(cr.getParameter(), is(nullValue()));
 
 
 		proc = new TestProcessor("(y)\\(([a-z]+)\\)");
 		cr = proc.extractCrossReference("y(asdf)");
 
-		assertEquals("y", cr.getCommand());
-		assertEquals("asdf", cr.getParameter());
-		assertNull(cr.getNamespace());
+		assertThat(cr.getCommand(), is(equalTo("y")));
+		assertThat(cr.getParameter(), is(equalTo("asdf")));
+		assertThat(cr.getNamespace(), is(nullValue()));
 
 		proc = new TestProcessor("(x)\\(([0-9]+)\\)");
 		cr = proc.extractCrossReference("x(123)");
 
-		assertEquals("x", cr.getCommand());
-		assertEquals("123", cr.getParameter());
-		assertNull(cr.getNamespace());
+		assertThat(cr.getCommand(), is(equalTo("x")));
+		assertThat(cr.getParameter(), is(equalTo("123")));
+		assertThat(cr.getNamespace(), is(nullValue()));
 
 
 		proc = new TestProcessor("([a-z]+)\\.(y)\\(([a-z]+)\\)");
 		cr = proc.extractCrossReference("ns.y(asdf)");
 
-		assertEquals("ns", cr.getNamespace());
-		assertEquals("y", cr.getCommand());
-		assertEquals("asdf", cr.getParameter());
+		assertThat(cr.getNamespace(), is(equalTo("ns")));
+		assertThat(cr.getCommand(), is(equalTo("y")));
+		assertThat(cr.getParameter(), is(equalTo("asdf")));
 
 		proc = new TestProcessor("([0-9]+)\\.(x)\\(([0-9]+)\\)");
 		cr = proc.extractCrossReference("123.x(321)");
 
-		assertEquals("123", cr.getNamespace());
-		assertEquals("x", cr.getCommand());
-		assertEquals("321", cr.getParameter());
+		assertThat(cr.getNamespace(), is(equalTo("123")));
+		assertThat(cr.getCommand(), is(equalTo("x")));
+		assertThat(cr.getParameter(), is(equalTo("321")));
 
 		proc = new TestProcessor("(w)(x)(y)(z)");
 		cr = proc.extractCrossReference("wxyz");
-		assertNull(cr);
+		assertThat(cr, is(nullValue()));
 
 		proc = new TestProcessor("1234");
 		cr = proc.extractCrossReference("1234");
-		assertNull(cr);
+		assertThat(cr, is(nullValue()));
 	}
 }

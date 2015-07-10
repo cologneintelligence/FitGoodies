@@ -19,56 +19,56 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import java.io.PrintStream;
+import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 
-import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
+import java.io.File;
+import java.io.PrintStream;
 
 
 /**
  * Singleton helper class which holds information about the latest runner.
  *
- * @author jwierum
  */
 public final class RunnerHelper {
-    private String filePath;
+    private File filePath;
     private Runner runner;
-    private String resultFilePath;
-    private AbstractDirectoryHelper dirHelper;
+    private File resultFilePath;
+    private FileSystemDirectoryHelper dirHelper;
     private PrintStream logStream;
 
     /**
      * Sets the current processed file's path.
      * @param path the path to the current processed file
-     * @see #getFilePath() getFilePath
+     * @see #getFile() getFilePath
      */
-    public void setFilePath(final String path) {
+    public void setFile(final File path) {
         filePath = path;
     }
 
     /**
      * Gets the current processed file's path.
      * @return the path to the current processed file.
-     * @see #setFilePath(String) setFilePath(String)
+     * @see #setFile(File) setFile(File)
      */
-    public String getFilePath() {
+    public File getFile() {
         return filePath;
     }
 
     /**
      * Sets the currently processed output file.
      * @param path the path of the current output file
-     * @see #getResultFilePath() getResultFilePath()
+     * @see #getResultFile() getResultFilePath()
      */
-    public void setResultFilePath(final String path) {
+    public void setResultFile(final File path) {
         resultFilePath = path;
     }
 
     /**
      * Gets the currently processed output file.
      * @return the path of the current output file
-     * @see #setResultFilePath(String) setResultFilePath(String)
+     * @see #setResultFile(File) setResultFilePath(String)
      */
-    public String getResultFilePath() {
+    public File getResultFile() {
         return resultFilePath;
     }
 
@@ -77,16 +77,16 @@ public final class RunnerHelper {
      * @param helper helper of the current processed file.
      * @see #getHelper() getHelper()
      */
-    public void setHelper(final AbstractDirectoryHelper helper) {
+    public void setHelper(final FileSystemDirectoryHelper helper) {
         dirHelper = helper;
     }
 
     /**
      * Gets the current processed file's directory helper.
      * @return the helper of the current processed file.
-     * @see #setHelper(AbstractDirectoryHelper) setHelper(AbstractDirectoryHelper)
+     * @see #setHelper(de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper) setHelper(AbstractDirectoryHelper)
      */
-    public AbstractDirectoryHelper getHelper() {
+    public FileSystemDirectoryHelper getHelper() {
         return dirHelper;
     }
 

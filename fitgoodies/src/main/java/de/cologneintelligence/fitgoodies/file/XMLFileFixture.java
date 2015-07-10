@@ -19,16 +19,15 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
+import fit.Parse;
+import fit.TypeAdapter;
+import org.w3c.dom.Document;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Document;
-
-import fit.Parse;
-import fit.TypeAdapter;
 
 /**
  * This Fixture can be used to test the content of a XML file using XPath-Expressions.
@@ -41,8 +40,6 @@ import fit.TypeAdapter;
  * 		<tr><td>/books/book[1]/id</td><td>326172</td></tr>
  * </table>
  *
- * @author jwierum
- * @version $Id$
  */
 public class XMLFileFixture extends AbstractFileReaderFixture {
 	/** for internal use only - used to solve cross references. */
@@ -51,7 +48,14 @@ public class XMLFileFixture extends AbstractFileReaderFixture {
 	private Document doc;
 	private XPathFactory xPathFactory;
 
-	// http://www.ibm.com/developerworks/library/x-javaxpathapi.html
+	public XMLFileFixture() {
+		super();
+	}
+
+	XMLFileFixture(FileInformationWrapper wrapper) {
+		super(wrapper);
+	}
+
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();

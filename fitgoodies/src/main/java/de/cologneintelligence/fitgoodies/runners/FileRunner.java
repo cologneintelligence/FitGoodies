@@ -19,16 +19,14 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import java.io.File;
-
-import fit.Counts;
-
 /**
  * This runner processes a single file. No additional report is generated.
  *
- * @author jwierum
- * @version $Id$
+ * @deprecated This method is deprecated! Use a {@link de.cologneintelligence.fitgoodies.runners.FitRunner} instead.
+ *
  */
+
+@Deprecated
 public final class FileRunner {
 	private FileRunner() { }
 
@@ -40,7 +38,7 @@ public final class FileRunner {
 	 *
 	 * @param args program parameters
 	 */
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws Throwable {
 		if (args.length < 2) {
 			final String error = "Usage:\n"
 				+ "fitgoodies.runners.FileRunner inputfile outputfile [encoding]";
@@ -48,26 +46,24 @@ public final class FileRunner {
 			throw new RuntimeException(error);
 		}
 
-		try {
-			String encoding = "utf-8";
+		String encoding = "utf-8";
+		boolean includeEncoding = false;
 
-			if (args.length > 2) {
-				encoding = args[2];
-			}
-
-			Runner runner = new FitFileRunner();
-			args[0] = args[0].replace('/', File.separatorChar).replace('\\', File.separatorChar);
-			args[1] = args[1].replace('/', File.separatorChar).replace('\\', File.separatorChar);
-			runner.setEncoding(encoding);
-			Counts result = runner.run(args[0], args[1]);
-			System.out.println(result);
-			
-			if (result != null && (result.exceptions > 0 || result.wrong > 0)) {
-				System.exit(1);
-			}
-		} catch (Exception e) {
-			System.err.println("Error: " + e.getMessage());
-			e.printStackTrace();
+		if (args.length > 2) {
+			includeEncoding = true;
+			encoding = args[2];
 		}
+
+		System.err.println();
+		System.err.println("WARNING: This main method is deprecated! Please run this test with:");
+		System.err.println(String.format("java %s --file \"%s\" --destination \"%s\" %s",
+				FitRunner.class.getName(), args[0], args[1], includeEncoding ? "--encoding " + encoding : ""));
+		System.err.println();
+
+		FitRunner.main(new String[]{
+				"--file", args[0],
+				"--destination", args[1],
+				"--encoding", encoding
+		});
 	}
 }

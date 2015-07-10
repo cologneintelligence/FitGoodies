@@ -19,28 +19,30 @@
 
 package de.cologneintelligence.fitgoodies.parsers;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.ScientificDouble;
-import de.cologneintelligence.fitgoodies.parsers.ScientificDoubleParser;
+import org.junit.Test;
 
-/**
- *
- * @author jwierum
- */
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+
 public final class ScientificDoubleParserTest extends FitGoodiesTestCase {
+	@Test
 	public void testParser() throws Exception {
 		ScientificDoubleParser parser = new ScientificDoubleParser();
 
-		assertTrue(parser.parse("1.3", null).equals(new ScientificDouble(1.326)));
-		assertFalse(parser.parse("1.3", null).equals(new ScientificDouble(1.396)));
+		assertThat(parser.parse("1.3", null).equals(new ScientificDouble(1.326)), is(true));
+		assertThat(parser.parse("1.3", null).equals(new ScientificDouble(1.396)), is(false));
 
-		assertTrue(parser.parse("1.5e1", null).equals(new ScientificDouble(14.5)));
-		assertFalse(parser.parse("1.5e1", null).equals(new ScientificDouble(15.8)));
+		assertThat(parser.parse("1.5e1", null).equals(new ScientificDouble(14.5)), is(true));
+		assertThat(parser.parse("1.5e1", null).equals(new ScientificDouble(15.8)), is(false));
 
-		assertTrue(parser.parse("2", null).equals(new ScientificDouble(2.3)));
-		assertFalse(parser.parse("2", null).equals(new ScientificDouble(1.3)));
+		assertThat(parser.parse("2", null).equals(new ScientificDouble(2.3)), is(true));
+		assertThat(parser.parse("2", null).equals(new ScientificDouble(1.3)), is(false));
 
-		assertTrue(parser.parse("1.5e-1", null).equals(new ScientificDouble(0.148)));
-		assertFalse(parser.parse("1.5e-1", null).equals(new ScientificDouble(0.158)));
+		assertThat(parser.parse("1.5e-1", null).equals(new ScientificDouble(0.148)), is(true));
+		assertThat(parser.parse("1.5e-1", null).equals(new ScientificDouble(0.158)), is(false));
+
 	}
 }

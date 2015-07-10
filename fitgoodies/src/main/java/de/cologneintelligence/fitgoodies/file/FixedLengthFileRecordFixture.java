@@ -48,8 +48,6 @@ import fit.TypeAdapter;
  * </table>
  *
  *
- * @author jwierum
- * @version $Id$
  */
 public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixture {
 	private boolean noeol;

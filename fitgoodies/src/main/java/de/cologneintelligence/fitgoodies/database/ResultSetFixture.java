@@ -33,8 +33,6 @@ import de.cologneintelligence.fitgoodies.dynamic.ResultSetWrapper;
  * {@link de.cologneintelligence.fitgoodies.dynamic.DynamicObjectFactory} and fills these objects
  * with the individual rows of the <code>ResultSet</code>.
  *
- * @author jwierum
- * @version $Id$
  */
 public class ResultSetFixture extends RowFixture {
 	private ResultSetWrapper table;
@@ -45,7 +43,7 @@ public class ResultSetFixture extends RowFixture {
 	 * @throws SQLException Exception thrown by the <code>ResultSet</code>. You can propagate
 	 * 		it to fit.
 	 */
-	public final void setResultSet(final ResultSet resultSet) throws SQLException {
+	public void setResultSet(final ResultSet resultSet) throws SQLException {
 		table = new ResultSetWrapper(resultSet);
 	}
 

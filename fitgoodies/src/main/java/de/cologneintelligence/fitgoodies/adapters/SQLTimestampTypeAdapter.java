@@ -34,7 +34,6 @@ import fit.TypeAdapter;
  * The parameter must have the format &quot;<code>locale, format</code>&quot;.
  * Example: &quot;<code>en_US, MM/dd/yyyy</code>&quot;.
  *
- * @author jwierum
  */
 public class SQLTimestampTypeAdapter extends AbstractTypeAdapter<Timestamp> {
     /**

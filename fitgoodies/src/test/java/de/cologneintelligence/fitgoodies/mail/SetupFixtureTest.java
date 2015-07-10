@@ -19,20 +19,22 @@
 
 package de.cologneintelligence.fitgoodies.mail;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import fit.Parse;
+import org.junit.Test;
+
 import java.text.ParseException;
 import java.util.Properties;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.mail.SetupFixture;
-import de.cologneintelligence.fitgoodies.mail.SetupHelper;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
-import fit.Parse;
 
-/**
- * @author jwierum
- */
 public final class SetupFixtureTest extends FitGoodiesTestCase {
+    @Test
     public void testPares1() throws ParseException {
         Parse table1 = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>host</td><td>127.0.0.1</td></tr>"
@@ -46,18 +48,19 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
         SetupFixture fixture = new SetupFixture();
         fixture.doTable(table1);
 
-        assertEquals(0, fixture.counts.exceptions);
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         Properties prop = helper.generateProperties();
 
-        assertEquals("pop3", prop.getProperty("mail.store.protocol"));
-        assertEquals("127.0.0.1", prop.getProperty("mail.pop3.host"));
-        assertEquals("123", prop.getProperty("mail.pop3.port"));
-        assertEquals("true", prop.getProperty("mail.pop3.ssl"));
-        assertEquals("testuser", prop.getProperty("mail.username"));
-        assertEquals("testpassword", prop.getProperty("mail.password"));
+        assertThat(prop.getProperty("mail.store.protocol"), is(equalTo("pop3")));
+        assertThat(prop.getProperty("mail.pop3.host"), is(equalTo("127.0.0.1")));
+        assertThat(prop.getProperty("mail.pop3.port"), is(equalTo("123")));
+        assertThat(prop.getProperty("mail.pop3.ssl"), is(equalTo("true")));
+        assertThat(prop.getProperty("mail.username"), is(equalTo("testuser")));
+        assertThat(prop.getProperty("mail.password"), is(equalTo("testpassword")));
     }
 
+    @Test
     public void testPares2() throws ParseException {
         Parse table1 = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>host</td><td>localhost</td></tr>"
@@ -70,16 +73,16 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
         SetupFixture fixture = new SetupFixture();
         fixture.doTable(table1);
 
-        assertEquals(0, fixture.counts.exceptions);
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         Properties prop = helper.generateProperties();
 
-        assertEquals("INBOX", prop.getProperty("mail.inbox"));
-        assertEquals("imap", prop.getProperty("mail.store.protocol"));
-        assertEquals("localhost", prop.getProperty("mail.imap.host"));
-        assertNull(prop.getProperty("mail.imap.port"));
-        assertNull(prop.getProperty("mail.imap.ssl"));
-        assertEquals("user", prop.getProperty("mail.username"));
-        assertEquals("passwd", prop.getProperty("mail.password"));
+        assertThat(prop.getProperty("mail.inbox"), is(equalTo("INBOX")));
+        assertThat(prop.getProperty("mail.store.protocol"), is(equalTo("imap")));
+        assertThat(prop.getProperty("mail.imap.host"), is(equalTo("localhost")));
+        assertThat(prop.getProperty("mail.imap.port"), is(nullValue()));
+        assertThat(prop.getProperty("mail.imap.ssl"), is(nullValue()));
+        assertThat(prop.getProperty("mail.username"), is(equalTo("user")));
+        assertThat(prop.getProperty("mail.password"), is(equalTo("passwd")));
     }
 }

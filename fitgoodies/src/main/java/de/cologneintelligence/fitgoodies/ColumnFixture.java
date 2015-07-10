@@ -32,8 +32,6 @@ import fit.TypeAdapter;
  * enables all fitgoodies features (for example custom type adapters,
  * custom parsers and cross references).
  *
- * @author jwierum
- * @version $Id$
  */
 public class ColumnFixture extends fit.ColumnFixture {
 	private String[] columnParameters;
@@ -198,7 +196,7 @@ public class ColumnFixture extends fit.ColumnFixture {
 	 *
 	 * @param parameters columnParameters to store in <code>args</code>
 	 */
-	public final void setParams(final String[] parameters) {
+	public void setParams(final String[] parameters) {
 		this.args = parameters;
 	}
 

@@ -22,7 +22,6 @@ package de.cologneintelligence.fitgoodies.util;
  * Interface which provides time functions.
  *
  * @author kmussawisade
- * @version $Id$
  */
 public interface SystemTime {
 	/**

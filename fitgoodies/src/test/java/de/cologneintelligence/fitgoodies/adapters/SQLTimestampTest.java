@@ -37,30 +37,38 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import java.sql.Timestamp;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.date.SetupHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.TypeAdapter;
+import org.junit.Test;
+
+import java.sql.Timestamp;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class SQLTimestampTest extends FitGoodiesTestCase {
-    public final void testGetType() {
+    @Test
+    public void testGetType() {
         final TypeAdapter ta = new TypeAdapter();
 
         final SQLTimestampTypeAdapter p = new SQLTimestampTypeAdapter(ta, null);
-        assertEquals(Timestamp.class, p.getType());
+        assertThat(p.getType(), is(equalTo(Timestamp.class)));
     }
 
-    public final void testParse() throws Exception {
+    @Test
+    public void testParse() throws Exception {
         final TypeAdapter ta = new TypeAdapter();
 
         final Timestamp t = Timestamp.valueOf("1987-12-01 00:00:00");
         final SQLTimestampTypeAdapter d = new SQLTimestampTypeAdapter(ta, null);
-        assertEquals(t, d.parse("1987-12-01 00:00:00"));
+        assertThat(d.parse("1987-12-01 00:00:00"), is(equalTo(t)));
     }
 
-    public final void testDateFormat() throws Exception {
+    @Test
+    public void testDateFormat() throws Exception {
         final TypeAdapter ta = new TypeAdapter();
 
         final SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
@@ -70,9 +78,9 @@ public class SQLTimestampTest extends FitGoodiesTestCase {
         final SQLTimestampTypeAdapter p = new SQLTimestampTypeAdapter(ta, null);
 
         Timestamp d = Timestamp.valueOf("1987-12-01 00:11:22");
-        assertEquals(d, p.parse("1987-12-01 00:11:22"));
+        assertThat(p.parse("1987-12-01 00:11:22"), is(equalTo(d)));
 
         d = Timestamp.valueOf("1989-03-08 00:00:00");
-        assertEquals(d, p.parse("08.03.1989"));
+        assertThat(p.parse("08.03.1989"), is(equalTo(d)));
     }
 }

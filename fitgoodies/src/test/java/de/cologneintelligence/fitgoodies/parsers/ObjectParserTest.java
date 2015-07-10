@@ -18,24 +18,26 @@
 
 
 package de.cologneintelligence.fitgoodies.parsers;
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.parsers.ObjectParser;
-import de.cologneintelligence.fitgoodies.parsers.Parser;
 
-/**
- *
- * @author jwierum
- *
- */
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.hamcrest.Matcher;
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 public class ObjectParserTest extends FitGoodiesTestCase {
-	public final void testGetType() {
+	@Test
+	public void testGetType() {
 		Parser<Object> p = new ObjectParser();
-		assertEquals(Object.class, p.getType());
+		assertThat(p.getType(), is(equalTo(Object.class)));
 	}
 
-	public final void testParse() throws Exception {
+	@Test
+	public void testParse() throws Exception {
 		Parser<Object> p = new ObjectParser();
-		assertEquals("test", p.parse("test", null));
-		assertEquals("string", p.parse("string", null));
+		assertThat(p.parse("test", null), (Matcher) is(equalTo("test")));
+		assertThat(p.parse("string", null), (Matcher) is(equalTo("string")));
 	}
 }

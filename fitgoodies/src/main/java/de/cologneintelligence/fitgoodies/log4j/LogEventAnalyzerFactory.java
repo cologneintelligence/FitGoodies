@@ -26,8 +26,6 @@ import fit.Parse;
 /**
  * Factory interface to provide {@link LogEventAnalyzer}s.
  *
- * @author jwierum
- * @version $Id$
  */
 public interface LogEventAnalyzerFactory {
 	/**

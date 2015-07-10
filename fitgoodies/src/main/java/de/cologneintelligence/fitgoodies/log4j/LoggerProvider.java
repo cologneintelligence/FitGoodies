@@ -24,8 +24,6 @@ import org.apache.log4j.spi.AppenderAttachable;
  * Interface for a LoggerProvider which returns corresponding
  * <code>org.apache.log4j.logger</code> objects.
  *
- * @author jwierum
- * @version $Id$
  */
 public interface LoggerProvider {
 	/**

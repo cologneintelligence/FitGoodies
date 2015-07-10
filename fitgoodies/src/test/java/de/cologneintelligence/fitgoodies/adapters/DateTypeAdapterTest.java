@@ -19,56 +19,51 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import fit.TypeAdapter;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
+import org.junit.Test;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import fit.TypeAdapter;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
-/**
- * @author jwierum
- */
+
 public class DateTypeAdapterTest extends FitGoodiesTestCase {
-	public final void testParser() throws Exception {
+
+	@Test
+	public void testParser() throws Exception {
 		final TypeAdapter ta = new TypeAdapter();
 
 		AbstractTypeAdapter<Date> p = new DateTypeAdapter(ta, null);
-		assertEquals(
-				DateFormat.getDateInstance(DateFormat.SHORT, Locale.US).parse(
-						"01/18/1987"), p.parse("01/18/1987"));
+		final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
+		assertThat(p.parse("01/18/1987"), (Matcher) is(equalTo(dateFormat.parse("01/18/1987"))));
 
 		p = new DateTypeAdapter(ta, "de_DE, dd.MM.yyyy");
-		assertEquals(
-				DateFormat.getDateInstance(DateFormat.SHORT, Locale.US).parse(
-						"01/18/1987"), p.parse("18.01.1987")
-				);
+		assertThat(p.parse("18.01.1987"), (Matcher) is(equalTo(dateFormat.parse("01/18/1987"))));
 
 		p = new DateTypeAdapter(ta, "de_DE, dd.MM.yyyy");
-		assertEquals(
-				DateFormat.getDateInstance(DateFormat.SHORT, Locale.US).parse(
-						"03/08/1989"), p.parse("08.03.1989")
-				);
+		assertThat(p.parse("08.03.1989"), (Matcher) is(equalTo(dateFormat.parse("03/08/1989"))));
 
 		p = new DateTypeAdapter(ta, null);
-		assertEquals(
-				DateFormat.getDateInstance(DateFormat.SHORT, Locale.US).parse(
-						"03/08/1989"), p.parse("03/08/1989"));
+		assertThat(p.parse("03/08/1989"), (Matcher) is(equalTo(dateFormat.parse("03/08/1989"))));
 	}
 
-	public final void testException() {
+	@Test(expected = ParseException.class)
+	public void testException() throws ParseException {
 		final TypeAdapter ta = new TypeAdapter();
-		try {
-			new DateTypeAdapter(ta, "invalid").parse("01/01/1970");
-			fail("could set invalid parameter");
-		} catch (final ParseException e) {
-		}
+		new DateTypeAdapter(ta, "invalid").parse("01/01/1970");
 	}
 
-	public final void testType() {
+	@Test
+	public void testType() {
 		final TypeAdapter ta = new TypeAdapter();
-
-		assertNotNull(new DateTypeAdapter(ta, null).getType());
+		assertThat(new DateTypeAdapter(ta, null).getType(), not(CoreMatchers.is(nullValue())));
 	}
 }

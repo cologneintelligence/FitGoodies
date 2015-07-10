@@ -19,11 +19,6 @@
 
 package de.cologneintelligence.fitgoodies.database;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import de.cologneintelligence.fitgoodies.RowFixture;
 import de.cologneintelligence.fitgoodies.dynamic.ResultSetWrapper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
@@ -31,6 +26,11 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShort
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Parse;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * This fixture takes a table name as an argument, fetches its content and
@@ -56,8 +56,6 @@ import fit.Parse;
  * <tr><td>18</td><td>93</td></tr>
  * </table>
  *
- * @author jwierum
- * @version $Id$
  */
 public class TableFixture extends RowFixture {
     private String table;

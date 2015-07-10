@@ -24,8 +24,6 @@ import java.math.BigDecimal;
 /**
  * Parser which is able to convert a string into a <code>BigDecimal</code>.
  *
- * @author jwierum
- * @version $Id$
  */
 public class BigDecimalParser implements Parser<BigDecimal> {
 	/**

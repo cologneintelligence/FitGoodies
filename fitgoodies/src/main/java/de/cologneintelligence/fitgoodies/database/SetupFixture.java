@@ -35,8 +35,6 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
  * 		<tr><td>password</td><td>My_PaSsWoRd</td></tr>
  * </table>
  *
- * @author jwierum
- * @version $Id$
  */
 public class SetupFixture extends ActionFixture {
     /**
@@ -52,7 +50,7 @@ public class SetupFixture extends ActionFixture {
      * The username can be received using {@link SetupHelper#getUser()}.
      * @param userName the database username
      */
-    public final void user(final String userName) {
+    public void user(final String userName) {
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setUser(userName);
     }
@@ -70,7 +68,7 @@ public class SetupFixture extends ActionFixture {
      * The password can be received using {@link SetupHelper#getPassword()}.
      * @param password the database password
      */
-    public final void password(final String password) {
+    public void password(final String password) {
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setPassword(password);
     }
@@ -89,7 +87,7 @@ public class SetupFixture extends ActionFixture {
      * {@link SetupHelper#getConnectionString()}.
      * @param uri the database connectoin string
      */
-    public final void connectionString(final String uri) {
+    public void connectionString(final String uri) {
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         helper.setConnectionString(uri);
     }
@@ -109,7 +107,7 @@ public class SetupFixture extends ActionFixture {
      * @throws Exception thrown if the class could not be found, initialized or
      * 		casted. Propagated to fit.
      */
-    public final void provider(final String providerName) throws Exception {
+    public void provider(final String providerName) throws Exception {
         SetupHelper.setProvider(providerName);
     }
 }

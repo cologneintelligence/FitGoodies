@@ -19,15 +19,16 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import java.text.ParseException;
-
 import de.cologneintelligence.fitgoodies.ActionFixture;
-import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
-import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryProvider;
+import de.cologneintelligence.fitgoodies.file.FileInformation;
+import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
 import fit.Counts;
 import fit.Parse;
+
+import java.io.File;
+import java.text.ParseException;
+import java.util.List;
 
 /**
  * Run sub-fixtures.<br /><br />
@@ -42,24 +43,22 @@ import fit.Parse;
  * <tr><td>directory</td><td>other_tests/</td></tr>
  * </table>
  *
- * @author jwierum
  */
 public class RunFixture extends ActionFixture {
     private Runner runner;
-    private AbstractDirectoryHelper dirHelper;
-    private String thisdir;
-    private String outdir;
+    private FileSystemDirectoryHelper dirHelper;
+    private File thisDir;
+    private File outDir;
     private Parse thisRow;
-    private RunnerHelper helper;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
-        helper = DependencyManager.getOrCreate(RunnerHelper.class);
+        RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
         dirHelper = helper.getHelper();
-        thisdir = dirHelper.getDir(helper.getFilePath());
-        outdir = dirHelper.getDir(helper.getResultFilePath());
+        thisDir = helper.getFile().getParentFile();
+        outDir = helper.getResultFile().getParentFile();
         runner = helper.getRunner();
     }
 
@@ -107,10 +106,8 @@ public class RunFixture extends ActionFixture {
         firstCell.more = new Parse("<td></td><td></td>", new String[]{"td"});
         firstCell.more.body = "<a href=\"" + name + "\">" + name + "</a>";
 
-        //Parse newCell = new Parse("<td></td>", new String[]{"td"});
         firstCell.more.more.body = results.toString();
         firstCell.more.more.addToTag(" bgcolor=\"" + color(results) + "\"");
-        //firstCell.more = newCell;
     }
 
     /**
@@ -119,14 +116,18 @@ public class RunFixture extends ActionFixture {
      * @param fileName file to process
      * @throws Exception propagated to fit
      */
-    public final void file(final String fileName) throws Exception {
-        String in = dirHelper.rel2abs(thisdir, fileName);
-        String out = dirHelper.rel2abs(outdir, fileName);
+    public void file(final String fileName) throws Exception {
+        String in = thisDir.getAbsolutePath();
+        File out = outDir.getAbsoluteFile();
 
-        dirHelper.mkDir(dirHelper.getDir(out));
-        Counts result = runner.run(in, out);
+        //noinspection ResultOfMethodCallIgnored
+        out.mkdirs();
 
-        generateResultRow(cells, fileName, result);
+        File inputFile = dirHelper.rel2abs(in, fileName);
+        File outputFile = dirHelper.subdir(out, inputFile.getName());
+        Counts result = runner.run(inputFile, outputFile);
+
+        generateResultRow(cells, inputFile.getName(), result);
         counts.tally(result);
     }
 
@@ -136,20 +137,24 @@ public class RunFixture extends ActionFixture {
      * @param dir file to process
      * @throws Exception propagated to fit
      */
-    public final void directory(final String dir) throws Exception {
-        String srcDir = dirHelper.rel2abs(thisdir, dir);
+    // TODO: not tested?
+    public void directory(final String dir) throws Exception {
+        File srcDir = dirHelper.rel2abs(thisDir.getAbsolutePath(), dir);
+
+        List<FileInformation> files = new DirectoryFilter(srcDir, dirHelper).getSelectedFiles();
+
+        RunConfiguration runConfiguration = new RunConfiguration();
+        runConfiguration.setEncoding(runner.getEncoding());
+        runConfiguration.setBaseDir(srcDir);
+        runConfiguration.setDestination(outDir.getPath());
+        runConfiguration.setSource(files.toArray(new FileInformation[files.size()]));
+        System.out.println("Run: " + files + " in " + srcDir + " to " + outDir);
+
+        final FitRunner fitRunner = new FitRunner(dirHelper, runConfiguration);
 
         FitParseResult results = new FitParseResult();
-
-        DirectoryRunner directoryRunner = new DirectoryRunner(
-                new FileSystemDirectoryProvider(srcDir),
-                outdir, helper.getRunner().getEncoding(),
-                dirHelper);
-
-        directoryRunner.runFiles(helper.getRunner(), results,
-                helper.getLog());
-
-        results.replaceLine(thisRow);
+        fitRunner.run(results);
+        results.replaceLastIn(thisRow);
         counts.tally(results.getCounts());
     }
 }

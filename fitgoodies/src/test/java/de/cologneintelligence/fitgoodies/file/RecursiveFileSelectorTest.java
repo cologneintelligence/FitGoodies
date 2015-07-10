@@ -19,105 +19,71 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.junit.Test;
+
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.io.FilenameFilter;
+import java.util.NoSuchElementException;
 
-import org.jmock.Expectations;
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.DirectoryProvider;
-import de.cologneintelligence.fitgoodies.file.FileInformation;
-import de.cologneintelligence.fitgoodies.file.RecursiveFileSelector;
 
-
-/**
- *
- * @author jwierum
- */
 public class RecursiveFileSelectorTest extends FitGoodiesTestCase {
-	public final void testIterator() throws FileNotFoundException {
-		final DirectoryProvider dirMock = prepareMock();
+	@Test
+	public void testIterator() throws FileNotFoundException {
+		final String pattern = ".*2.*";
+		File dirMock = mockDirectory(pattern,
+				"d/file2.txt",
+				"d/s1/file2.bat",
+				"d/s1/s2/src2.java");
+		RecursiveFileSelector selector = new RecursiveFileSelector(dirMock, pattern);
 
-		RecursiveFileSelector selector = new RecursiveFileSelector(dirMock, ".*2.*");
-
-		assertEquals("d/file2.txt", selector.next().fullname());
-		assertEquals("d/s1/file2.bat", selector.next().fullname());
-		assertEquals("d/s1/s2/src2.java", selector.next().fullname());
-		assertFalse(selector.hasNext());
+		assertThat(selector.next().toString(), is(equalTo("d/file2.txt")));
+		assertThat(selector.next().toString(), is(equalTo("d/s1/file2.bat")));
+		assertThat(selector.next().toString(), is(equalTo("d/s1/s2/src2.java")));
+		assertThat(selector.hasNext(), is(false));
 	}
 
-	public final void testIterator2() throws FileNotFoundException {
-		final DirectoryProvider dirMock = prepareMock();
+	@Test
+	public void testIterator2() throws FileNotFoundException {
+		final String pattern = ".*\\.java";
+		File dirMock = mockDirectory(pattern,
+				"d/src3.java",
+				"d/s1/s2/src1.java",
+				"d/s1/s2/src2.java",
+				"d/a/src3.java");
 
-		RecursiveFileSelector selector = new RecursiveFileSelector(dirMock, ".*\\.java");
+		RecursiveFileSelector selector = new RecursiveFileSelector(dirMock, pattern);
 
-		assertEquals("d/src3.java", selector.next().fullname());
-		assertEquals("d/s1/s2/src1.java", selector.next().fullname());
-		assertEquals("d/s1/s2/src2.java", selector.next().fullname());
-		assertEquals("d/a/src3.java", selector.next().fullname());
-		assertFalse(selector.hasNext());
+		assertThat(selector.next().toString(), is(equalTo("d/src3.java")));
+		assertThat(selector.next().toString(), is(equalTo("d/a/src3.java")));
+		assertThat(selector.next().toString(), is(equalTo("d/s1/s2/src1.java")));
+		assertThat(selector.next().toString(), is(equalTo("d/s1/s2/src2.java")));
+		assertThat(selector.hasNext(), is(false));
+
 	}
 
-	private DirectoryProvider prepareMock() throws FileNotFoundException {
-		final DirectoryProvider provider1 =
-			mock(DirectoryProvider.class, "provider1");
-		final DirectoryProvider provider2 =
-			mock(DirectoryProvider.class, "provider2");
-		final DirectoryProvider provider3 =
-			mock(DirectoryProvider.class, "provider3");
-		final DirectoryProvider provider4 =
-			mock(DirectoryProvider.class, "provider4");
-
-		final List<FileInformation> dir1 = new ArrayList<FileInformation>();
-		final List<FileInformation> dir2 = new ArrayList<FileInformation>();
-		final List<FileInformation> dir3 = new ArrayList<FileInformation>();
-		final List<FileInformation> dir4 = new ArrayList<FileInformation>();
-
-		dir1.add(new FileInformationMock("d/", "file1.txt", null));
-		dir1.add(new FileInformationMock("d/", "file2.txt", null));
-		dir1.add(new FileInformationMock("d/", "src3.java", null));
-		dir2.add(new FileInformationMock("d/s1/", "file1.bat", null));
-		dir2.add(new FileInformationMock("d/s1/", "file2.bat", null));
-		dir3.add(new FileInformationMock("d/s1/s2/", "src1.java", null));
-		dir3.add(new FileInformationMock("d/s1/s2/", "src2.java", null));
-		dir3.add(new FileInformationMock("d/a/", "src3.java", null));
-		dir4.add(new FileInformationMock("d/a/", "program.class", null));
-
-		checking(new Expectations() {{
-			oneOf(provider1).getFiles(); will(returnValue(dir1.iterator()));
-			oneOf(provider2).getFiles(); will(returnValue(dir2.iterator()));
-			oneOf(provider3).getFiles(); will(returnValue(dir3.iterator()));
-			oneOf(provider4).getFiles(); will(returnValue(dir4.iterator()));
-			oneOf(provider1).getDirectories(); will(returnIterator(provider2, provider4));
-			oneOf(provider2).getDirectories(); will(returnIterator(provider3));
-			oneOf(provider3).getDirectories(); will(returnIterator(new DirectoryProvider[]{}));
-			oneOf(provider4).getDirectories(); will(returnIterator(new DirectoryProvider[]{}));
-		}});
-		return provider1;
+	@Test(expected = NoSuchElementException.class)
+	public void testErrorHandling1() {
+		File dirMock = mock(File.class);
+		when(dirMock.listFiles(argThat(any(FilenameFilter.class)))).thenReturn(null);
+		RecursiveFileSelector selector = new RecursiveFileSelector(dirMock, "");
+		selector.next();
 	}
 
-	public final void testErrorHandling() {
-		RecursiveFileSelector selector = new RecursiveFileSelector(
-				new DirectoryProvider() {
-					@Override public Iterator<DirectoryProvider> getDirectories()
-							throws FileNotFoundException {
-						throw new FileNotFoundException();
-					}
-
-					@Override public Iterator<FileInformation> getFiles()
-							throws FileNotFoundException {
-						throw new FileNotFoundException();
-					}
-
-					@Override public String getPath() { return null; }
-				}, "");
-
-		try {
-			selector.next();
-			fail("expected FileNotFoundException");
-		} catch (RuntimeException e) {
-		}
+	@Test(expected = NoSuchElementException.class)
+	public void testErrorHandling2() {
+		File dirMock = mock(File.class);
+		when(dirMock.listFiles(argThat(any(FilenameFilter.class)))).thenReturn(new File[0]);
+		RecursiveFileSelector selector = new RecursiveFileSelector(dirMock, "");
+		selector.next();
 	}
 }

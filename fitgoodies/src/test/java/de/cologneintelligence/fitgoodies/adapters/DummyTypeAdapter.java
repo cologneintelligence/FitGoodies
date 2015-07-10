@@ -19,16 +19,11 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import java.math.BigInteger;
-
-import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
-
 import fit.TypeAdapter;
 
-/**
- *
- * @author jwierum
- */
+import java.math.BigInteger;
+
+
 public class DummyTypeAdapter extends AbstractTypeAdapter<BigInteger> {
 	public DummyTypeAdapter(final TypeAdapter ta, final String x) {
 		super(ta, x);

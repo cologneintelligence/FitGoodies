@@ -32,8 +32,6 @@ import fit.TypeAdapter;
  * enables all fitgoodies features (for example custom type adapters,
  * custom parsers and cross references).
  *
- * @author jwierum
- * @version $Id$
  */
 public class Fixture extends fit.Fixture {
 	private String cellParameter;
@@ -91,7 +89,7 @@ public class Fixture extends fit.Fixture {
 	 *
 	 * @param parameters parameters to store in <code>args</code>
 	 */
-	public final void setParams(final String[] parameters) {
+	public void setParams(final String[] parameters) {
 		this.args = parameters;
 	}
 

@@ -19,17 +19,24 @@
 
 package de.cologneintelligence.fitgoodies.references;
 
-import java.text.ParseException;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
+import org.hamcrest.Matcher;
+import org.junit.Test;
 
-/**
- * @author jwierum
- */
+import java.text.ParseException;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
+
+
 public class SetupFixtureTest extends FitGoodiesTestCase {
-    public final void testUse() throws ParseException {
+    @Test
+    public void testUse() throws ParseException {
         final Processors procs = new Processors();
         final SetupFixture setup = new SetupFixture(procs);
 
@@ -38,8 +45,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
                 + "processors.EmptyCrossReferenceProcessor</td></tr>"
                 + "</table>");
         setup.doTable(table);
-        assertSame(procs.get(0).getClass(),
-                de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor.class);
+        assertThat(de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor.class, (Matcher) is(sameInstance(procs.get(0).getClass())));
 
         table = new Parse(
                 "<table><tr><td>ignore</td></tr>"
@@ -49,11 +55,11 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
                         + "processors.StorageCrossReferenceProcessor</td></tr>"
                         + "</table>");
         setup.doTable(table);
-        assertSame(procs.get(1).getClass(),
-                de.cologneintelligence.fitgoodies.references.processors.StorageCrossReferenceProcessor.class);
+        assertThat(de.cologneintelligence.fitgoodies.references.processors.StorageCrossReferenceProcessor.class, (Matcher) is(sameInstance(procs.get(1).getClass())));
     }
 
-    public final void testUseOutput() throws ParseException {
+    @Test
+    public void testUseOutput() throws ParseException {
         final Processors procs = new Processors();
         final SetupFixture setup = new SetupFixture(procs);
 
@@ -63,10 +69,11 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
                         + "processors.EmptyCrossReferenceProcessor</td></tr>"
                         + "</table>");
         setup.doTable(table);
-        assertContains("nonEmpty", table.parts.more.parts.more.text());
+        assertThat(table.parts.more.parts.more.text(), containsString("nonEmpty"));
     }
 
-    public final void testRemove() throws ParseException {
+    @Test
+    public void testRemove() throws ParseException {
         final Processors procs = new Processors();
         final SetupFixture setup = new SetupFixture(procs);
 
@@ -87,7 +94,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
                         + "</table>");
         setup.doTable(table);
 
-        assertEquals(1, procs.count());
+        assertThat(procs.count(), is(equalTo((Object) 1)));
 
         table = new Parse(
                 "<table>"
@@ -97,10 +104,11 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
                         + "</table>");
         setup.doTable(table);
 
-        assertEquals(1, procs.count());
+        assertThat(procs.count(), is(equalTo((Object) 1)));
     }
 
-    public final void testConstructor() throws ParseException  {
+    @Test
+    public void testConstructor() throws ParseException  {
         CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 
         while (helper.getProcessors().count() > 0) {
@@ -115,6 +123,6 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
                         + "processors.EmptyCrossReferenceProcessor</td></tr>"
                         + "</table>");
         setup.doTable(table);
-        assertEquals(1, helper.getProcessors().count());
+        assertThat(helper.getProcessors().count(), is(equalTo((Object) 1)));
     }
 }

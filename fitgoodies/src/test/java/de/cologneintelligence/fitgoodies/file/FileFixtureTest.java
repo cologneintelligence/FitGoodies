@@ -19,20 +19,21 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import fit.Parse;
+import org.junit.Test;
+
 import java.text.ParseException;
 
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.FileFixture;
-import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
-import fit.Parse;
 
-/**
- * @author jwierum
- */
 public class FileFixtureTest extends FitGoodiesTestCase {
-    public final void testErrors() throws ParseException {
+    @Test
+    public void testErrors() throws ParseException {
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>too short</td></tr>"
                 + "<tr><td>wrong</td><td>value</td></tr></table>"
@@ -41,21 +42,22 @@ public class FileFixtureTest extends FitGoodiesTestCase {
         FileFixture fixture = new FileFixture();
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.wrong);
-        assertEquals(2, fixture.counts.exceptions);
+        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 2)));
     }
 
-    public final void testPattern() throws ParseException {
+    @Test
+    public void testPattern() throws ParseException {
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>pattern</td><td>.*\\.txt</td></tr></table>");
 
         FileFixture fixture = new FileFixture();
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.wrong);
-        assertEquals(0, fixture.counts.exceptions);
+        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
         FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-        assertEquals(".*\\.txt", helper.getPattern());
+        assertThat(helper.getPattern(), is(equalTo(".*\\.txt")));
 
         table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>pattern</td><td>testfile</td></tr></table>"
@@ -63,13 +65,14 @@ public class FileFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.wrong);
-        assertEquals(0, fixture.counts.exceptions);
-        assertEquals(0, fixture.counts.right);
-        assertEquals("testfile", helper.getPattern());
+        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
+        assertThat(helper.getPattern(), is(equalTo("testfile")));
     }
 
-    public final void testEncoding() throws ParseException {
+    @Test
+    public void testEncoding() throws ParseException {
         Parse table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>directory</td><td>dir</td></tr>"
                 + "<tr><td>encoding</td><td>utf-8</td></tr>"
@@ -80,10 +83,10 @@ public class FileFixtureTest extends FitGoodiesTestCase {
 
         FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
 
-        assertEquals(0, fixture.counts.right);
-        assertEquals(0, fixture.counts.wrong);
-        assertEquals(0, fixture.counts.exceptions);
-        assertEquals("utf-8", helper.getEncoding());
+        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
+        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(helper.getEncoding(), is(equalTo("utf-8")));
 
         table = new Parse("<table><tr><td>ignore</td></tr>"
                 + "<tr><td>directory</td><td>c:\\</td></tr>"
@@ -92,9 +95,9 @@ public class FileFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertEquals(0, fixture.counts.right);
-        assertEquals(0, fixture.counts.wrong);
-        assertEquals(0, fixture.counts.exceptions);
-        assertEquals("latin-1", helper.getEncoding());
+        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
+        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(helper.getEncoding(), is(equalTo("latin-1")));
     }
 }

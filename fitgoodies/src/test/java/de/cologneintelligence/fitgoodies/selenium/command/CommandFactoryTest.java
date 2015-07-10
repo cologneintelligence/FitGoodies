@@ -18,61 +18,53 @@
 
 package de.cologneintelligence.fitgoodies.selenium.command;
 
-import org.jmock.Expectations;
-
 import com.thoughtworks.selenium.CommandProcessor;
-
-import de.cologneintelligence.fitgoodies.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
-import de.cologneintelligence.fitgoodies.selenium.command.CaptureEntirePageScreenshotCommand;
-import de.cologneintelligence.fitgoodies.selenium.command.CommandFactory;
-import de.cologneintelligence.fitgoodies.selenium.command.OpenCommand;
-import de.cologneintelligence.fitgoodies.selenium.command.RetryCommand;
-import de.cologneintelligence.fitgoodies.selenium.command.SeleniumCommand;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import org.hamcrest.Matcher;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class CommandFactoryTest extends FitGoodiesTestCase {
-    private SeleniumFactory factory;
-    private CommandProcessor seleniumCommand;
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        factory = mock(SeleniumFactory.class);
-        seleniumCommand = mock(CommandProcessor.class);
-        DependencyManager.inject(SeleniumFactory.class, factory);
-
-        checking(new Expectations() {{
-            allowing(factory).createCommandProcessor("localhost", 4444, "*firefox", "http://localhost");
-            will(returnValue(seleniumCommand));
-
-            allowing(seleniumCommand).doCommand("setTimeout", new String[]{"30000"});
-        }});
-    }
-
     private final String[] args = new String[]{};
 
+    @Before
+    public void setUp() throws Exception {
+        SeleniumFactory factory = mock(SeleniumFactory.class);
+        CommandProcessor seleniumCommand = mock(CommandProcessor.class);
+        DependencyManager.inject(SeleniumFactory.class, factory);
+
+        when(factory.createCommandProcessor("localhost", 4444, "*firefox", "http://localhost"))
+                .thenReturn(seleniumCommand);
+    }
+
+    @Test
     public void testCommandAndRetry() {
-        assertEquals(RetryCommand.class,
-                CommandFactory.createCommand("commandAndRetry", args, new SetupHelper()).getClass());
-        assertEquals(RetryCommand.class,
-                CommandFactory.createCommand("blaAndRetry", args, new SetupHelper()).getClass());
+        assertThat(CommandFactory.createCommand("commandAndRetry", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(RetryCommand.class)));
+        assertThat(CommandFactory.createCommand("blaAndRetry", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(RetryCommand.class)));
     }
 
+    @Test
     public void testCommandOpen() {
-        assertEquals(OpenCommand.class,
-                CommandFactory.createCommand("open", args, new SetupHelper()).getClass());
+        assertThat(CommandFactory.createCommand("open", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(OpenCommand.class)));
     }
 
+    @Test
     public void testCommandCaptureEntirePageScreenshot() {
-        assertEquals(CaptureEntirePageScreenshotCommand.class,
-                CommandFactory.createCommand("captureEntirePageScreenshot", args,
-                        new SetupHelper()).getClass());
+        assertThat(CommandFactory.createCommand("captureEntirePageScreenshot", args,
+                new SetupHelper()).getClass(), (Matcher) is(sameInstance(CaptureEntirePageScreenshotCommand.class)));
     }
 
+    @Test
     public void testCommand() {
-        assertEquals(SeleniumCommand.class, CommandFactory.createCommand("command", args, new SetupHelper()).getClass());
-        assertEquals(SeleniumCommand.class, CommandFactory.createCommand("bla", args, new SetupHelper()).getClass());
+        assertThat(CommandFactory.createCommand("command", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(SeleniumCommand.class)));
+        assertThat(CommandFactory.createCommand("bla", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(SeleniumCommand.class)));
     }
 }

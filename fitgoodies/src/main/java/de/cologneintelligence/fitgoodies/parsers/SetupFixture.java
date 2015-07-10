@@ -34,8 +34,6 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
  * </table>
  *
  * @see ParserHelper ParserHelper
- * @author jwierum
- * @version $Id$
  */
 public class SetupFixture extends ActionFixture {
     /**
@@ -54,7 +52,7 @@ public class SetupFixture extends ActionFixture {
      * @throws Exception thrown in case of errors. Propagate it to fit.
      * @see #load() load()
      */
-    public final void load(final String className) throws Exception {
+    public void load(final String className) throws Exception {
         Parser<?> p = (Parser<?>) Class.forName(className).newInstance();
         ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
         helper.registerParser(p);

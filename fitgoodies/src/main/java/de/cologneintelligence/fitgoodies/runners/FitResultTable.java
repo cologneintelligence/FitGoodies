@@ -19,33 +19,31 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
+import de.cologneintelligence.fitgoodies.util.FixtureTools;
+import fit.Counts;
+
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.cologneintelligence.fitgoodies.file.AbstractDirectoryHelper;
-
-import fit.Counts;
+import static de.cologneintelligence.fitgoodies.util.FixtureTools.htmlSafeFile;
 
 /**
  * Implementation of FitResult which generates a indented HTML table.
  *
- * @author jwierum
- * @version $Id$
  */
 public final class FitResultTable implements FitResult {
 	private final List<FileCount> results = new LinkedList<FileCount>();
-	private final AbstractDirectoryHelper dirHelper;
+	private final FileSystemDirectoryHelper dirHelper;
 
 	/**
 	 * Generates a new Object.
 	 * @param helper helper object to convert pathnames
 	 */
-	public FitResultTable(final AbstractDirectoryHelper helper) {
+	public FitResultTable(final FileSystemDirectoryHelper helper) {
 		dirHelper = helper;
 	}
 
@@ -54,7 +52,7 @@ public final class FitResultTable implements FitResult {
 	 * @param file filename to identify the result
 	 * @param result results
 	 */
-	public void put(final String file, final Counts result) {
+	public void put(final File file, final Counts result) {
 		FileCount fileCount = new FileCount(file, result);
 
 		if (results.contains(fileCount)) {
@@ -69,7 +67,7 @@ public final class FitResultTable implements FitResult {
 	 * @param file filename to look up
 	 * @return <code>Counts</code> object which represents the file result
 	 */
-	public Counts get(final String file) {
+	public Counts get(final File file) {
 		int index = results.indexOf(new FileCount(file, null));
 
 		if (index == -1) {
@@ -83,12 +81,14 @@ public final class FitResultTable implements FitResult {
 	 * Returns all saved filenames.
 	 * @return filenames of all results.
 	 */
-	public String[] getFiles() {
-		List<String> result = new ArrayList<String>();
+	public File[] getFiles() {
+		List<File> result = new ArrayList<File>();
 		for (FileCount fileCount : results) {
 			result.add(fileCount.getFile());
 		}
-		return result.toArray(new String[]{});
+
+        Collections.sort(result, new FitFileComparator());
+        return result.toArray(new File[result.size()]);
 	}
 
 	/**
@@ -121,22 +121,22 @@ public final class FitResultTable implements FitResult {
 	 * @param file filename to look up
 	 * @return HTML String with a a single Table row
 	 */
-	public String getRow(final String file) {
+	public String getRow(final File file) {
 		StringBuilder builder = new StringBuilder();
 
 		Counts counts = get(file);
-		int depth = dirHelper.dirDepth(file);
 
 		builder.append("<tr bgcolor=\"");
 		builder.append(color(counts));
 		builder.append("\"><td>");
 
+		int depth = dirHelper.dirDepth(file);
 		indent(depth, builder);
 
 		builder.append("<a href=\"");
-		builder.append(file);
+		builder.append(htmlSafeFile(file));
 		builder.append("\">");
-		builder.append(dirHelper.getFilename(file));
+		builder.append(file.getName());
 		builder.append("</a>");
 		builder.append("</td><td>");
 
@@ -155,14 +155,14 @@ public final class FitResultTable implements FitResult {
 	 * @param directory headline of the table
 	 * @return a single HTML row
 	 */
-	public String getSummaryRow(final String directory) {
+	public String getSummaryRow(final File directory) {
 		StringBuilder builder = new StringBuilder();
 		Counts counts = getSummary();
 
 		builder.append("<tr bgcolor=\"");
 		builder.append(color(counts));
 		builder.append("\"><th style=\"text-align: left\">");
-		builder.append(directory);
+		builder.append(directory.getName());
 		builder.append("</th><th style=\"text-align: left\">");
 		builder.append(counts.toString());
 		builder.append("</th></tr>");
@@ -177,8 +177,7 @@ public final class FitResultTable implements FitResult {
 	 * @param stream stream to write results to
 	 * @throws IOException thrown by <code>stream</code> in case of problems
 	 */
-	public void print(final String directory,
-			final OutputStream stream) throws IOException {
+	public void print(final File directory, final OutputStream stream) throws IOException {
 		OutputStreamWriter osw = new OutputStreamWriter(stream);
 		BufferedWriter bw = new BufferedWriter(osw);
 
@@ -186,23 +185,21 @@ public final class FitResultTable implements FitResult {
 		bw.write(getSummaryRow(directory));
 		bw.write("<tr><td colspan=\"2\"></td></tr>");
 
-		String[] files = getFiles();
+		File[] files = getFiles();
 		if (files.length == 0) {
 			bw.write("<tr><td colspan=\"2\">no files found</td></tr>");
 		} else {
-			String dir = ""; //dirHelper.getDir(files[0]);
+			File currentDir = directory;
 
-			for (String file : files) {
-				String newDir = dirHelper.getDir(file);
-				if (newDir != null) {
-	    			if (!newDir.equals(dir) && !dirHelper.isSubDir(dir, newDir)) {
-	    				for (String tmpDir : dirHelper.getParentDirs(
-	    						dirHelper.getCommonDir(dir, newDir), newDir)) {
-	    					bw.write(getSubSummaryRow(tmpDir));
-	    				}
-	    			}
-	    			dir = newDir;
-				}
+			for (File file : files) {
+                File newDir = file.getAbsoluteFile().getParentFile();
+				if (!newDir.equals(currentDir) && !dirHelper.isSubDir(currentDir, newDir)) {
+                    for (File tmpDir : dirHelper.getParentDirs(dirHelper.getCommonDir(currentDir, file), newDir)) {
+                        bw.write(getSubSummaryRow(tmpDir));
+                    }
+                }
+				currentDir = newDir;
+
 				bw.write(getRow(file));
 			}
 		}
@@ -214,40 +211,23 @@ public final class FitResultTable implements FitResult {
 
 	/**
 	 * Generates a HTML summary row for a subdirectory.
+	 *
 	 * @param path subdirectory to process
 	 * @return a single HTML row
 	 */
-	public String getSubSummaryRow(final String path) {
-		String fullPath = path;
-		if (!path.endsWith(dirHelper.separator())) {
-			fullPath += dirHelper.separator();
-		}
+	public String getSubSummaryRow(final File path) throws IOException {
+		Counts sum = subDirSum(path);
 
-		Counts sum = subDirSum(fullPath);
-
-		//int depth = dirHelper.dirDepth(fullPath) - 1;
-
-		StringBuilder builder = new StringBuilder();
-		builder.append("<tr bgcolor=\"");
-		builder.append(color(sum));
-		builder.append("\"><th style=\"text-align: left\">");
-
-		//indent(depth, builder);
-
-		builder.append(fullPath);
-		builder.append("</th><td>");
-		builder.append(sum.toString());
-		builder.append("</td></tr>");
-
-		return builder.toString();
+		return String.format("<tr bgcolor=\"%s\"><th style=\"text-align: left\">%s</th><td>%s</td></tr>",
+				color(sum), FixtureTools.htmlSafeFile(dirHelper.abs2rel(new File("").getAbsolutePath(), path.getAbsolutePath())), sum.toString());
 	}
 
-	private Counts subDirSum(final String fullPath) {
+	private Counts subDirSum(final File fullPath) throws IOException {
 		Counts sum = new Counts();
 
 		for (FileCount fileCount : results) {
-			String filePath = dirHelper.getDir(fileCount.getFile());
-			if (filePath.startsWith(fullPath) && fileCount.getCounts() != null) {
+			String filePath = fileCount.getFile().getCanonicalFile().getParentFile().getCanonicalFile().getAbsolutePath();
+			if (filePath.startsWith(fullPath.getCanonicalFile().getAbsolutePath()) && fileCount.getCounts() != null) {
 				sum.tally(fileCount.getCounts());
 			}
 		}

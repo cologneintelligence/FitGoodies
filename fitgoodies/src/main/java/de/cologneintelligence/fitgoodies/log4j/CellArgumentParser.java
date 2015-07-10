@@ -24,8 +24,6 @@ import java.util.Map;
  * Parser which extracts a <code>Map</code> from a cell.
  * The parameter format must be &quot;[key1=value1, key2=value2, ...]&quot;
  *
- * @author jwierum
- * @version $Id$
  */
 public interface CellArgumentParser {
 	/**
