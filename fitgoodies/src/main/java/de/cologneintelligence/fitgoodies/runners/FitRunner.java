@@ -34,9 +34,8 @@ import java.util.List;
  * This runner traverses a directory tree. All files that end with .htm or .html
  * are processed. Files which are named setup.html are processed as the first
  * file in the directory, files which are named teardown.html are processed as
- * last. These files are <em>not</em> processed before each html file.<br />
- * <br />
- * <p/>
+ * last. These files are <em>not</em> processed before each html file.
+ * <p>
  * All processed files are copied into an output folder. Additionally, a report
  * file is generated.
  */
@@ -47,12 +46,6 @@ public class FitRunner {
     public FitRunner(FileSystemDirectoryHelper directoryHelper, RunConfiguration runConfiguration) {
         this.directoryHelper = directoryHelper;
         this.runConfiguration = runConfiguration;
-    }
-
-    private static String canonical(final FileSystemDirectoryHelper directoryHelper, File destPath) {
-        return directoryHelper.rel2abs(
-                System.getProperty("user.dir"),
-                destPath.getAbsolutePath().replace('/', File.separatorChar).replace('\\', File.separatorChar)).getPath();
     }
 
     public static void main(final String[] args) throws Throwable {

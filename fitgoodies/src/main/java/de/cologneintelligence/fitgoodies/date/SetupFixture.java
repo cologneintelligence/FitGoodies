@@ -19,22 +19,25 @@
 
 package de.cologneintelligence.fitgoodies.date;
 
-import java.text.SimpleDateFormat;
-
 import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
 import de.cologneintelligence.fitgoodies.parsers.Parser;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
+import java.text.SimpleDateFormat;
+
 
 /**
  * This fixture allows it to set the locale and format of dates.
  * {@link AbstractTypeAdapter} and {@link Parser} use these formats
- * when they parse dates.<br /><br />
+ * when they parse dates.
+ * <p>
  *
- * Example to allow German dates:<br />
- * <table border="1">
- * <tr><td colspan="2">fitgoodies.date.SetupFixture</td></tr>
+ * Example to allow German dates:
+ * <p>
+ *
+ * <table border="1" summary="">
+ * <tr><td>fitgoodies.date.SetupFixture</td></tr>
  * <tr><td>locale</td><td>de_DE</td></tr>
  * <tr><td>format</td><td>dd.MM.yyyy hh:mm:ss</td></tr>
  * </table>
@@ -58,7 +61,7 @@ public class SetupFixture extends ActionFixture {
     }
 
     /**
-     * Sets the locale value to <code>locale</code>.
+     * Sets the locale value to {@code locale}.
      * @param locale name of the local to use
      * @see de.cologneintelligence.fitgoodies.date.SetupHelper#setLocale(String) SetupHelper.setLocale(String)
      * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getLocale() SetupHelper.getLocale()
@@ -69,7 +72,7 @@ public class SetupFixture extends ActionFixture {
     }
 
     /**
-     * Sets the format value to <code>format</code>.
+     * Sets the format value to {@code format}.
      * @param format format string which is parsable by {@link SimpleDateFormat}
      * @see de.cologneintelligence.fitgoodies.date.SetupHelper#setFormat(String) SetupHelper.setFormat(String)
      * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getFormat() SetupHelper.getFormat()

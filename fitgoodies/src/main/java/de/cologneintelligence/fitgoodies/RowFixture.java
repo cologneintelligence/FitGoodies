@@ -17,8 +17,6 @@
  */
 package de.cologneintelligence.fitgoodies;
 
-import java.util.List;
-
 import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
 import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
@@ -27,8 +25,10 @@ import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Parse;
 import fit.TypeAdapter;
 
+import java.util.List;
+
 /**
- * In contrast to <code>fit.RowFixture</code>, this <code>RowFixture</code>
+ * In contrast to {@code fit.RowFixture}, this {@code RowFixture}
  * enables all fitgoodies features (for example custom type adapters, custom
  * parsers and cross references).
  *
@@ -38,7 +38,7 @@ public abstract class RowFixture extends fit.RowFixture {
     private String[] parameters;
 
     /**
-     * Replacement of <code>check</code> which resolves cross-references before
+     * Replacement of {@code check} which resolves cross-references before
      * calling the original check method of fit.
      *
      * @param cell the cell to check
@@ -55,13 +55,13 @@ public abstract class RowFixture extends fit.RowFixture {
     }
 
     /**
-     * Replacement of <code>parse</code> which uses the extended parse features
+     * Replacement of {@code parse} which uses the extended parse features
      * of fitgoodies and uses fit's parse as a fallback.
      *
      * @param text text to parse
      * @param type type to transform text to
-     * @return Object of type <code>type</code> which represents
-     * <code>text</code>
+     * @return Object of type {@code type} which represents
+     * {@code text}
      * @throws Exception if the value can't be parsed
      * @see fit.Fixture#parse(String, Class)
      * {@link fit.Fixture#parse(String, Class)}
@@ -106,9 +106,9 @@ public abstract class RowFixture extends fit.RowFixture {
     }
 
     /**
-     * Replacement of <code>bindField(String)</code>, which calls
-     * <code>fit.RowFixture.bindField(String)</code> and rebinds the returned
-     * <code>TypeAdapter</code> to a custom registered, more specific one, if
+     * Replacement of {@code bindField(String)}, which calls
+     * {@code fit.RowFixture.bindField(String)} and rebinds the returned
+     * {@code TypeAdapter} to a custom registered, more specific one, if
      * possible.
      *
      * @param name field name to bind
@@ -127,9 +127,9 @@ public abstract class RowFixture extends fit.RowFixture {
     }
 
     /**
-     * Replacement of <code>bindMethod(String)</code>, which calls
-     * <code>fit.RowFixture.bindMethod(String)</code> and rebinds the returned
-     * <code>TypeAdapter</code> to a custom registered, more specific one, if
+     * Replacement of {@code bindMethod(String)}, which calls
+     * {@code fit.RowFixture.bindMethod(String)} and rebinds the returned
+     * {@code TypeAdapter} to a custom registered, more specific one, if
      * possible.
      *
      * @param name method name to bind
@@ -153,15 +153,15 @@ public abstract class RowFixture extends fit.RowFixture {
      * table. This method is primary useful for debugging. You won't need it
      * otherwise.
      *
-     * @param args parameters to store in <code>args</code>
+     * @param args parameters to store in {@code args}
      */
     public final void setParams(final String[] args) {
         this.args = args;
     }
 
     /**
-     * Initializes the fixture arguments, call <code>setUp</code>,
-     * <code>fit.RowFixture.doTable(Parse)</code> and <code>tearDown()</code>.
+     * Initializes the fixture arguments, call {@code setUp},
+     * {@code fit.RowFixture.doTable(Parse)} and {@code tearDown()}.
      *
      * @param table the table to be processed
      * @see fit.RowFixture#doTable(Parse) {@link fit.RowFixture#doTable(Parse)}
@@ -229,11 +229,11 @@ public abstract class RowFixture extends fit.RowFixture {
      * Looks up a given parameter in the fixture's argument list.
      *
      * @param paramName the parameter name to look up
-     * @return the parameter value, if it could be found, <code>null</code>
+     * @return the parameter value, if it could be found, {@code null}
      * otherwise
      * @see #getParam(String, String) {@link #getParam(String, String)}
-     * @see FixtureTools#getArg(String[], String, String)
-     * {@link FixtureTools#getArg(String[], String, String)}
+     * @see FixtureTools#getArg(String[], String, String, CrossReferenceHelper)
+     * {@link FixtureTools#getArg(String[], String, String, CrossReferenceHelper)}
      */
     public final String getParam(final String paramName) {
         return getParam(paramName, null);
@@ -248,7 +248,7 @@ public abstract class RowFixture extends fit.RowFixture {
      * @param defaultValue defaultValue the value to be returned if the
      *                     parameter is missing
      * @return the parameter value, if it could be found,
-     * <code>defaultValue</code> otherwise
+     * {@code defaultValue} otherwise
      */
     public final String getParam(final String paramName, final String defaultValue) {
         return FixtureTools.getArg(args, paramName, defaultValue,

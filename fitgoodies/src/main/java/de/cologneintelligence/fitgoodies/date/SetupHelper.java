@@ -26,7 +26,8 @@ import java.util.Locale;
 
 /**
  * Helper class which holds information about date formats and
- * allows to parse date string. <br /><br />
+ * allows to parse date string.
+ * <p>
  *
  * This class should be used whenever a
  * {@link de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter} or a {@link de.cologneintelligence.fitgoodies.parsers.Parser}
@@ -80,7 +81,7 @@ public final class SetupHelper {
     }
 
     /**
-     * Sets the format which is used to parse dates to <code>formatString</code>.
+     * Sets the format which is used to parse dates to {@code formatString}.
      * The string must be valid as a {@link SimpleDateFormat} format string.
      * @param formatString the format string
      * @see #getFormat() getFormat()
@@ -99,24 +100,24 @@ public final class SetupHelper {
     }
 
     /**
-     * Parses <code>string</code> and returns a valid Date object.
+     * Parses {@code string} and returns a valid Date object.
      * For parsing, a {@link SimpleDateFormat} object is used.
      * @param string the string which represents the date
-     * @return the date which is represented by <code>string</code>
-     * @throws ParseException thrown, if <code>string</code> can not be parsed.
+     * @return the date which is represented by {@code string}
+     * @throws ParseException thrown, if {@code string} can not be parsed.
      */
     public Date getDate(final String string) throws ParseException {
         return new SimpleDateFormat(format, locale).parse(string);
     }
 
     /**
-     * Parses <code>string</code> and returns a valid Date object.
+     * Parses {@code string} and returns a valid Date object.
      * For parsing, a {@link SimpleDateFormat} object is used.
      * @param string the string which represents the date
      * @param localeName the name of the locale to use, for example en_US
      * @param formatString a valid SimpleDateFormat format string
-     * @return the date which is represented by <code>string</code>
-     * @throws ParseException thrown, if <code>string</code> can not be parsed.
+     * @return the date which is represented by {@code string}
+     * @throws ParseException thrown, if {@code string} can not be parsed.
      */
     public Date getDate(final String string, final String localeName,
             final String formatString) throws ParseException {

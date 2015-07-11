@@ -22,11 +22,11 @@ import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
- * Sets the connection parameters for the selenium server.<br /><br />
+ * Sets the connection parameters for the selenium server.<p>
  *
  * Such a setup table could look like this:
- * <table border="1">
- * 		<tr><td colspan="2">fitgoodies.selenium.SetupFixture</td></tr>
+ * <table border="1" summary="">
+ * 		<tr><td>fitgoodies.selenium.SetupFixture</td></tr>
  * 		<tr><td>serverHost</td><td>selenium-server-host</td></tr>
  * 		<tr><td>serverPort</td><td>4444</td></tr>
  * 		<tr><td>browserStartCommand</td><td>*firefox</td></tr>

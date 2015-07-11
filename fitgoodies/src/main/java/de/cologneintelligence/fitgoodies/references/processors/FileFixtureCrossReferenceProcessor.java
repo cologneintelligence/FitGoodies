@@ -28,7 +28,8 @@ import java.io.FileNotFoundException;
 /**
  * This fixture can be used to retrieve a filename, which was selected earlier
  * using either the {@link de.cologneintelligence.fitgoodies.file.FileFixtureHelper} or a
- * {@link de.cologneintelligence.fitgoodies.file.FileFixture}.<br /><br />
+ * {@link de.cologneintelligence.fitgoodies.file.FileFixture}.
+ * <p>
  * This class provide ${selectedFile()} and ${selectedEncoding()}.
  *
  */
@@ -39,6 +40,7 @@ AbstractCrossReferenceProcessor {
 
     /**
      * Default constructor.
+     * @param fileFixtureHelper setup object
      */
     public FileFixtureCrossReferenceProcessor(final FileFixtureHelper fileFixtureHelper) {
         super(PATTERN);

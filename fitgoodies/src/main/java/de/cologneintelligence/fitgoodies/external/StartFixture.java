@@ -1,22 +1,20 @@
 package de.cologneintelligence.fitgoodies.external;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * This fixture runs external commands and optionally waits for them to finish<br />
- * <br />
+ * This fixture runs external commands and optionally waits for them to finish
+ * <p>
  *
- * <table border="1">
+ * <table border="1" summary="">
  * <tr>
- * <td colspan="3">fitgoodies.external.ProcessWrapper</td>
+ * <td>fitgoodies.external.ProcessWrapper</td>
  * </tr>
  * <tr>
  * <td>execute</td>

@@ -19,11 +19,6 @@
 
 package de.cologneintelligence.fitgoodies.mail;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.mail.MessagingException;
-
 import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.mail.providers.JavaMailMessageProvider;
 import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
@@ -33,30 +28,35 @@ import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Parse;
 import fit.TypeAdapter;
 
+import javax.mail.MessagingException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Fixture which checks the content of a mail. Before calling, a connection must
  * be set up using either the {@link SetupFixture} or the {@link SetupHelper}.
  * The fixture opens a connection, fetches the most recent mail, checks it,
- * deletes it by default and closes the connection again.<br /><br />
- *
+ * deletes it by default and closes the connection again.
+ * <p>
  * The table must have three columns. The first one contains the header name or
  * &quot;body&quot; to check the plain text and the HTML body or
- * &quot;htmlbody&quot;/&quot;plainbody&quot; to only check one of them.<br /><br />
- *
+ * &quot;htmlbody&quot;/&quot;plainbody&quot; to only check one of them.
+ * <p>
  * The second column must contain the keywords &quot;contains&quot; or
  * &quot;regex&quot;, which decides how the third column is interpreted. The
  * third column contains the String which is compared with the selected content.
- * Cross References are supported in the third column only.<br /><br />
- *
+ * Cross References are supported in the third column only.
+ * <p>
  * If a text matches, only the matching line is shown. If a regular expression
- * was used, the whole match is shown.<br /><br />
- *
+ * was used, the whole match is shown.
+ * <p>
  * To not delete a mail after processing set the fixture parameter
  * &quot;delete&quot; to false.
- *
- * Example:<br />
- * <table border="1">
- * <tr><td colspan="2">fitgoodies.mail.MailFixture</td><td>delete=false</td></tr>
+ * <p>
+ * Example:
+ * <p>
+ * <table border="1" summary="">
+ * <tr><td>fitgoodies.mail.MailFixture</td><td>delete=false</td></tr>
  * <tr><td>body</td><td>contains</td><td>dear user</td></tr>
  * <tr><td>subject</td><td>regex</td><td>sp.m</td></tr>
  * </table>

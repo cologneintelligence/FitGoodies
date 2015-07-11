@@ -71,7 +71,7 @@ public final class WaitForResultTest extends FitGoodiesTestCase {
         Method method = Actor.class.getMethod("myTestMethodReturnsTrue");
         WaitForResult waitForResult = new WaitForResult(method, new Actor(), 0L);
         waitForResult.invokeMethod();
-        assertThat(waitForResult.lastCallWasSuccessfull(), is(true));
+        assertThat(waitForResult.lastCallWasSuccessful(), is(true));
     }
 
     @Test
@@ -79,7 +79,7 @@ public final class WaitForResultTest extends FitGoodiesTestCase {
         Method method = Actor.class.getMethod("myTestMethodReturnsFalse");
         WaitForResult waitForResult = new WaitForResult(method, new WaitForResultTest.Actor(), 0L);
         waitForResult.invokeMethod();
-        assertThat(waitForResult.lastCallWasSuccessfull(), is(false));
+        assertThat(waitForResult.lastCallWasSuccessful(), is(false));
 
     }
 
@@ -97,7 +97,7 @@ public final class WaitForResultTest extends FitGoodiesTestCase {
         waitForResult.repeatInvokeWithTimeout();
         assertThat(actor.getCalls(), is(equalTo((Object) 12)));
         assertThat(waitForResult.getLastElapsedTime(), is(equalTo((Object) 220L)));
-        assertThat(waitForResult.lastCallWasSuccessfull(), is(true));
+        assertThat(waitForResult.lastCallWasSuccessful(), is(true));
     }
 
     @Test
@@ -114,7 +114,7 @@ public final class WaitForResultTest extends FitGoodiesTestCase {
         waitForResult.repeatInvokeWithTimeout();
         assertThat(actor.getCalls(), is(equalTo((Object) 7)));
         assertThat(waitForResult.getLastElapsedTime(), is(equalTo((Object) 60L)));
-        assertThat(waitForResult.lastCallWasSuccessfull(), is(false));
+        assertThat(waitForResult.lastCallWasSuccessful(), is(false));
 
     }
 }

@@ -37,6 +37,7 @@ public final class FileRunner {
 	 * is omitted, utf-8 is used.
 	 *
 	 * @param args program parameters
+	 * @throws Throwable if an error occours
 	 */
 	public static void main(final String[] args) throws Throwable {
 		if (args.length < 2) {

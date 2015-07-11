@@ -21,13 +21,14 @@ package de.cologneintelligence.fitgoodies;
 
 
 /**
- * Dropin replacement for <code>fit.ScientificDouble</code>
- * which works with RowFixtures.<br /><br />
+ * Drop in replacement for {@code fit.ScientificDouble}
+ * which works with RowFixtures.
+ * <p>
  *
- * The original ScientificDouble does not override <code>hashCode</code> but equals.
+ * The original ScientificDouble does not override {@code hashCode} but equals.
  * There is a problem, because equal objects must return the an equal code.
  * However, the precision makes it impossible to generate a good hash.
- * So <code>1</code> is returned, which does not boost the performance, but
+ * So {@code 1} is returned, which does not boost the performance, but
  * at least, it works.
  *
  */

@@ -19,28 +19,29 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import java.text.ParseException;
-import java.util.Date;
-
 import de.cologneintelligence.fitgoodies.date.SetupHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.TypeAdapter;
 
+import java.text.ParseException;
+import java.util.Date;
+
 /**
- * TypeAdapter which is able to convert a string into a <code>java.util.Date</code>.
+ * TypeAdapter which is able to convert a string into a {@code java.util.Date}.
  * This class uses the {@link de.cologneintelligence.fitgoodies.date.SetupHelper} to allow the user
- * to set individual formats.<br /><br />
+ * to set individual formats.
+ * <p>
  *
  * If the cell is parameterized, the date format can be set individually.
- * The parameter must have the format &quot;<code>locale, format</code>&quot;.
- * Example: &quot;<code>en_US, MM/dd/yyyy</code>&quot;.
+ * The parameter must have the format &quot;{@code locale, format}&quot;.
+ * Example: &quot;{@code en_US, MM/dd/yyyy}&quot;.
  *
  */
 public class DateTypeAdapter extends AbstractTypeAdapter<Date> {
     private final SetupHelper dateSetupHelper;
 
     /**
-     * Creates a new TypeAdapter which bases on <code>ta</code>.
+     * Creates a new TypeAdapter which bases on {@code ta}.
      * @param ta TypeAdapter to use as source
      * @param convertParameter a parameter in the format [locale, format] which
      * 		represents the format to use
@@ -51,9 +52,9 @@ public class DateTypeAdapter extends AbstractTypeAdapter<Date> {
     }
 
     /**
-     * Parses a string and converts it into a <code>java.util.Date</code> object.
-     * @param s <code>String</code> which will be converted
-     * @return <code>java.util.Date</code> object which is represented by <code>s</code>.
+     * Parses a string and converts it into a {@code java.util.Date} object.
+     * @param s {@code String} which will be converted
+     * @return {@code java.util.Date} object which is represented by {@code s}.
      * @throws ParseException if the date could not be parsed
      */
     @Override

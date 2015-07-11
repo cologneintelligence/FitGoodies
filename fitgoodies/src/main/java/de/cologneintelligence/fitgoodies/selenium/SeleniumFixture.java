@@ -32,7 +32,7 @@ import fit.Parse;
  * Run the selenium-IDE and record your test-case. Save the result as html and
  * copy the table part into a new Html-File. Adjust the first row and add the
  * reference to this class.
- * <table border="1">
+ * <table border="1" summary="">
  * <tr>
  * <td>fitgoodies.selenium.SeleniumFixture</td>
  * <td></td>

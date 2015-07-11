@@ -19,11 +19,11 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import java.lang.reflect.Array;
-import java.util.StringTokenizer;
-
 import fit.Fixture;
 import fit.TypeAdapter;
+
+import java.lang.reflect.Array;
+import java.util.StringTokenizer;
 
 /**
  * If the destination type is an array, this adapter handles it.
@@ -57,7 +57,7 @@ public class ArrayTypeAdapter extends TypeAdapter {
     }
 
     /**
-     * <code>TypeAdapter</code> which handles the array items.
+     * {@code TypeAdapter} which handles the array items.
      */
     protected TypeAdapter componentAdapter;
 
@@ -67,7 +67,6 @@ public class ArrayTypeAdapter extends TypeAdapter {
      *
      * @param target target fixture
      * @param type type of the fixture data
-     * @param typeAdapterHelper the helper which manages registered types
      */
     @Override @SuppressWarnings("rawtypes")
     protected void init(final Fixture target, final Class type) {
@@ -78,9 +77,9 @@ public class ArrayTypeAdapter extends TypeAdapter {
     }
 
     /**
-     * Converts a <code>String</code> into a <code>Array</code>.
-     * @param s the <code>String</code> to convert
-     * @return an <code>Array</code> which contains <code>s</code>
+     * Converts a {@code String} into a {@code Array}.
+     * @param s the {@code String} to convert
+     * @return an {@code Array} which contains {@code s}
      * @throws Exception if the string could not be parsed
      */
     @Override
@@ -99,7 +98,7 @@ public class ArrayTypeAdapter extends TypeAdapter {
      * an item-specific type adapter.
      *
      * @param o Array to convert
-     * @return <code>o</code> as a String
+     * @return {@code o} as a String
      */
     @Override
     public String toString(final Object o) {
@@ -108,7 +107,7 @@ public class ArrayTypeAdapter extends TypeAdapter {
         }
 
         final int length = Array.getLength(o);
-        final StringBuffer b = new StringBuffer(5 * length);
+        final StringBuilder b = new StringBuilder(5 * length);
         for (int i = 0; i < length; i++) {
             b.append(componentAdapter.toString(Array.get(o, i)));
             if (i < length - 1) {
@@ -119,14 +118,14 @@ public class ArrayTypeAdapter extends TypeAdapter {
     }
 
     /**
-     * Checks whether two Arrays <code>a</code> and <code>b</code> are
+     * Checks whether two Arrays {@code a} and {@code b} are
      * equal.
      *
-     * A type specific <code>TypeAdapter</code> is used to compare the items.
+     * A type specific {@code TypeAdapter} is used to compare the items.
      *
      * @param a first array
      * @param b second array
-     * @return <code>true</code> if all items are equal, <code>false</code> otherwise
+     * @return {@code true} if all items are equal, {@code false} otherwise
      */
     @Override
     public boolean equals(final Object a, final Object b) {

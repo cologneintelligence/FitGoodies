@@ -25,12 +25,14 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
  * This fixture allows to register new processors via HTML. A processor
- * must extend an <code>AbstractCrossReferenceProcessor</code> and it must
- * be located in java's class path.<br /><br />
+ * must extend an {@code AbstractCrossReferenceProcessor} and it must
+ * be located in java's class path.<p>
  *
  * To load a processor, you must specify its fully qualified class name:
- * <table border="1">
- * 	<tr><td colspan="2">fitgoodies.references.SetupFixture</td></tr>
+ * <p>
+ *
+ * <table border="1" summary="">
+ * 	<tr><td>fitgoodies.references.SetupFixture</td></tr>
  * 	<tr><td>use</td><td>com.example.MyReferenceProcessor</td></tr>
  *  <tr><td>remove</td><td>com.example.MyOtherReferenceProcessor</td></tr>
  * </table>
@@ -77,7 +79,7 @@ public class SetupFixture extends ActionFixture {
     }
 
     /**
-     * Removes the processor <code>module</code> from the list of registered
+     * Removes the processor {@code module} from the list of registered
      * processors.
      * @param module fully qualified path to an implementation of
      * 		{@link AbstractCrossReferenceProcessor}
@@ -86,8 +88,7 @@ public class SetupFixture extends ActionFixture {
      * @see #remove() remove()
      */
     public void remove(final String module) throws Exception {
-        Class<?> c = null;
-        c = Class.forName(module);
+        Class<?> c = Class.forName(module);
 
         for (int i = 0; i < processors.count(); ++i) {
             if (processors.get(i).getClass() == c) {
@@ -97,7 +98,7 @@ public class SetupFixture extends ActionFixture {
     }
 
     /**
-     * Adds the processor <code>module</code> to the list of registered processors.
+     * Adds the processor {@code module} to the list of registered processors.
      * @param module fully qualified path to an implementation of
      * 		{@link AbstractCrossReferenceProcessor}
      * @throws Exception propagated to fit, thrown if a class could not be found,
