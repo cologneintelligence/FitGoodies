@@ -25,11 +25,13 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 /**
  * Fixture which allows the user to register new parsers via HTML.
  * To register a parser, simply have the parser in your classpath and load
- * the parser by specifying its fully qualified class name. <br /><br />
+ * the parser by specifying its fully qualified class name.
+ * <p>
  *
- * Example to load com.example.myParser:<br />
- * <table>
- * 	<tr><td colspan="2">fitgoodies.parsers.SetupFixture</td></tr>
+ * Example to load com.example.myParser:
+ *
+ * <table border="1" summary="">
+ * 	<tr><td>fitgoodies.parsers.SetupFixture</td></tr>
  *	<tr><td>load</td><td>com.example.myParser</td></tr>
  * </table>
  *
@@ -47,7 +49,7 @@ public class SetupFixture extends ActionFixture {
 
     /**
      * Registers the parser which is identified by its fully qualified class
-     * name <code>className</code>.
+     * name {@code className}.
      * @param className fully qualified class name to register
      * @throws Exception thrown in case of errors. Propagate it to fit.
      * @see #load() load()

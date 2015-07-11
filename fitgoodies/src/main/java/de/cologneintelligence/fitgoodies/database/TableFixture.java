@@ -35,17 +35,20 @@ import java.sql.Statement;
 /**
  * This fixture takes a table name as an argument, fetches its content and
  * compares it with the given table. It's possible to filter the resulting
- * table using an optional where clause.<br /><br />
+ * table using an optional where clause.
+ * <p>
  *
  * The credentials used to authenticate can be set in the code using the
  * {@link de.cologneintelligence.fitgoodies.database.SetupHelper} or using a
- * {@link de.cologneintelligence.fitgoodies.database.SetupFixture} in your HTML table. <br /><br />
+ * {@link de.cologneintelligence.fitgoodies.database.SetupFixture} in your HTML table.
+ * <p>
  *
  * The following table would compare the columns &quot;c1&quot; and &quot;c2&quot;
  * of the SQL table &quot;tab1&quot; with given the HTML table, if the value of
- * c1 is bigger than 10: <br /><br />
+ * c1 is bigger than 10:
+ * <p>
  *
- * <table border="1">
+ * <table border="1" summary="">
  * <tr>
  * 		<td>fitgoodies.database.TableFixture</td>
  * 		<td>table=tab1</td>
@@ -93,7 +96,7 @@ public class TableFixture extends RowFixture {
 
     /**
      * Creates a new fixture ignoring the values set in {@link SetupHelper} but
-     * using <code>conn</code> as the connection object.
+     * using {@code conn} as the connection object.
      * This constructor is primary used for testing.
      * @param conn the connection object
      */
@@ -124,12 +127,12 @@ public class TableFixture extends RowFixture {
     }
 
     /**
-     * Generates a <code>java.sql.ResultSet</code> by using the saved connection.
-     * This method queries the table <code>tableName</code> and appends
-     * <code>where</code> as an optional where clause.
+     * Generates a {@code java.sql.ResultSet} by using the saved connection.
+     * This method queries the table {@code tableName} and appends
+     * {@code where} as an optional where clause.
      * @param tableName the table name to query
-     * @param where a where clause or <code>null</code>
-     * @return the <code>ResultSet</code> which the query returned
+     * @param where a where clause or {@code null}
+     * @return the {@code ResultSet} which the query returned
      */
     public final ResultSet getResultSet(final String tableName, final String where) {
         if (tableName == null) {
@@ -168,7 +171,7 @@ public class TableFixture extends RowFixture {
 
     /**
      * Gets an array which represents the created ResultSet as an object array.
-     * The type of these objects can be determined via <code>getTargetClass()</code>.
+     * The type of these objects can be determined via {@code getTargetClass()}.
      */
     @Override
     public final Object[] query() throws Exception {
@@ -184,7 +187,7 @@ public class TableFixture extends RowFixture {
     }
 
     /**
-     * Sets the database connection to <code>conn</code>.
+     * Sets the database connection to {@code conn}.
      * This method is primary used for testing.
      * @param conn connection to use.
      * @see #getConnection() getConnection()
@@ -194,7 +197,7 @@ public class TableFixture extends RowFixture {
     }
 
     /**
-     * Gets the connection object which is used to generate the <code>ResultSet</code>.
+     * Gets the connection object which is used to generate the {@code ResultSet}.
      * @return the connection object
      * @see #setConnection(Connection) setConnection(Connection)
      */

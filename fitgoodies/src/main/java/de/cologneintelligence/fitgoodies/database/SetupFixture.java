@@ -23,12 +23,13 @@ import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
- * Enables a user to setup a database connection from HTML.<br /><br />
+ * Enables a user to setup a database connection from HTML.
+ * <p
  *
  * Such a setup table could look like this (you need ojdbc*.jar in your
  * classpath):
- * <table border="1">
- * 		<tr><td colspan="2">fitgoodies.database.SetupFixture</td></tr>
+ * <table border="1" summary="">
+ * 		<tr><td>fitgoodies.database.SetupFixture</td></tr>
  * 		<tr><td>provider</td><td>oracle.jdbc.OracleDriver</td></tr>
  * 		<tr><td>connectionString</td><td>jdbc:oracle:thin:@Server:Port:Database</td></tr>
  * 		<tr><td>user</td><td>MY_USER</td></tr>
@@ -46,7 +47,7 @@ public class SetupFixture extends ActionFixture {
     }
 
     /**
-     * Sets the database username to <code>userName</code>.
+     * Sets the database username to {@code userName}.
      * The username can be received using {@link SetupHelper#getUser()}.
      * @param userName the database username
      */
@@ -64,7 +65,7 @@ public class SetupFixture extends ActionFixture {
     }
 
     /**
-     * Sets the database password to <code>password</code>.
+     * Sets the database password to {@code password}.
      * The password can be received using {@link SetupHelper#getPassword()}.
      * @param password the database password
      */
@@ -82,7 +83,7 @@ public class SetupFixture extends ActionFixture {
     }
 
     /**
-     * Sets the database connection string to <code>uri</code>.
+     * Sets the database connection string to {@code uri}.
      * The connection string can be received using
      * {@link SetupHelper#getConnectionString()}.
      * @param uri the database connectoin string
@@ -101,7 +102,7 @@ public class SetupFixture extends ActionFixture {
     }
 
     /**
-     * Sets the database provider. The <code>providerName</code> must be a
+     * Sets the database provider. The {@code providerName} must be a
      * fully qualified class name and the class must be in java's class path.
      * @param providerName fully qualified class name of a java.sql.Driver.
      * @throws Exception thrown if the class could not be found, initialized or

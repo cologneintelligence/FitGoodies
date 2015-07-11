@@ -18,15 +18,16 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import java.util.Map;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+
+import java.util.Map;
 
 /**
  * Abstract class which decides which logging event matches given conditions.
  * The method {@link #matches(LoggingEvent)} must be overridden to provide
- * custom matches.<br /><br />
+ * custom matches.
+ * <p>
  *
  * The class uses two parameters of the map: minlevel and thread. They are used
  * to pre-filter the matches. If minlevel is set, only log entries with this
@@ -40,7 +41,7 @@ public abstract class AbstractLoggingEventMatcher {
 	 * and the given parameters.
 	 * @param events log entries to process
 	 * @param parameters filter parameters
-	 * @return first matching log entry or <code>null</code> otherwise
+	 * @return first matching log entry or {@code null} otherwise
 	 */
 	public final LoggingEvent getFirstMatchingEvent(final LoggingEvent[] events,
 			final Map<String, String> parameters) {
@@ -86,7 +87,7 @@ public abstract class AbstractLoggingEventMatcher {
 	/**
 	 * Called to check whether a event matches custom conditions.
 	 * @param event event to process
-	 * @return <code>true</code> iif the event matches
+	 * @return {@code true} iif the event matches
 	 */
 	abstract boolean matches(LoggingEvent event);
 }

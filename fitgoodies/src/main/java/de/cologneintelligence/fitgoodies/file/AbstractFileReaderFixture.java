@@ -28,25 +28,30 @@ import java.io.File;
 
 
 /**
- * Fixture which allows a user to select a file from its arguments.<br /><br />
+ * Fixture which allows a user to select a file from its arguments.
+ * <p>
  *
- * A fixture which extends the <code>AbstractFileReaderFixture</code> can
+ * A fixture which extends the {@code AbstractFileReaderFixture} can
  * easily access a selected file via {@link #getFile()}. The selected encoding
- * can be retrieved via {@link #getEncoding()}.<br /><br />
+ * can be retrieved via {@link #getEncoding()}.
+ * <p>
  *
  * There are two ways of selecting a file. Either by providing a full file path,
  * or by using a pattern. In the latter case, the first matching file is selected:
+ * <p>
  *
- * <table border="1"><tr>
+ * <table border="1" summary=""><tr>
  * <td>MyFixture</td><td>file=/path/to/file</td><td>encoding=latin-1</td>
- * </tr><tr><td colspan="3">...</td></tr></table><br />
+ * </tr><tr><td>...</td></tr></table>
+ * <p>
  *
- * <table border="1"><tr>
+ * <table border="1" summary=""><tr>
  * <td>MyFixture</td><td>dir=/path/to/</td><td>pattern=.*\.txt</td>
- * </tr><tr><td colspan="3">...</td></tr></table><br />
+ * </tr><tr><td>...</td></tr></table>
+ * <p>
  *
- * Either <code>file</code> or <code>pattern</code> must be provided.
- * <code>dir</code> and <code>encoding</code> are retrieved from the
+ * Either {@code file} or {@code pattern} must be provided.
+ * {@code dir} and {@code encoding} are retrieved from the
  * {@link FileFixtureHelper} if they are missing.
  *
  */

@@ -18,32 +18,33 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import java.util.Map;
-
-import org.apache.log4j.Appender;
-import org.apache.log4j.spi.AppenderAttachable;
-
 import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Parse;
 import fit.TypeAdapter;
+import org.apache.log4j.Appender;
+import org.apache.log4j.spi.AppenderAttachable;
+
+import java.util.Map;
 
 /**
  * Fixture to analyze captured log data. Log messages can be analyzed by searing
- * strings in their messages and exception information.<br />
+ * strings in their messages and exception information.<br>
  * The fixture contains 4 rows: the name of the logger, the name of the appender,
  * a command which can have parameters, and a expression to search. The parameter
  * column supports Cross References.
  * Only captured loggers can be analyzed. To capture loggers, see {@link SetupFixture}.
- * <br />
+ * <p>
  * The root logger is named &quot;rootLogger&quot;.
  * Valid parameters are &quot;Thread&quot; and &quot;MinLevel&quot;.
- * <br /><br />
+ * <p>
  *
  * Example:
- * <table border="1"><tr><td colspan="4">fitgoodies.log4j.LogFixture</td></tr>
+ * <p>
+ *
+ * <table border="1" summary=""><tr><td>fitgoodies.log4j.LogFixture</td></tr>
  * <tr><td>rootLogger</td><td>R</td><td>contains</td><td>successfully initialized</td></tr>
  * <tr><td>rootLogger</td><td>R</td><td>notContains</td><td>critical error</td></tr>
  * <tr>
@@ -81,7 +82,7 @@ public class LogFixture extends Fixture {
 	private static final int CHECK_EXPRESSION_COLUMN = 3;
 
 	/**
-	 * Initializes a new <code>LogFixture</code> using a {@link LoggerProviderImpl},
+	 * Initializes a new {@code LogFixture} using a {@link LoggerProviderImpl},
 	 * a {@link CellArgumentParserFactoryImpl} and a {@link LogEventAnalyzerFactoryImpl}.
 	 * @see #LogFixture(LoggerProvider, CellArgumentParserFactory, LogEventAnalyzerFactory)
 	 * 		LogFixture(LoggerProvider, CellArgumentParserFactory, LogEventAnalyzerFactory)
@@ -94,10 +95,10 @@ public class LogFixture extends Fixture {
 
 	/**
 	 * Initializes a new LogFixture.
-	 * @param logs <code>LoggerProvider</code> to receive loggers.
-	 * @param cellArgumentParserFactory <code>CellArgumentParserFactory</code>
+	 * @param logs {@code LoggerProvider} to receive loggers.
+	 * @param cellArgumentParserFactory {@code CellArgumentParserFactory}
 	 * 		to extract arguments from cells
-	 * @param logEventAnalyzerFactory <code>LogEventAnalyzerFactory</code>
+	 * @param logEventAnalyzerFactory {@code LogEventAnalyzerFactory}
 	 * 		to analyze log entries
 	 */
 	public LogFixture(final LoggerProvider logs,
@@ -109,7 +110,7 @@ public class LogFixture extends Fixture {
 	}
 
 	/**
-	 * Processes the table row <code>cells</code>.
+	 * Processes the table row {@code cells}.
 	 * @param cells row to parse and process
 	 */
 	@Override
@@ -134,7 +135,7 @@ public class LogFixture extends Fixture {
 		final String command = getCell(COMMAND_COLUMN).text();
 		final String checkExpression = getExpressionCellContent();
 
-		dispatchCommand(command, parameters, checkExpression);
+		dispatchCommand(command, parameters);
 	}
 
 	private String getExpressionCellContent() {
@@ -182,7 +183,7 @@ public class LogFixture extends Fixture {
 	}
 
 	private void dispatchCommand(final String command,
-			final Map<String, String> parameters, final String checkExpression) {
+			final Map<String, String> parameters) {
 
 		final LogEventAnalyzer analyzer = logEventAnalyzerFactory.getLogEventAnalyzerFor(
 				this, getCell(CHECK_EXPRESSION_COLUMN), appender.getAllEvents());

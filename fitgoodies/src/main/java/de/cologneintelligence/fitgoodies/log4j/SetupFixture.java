@@ -26,17 +26,19 @@ import fit.Parse;
 /**
  * This fixture is used to start captures of log4j logger.
  * To capture the output, the logger <em>and</em> the specific appender must be
- * provided. This means, that the appender must have a name.<br /><br />
+ * provided. This means, that the appender must have a name.
+ * <p>
  *
  * Example to monitor the output of the appender &quot;R&quot; of the root logger,
  * to monitor the output the output of the appender &quot;stdout&quot; of the
  * org.example.myclass and do clear the cached log entries of &quot;stderr&quot;:
+ * <p>
  *
  *  <!-- and to stop monitoring the appender &quot;stderr&quot; of the root logger-->
  *
- * <table border="1">
- * <tr><td colspan="3">fitgoodies.log4j.SetupFixture</td></tr>
- * <tr><td>monitorRoot</td><td colspan="2">R</td></tr>
+ * <table border="1" summary="">
+ * <tr><td>fitgoodies.log4j.SetupFixture</td></tr>
+ * <tr><td>monitorRoot</td><td>R</td></tr>
  * <tr><td>monitor</td><td>org.example.myclass</td><td>stdout</td></tr>
  * <tr><td>clear</td><td>org.example.myclass</td><td>stderr</td></tr>
  * </table>
@@ -46,7 +48,7 @@ public class SetupFixture extends Fixture {
     private final LoggerProvider loggerProvider;
 
     /**
-     * Creates a new SetupFixture which uses <code>provider</code> to get
+     * Creates a new SetupFixture which uses {@code provider} to get
      * loggers. This method is mainly used for testing.
      * @param provider provider to get logger instances
      */
@@ -62,7 +64,7 @@ public class SetupFixture extends Fixture {
     }
 
     /**
-     * Processes the content of <code>cells</code>.
+     * Processes the content of {@code cells}.
      * @param cells cells to process
      */
     @Override

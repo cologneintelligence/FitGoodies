@@ -23,9 +23,9 @@ import java.io.File;
 
 /**
  * Simple main file which decides which available runner will be used.
- * Useful for command line invokes.<br /><br />
- * Usage: <code>java -classpath /path/to/fit.jar:/path/to/fitgoodies.jar:...
- * fitgoodies.runners.AutoRunner input output [encoding]</code>
+ * Useful for command line invokes.<p>
+ * Usage: {@code java -classpath /path/to/fit.jar:/path/to/fitgoodies.jar:...
+ * fitgoodies.runners.AutoRunner input output [encoding]}
  */
 @Deprecated
 public final class AutoRunner {
@@ -46,6 +46,7 @@ public final class AutoRunner {
      * of the type of the first parameter (directory / file).
      *
      * @param args program parameters
+     * @throws Throwable if an error occours
      */
     public static void main(final String[] args) throws Throwable {
         if (args.length < 2 || args.length > 3) {

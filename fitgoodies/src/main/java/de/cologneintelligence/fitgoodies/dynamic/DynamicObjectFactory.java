@@ -19,19 +19,20 @@
 
 package de.cologneintelligence.fitgoodies.dynamic;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.HashMap;
-
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.Type;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.HashMap;
+
 /**
  * Factory that allows to generate java classes on the fly.
- * The class will have a public constructor and only public variables.<br /><br />
+ * The class will have a public constructor and only public variables.
+ * <p>
  *
  * This class is primary written for internal use.
  *
@@ -44,7 +45,7 @@ public class DynamicObjectFactory {
 	 */
 	public static class JavaClassClassloader extends java.lang.ClassLoader {
 		/**
-		 * Default constructor. Creates a new <code>ClassLoader</code>.
+		 * Default constructor. Creates a new {@code ClassLoader}.
 		 */
 		public JavaClassClassloader() {
 			super(JavaClassClassloader.class.getClassLoader());
@@ -63,10 +64,10 @@ public class DynamicObjectFactory {
 		private final HashMap<String, Class<?>> cache = new HashMap<String, Class<?>>();
 
 		/**
-		 * Loads the byte code of <code>javaClass</code>, defines a class
+		 * Loads the byte code of {@code javaClass}, defines a class
 		 * and resolves it. The loaded class is returned.
 		 * @param name class name
-		 * @param javaClass <code>JavaClass</code> object which holds the
+		 * @param javaClass {@code JavaClass} object which holds the
 		 * 		dynamically generated class.
 		 * @return the loaded class
 		 */
@@ -115,7 +116,7 @@ public class DynamicObjectFactory {
 	 *
 	 * @param type type of the field
 	 * @param name name of the field
-	 * @throws ClassNotFoundException indicates a problem with <code>type</code>
+	 * @throws ClassNotFoundException indicates a problem with {@code type}
 	 */
 	public void add(final Class<?> type, final String name) throws ClassNotFoundException {
 		FieldGen fg;

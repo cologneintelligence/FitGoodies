@@ -32,14 +32,14 @@ import fit.TypeAdapter;
 import java.lang.reflect.Method;
 
 /**
- * In contrast to <code>fit.ActionFixture</code>, this <code>ActionFixture</code>
+ * In contrast to {@code fit.ActionFixture}, this {@code ActionFixture}
  * enables all fitgoodies features (for example custom type adapters,
- * custom parsers and cross references). <br /><br />
- *
- * In addition, <code>waitFor</code> was added. The command takes a method name
- * without parameters and a return value of <code>Boolean</code> as the first
- * parameter and a timeout in ms as the second parameter.<br />
- * The method is called every <code>sleepTime</code> ms, until it returns true or the timeout is
+ * custom parsers and cross references).
+ * <p>
+ * In addition, {@code waitFor} was added. The command takes a method name
+ * without parameters and a return value of {@code Boolean} as the first
+ * parameter and a timeout in ms as the second parameter.<br>
+ * The method is called every {@code sleepTime} ms, until it returns true or the timeout is
  * exceeded.
  *
  */
@@ -51,7 +51,7 @@ public class ActionFixture extends fit.ActionFixture {
 	/**
 	 * Sets the actor of a fixture.
 	 *
-	 * At runtime, the actor can be set using <code>start</code> in the input
+	 * At runtime, the actor can be set using {@code start} in the input
 	 * table.
 	 * @param fixture the new actor
 	 */
@@ -67,7 +67,7 @@ public class ActionFixture extends fit.ActionFixture {
 	}
 
 	/**
-	 * Replacement of <code>check</code> which resolves cross-references
+	 * Replacement of {@code check} which resolves cross-references
 	 * before calling the original check method of fit.
 	 *
 	 *  @param cell the cell to check
@@ -87,8 +87,8 @@ public class ActionFixture extends fit.ActionFixture {
 	}
 
 	/**
-	 * Replacement of <code>enter()</code> which resolves cross-references
-	 * and calls the original <code>fit.enter()</code>.
+	 * Replacement of {@code enter()} which resolves cross-references
+	 * and calls the original {@code fit.enter()}.
 	 *
 	 * @see fit.ActionFixture#enter() {@link fit.ActionFixture#enter()}
 	 */
@@ -122,7 +122,7 @@ public class ActionFixture extends fit.ActionFixture {
 
     private void writeResultIntoCell(final WaitForResult waitForResult) {
         cells.more.more.body = Long.toString(waitForResult.getLastElapsedTime());
-        if (waitForResult.lastCallWasSuccessfull()) {
+        if (waitForResult.lastCallWasSuccessful()) {
         	right(cells.more.more);
         } else {
         	wrong(cells.more.more);
@@ -132,9 +132,9 @@ public class ActionFixture extends fit.ActionFixture {
 
     /**
 	 * Waits until a method returns true. The command takes a method name
-	 * without parameters and a return value of <code>Boolean</code> as the first
-	 * parameter and a timeout in ms as the second parameter.<br />
-	 * The method is called every <code>sleepTime</code>ms, until it returns true or the timeout is
+	 * without parameters and a return value of {@code Boolean} as the first
+	 * parameter and a timeout in ms as the second parameter.<br>
+	 * The method is called every {@code sleepTime}ms, until it returns true or the timeout is
 	 * exceeded.
 	 * @throws Exception propagated to fit
 	 */
@@ -151,12 +151,12 @@ public class ActionFixture extends fit.ActionFixture {
 
 	/**
 	 * Transforms the selected row into an &quot;enter&quot; command and
-	 * reinterprets it.<br /><br />
-	 *
-	 * Example: <br />
-	 * Row content: <code>setEndocing | utf-8</code><br />
+	 * reinterprets it.
+	 * <p>
+	 * Example:
+	 * Row content: {@code setEncoding | utf-8} <br>
 	 * Code in the fixture:
-	 * <code><pre>
+	 * {@code
 	 * public void setEncoding() throws Exception {
 	 *     transformAndEnter();
 	 * }
@@ -164,7 +164,7 @@ public class ActionFixture extends fit.ActionFixture {
 	 * public void setEncoding(String encoding) {
 	 *     // do stuff with encoding here
 	 * }
-	 * </pre></code>
+	 * }
 	 *
 	 * @throws Exception should be propagated to fit.
 	 */
@@ -184,13 +184,13 @@ public class ActionFixture extends fit.ActionFixture {
 	}
 
 	/**
-	 * Replacement of <code>parse</code> which uses the extended parse features of
+	 * Replacement of {@code parse} which uses the extended parse features of
 	 * fitgoodies and uses fit's parse as a fallback.
 	 *
 	 *  @param text text to parse
      *  @param type type to transform text to
      *
-     *  @return Object of type <code>type</code> which represents <code>text</code>
+     *  @return Object of type {@code type} which represents {@code text}
      *  @throws Exception if the value can't be parsed
      *
      *  @see fit.Fixture#parse(String, Class) {@link fit.Fixture#parse(String, Class)}
@@ -214,15 +214,15 @@ public class ActionFixture extends fit.ActionFixture {
 	 * line of the table. This method is primary useful for debugging.
 	 * You won't need it otherwise.
 	 *
-	 * @param parameters parameters to store in <code>args</code>
+	 * @param parameters parameters to store in {@code args}
 	 */
 	public void setParams(final String[] parameters) {
 		this.args = parameters;
 	}
 
 	/**
-	 * Initializes the fixture arguments, call <code>setUp</code>,
-	 * <code>fit.ActionFixture.doTable(Parse)</code> and <code>tearDown()</code>.
+	 * Initializes the fixture arguments, call {@code setUp},
+	 * {@code fit.ActionFixture.doTable(Parse)} and {@code tearDown()}.
 	 *
      * @param table the table to be processed
 	 * @see fit.Fixture#doTable(Parse) {@link fit.Fixture#doTable(Parse)}
@@ -269,7 +269,7 @@ public class ActionFixture extends fit.ActionFixture {
      * Looks up a given parameter in the fixture's argument list.
      *
      * @param paramName the parameter name to look up
-     * @return  the parameter value, if it could be found, <code>null</code> otherwise
+     * @return  the parameter value, if it could be found, {@code null} otherwise
      * @see #getParam(String, String) {@link #getParam(String, String)}
      * @see FixtureTools#getArg(String[], String, String, de.cologneintelligence.fitgoodies.references.CrossReferenceHelper)
      * 		{@link FixtureTools#getArg(String[], String, String, de.cologneintelligence.fitgoodies.references.CrossReferenceHelper)}
@@ -284,7 +284,7 @@ public class ActionFixture extends fit.ActionFixture {
 	 * If the value does not exist, the given default value is returned.
      * @param paramName paramName the parameter name to look up
      * @param defaultValue defaultValue the value to be returned if the parameter is missing
-     * @return the parameter value, if it could be found, <code>defaultValue</code> otherwise
+     * @return the parameter value, if it could be found, {@code defaultValue} otherwise
 	 */
 	public final String getParam(final String paramName, final String defaultValue) {
 		return FixtureTools.getArg(args, paramName, defaultValue,
