@@ -60,6 +60,7 @@ public class FileSystemDirectoryHelper {
      * @param parentDir parent directory
      * @return <code>true</code> if <code>subDir</code> is a subDirectory of
      * 		<code>parentDir</code>, false otherwise.
+     * @throws java.io.IOException
      */
     public boolean isSubDir(final File subDir, final File parentDir) throws IOException {
         int parentDirLength = parentDir.getCanonicalFile().getAbsolutePath().length();
@@ -77,9 +78,10 @@ public class FileSystemDirectoryHelper {
      * @param fromDir directory to start from
      * @param toDir last directory path
      * @return an array of all generated paths
+     * @throws java.io.IOException
      */
     public File[] getParentDirs(final File fromDir, final File toDir) throws IOException {
-        List<File> result = new LinkedList<File>();
+        List<File> result = new LinkedList<>();
         final File fromDirCanonical = fromDir.getCanonicalFile();
         for (File current = toDir.getCanonicalFile().getAbsoluteFile(); !current.equals(fromDirCanonical); current = current.getParentFile()) {
             result.add(0, current);
@@ -93,6 +95,7 @@ public class FileSystemDirectoryHelper {
      * @param dir1 first path
      * @param dir2 second path
      * @return longest common path in <code>dir1</code> and <code>dir2</code>
+     * @throws java.io.IOException
      */
     public File getCommonDir(final File dir1, final File dir2) throws IOException {
         List<File> parts1 = getParentDirs(dir1);
@@ -112,7 +115,7 @@ public class FileSystemDirectoryHelper {
     }
 
     private List<File> getParentDirs(File dir) throws IOException {
-        List<File> dirs = new LinkedList<File>();
+        List<File> dirs = new LinkedList<>();
 
         File currentDir = dir.getCanonicalFile();
         File lastDir;
@@ -200,7 +203,7 @@ public class FileSystemDirectoryHelper {
             return new File(relPath);
         }
 
-        List<String> parts = new ArrayList<String>();
+        List<String> parts = new ArrayList<>();
         for (int i = 0; i < baseParts.length; ++i) {
             if (i > 0 || !isWindowsDrive(basePath)) {
                 parts.add(baseParts[i]);

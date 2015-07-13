@@ -46,9 +46,7 @@ public abstract class AbstractFileRecordReaderFixture extends
 	public AbstractFileRecordReaderFixture() {
 		try {
 			typeAdapter = TypeAdapter.on(this, this.getClass().getField("actualValue"));
-		} catch (SecurityException e) {
-			throw new RuntimeException(e);
-		} catch (NoSuchFieldException e) {
+		} catch (SecurityException | NoSuchFieldException e) {
 			throw new RuntimeException(e);
 		}
 	}

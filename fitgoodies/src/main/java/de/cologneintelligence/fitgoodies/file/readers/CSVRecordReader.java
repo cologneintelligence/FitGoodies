@@ -77,6 +77,7 @@ public class CSVRecordReader implements FileRecordReader {
 
 	/**
 	 * Closes the underlying stream.
+         * @throws java.io.IOException
 	 */
 	@Override
 	public void close() throws IOException {
@@ -120,7 +121,7 @@ public class CSVRecordReader implements FileRecordReader {
 	}
 
 	private List<String> splitLine(final String line) throws IOException {
-		final List<String> newParts = new ArrayList<String>();
+		final List<String> newParts = new ArrayList<>();
 		final ParserState state = new ParserState();
 
 		final StringBuilder todo = new StringBuilder(line);

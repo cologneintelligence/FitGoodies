@@ -46,6 +46,7 @@ public class FileIterator implements Iterator<FileInformation> {
 	 *
 	 * @return true if the iterator has more elements.
 	 */
+        @Override
 	public final boolean hasNext() {
 		return pos < files.length - 1;
 	}

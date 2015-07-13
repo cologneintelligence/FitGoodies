@@ -101,9 +101,7 @@ public class JavaMailMail implements Mail {
 					return (MimeBodyPart) part;
 				}
 			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (MessagingException e) {
+		} catch (IOException | MessagingException e) {
 			throw new RuntimeException(e);
 		}
 
@@ -157,9 +155,9 @@ public class JavaMailMail implements Mail {
 			enc = "US-ASCII";
 		}
 
-		InputStream stream = part.getInputStream();
-		stream.read(content);
-		stream.close();
+                try (InputStream stream = part.getInputStream()) {
+                    stream.read(content);
+                }
 
 		return new String(content, Charset.forName(enc));
 	}

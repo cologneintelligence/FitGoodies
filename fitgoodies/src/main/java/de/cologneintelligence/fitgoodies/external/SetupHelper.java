@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SetupHelper {
-    private List<String> properties = new LinkedList<String>();
+    private List<String> properties = new LinkedList<>();
 
     public void addProperty(String property) {
         properties.add(property);

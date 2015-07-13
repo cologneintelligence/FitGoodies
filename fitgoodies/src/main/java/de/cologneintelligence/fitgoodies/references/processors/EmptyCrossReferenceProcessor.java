@@ -75,11 +75,14 @@ public class EmptyCrossReferenceProcessor extends AbstractCrossReferenceProcesso
 	@Override
 	public final String processMatch(final CrossReference cr, final Object object)
 			throws CrossReferenceProcessorShortcutException {
-		if (cr.getCommand().equals("empty")) {
-			processEmpty(object);
-		} else if (cr.getCommand().equals("nonEmpty")) {
-			processNonEmpty(object);
-		}
+                switch (cr.getCommand()) {
+                    case "empty":
+                        processEmpty(object);
+                        break;
+                    case "nonEmpty":
+                        processNonEmpty(object);
+                        break;
+                }
 		return null;
 	}
 

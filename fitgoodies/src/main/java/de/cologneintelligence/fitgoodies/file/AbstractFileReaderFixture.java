@@ -71,6 +71,7 @@ public abstract class AbstractFileReaderFixture extends Fixture {
     /**
      * Reads the given parameters and initializes the values of
      * {@link #getEncoding()} and {@link #getFile()}.
+     * @throws java.lang.Exception
      */
     @Override
     public void setUp() throws Exception {

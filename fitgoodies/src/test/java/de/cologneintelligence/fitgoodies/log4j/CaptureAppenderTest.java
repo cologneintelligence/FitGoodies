@@ -59,7 +59,7 @@ public final class CaptureAppenderTest extends FitGoodiesTestCase {
 
 		Logger logger = null;
 
-		Map<String, String> props = new HashMap<String, String>();
+		Map<String, String> props = new HashMap<>();
 		LoggingEvent ev1 = new LoggingEvent("fqdn", logger, 42, Level.DEBUG, "message",
 				"thread", new ThrowableInformation(new RuntimeException("x")),
 				"ndc", null, props);
@@ -84,7 +84,7 @@ public final class CaptureAppenderTest extends FitGoodiesTestCase {
 
 		Logger logger = null;
 
-		Map<String, String> props = new HashMap<String, String>();
+		Map<String, String> props = new HashMap<>();
 		LoggingEvent ev1 = new LoggingEvent("fqdn", logger, 42, Level.DEBUG, "message",
 				"thread", new ThrowableInformation(new RuntimeException("x")),
 				"ndc", null, props);

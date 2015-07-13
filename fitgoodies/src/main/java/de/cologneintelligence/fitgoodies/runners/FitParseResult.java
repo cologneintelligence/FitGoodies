@@ -36,35 +36,33 @@ import static de.cologneintelligence.fitgoodies.util.FixtureTools.htmlSafeFile;
  * a dummy cell. This dummy cell is preserved.
  */
 public final class FitParseResult implements FitResult {
-    private final List<FileCount> results = new LinkedList<FileCount>();
+    private final List<FileCount> results = new LinkedList<>();
 
     @Override
     public void print(final File directory, final OutputStream stream)
             throws IOException {
-        Writer writer = new OutputStreamWriter(stream);
-        BufferedWriter bufferedWriter = new BufferedWriter(writer);
-
-        bufferedWriter.write("<table><tr><th colspan=\"2\">");
-        bufferedWriter.write(directory.getName());
-        bufferedWriter.write("</th></tr>");
-
-        for (FileCount fileCount : results) {
-            bufferedWriter.write("<tr><td><a href=\"");
-            String file = htmlSafeFile(fileCount.getFile());
-            bufferedWriter.write(file);
-            bufferedWriter.write("\">");
-            bufferedWriter.write(file);
-            bufferedWriter.write("</a>");
-            bufferedWriter.write("</td><td bgcolor=\"");
-            bufferedWriter.write(color(fileCount.getCounts()));
-            bufferedWriter.write("\">");
-            bufferedWriter.write(fileCount.getCounts().toString());
-            bufferedWriter.write("</td></tr>");
+        try (Writer writer = new OutputStreamWriter(stream); BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
+            
+            bufferedWriter.write("<table><tr><th colspan=\"2\">");
+            bufferedWriter.write(directory.getName());
+            bufferedWriter.write("</th></tr>");
+            
+            for (FileCount fileCount : results) {
+                bufferedWriter.write("<tr><td><a href=\"");
+                String file = htmlSafeFile(fileCount.getFile());
+                bufferedWriter.write(file);
+                bufferedWriter.write("\">");
+                bufferedWriter.write(file);
+                bufferedWriter.write("</a>");
+                bufferedWriter.write("</td><td bgcolor=\"");
+                bufferedWriter.write(color(fileCount.getCounts()));
+                bufferedWriter.write("\">");
+                bufferedWriter.write(fileCount.getCounts().toString());
+                bufferedWriter.write("</td></tr>");
+            }
+            
+            bufferedWriter.write("</table>");
         }
-
-        bufferedWriter.write("</table>");
-        bufferedWriter.close();
-        writer.close();
     }
 
     @Override

@@ -80,11 +80,7 @@ public class XMLFileFixture extends AbstractFileReaderFixture {
 				selectedValue = path.evaluate(xpath, doc);
 				check(row.parts.more, TypeAdapter.on(this,
 						this.getClass().getField("selectedValue")));
-			} catch (XPathExpressionException e) {
-				exception(row.parts, e);
-			} catch (SecurityException e) {
-				exception(row.parts, e);
-			} catch (NoSuchFieldException e) {
+			} catch (XPathExpressionException | SecurityException | NoSuchFieldException e) {
 				exception(row.parts, e);
 			}
 		}

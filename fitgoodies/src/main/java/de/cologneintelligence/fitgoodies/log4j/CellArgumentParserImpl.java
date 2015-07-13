@@ -47,7 +47,7 @@ public final class CellArgumentParserImpl implements CellArgumentParser {
 	 */
 	@Override
 	public Map<String, String> getExtractedCommandParameters() {
-		Map<String, String> result = new HashMap<String, String>();
+		Map<String, String> result = new HashMap<>();
 
 		if (cellParameters != null) {
 			arrayToMap(cellParameters.split("\\s*,\\s*"), result);

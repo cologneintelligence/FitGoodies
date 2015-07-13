@@ -82,7 +82,7 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
 
         appender = CaptureAppender.newAppenderFrom(new BaseAppender("ap1"));
         rootAppender = CaptureAppender.newAppenderFrom(new BaseAppender("rap1"));
-        parameterMap = new HashMap<String, String>();
+        parameterMap = new HashMap<>();
     }
 
     private void prepareFactories() {

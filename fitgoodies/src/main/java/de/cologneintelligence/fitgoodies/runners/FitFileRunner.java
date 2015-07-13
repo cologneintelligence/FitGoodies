@@ -88,11 +88,9 @@ public class FitFileRunner implements Runner {
     private String read(final File input) throws IOException {
         char[] chars = new char[(int) (input.length())];
 
-        InputStream is = new FileInputStream(input);
-        InputStreamReader ir = new InputStreamReader(is, encoding);
-        ir.read(chars);
-        ir.close();
-        is.close();
+        try (InputStream is = new FileInputStream(input); InputStreamReader ir = new InputStreamReader(is, encoding)) {
+            ir.read(chars);
+        }
 
         return new String(chars);
     }
@@ -104,27 +102,25 @@ public class FitFileRunner implements Runner {
 
     private Counts process(final File inputFile, final File outputFile)
             throws IOException {
-        PrintWriter output = new PrintWriter(outputFile, encoding);
-        Fixture fixture = prepareFixture(inputFile, outputFile);
-
-        String input = read(inputFile);
-        Parse tables;
-
-        try {
-            if (input.contains("<wiki>")) {
-                tables = new Parse(input, new String[]{"wiki", "table", "tr", "td"});
-                fixture.doTables(tables.parts);
-            } else {
-                tables = new Parse(input, new String[]{"table", "tr", "td"});
-                fixture.doTables(tables);
+        Fixture fixture;
+        try (PrintWriter output = new PrintWriter(outputFile, encoding)) {
+            fixture = prepareFixture(inputFile, outputFile);
+            String input = read(inputFile);
+            Parse tables;
+            try {
+                if (input.contains("<wiki>")) {
+                    tables = new Parse(input, new String[]{"wiki", "table", "tr", "td"});
+                    fixture.doTables(tables.parts);
+                } else {
+                    tables = new Parse(input, new String[]{"table", "tr", "td"});
+                    fixture.doTables(tables);
+                }
+            } catch (Exception e) {
+                tables = new Parse("body", "Unable to parse input. Input ignored.", null, null);
+                fixture.exception(tables, e);
             }
-        } catch (Exception e) {
-            tables = new Parse("body", "Unable to parse input. Input ignored.", null, null);
-            fixture.exception(tables, e);
-        }
-        tables.print(output);
-        output.close();
-        return fixture.counts;
+            tables.print(output);
+        }        return fixture.counts;
     }
 
     @SuppressWarnings("unchecked")

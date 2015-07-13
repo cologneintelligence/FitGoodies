@@ -90,6 +90,7 @@ public class ActionFixture extends fit.ActionFixture {
 	 * Replacement of {@code enter()} which resolves cross-references
 	 * and calls the original {@code fit.enter()}.
 	 *
+         * @throws java.lang.Exception
 	 * @see fit.ActionFixture#enter() {@link fit.ActionFixture#enter()}
 	 */
 	@Override

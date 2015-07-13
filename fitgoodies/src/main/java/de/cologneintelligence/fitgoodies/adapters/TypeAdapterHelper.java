@@ -25,7 +25,7 @@ import fit.TypeAdapter;
 
 public final class TypeAdapterHelper {
     private final Map<Class<?>, Class<? extends AbstractTypeAdapter<?>>> adapters =
-            new HashMap<Class<?>, Class<? extends AbstractTypeAdapter<?>>>();
+            new HashMap<>();
 
     public TypeAdapterHelper() {
         register(StringBuilderTypeAdapter.class);

@@ -45,7 +45,7 @@ public class PropertyCrossReferenceProcessor extends AbstractCrossReferenceProce
 	}
 
     private final Map<String, ResourceBundle> resourceBundleMap =
-    	new HashMap<String, ResourceBundle>();
+    	new HashMap<>();
 
 	/**
 	 * Replaces the match with the selected property.

@@ -19,7 +19,6 @@
 package de.cologneintelligence.fitgoodies.util;
 
 import de.cologneintelligence.fitgoodies.references.processors.PropertyProvider;
-import de.cologneintelligence.fitgoodies.util.SystemPropertyProvider;
 import junit.framework.TestCase;
 
 public class SystemPropertyProviderTest extends TestCase {

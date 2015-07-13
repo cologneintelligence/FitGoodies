@@ -27,7 +27,7 @@ import java.util.HashMap;
 
 class NamespaceHashMap<T> {
 	private final HashMap<String, HashMap<String, T>> map
-		= new HashMap<String, HashMap<String, T>>();
+		= new HashMap<>();
 
 	public void put(final String namespace, final String key, final T value) {
 		if (!map.containsKey(namespace)) {

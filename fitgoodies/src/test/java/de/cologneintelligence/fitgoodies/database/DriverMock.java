@@ -98,6 +98,7 @@ public class DriverMock implements Driver {
 
     // This method must not have an '@Override' Annotation,
     // because the method does not exist in Java 7
+    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException();
     }

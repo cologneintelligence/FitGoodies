@@ -31,7 +31,7 @@ public class ArgumentParser {
     private final File pwd;
     private File destinationDir;
     private String encoding;
-    private List<FileInformation> files = new LinkedList<FileInformation>();
+    private List<FileInformation> files = new LinkedList<>();
     private FileSystemDirectoryHelper fsHelper;
     private DirectoryFilter currentDirFilter;
     private File sourceDir;
@@ -45,23 +45,33 @@ public class ArgumentParser {
         for (int i = 0; i < args.length; i += 2) {
             String arg = args[i];
 
-            if ("-d".equals(arg) || "--destination".equals(arg)) {
-                this.destinationDir = new File(getOption(args, i, "-d", this.destinationDir));
-            } else if ("-e".equals(arg) || "--encoding".equals(arg)) {
-                this.encoding = getOption(args, i, "-e", this.encoding);
-            } else if ("-f".equals(arg) || "--file".equals(arg)) {
-                finishDir();
-                addFile(getOption(args, i, "-f", null));
-            } else if ("-s".equals(arg) || "--source".equals(arg)) {
-                finishDir();
-                addDirectory(getOption(args, i, "s", sourceDir));
-            } else if ("-o".equals(arg) || "--only".equals(arg)) {
-                if (currentDirFilter == null) {
-                    throw new IllegalArgumentException("Limit must follow -s or -o");
-                }
-                addLimit(getOption(args, i, "l", null));
-            } else {
-                throw new IllegalArgumentException("Unknown argument: " + arg);
+            if (null != arg) switch (arg) {
+                case "-d":
+                case "--destination":
+                    this.destinationDir = new File(getOption(args, i, "-d", this.destinationDir));
+                    break;
+                case "-e":
+                case "--encoding":
+                    this.encoding = getOption(args, i, "-e", this.encoding);
+                    break;
+                case "-f":
+                case "--file":
+                    finishDir();
+                    addFile(getOption(args, i, "-f", null));
+                    break;
+                case "-s":
+                case "--source":
+                    finishDir();
+                    addDirectory(getOption(args, i, "s", sourceDir));
+                    break;
+                case "-o":
+                case "--only":
+                    if (currentDirFilter == null) {
+                        throw new IllegalArgumentException("Limit must follow -s or -o");
+                    }   addLimit(getOption(args, i, "l", null));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown argument: " + arg);
             }
         }
 

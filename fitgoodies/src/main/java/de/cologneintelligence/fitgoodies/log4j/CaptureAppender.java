@@ -31,7 +31,7 @@ import java.util.List;
  * It copies the filters from a given parent Appender
  */
 public class CaptureAppender extends AppenderSkeleton {
-	private final List<LoggingEvent> events = new LinkedList<LoggingEvent>();
+	private final List<LoggingEvent> events = new LinkedList<>();
 	private final Appender parent;
 
 	private CaptureAppender(final Appender parent) {

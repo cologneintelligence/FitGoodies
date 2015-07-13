@@ -86,9 +86,7 @@ public final class AliasEnabledFixture extends Fixture {
         } catch (ClassCastException e) {
             throw new RuntimeException("\"" + realName
                     + "\" was found, but it's not a fixture.", e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(notFound, e);
-        } catch (NoClassDefFoundError e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             throw new RuntimeException(notFound, e);
         }
     }

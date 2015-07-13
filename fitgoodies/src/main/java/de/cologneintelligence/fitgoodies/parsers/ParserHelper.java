@@ -29,7 +29,7 @@ import java.util.HashMap;
  */
 public final class ParserHelper {
     private final HashMap<Class<?>, Parser<?>> parsers =
-            new HashMap<Class<?>, Parser<?>>();
+            new HashMap<>();
 
     public ParserHelper() {
         registerParser(new BigIntegerParser());
