@@ -25,7 +25,7 @@ public final class DependencyManager {
     private static final DependencyManager INSTANCE = new DependencyManager();
     private DependencyManager() {}
 
-    private final Map<Class<?>, Object> cache = new HashMap<Class<?>, Object>();
+    private final Map<Class<?>, Object> cache = new HashMap<>();
 
     public static void clear() {
         INSTANCE.realClear();
@@ -53,9 +53,7 @@ public final class DependencyManager {
         try {
             final T instance = concreteClass.newInstance();
             cache.put(className, instance);
-        } catch (final InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (final IllegalAccessException e) {
+        } catch (final InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

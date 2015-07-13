@@ -247,7 +247,7 @@ public final class FixtureTools {
      * @see #copyParamsToFixture(String[], Fixture, CrossReferenceHelper, TypeAdapterHelper) copyParamsToFixture
      */
     public static String[] getArgs(final String[] args) {
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
 
         if (args == null) {
             return new String[]{};
@@ -302,7 +302,7 @@ public final class FixtureTools {
      */
     public static String[] extractColumnParameters(final Parse row) {
         Parse cell = row.parts;
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
 
         while (cell != null) {
             result.add(extractCellParameter(cell));

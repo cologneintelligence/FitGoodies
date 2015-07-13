@@ -178,14 +178,15 @@ public class MailFixture extends Fixture {
 
     private boolean dispatchMatcher(final Parse cells, final String command,
             final String content, final String inspect) {
-        if (command.equals("contains")) {
-            return matchContains(cells.more.more, content, inspect);
-        } else if (command.equals("regex")) {
-            return matchRegex(cells.more.more, content, inspect);
-        } else {
-            ignore(cells.more);
-            return true;
-        }
+            switch (command) {
+                case "contains":
+                    return matchContains(cells.more.more, content, inspect);
+                case "regex":
+                    return matchRegex(cells.more.more, content, inspect);
+                default:
+                    ignore(cells.more);
+                    return true;
+            }
     }
 
     private boolean matchContains(final Parse cell,

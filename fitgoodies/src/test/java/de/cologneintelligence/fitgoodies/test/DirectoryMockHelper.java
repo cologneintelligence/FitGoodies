@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DirectoryMockHelper {
-    private Map<String, Object> dirs = new LinkedHashMap<String, Object>();
+    private Map<String, Object> dirs = new LinkedHashMap<>();
 
     public void addFile(final String file) {
         String[] parts = file.split("[/\\\\]");
@@ -69,8 +69,8 @@ public class DirectoryMockHelper {
     }
 
     private File createTree(String selector, String parent, String name, Map<String, Object> dirs) {
-        List<File> children = new LinkedList<File>();
-        List<File> files = new LinkedList<File>();
+        List<File> children = new LinkedList<>();
+        List<File> files = new LinkedList<>();
 
         for (Map.Entry<String, Object> child : dirs.entrySet()) {
             if (child.getValue() instanceof File) {

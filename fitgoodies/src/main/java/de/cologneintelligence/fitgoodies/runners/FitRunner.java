@@ -140,18 +140,15 @@ public class FitRunner {
     }
 
     private void writeResults(final FitResultTable result) throws IOException {
-        final FileOutputStream fos = new FileOutputStream(new File(
-                runConfiguration.getDestination(), "report.html"));
-
-        final PrintWriter pw = new PrintWriter(fos, true);
-        pw.println("<html><head><title>Fit Report</title></head><body>");
-        pw.println("<h1>Fit Report</h1>");
-        pw.println("<p>" + DateFormat.getDateTimeInstance().format(new Date()) + "</p>");
-
-        result.print(new File(System.getProperty("user.dir")), fos);
-
-        pw.println("</body></html>");
-        pw.close();
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(new File(
+                runConfiguration.getDestination(), "report.html")); PrintWriter pw = new PrintWriter(fos, true)) {
+            pw.println("<html><head><title>Fit Report</title></head><body>");
+            pw.println("<h1>Fit Report</h1>");
+            pw.println("<p>" + DateFormat.getDateTimeInstance().format(new Date()) + "</p>");
+            
+            result.print(new File(System.getProperty("user.dir")), fos);
+            
+            pw.println("</body></html>");
+        }
     }
 }

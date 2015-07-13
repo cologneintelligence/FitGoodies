@@ -30,10 +30,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DirectoryFilter {
-    private final List<FileInformation> allFiles = new ArrayList<FileInformation>();
+    private final List<FileInformation> allFiles = new ArrayList<>();
     private SimpleRegexFilter filter = new SimpleRegexFilter("(?i).*\\.html?");
     private boolean limited;
-    private List<FileInformation> limits = new ArrayList<FileInformation>();
+    private List<FileInformation> limits = new ArrayList<>();
     private FileSystemDirectoryHelper fsHelper;
 
     public DirectoryFilter(File dir, FileSystemDirectoryHelper fsHelper) {
@@ -58,7 +58,7 @@ public class DirectoryFilter {
     public List<FileInformation> getSelectedFiles() {
         List<FileInformation> result;
         if (limited) {
-            result = new LinkedList<FileInformation>();
+            result = new LinkedList<>();
             filterList(result);
         } else {
             result = allFiles;

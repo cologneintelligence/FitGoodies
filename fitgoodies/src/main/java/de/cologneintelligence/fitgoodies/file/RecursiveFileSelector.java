@@ -30,7 +30,7 @@ import java.util.NoSuchElementException;
  *
  */
 public class RecursiveFileSelector implements Iterator<File> {
-	private final List<File> dirs = new LinkedList<File>();
+	private final List<File> dirs = new LinkedList<>();
 	private final String pattern;
 	private File[] files;
 	private int fileIndex = 0;

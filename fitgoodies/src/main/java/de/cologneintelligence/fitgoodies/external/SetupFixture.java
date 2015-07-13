@@ -20,9 +20,6 @@
 package de.cologneintelligence.fitgoodies.external;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
-import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
-import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
@@ -47,6 +44,7 @@ public class SetupFixture extends ActionFixture {
     /**
      *
      *
+     * @param property
      * @throws Exception propagated to fit
      */
     public void addProperty(String property) throws Exception {

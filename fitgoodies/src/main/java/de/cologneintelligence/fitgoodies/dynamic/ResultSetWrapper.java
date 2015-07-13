@@ -34,9 +34,9 @@ import java.util.List;
  *
  */
 public class ResultSetWrapper {
-	private final List<String> names = new ArrayList<String>();
-	private final List<Class<?>> types = new ArrayList<Class<?>>();
-	private final List<Object[]> rows = new ArrayList<Object[]>();
+	private final List<String> names = new ArrayList<>();
+	private final List<Class<?>> types = new ArrayList<>();
+	private final List<Object[]> rows = new ArrayList<>();
 	private final ResultSet resultSet;
 	private final int columnCount;
 	private Class<?> clazz;
@@ -114,9 +114,7 @@ public class ResultSetWrapper {
 	public final Object createContainerObject() {
 		try {
 			return clazz.newInstance();
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -131,7 +129,7 @@ public class ResultSetWrapper {
 	 * @throws SQLException thrown, if the <code>ResultSet</code> throws an Exception
 	 */
 	public final Object[] getRows() throws SQLException {
-		List<Object> result = new ArrayList<Object>();
+		List<Object> result = new ArrayList<>();
 
 		while (rows.size() > 0) {
 			Object[] copy = rows.remove(0);

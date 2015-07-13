@@ -47,7 +47,7 @@ public class StorageCrossReferenceProcessor extends AbstractCrossReferenceProces
 
 
     private final NamespaceHashMap<String> variablesMap =
-            new NamespaceHashMap<String>();
+            new NamespaceHashMap<>();
 
     /**
      * Default constructor.
@@ -74,19 +74,21 @@ public class StorageCrossReferenceProcessor extends AbstractCrossReferenceProces
     @Override
     public final String processMatch(final CrossReference cr, final Object object) {
         String result = null;
-        if (cr.getCommand().equals("get")) {
-            result = getValue(cr);
-        } else if (cr.getCommand().equals("put")) {
-            result = putValue(cr, object);
-        } else if (cr.getCommand().equals("containsValue")) {
-            result = variablesMap.get(cr.getNamespace(), cr.getParameter());
-
-            if (result == null) {
-                result = cr.getNamespace() + "." + cr.getParameter()
-                        + ": no value found!";
-            } else {
-                result = object.toString();
-            }
+        switch (cr.getCommand()) {
+            case "get":
+                result = getValue(cr);
+                break;
+            case "put":
+                result = putValue(cr, object);
+                break;
+            case "containsValue":
+                result = variablesMap.get(cr.getNamespace(), cr.getParameter());
+                if (result == null) {
+                    result = cr.getNamespace() + "." + cr.getParameter()
+                            + ": no value found!";
+                } else {
+                    result = object.toString();
+                }   break;
         }
 
         return result;

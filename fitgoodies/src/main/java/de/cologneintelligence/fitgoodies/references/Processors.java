@@ -32,7 +32,7 @@ import de.cologneintelligence.fitgoodies.references.processors.AbstractCrossRefe
  */
 public class Processors {
 	private final List<AbstractCrossReferenceProcessor> processors =
-		new ArrayList<AbstractCrossReferenceProcessor>();
+		new ArrayList<>();
 
 	private String pattern;
 	private Pattern searchPattern;

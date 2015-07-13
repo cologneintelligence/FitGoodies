@@ -33,9 +33,9 @@ import static org.junit.Assert.assertThat;
 public class IteratorHelperTest extends FitGoodiesTestCase {
 	@Test
 	public void testIterator() {
-		ArrayList<Object> al = new ArrayList<Object>();
+		ArrayList<Object> al = new ArrayList<>();
 		Iterator<Object> iterator = al.iterator();
-		Iterable<Object> iterable = new IteratorHelper<Object>(iterator);
+		Iterable<Object> iterable = new IteratorHelper<>(iterator);
 
 		assertThat(iterable.iterator(), is(sameInstance(iterator)));
 	}

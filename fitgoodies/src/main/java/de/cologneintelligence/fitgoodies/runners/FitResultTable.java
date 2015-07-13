@@ -36,7 +36,7 @@ import static de.cologneintelligence.fitgoodies.util.FixtureTools.htmlSafeFile;
  *
  */
 public final class FitResultTable implements FitResult {
-	private final List<FileCount> results = new LinkedList<FileCount>();
+	private final List<FileCount> results = new LinkedList<>();
 	private final FileSystemDirectoryHelper dirHelper;
 
 	/**
@@ -52,6 +52,7 @@ public final class FitResultTable implements FitResult {
 	 * @param file filename to identify the result
 	 * @param result results
 	 */
+        @Override
 	public void put(final File file, final Counts result) {
 		FileCount fileCount = new FileCount(file, result);
 
@@ -82,7 +83,7 @@ public final class FitResultTable implements FitResult {
 	 * @return filenames of all results.
 	 */
 	public File[] getFiles() {
-		List<File> result = new ArrayList<File>();
+		List<File> result = new ArrayList<>();
 		for (FileCount fileCount : results) {
 			result.add(fileCount.getFile());
 		}
@@ -177,6 +178,7 @@ public final class FitResultTable implements FitResult {
 	 * @param stream stream to write results to
 	 * @throws IOException thrown by {@code stream} in case of problems
 	 */
+        @Override
 	public void print(final File directory, final OutputStream stream) throws IOException {
 		OutputStreamWriter osw = new OutputStreamWriter(stream);
 		BufferedWriter bw = new BufferedWriter(osw);

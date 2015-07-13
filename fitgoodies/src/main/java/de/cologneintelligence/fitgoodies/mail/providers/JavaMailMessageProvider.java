@@ -56,6 +56,7 @@ public class JavaMailMessageProvider implements MessageProvider {
 		this.folderName = props.getProperty("mail.inbox");
 	}
 
+        @Override
 	public void connect() throws MessagingException {
 		disconnect();
 		store = session.getStore();
@@ -65,6 +66,7 @@ public class JavaMailMessageProvider implements MessageProvider {
 		folder.open(Folder.READ_WRITE);
 	}
 
+        @Override
 	public void disconnect() throws MessagingException {
 		if (folder != null) {
 			folder.close(true);
@@ -74,6 +76,7 @@ public class JavaMailMessageProvider implements MessageProvider {
 		}
 	}
 
+        @Override
 	public Mail getLatestMessage()
 			throws MessagingException {
 

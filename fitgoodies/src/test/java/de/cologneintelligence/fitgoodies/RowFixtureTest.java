@@ -19,17 +19,14 @@ package de.cologneintelligence.fitgoodies;
 
 import java.text.ParseException;
 
-import de.cologneintelligence.fitgoodies.RowFixture;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.processors.CrossReferenceProcessorMock;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
-import fit.Fixture;
 import fit.Parse;
 import org.junit.Before;
 import org.junit.Test;
-
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;

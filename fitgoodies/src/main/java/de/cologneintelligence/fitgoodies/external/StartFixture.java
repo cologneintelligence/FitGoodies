@@ -72,7 +72,7 @@ public class StartFixture extends ActionFixture {
     }
 
     private String[] getParameters() {
-        List<String> parameterList = new LinkedList<String>();
+        List<String> parameterList = new LinkedList<>();
         Parse cell = cells.more.more.more;
         while (cell != null) {
             parameterList.add(cell.text());

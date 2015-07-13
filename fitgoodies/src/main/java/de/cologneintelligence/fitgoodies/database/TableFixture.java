@@ -116,10 +116,7 @@ public class TableFixture extends RowFixture {
                     getResultSet(
                             FixtureTools.getArg(getArgs(), "table", null, crossReferenceHelper),
                             FixtureTools.getArg(getArgs(), "where", null, crossReferenceHelper)));
-        } catch (final RuntimeException e) {
-            exception(parsedTable.parts.parts, e);
-            return;
-        } catch (final SQLException e) {
+        } catch (final RuntimeException | SQLException e) {
             exception(parsedTable.parts.parts, e);
             return;
         }
@@ -153,9 +150,7 @@ public class TableFixture extends RowFixture {
                     + table + whereClause);
             return rs;
 
-        } catch (final CrossReferenceProcessorShortcutException e) {
-            throw new RuntimeException(e);
-        } catch (final SQLException e) {
+        } catch (final CrossReferenceProcessorShortcutException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -172,6 +167,8 @@ public class TableFixture extends RowFixture {
     /**
      * Gets an array which represents the created ResultSet as an object array.
      * The type of these objects can be determined via {@code getTargetClass()}.
+     * @return 
+     * @throws java.lang.Exception
      */
     @Override
     public final Object[] query() throws Exception {

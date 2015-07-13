@@ -27,7 +27,7 @@ import java.util.Map;
  *
  */
 public final class AliasHelper {
-    private final Map<String, String> classMapper = new HashMap<String, String>();
+    private final Map<String, String> classMapper = new HashMap<>();
 
     public AliasHelper() {
         initDefaultMappings();

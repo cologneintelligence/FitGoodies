@@ -61,7 +61,7 @@ public class DynamicObjectFactory {
 			}
 		}
 
-		private final HashMap<String, Class<?>> cache = new HashMap<String, Class<?>>();
+		private final HashMap<String, Class<?>> cache = new HashMap<>();
 
 		/**
 		 * Loads the byte code of {@code javaClass}, defines a class

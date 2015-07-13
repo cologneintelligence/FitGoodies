@@ -177,7 +177,7 @@ public class ArgumentParserTest extends FitGoodiesTestCase {
         assertThat(parser.getDestinationDir().getAbsolutePath(), is(equalTo(new File(destinationDir).getAbsolutePath())));
         assertThat(parser.getEncoding(), is(equalTo(encoding)));
 
-        List<Matcher<FileInformation>> matchers = new ArrayList<Matcher<FileInformation>>();
+        List<Matcher<FileInformation>> matchers = new ArrayList<>();
         for (String file : files) {
             matchers.add(equalToFile(file));
         }

@@ -49,7 +49,7 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 	}
 
 	private LoggingEvent[] prepareCheckForGreenTest() {
-		List<LoggingEvent> list = new LinkedList<LoggingEvent>();
+		List<LoggingEvent> list = new LinkedList<>();
 
 		list.add(new LoggingEvent("com.fqdn.class1", null,
 				100, Level.ERROR, "a message", "thread1",
@@ -107,7 +107,7 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		final Parse cell3 = makeCell("no error");
 		final Parse cell4 = makeCell("no error");
 
-		Map<String, String> parameters = new HashMap<String, String>();
+		Map<String, String> parameters = new HashMap<>();
 		parameters.put("minlevel", "Info");
 		parameters.put("thread", "thread2");
 		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(fixture, cell1, list);

@@ -10,3 +10,4 @@ release.properties
 .classpath
 *.iml
 .idea
+nb-configuration.xml
