@@ -26,9 +26,12 @@ import de.cologneintelligence.fitgoodies.util.FixtureTools;
  * This fixture is used to define a connection to an e-mail provider.
  * The connection is not opened, this happens when the {@link MailFixture}
  * is used.
+ * <p>
  *
- * Setup example: <br />
- * <table border="1">
+ * Setup example:
+ * <p>
+ *
+ * <table border="1" summary="">
  * <tr><td>fitgoodies.mail.SetupFixture</td></tr>
  * <tr><td>protocol</td><td>imap</td></tr>
  * <tr><td>host</td><td>imapserver.mycompany.com</td></tr>
@@ -39,9 +42,9 @@ import de.cologneintelligence.fitgoodies.util.FixtureTools;
  * <tr><td>inbox</td><td>INBOX.Testfolder</td></tr>
  * </table>
  *
- * <br />
- * Shorter example (no ssl, standard port): <br />
- * <table border="1">
+ * <p>
+ * Shorter example (no ssl, standard port): <p>
+ * <table border="1" summary="">
  * <tr><td>fitgoodies.mail.SetupFixture</td></tr>
  * <tr><td>protocol</td><td>pop3</td></tr>
  * <tr><td>host</td><td>pop3server.mycompany.com</td></tr>

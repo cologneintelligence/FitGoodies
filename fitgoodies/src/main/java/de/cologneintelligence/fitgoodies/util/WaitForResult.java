@@ -24,9 +24,10 @@ import java.lang.reflect.Method;
 /**
  * With this class is it possible to invoke a given method of a given class
  * by reflection until the method returns true or a given maxtime is reached.
- * <br /><br />
  *
- * The method must have the signature <code>boolean method()</code>.
+ * <p>
+ * The method must have the signature {@code boolean method()}.
+ * <p>
  *
  * @author kmussawisade
  */
@@ -65,7 +66,7 @@ public final class WaitForResult {
     }
 
     /**
-     * Invokes the method. The result can be fetched with {@link #lastCallWasSuccessfull()};
+     * Invokes the method. The result can be fetched with {@link #lastCallWasSuccessful()};
      */
     public void invokeMethod() {
         try {
@@ -78,13 +79,13 @@ public final class WaitForResult {
     /**
      * Invokes the method multiple times, either until it returns true, or
      * until maxtime is over. After each invoke, the class waits
-     * <code>sleepTime</code> milliseconds.
+     * {@code sleepTime} milliseconds.
      *
      * @see #setSleepTime(long) setSleepTime(long)
      */
     public void repeatInvokeWithTimeout() {
         long invokeTime = systemTime.currentSystemTimeInMS();
-        boolean repeat = true;
+        boolean repeat;
         do  {
             invokeMethod();
             lastElapsedTime = elapsedSince(invokeTime);
@@ -117,14 +118,14 @@ public final class WaitForResult {
     }
 
     /**
-     * Returns the result of the last invoke. <br />
+     * Returns the result of the last invoke. <p>
      * Note: it is possible, that both, the timeout and the invoke are true.
-     * This is the case when the last invoke did return <code>true</code> and
+     * This is the case when the last invoke did return {@code true} and
      * exceeded the timeout in the same call.
      * @return the last result of {@link #repeatInvokeWithTimeout()}
      * and {@link #invokeMethod()}.
      */
-	public boolean lastCallWasSuccessfull() {
+	public boolean lastCallWasSuccessful() {
 		return lastCallWasSuccessful;
 	}
 

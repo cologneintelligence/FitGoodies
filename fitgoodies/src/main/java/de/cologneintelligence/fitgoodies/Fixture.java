@@ -28,7 +28,7 @@ import fit.Parse;
 import fit.TypeAdapter;
 
 /**
- * In contrast to <code>fit.Fixture</code>, this <code>Fixture</code>
+ * In contrast to <code>fit.Fixture</code>, this {@code Fixture}
  * enables all fitgoodies features (for example custom type adapters,
  * custom parsers and cross references).
  *
@@ -37,7 +37,7 @@ public class Fixture extends fit.Fixture {
 	private String cellParameter;
 
 	/**
-	 * Replacement of <code>check</code> which resolves cross-references
+	 * Replacement of {@code check} which resolves cross-references
 	 * before calling the original check method of fit.
 	 *
 	 *  @param cell the cell to check
@@ -57,13 +57,13 @@ public class Fixture extends fit.Fixture {
 	}
 
 	/**
-	 * Replacement of <code>parse</code> which uses the extended parse features of
+	 * Replacement of {@code parse} which uses the extended parse features of
 	 * fitgoodies and uses fit's parse as a fallback.
 	 *
 	 *  @param text text to parse
      *  @param type type to transform text to
      *
-     *  @return Object of type <code>type</code> which represents <code>text</code>
+     *  @return Object of type <code>type</code> which represents {@code text}
      *  @throws Exception if the value can't be parsed
      *
      *  @see fit.Fixture#parse(String, Class) {@link fit.Fixture#parse(String, Class)}
@@ -87,15 +87,15 @@ public class Fixture extends fit.Fixture {
 	 * line of the table. This method is primary useful for debugging.
 	 * You won't need it otherwise.
 	 *
-	 * @param parameters parameters to store in <code>args</code>
+	 * @param parameters parameters to store in {@code args}
 	 */
 	public void setParams(final String[] parameters) {
 		this.args = parameters;
 	}
 
 	/**
-	 * Initializes the fixture arguments, call <code>setUp</code>,
-	 * <code>fit.Fixture.doTable(Parse)</code> and <code>tearDown()</code>.
+	 * Initializes the fixture arguments, call {@code setUp},
+	 * <code>fit.Fixture.doTable(Parse)</code> and {@code tearDown()}.
 	 *
      * @param table the table to be processed
 	 * @see fit.Fixture#doTable(Parse) {@link fit.Fixture#doTable(Parse)}
@@ -142,10 +142,10 @@ public class Fixture extends fit.Fixture {
      * Looks up a given parameter in the fixture's argument list.
      *
      * @param paramName the parameter name to look up
-     * @return  the parameter value, if it could be found, <code>null</code> otherwise
+     * @return  the parameter value, if it could be found, {@code null} otherwise
      * @see #getParam(String, String) {@link #getParam(String, String)}
-     * @see FixtureTools#getArg(String[], String, String)
-     * 		{@link FixtureTools#getArg(String[], String, String)}
+     * @see FixtureTools#getArg(String[], String, String, CrossReferenceHelper)
+     * 		{@link FixtureTools#getArg(String[], String, String, CrossReferenceHelper)}
      */
 	public final String getParam(final String paramName) {
 		return getParam(paramName, null);
@@ -157,7 +157,7 @@ public class Fixture extends fit.Fixture {
 	 * If the value does not exist, the given default value is returned.
      * @param paramName paramName the parameter name to look up
      * @param defaultValue defaultValue the value to be returned if the parameter is missing
-     * @return the parameter value, if it could be found, <code>defaultValue</code> otherwise
+     * @return the parameter value, if it could be found, {@code defaultValue} otherwise
 	 */
 	public final String getParam(final String paramName, final String defaultValue) {
 		return FixtureTools.getArg(args, paramName, defaultValue,

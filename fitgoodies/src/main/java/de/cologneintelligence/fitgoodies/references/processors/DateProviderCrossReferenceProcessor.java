@@ -31,6 +31,7 @@ public class DateProviderCrossReferenceProcessor extends AbstractCrossReferenceP
 
     /**
      * Default constructor.
+     * @param dateProvider setup object
      */
     public DateProviderCrossReferenceProcessor(DateProvider dateProvider) {
         super(PATTERN);

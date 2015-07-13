@@ -31,10 +31,12 @@ import javax.xml.xpath.XPathFactory;
 
 /**
  * This Fixture can be used to test the content of a XML file using XPath-Expressions.
- * <br /><br />
+ * <p>
  *
- * Example:<br />
- * <table>
+ * Example:
+ * <p>
+ *
+ * <table border="1" summary="">
  * 		<tr><td>fitgoodies.file.XMLFileFixture</td><td>file=/myfile.xml</td></tr>
  * 		<tr><td>/books/book[0]/author</td><td>Terry Pratchett</td></tr>
  * 		<tr><td>/books/book[1]/id</td><td>326172</td></tr>

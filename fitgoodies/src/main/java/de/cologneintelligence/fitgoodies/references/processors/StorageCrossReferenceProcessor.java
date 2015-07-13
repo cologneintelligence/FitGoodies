@@ -18,16 +18,17 @@
 
 
 package de.cologneintelligence.fitgoodies.references.processors;
+import de.cologneintelligence.fitgoodies.references.CrossReference;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.cologneintelligence.fitgoodies.references.CrossReference;
-
 /**
  * This processor allows to store and receive string values. To keep things clean,
- * the processor uses namespaces.<br /><br />
+ * the processor uses namespaces.
+ * <p>
  *
- * Valid examples and return values:<br /><ul>
+ * Valid examples and return values:<p><ul>
  * <li>${testnamespace.put(var1)} with object &quot;x&quot;: x</li>
  * <li>${testnamespace.put(var2)} with object &quot;y&quot;: y</li>
  * <li>${ns2.put(var2)} with object &quot;x&quot;: x</li>
@@ -57,17 +58,18 @@ public class StorageCrossReferenceProcessor extends AbstractCrossReferenceProces
 
     /**
      * Processes a match. The namespace represents the namespace, the parameter
-     * represents the variable's name.<br /><br />
+     * represents the variable's name.
+     * <p>
      *
      * The return value depends on what command is used. If it is &quot;get&quot;,
      * the loaded value or an error is returned. If it is &quot;put&quot;,
-     * <code>object</code> is returned, and if it is &quot;containsValue&quot;,
+     * {@code object} is returned, and if it is &quot;containsValue&quot;,
      * either the object or an error is returned.
      *
      * @param cr the extracted match
      * @param object the object to save
-     * @return <code>object</code>, an error message or the loaded value, depending
-     * 		on <code>cr.getcommand()</code> (see method description above).
+     * @return {@code object}, an error message or the loaded value, depending
+     * 		on {@code cr.getcommand()} (see method description above).
      */
     @Override
     public final String processMatch(final CrossReference cr, final Object object) {

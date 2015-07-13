@@ -59,7 +59,8 @@ public class SetupFixture extends Fixture {
      *
      * The first cell must contain the alias, the second one must contains the
      * fully qualified class name. Using another alias as class name is not
-     * permitted.<br /><br />
+     * permitted.
+     * <p>
      *
      * Cross references are resolved.
      *

@@ -2,5 +2,4 @@ language: java
 notifications:
     email:
         - jochen.wierum@co-in.de
-        - kiaresch.mussawisade@co-in.de
-
+sudo: false

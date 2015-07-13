@@ -31,13 +31,15 @@ import java.text.ParseException;
 import java.util.List;
 
 /**
- * Run sub-fixtures.<br /><br />
+ * Run sub-fixtures.
  *
  * This fixture allows to start other fixtures and collects their results.
- * The files must be specified relative to the fixtures file path.<br /><br />
- *
+ * The files must be specified relative to the fixtures file path.
+ * <p>
  * Example:
- * <table border="1" colspan="2"><tr><td>fitgoodies.runners.RunFixture</td></tr>
+ * <p>
+ *
+ * <table border="1" summary=""><tr><td>fitgoodies.runners.RunFixture</td></tr>
  * <tr><td>file</td><td>file1.html</td></tr>
  * <tr><td>file</td><td>dir/file2.html</td></tr>
  * <tr><td>directory</td><td>other_tests/</td></tr>

@@ -48,7 +48,7 @@ public final class FitResultTable implements FitResult {
 	}
 
 	/**
-	 * Saves the result <code>result</code> of the file <code>file</code>.
+	 * Saves the result <code>result</code> of the file {@code file}.
 	 * @param file filename to identify the result
 	 * @param result results
 	 */
@@ -63,9 +63,9 @@ public final class FitResultTable implements FitResult {
 	}
 
 	/**
-	 * Returns the <code>Counts</code> of a filename.
+	 * Returns the {@code Counts} of a filename.
 	 * @param file filename to look up
-	 * @return <code>Counts</code> object which represents the file result
+	 * @return {@code Counts} object which represents the file result
 	 */
 	public Counts get(final File file) {
 		int index = results.indexOf(new FileCount(file, null));
@@ -117,7 +117,7 @@ public final class FitResultTable implements FitResult {
 
 	/**
 	 * Returns a single HTML Table row representing the results of the file
-	 * <code>file</code>.
+	 * {@code file}.
 	 * @param file filename to look up
 	 * @return HTML String with a a single Table row
 	 */
@@ -171,11 +171,11 @@ public final class FitResultTable implements FitResult {
 	}
 
 	/**
-	 * Prints out a table to <code>stream</code> which contains all saved
+	 * Prints out a table to {@code stream} which contains all saved
 	 * results including all summary rows.
 	 * @param directory headline of the table
 	 * @param stream stream to write results to
-	 * @throws IOException thrown by <code>stream</code> in case of problems
+	 * @throws IOException thrown by {@code stream} in case of problems
 	 */
 	public void print(final File directory, final OutputStream stream) throws IOException {
 		OutputStreamWriter osw = new OutputStreamWriter(stream);
@@ -214,6 +214,7 @@ public final class FitResultTable implements FitResult {
 	 *
 	 * @param path subdirectory to process
 	 * @return a single HTML row
+	 * @throws IOException if path cannot be resolved correctly
 	 */
 	public String getSubSummaryRow(final File path) throws IOException {
 		Counts sum = subDirSum(path);

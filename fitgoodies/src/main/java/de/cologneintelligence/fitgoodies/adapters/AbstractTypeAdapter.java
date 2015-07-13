@@ -22,36 +22,38 @@ package de.cologneintelligence.fitgoodies.adapters;
 import fit.TypeAdapter;
 
 /**
- * The <code>AbstractTypeAdapter</code> is used to implement a custom
- * <code>TypeAdapter</code>. This adapter is called with another instance of
- * <code>TypeAdapter</code> which normally is responsible for
- * <code>Object</code>. The resulting adapter should be responsible only for
- * the generic type T.<br /><br />
+ * The {@code AbstractTypeAdapter} is used to implement a custom
+ * {@code TypeAdapter}. This adapter is called with another instance of
+ * {@code TypeAdapter} which normally is responsible for
+ * {@code Object}. The resulting adapter should be responsible only for
+ * the generic type T.
+ * <p>
  *
- * It is recommended to override <code>toString</code>, <code>parse</code> and
- * <code>getType</code>.<br /><br />
+ * It is recommended to override {@code toString}, {@code parse} and
+ * {@code getType}.
+ * <p>
  *
- * A <code>TypeAdapter</code> must be registered using
- * <code>{@link de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper#register(Class)}</code>
- * from code or using a <code>{@link de.cologneintelligence.fitgoodies.adapters.SetupFixture}</code>
+ * A {@code TypeAdapter} must be registered using
+ * {@code {@link de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper#register(Class)}}
+ * from code or using a {@code {@link de.cologneintelligence.fitgoodies.adapters.SetupFixture}}
  * from HTML.
  *
- * @param <T> type the <code>AbstractTypeAdapter</code> is responsible for.
+ * @param <T> type the {@code AbstractTypeAdapter} is responsible for.
  *
  */
 public abstract class AbstractTypeAdapter<T> extends TypeAdapter {
 	private final String parameter;
 
 	/**
-	 * Constructs an AbstractTypeAdapter object using <code>ta</code> as
+	 * Constructs an AbstractTypeAdapter object using {@code ta} as
 	 * template.
 	 *
-	 * The values <code>field</code>, <code>fixture</code>, <code>method</code>,
-	 * <code>target</code> and <code>type</code> are copied.
+	 * The values {@code field}, {@code fixture}, {@code method},
+	 * {@code target} and {@code type} are copied.
 	 *
 	 * @param ta template <class>TypeAdapter</code> to copy.
 	 * @param convertParameter parameter which is stored and can be used with
-	 * 		<code>toString</code>/<code>parse</code> to customize the behavior.
+	 * 		{@code toString}/{@code parse} to customize the behavior.
 	 */
 	public AbstractTypeAdapter(final TypeAdapter ta, final String convertParameter) {
 		this.field = ta.field;

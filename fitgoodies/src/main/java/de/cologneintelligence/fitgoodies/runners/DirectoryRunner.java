@@ -24,7 +24,7 @@ package de.cologneintelligence.fitgoodies.runners;
  * .htm or .html are processed. Files which are named setup.html are processed
  * as the first file in the directory, files which are named teardown.html are
  * processed as last. These files are <em>not</em> processed before each html
- * file.<br /><br />
+ * file.<p>
  *
  * All processed files are copied into an output folder. Additionally, a report
  * file is generated.

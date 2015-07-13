@@ -28,7 +28,7 @@ import fit.Parse;
 import fit.TypeAdapter;
 
 /**
- * In contrast to <code>fit.ColumnFixture</code>, this <code>ColumnFixture</code>
+ * In contrast to <code>fit.ColumnFixture</code>, this {@code ColumnFixture}
  * enables all fitgoodies features (for example custom type adapters,
  * custom parsers and cross references).
  *
@@ -38,8 +38,8 @@ public class ColumnFixture extends fit.ColumnFixture {
 	private String columnParameter;
 
 	/**
-	 * Replacement of <code>doCell</code> which resolves cross-references
-	 * before calling the original <code>doCell</code> method of fit.
+	 * Replacement of {@code doCell} which resolves cross-references
+	 * before calling the original {@code doCell} method of fit.
 	 *
 	 *  @param cell the cell to check
      *  @param column the selected column
@@ -78,13 +78,13 @@ public class ColumnFixture extends fit.ColumnFixture {
     }
 
 	/**
-	 * Replacement of <code>parse</code> which uses the extended parse features of
+	 * Replacement of {@code parse} which uses the extended parse features of
 	 * fitgoodies and uses fit's parse as a fallback.
 	 *
 	 *  @param text text to parse
      *  @param type type to transform text to
      *
-     *  @return Object of type <code>type</code> which represents <code>text</code>
+     *  @return Object of type <code>type</code> which represents {@code text}
      *  @throws Exception if the value can't be parsed
      *
      *  @see fit.Fixture#parse(String, Class) {@link fit.Fixture#parse(String, Class)}
@@ -129,9 +129,9 @@ public class ColumnFixture extends fit.ColumnFixture {
     }
 
 	/**
-	 * Replacement of <code>bindMethod(String)</code>, which calls
-	 * <code>fit.ColumnFixture.bindMethod(String)</code> and
-	 * rebinds the returned <code>TypeAdapter</code> to a custom registered,
+	 * Replacement of {@code bindMethod(String)}, which calls
+	 * {@code fit.ColumnFixture.bindMethod(String)} and
+	 * rebinds the returned {@code TypeAdapter} to a custom registered,
 	 * more specific one, if possible.
 	 *
 	 *  @param name method name to bind
@@ -150,9 +150,9 @@ public class ColumnFixture extends fit.ColumnFixture {
 	}
 
 	/**
-	 * Replacement of <code>bindField(String)</code>, which calls
-	 * <code>fit.ColumnFixture.bindField(String)</code> and rebinds the
-	 * returned <code>TypeAdapter</code> to a custom registered,
+	 * Replacement of {@code bindField(String)}, which calls
+	 * {@code fit.ColumnFixture.bindField(String)} and rebinds the
+	 * returned {@code TypeAdapter} to a custom registered,
 	 * more specific one, if possible.
 	 *
 	 * @param name field name to bind
@@ -171,7 +171,7 @@ public class ColumnFixture extends fit.ColumnFixture {
 	}
 
 	/**
-	 * Replacement of <code>doRows(Parse)</code> which resolves question marks
+	 * Replacement of {@code doRows(Parse)} which resolves question marks
 	 * in the first row and calls fit.ColumnFixture.doRows(Parse).
 	 *
 	 * Question marks represent method calls,
@@ -194,15 +194,15 @@ public class ColumnFixture extends fit.ColumnFixture {
 	 * line of the table. This method is primary useful for debugging.
 	 * You won't need it otherwise.
 	 *
-	 * @param parameters columnParameters to store in <code>args</code>
+	 * @param parameters columnParameters to store in {@code args}
 	 */
 	public void setParams(final String[] parameters) {
 		this.args = parameters;
 	}
 
 	/**
-	 * Initializes the fixture arguments, call <code>setUp</code>,
-	 * <code>fit.ActionFixture.doTable(Parse)</code> and <code>tearDown()</code>.
+	 * Initializes the fixture arguments, call {@code setUp},
+	 * <code>fit.ActionFixture.doTable(Parse)</code> and {@code tearDown()}.
 	 *
      * @param table the table to be processed
 	 * @see fit.Fixture#doTable(Parse) {@link fit.Fixture#doTable(Parse)}
@@ -249,10 +249,10 @@ public class ColumnFixture extends fit.ColumnFixture {
      * Looks up a given columnParameter in the fixture's argument list.
      *
      * @param paramName the columnParameter name to look up
-     * @return  the columnParameter value, if it could be found, <code>null</code> otherwise
+     * @return  the columnParameter value, if it could be found, {@code null} otherwise
      * @see #getParam(String, String) {@link #getParam(String, String)}
-     * @see FixtureTools#getArg(String[], String, String)
-     * 		{@link FixtureTools#getArg(String[], String, String)}
+     * @see FixtureTools#getArg(String[], String, String, CrossReferenceHelper)
+     * 		{@link FixtureTools#getArg(String[], String, String, CrossReferenceHelper)}
      */
 	public final String getParam(final String paramName) {
 		return getParam(paramName, null);
@@ -264,7 +264,7 @@ public class ColumnFixture extends fit.ColumnFixture {
 	 * If the value does not exist, the given default value is returned.
      * @param paramName paramName the columnParameter name to look up
      * @param defaultValue defaultValue the value to be returned if the columnParameter is missing
-     * @return the columnParameter value, if it could be found, <code>defaultValue</code> otherwise
+     * @return the columnParameter value, if it could be found, {@code defaultValue} otherwise
 	 */
 	public final String getParam(final String paramName, final String defaultValue) {
 		return FixtureTools.getArg(args, paramName, defaultValue,

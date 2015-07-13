@@ -19,14 +19,14 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import java.io.IOException;
-
 import de.cologneintelligence.fitgoodies.file.readers.FixedLengthRecordReader;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Parse;
 import fit.TypeAdapter;
+
+import java.io.IOException;
 
 /**
  * {@link AbstractFileRecordReaderFixture} implementation which processes
@@ -36,12 +36,12 @@ import fit.TypeAdapter;
  * parameter of
  * {@link FixedLengthRecordReader#FixedLengthRecordReader(java.io.BufferedReader, int[], boolean)}.
  * It is called &quot;skipEOL&quot;.
- * <br /><br />
+ * <p>
  *
  * The first row must contain the field width of each field:
- * <table border="1">
+ * <table border="1" summary="">
  * <tr><td>fitgoodies.file.FixedLengthFileRecordFixture</td>
- * 		<td colspan="2">file=/myfile.txt</td></tr>
+ * 		<td>file=/myfile.txt</td></tr>
  * <tr><td>3</td><td>10</td><td>25</td></tr>
  * <tr><td>1</td><td>record 1</td><td>more content</td></tr>
  * <tr><td>2</td><td>record 2</td><td>some text</td></tr>

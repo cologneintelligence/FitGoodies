@@ -27,7 +27,7 @@ import java.io.File;
 /**
  * The file fixture is used to select files via HTML:
  *
- * <table>
+ * <table border="1" summary="">
  * <tr><td>fitgoodies.file.FileFixture</td></tr>
  * <tr><td>directory</td><td>/my/dir</td></tr>
  * <tr><td>pattern</td><td>.*\.txt</td></tr>

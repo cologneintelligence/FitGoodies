@@ -46,16 +46,16 @@ public final class FixtureTools {
     }
 
     /**
-     * Test whether a <code>String</code> has a boolean value.
+     * Test whether a {@code String} has a boolean value.
      * &quot;true&quot;, &quot;yes&quot; and &quot;1&quot; are recognized as
-     * <code>true</code>, &quot;false&quot;, &quot;no&quot; and &quot;0&quot;
-     * are recognized as <code>false</code>.<br />
+     * {@code true}, &quot;false&quot;, &quot;no&quot; and &quot;0&quot;
+     * are recognized as {@code false}.<p>
      *
      * Values other than these six lead to an IllegalArgumentException.
      *
      * @param text text to parse
      * @return the represented value
-     * @throws IllegalArgumentException if the <code>String</code>
+     * @throws IllegalArgumentException if the {@code String}
      * 		can not be parsed.
      */
     public static boolean convertToBoolean(final String text) {
@@ -74,14 +74,15 @@ public final class FixtureTools {
 
     /**
      * Resolves cross references and decides, whether more processing
-     * (a call to <code>check</code>) is necessary.
+     * (a call to {@code check}) is necessary.
      * @param cell the cell to parse
      * @param ta the type bound adapter which is used to compare the cell content
      * @param parent the parent fixture
-     * @return a cached <code>TypeAdapter</code>, whether the cell should be
-     * 		<code>check</code>'ed, <code>null</code> if no more processing is
+     * @param crossReferenceHelper CrossReferenceHelper to resolve cross references
+     * @return a cached {@code TypeAdapter}, whether the cell should be
+     * 		{@code check}'ed, {@code null} if no more processing is
      * 		required (the cell is then marked as right or wrong from
-     * 		<code>processCell</code>)
+     * 		{@code processCell})
      */
     public static TypeAdapter processCell(final Parse cell,
             final TypeAdapter ta, final Fixture parent,
@@ -140,14 +141,15 @@ public final class FixtureTools {
     }
 
     /**
-     * Tries to parse a <code>text</code> into an object of the type
-     * <code>type</code> by looking up a registered parser. If no parser
-     * could be found, <code>null</code> is returned.
+     * Tries to parse a {@code text} into an object of the type
+     * {@code type} by looking up a registered parser. If no parser
+     * could be found, {@code null} is returned.
      * @param text the text to be parsed
      * @param type the destination type of the return value
      * @param parameter provided row/column parameter
-     * @return an Object of the type <code>type</code> which represents
-     * 	<code>text</code> or null, if no parser was found.
+     * @param parserHelper ParserHelper to parse text
+     * @return an Object of the type {@code type} which represents
+     * 	{@code text} or null, if no parser was found.
      * @throws Exception should be propagated to fit.
      */
     public static Object parse(final String text, final Class<?> type,
@@ -158,13 +160,15 @@ public final class FixtureTools {
     }
 
     /**
-     * Replaces the given <code>TypeAdapter</code> with a more specific one.
+     * Replaces the given {@code TypeAdapter} with a more specific one.
      * The type of the new adapter is determined by the type of
-     * <code>ta.target</code>.
-     * <br /><br />
+     * {@code ta.target}.
+     * <p>
      * If no suitable TypeAdapter could be found, the old one is returned.
-     * @param ta the <code>TypeAdapter</code> to replace.
+     * <p>
+     * @param ta the {@code TypeAdapter} to replace.
      * @param parameter column/row parameter
+     * @param taHelper TypeAdapterHelper to resolve TypeAdapters
      * @return a TypeAdapter
      */
     public static TypeAdapter rebindTypeAdapter(final TypeAdapter ta,
@@ -178,14 +182,18 @@ public final class FixtureTools {
      * The search for an argument is case-insensitive and whitespaces at the
      * beginning and the end are ignored. The argument's name and its value are
      * separated by an equal sign. All these inputs will result in
-     * &quot;world&quot;, if you look up &quot;hello&quot;:<br />
+     * &quot;world&quot;, if you look up &quot;hello&quot;:
+     * <p>
      * &quot;hello=world&quot;, &quot; hello = world &quot;,
-     * &quot;HeLLo = world&quot;.<br /><br />
+     * &quot;HeLLo = world&quot;.</p>
+     * <p>
      * Note: the case of the value is unchanged.
+     * <p>
      *
      * @param args the argument list (normally, this is fixture.args)
      * @param argName the argument name to look up
      * @param defaultValue the result value if the argument does not exist
+     * @param crossReferenceHelper crossReferenceHelper to resolve cross references
      * @return the argument's value without namespaces, or defaultValue
      *
      * @see #getArgs(String[]) getArgs
@@ -264,6 +272,8 @@ public final class FixtureTools {
      *
      * @param args argument list to process
      * @param fixture fixture to copy the values to
+     * @param crossReferenceHelper the CrossReferenceHelper to resolve cross references
+     * @param taHelper TypeAdapterHelper to resolve types
      *
      * @see #getArg(String[], String, String, CrossReferenceHelper) getArg
      * @see #getArgs(String[]) getArgs
@@ -305,7 +315,7 @@ public final class FixtureTools {
     /**
      * extracts and removes parameters from a cell.
      * @param cell cell to process
-     * @return the extracted parameter or <code>null</code>
+     * @return the extracted parameter or {@code null}
      */
     public static String extractCellParameter(final Parse cell) {
         final Matcher matcher = parameterPattern.matcher(cell.text());
