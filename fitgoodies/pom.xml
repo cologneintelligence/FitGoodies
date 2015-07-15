@@ -65,12 +65,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.c2.fit</groupId>
-      <artifactId>fit</artifactId>
-      <version>1.1</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcomponents-core</artifactId>
       <version>4.4</version>
