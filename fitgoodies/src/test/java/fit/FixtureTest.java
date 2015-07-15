@@ -1,14 +1,15 @@
 package fit;
 
-import junit.framework.*;
+import org.junit.Test;
 
-public class FixtureTest extends TestCase {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
-	public FixtureTest(String name) {
-		super(name);
-	}
-	
+public class FixtureTest {
+
+	@Test
 	public void testEscape() {
-		assertEquals(" &nbsp; &nbsp; ", Fixture.escape("     "));
+		assertThat(Fixture.escape("     "), is(equalTo(" &nbsp; &nbsp; ")));
 	}
 }

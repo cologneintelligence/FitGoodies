@@ -3,27 +3,31 @@
 
 package fit;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
 import java.util.LinkedList;
+import java.util.List;
 
-public class RowFixtureTest extends TestCase {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-    class BusinessObject {
-        private String[] strs;
+public class RowFixtureTest {
 
-        public BusinessObject(String[] strs) {
-            this.strs = strs;
-        }
+	@SuppressWarnings("unused")
+	class BusinessObject {
+		private String[] strs;
 
-        public String[] getStrings() {return strs;}
-    }
+		public BusinessObject(String[] strs) {
+			this.strs = strs;
+		}
 
-    public RowFixtureTest (String name) {
-        super (name);
-    }
+		public String[] getStrings() {
+			return strs;
+		}
+	}
 
-
-    public void testMatch() throws Exception {
+	@Test
+	public void testMatch() throws Exception {
 
         /*
         Now back to the bug I found: The problem stems from the fact
@@ -36,31 +40,32 @@ public class RowFixtureTest extends TestCase {
         -- Jacques Morel
         */
 
-        RowFixture fixture = new TestRowFixture();
-        TypeAdapter arrayAdapter = TypeAdapter.on(fixture,
-                                                  BusinessObject.class.getMethod("getStrings", new Class[0]));
-        fixture.columnBindings = new TypeAdapter[]{arrayAdapter };
+		RowFixture fixture = new TestRowFixture();
+		TypeAdapter arrayAdapter = TypeAdapter.on(fixture,
+				BusinessObject.class.getMethod("getStrings", new Class[0]));
+		fixture.columnBindings = new TypeAdapter[]{arrayAdapter};
 
-        LinkedList computed = new LinkedList();
-        computed.add(new BusinessObject(new String[] { "1" }));
-        LinkedList expected = new LinkedList();
-        expected.add(new Parse("tr","",new Parse("td","1",null,null),null));
-        fixture.match(expected, computed,0);
-        assertEquals("right", 1, fixture.counts.right);
-        assertEquals("exceptions", 0, fixture.counts.exceptions);
-        assertEquals("missing", 0, fixture.missing.size());
-        assertEquals("surplus", 0, fixture.surplus.size());
-    }
+		List<BusinessObject> computed = new LinkedList<>();
+		computed.add(new BusinessObject(new String[]{"1"}));
+		List<Parse> expected = new LinkedList<>();
+		expected.add(new Parse("tr", "", new Parse("td", "1", null, null), null));
+		fixture.match(expected, computed, 0);
 
-    private class TestRowFixture extends RowFixture {
-        public Object[] query() throws Exception  // get rows to be compared
-        {
-            return new Object[0];
-        }
+		assertThat("right", fixture.counts.right, is(1));
+		assertThat("exceptions", fixture.counts.exceptions, is(0));
+		assertThat("missing", fixture.missing.size(), is(0));
+		assertThat("surplus", fixture.surplus.size(), is(0));
+	}
 
-        public Class getTargetClass()             // get expected type of row
-        {
-            return BusinessObject.class;
-        }
-    }
+	private class TestRowFixture extends RowFixture {
+		public Object[] query() throws Exception  // get rows to be compared
+		{
+			return new Object[0];
+		}
+
+		public Class getTargetClass()             // get expected type of row
+		{
+			return BusinessObject.class;
+		}
+	}
 }

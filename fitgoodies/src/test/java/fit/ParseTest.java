@@ -3,108 +3,117 @@ package fit;
 //Copyright (c) 2002 Cunningham & Cunningham, Inc.
 //Released under the terms of the GNU General Public License version 2 or later.
 
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class ParseTest extends TestCase {
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-	public ParseTest(String name) {
-		super(name);
-	}
+public class ParseTest {
 
+	@Test
 	public void testParsing () throws Exception {
 		Parse p = new Parse("leader<Table foo=2>body</table>trailer", new String[] {"table"});
-		assertEquals("leader", p.leader);
-		assertEquals("<Table foo=2>", p.tag);
-		assertEquals("body", p.body);
-		assertEquals("trailer", p.trailer);
+		assertThat(p.leader, is(equalTo("leader")));
+		assertThat(p.tag, is(equalTo("<Table foo=2>")));
+		assertThat(p.body, is(equalTo("body")));
+		assertThat(p.trailer, is(equalTo("trailer")));
 	}
 
+	@Test
 	public void testRecursing () throws Exception {
 		Parse p = new Parse("leader<table><TR><Td>body</tD></TR></table>trailer");
-		assertEquals(null, p.body);
-		assertEquals(null, p.parts.body);
-		assertEquals("body", p.parts.parts.body);
+		assertThat(p.body, is(equalTo(null)));
+		assertThat(p.parts.body, is(equalTo(null)));
+		assertThat(p.parts.parts.body, is(equalTo("body")));
 	}
 
+	@Test
 	public void testIterating () throws Exception {
 		Parse p = new Parse("leader<table><tr><td>one</td><td>two</td><td>three</td></tr></table>trailer");
-		assertEquals("one", p.parts.parts.body);
-		assertEquals("two", p.parts.parts.more.body);
-		assertEquals("three", p.parts.parts.more.more.body);
+		assertThat(p.parts.parts.body, is(equalTo("one")));
+		assertThat(p.parts.parts.more.body, is(equalTo("two")));
+		assertThat(p.parts.parts.more.more.body, is(equalTo("three")));
 	}
 
+	@Test
 	public void testIndexing () throws Exception {
 		Parse p = new Parse("leader<table><tr><td>one</td><td>two</td><td>three</td></tr><tr><td>four</td></tr></table>trailer");
-		assertEquals("one", p.at(0,0,0).body);
-		assertEquals("two", p.at(0,0,1).body);
-		assertEquals("three", p.at(0,0,2).body);
-		assertEquals("three", p.at(0,0,3).body);
-		assertEquals("three", p.at(0,0,4).body);
-		assertEquals("four", p.at(0,1,0).body);
-		assertEquals("four", p.at(0,1,1).body);
-		assertEquals("four", p.at(0,2,0).body);
-		assertEquals(1, p.size());
-		assertEquals(2, p.parts.size());
-		assertEquals(3, p.parts.parts.size());
-		assertEquals("one", p.leaf().body);
-		assertEquals("four", p.parts.last().leaf().body);
+		assertThat(p.at(0,0,0).body, is(equalTo("one")));
+		assertThat(p.at(0,0,1).body, is(equalTo("two")));
+		assertThat(p.at(0,0,2).body, is(equalTo("three")));
+		assertThat(p.at(0,0,3).body, is(equalTo("three")));
+		assertThat(p.at(0,0,4).body, is(equalTo("three")));
+		assertThat(p.at(0,1,0).body, is(equalTo("four")));
+		assertThat(p.at(0,1,1).body, is(equalTo("four")));
+		assertThat(p.at(0,2,0).body, is(equalTo("four")));
+		assertThat(p.size(), is(equalTo((Object) 1)));
+		assertThat(p.parts.size(), is(equalTo((Object) 2)));
+		assertThat(p.parts.parts.size(), is(equalTo((Object) 3)));
+		assertThat(p.leaf().body, is(equalTo("one")));
+		assertThat(p.parts.last().leaf().body, is(equalTo("four")));
 	}
 
+	@Test
 	public void testParseException () {
 		try {
-			Parse p = new Parse("leader<table><tr><th>one</th><th>two</th><th>three</th></tr><tr><td>four</td></tr></table>trailer");
+			new Parse("leader<table><tr><th>one</th><th>two</th><th>three</th></tr><tr><td>four</td></tr></table>trailer");
 		} catch (java.text.ParseException e) {
-			assertEquals(17, e.getErrorOffset());
-			assertEquals("Can't find tag: td", e.getMessage());
+			assertThat(e.getErrorOffset(), is(equalTo((Object) 17)));
+			assertThat(e.getMessage(), is(equalTo("Can't find tag: td")));
 			return;
 		}
-		fail("exptected exception not thrown");
+		Assert.fail("exptected exception not thrown");
 	}
 
+	@Test
 	public void testText () throws Exception {
 		String tags[] ={"td"};
 		Parse p = new Parse("<td>a&lt;b</td>", tags);
-		assertEquals("a&lt;b", p.body);
-		assertEquals("a<b", p.text());
+		assertThat(p.body, is(equalTo("a&lt;b")));
+		assertThat(p.text(), is(equalTo("a<b")));
 		p = new Parse("<td>\ta&gt;b&nbsp;&amp;&nbsp;b>c &&&lt;</td>", tags);
-		assertEquals("a>b & b>c &&<", p.text());
+		assertThat(p.text(), is(equalTo("a>b & b>c &&<")));
 		p = new Parse("<td>\ta&gt;b&nbsp;&amp;&nbsp;b>c &&lt;</td>", tags);
-		assertEquals("a>b & b>c &<", p.text());
+		assertThat(p.text(), is(equalTo("a>b & b>c &<")));
 		p = new Parse("<TD><P><FONT FACE=\"Arial\" SIZE=2>GroupTestFixture</FONT></TD>", tags);
-		assertEquals("GroupTestFixture",p.text());
+		assertThat(p.text(), is(equalTo("GroupTestFixture")));
 
-		assertEquals("", Parse.htmlToText("&nbsp;"));
-		assertEquals("a b", Parse.htmlToText("a <tag /> b"));
-		assertEquals("a", Parse.htmlToText("a &nbsp;"));
-		assertEquals("&nbsp;", Parse.htmlToText("&amp;nbsp;"));
-		assertEquals("1     2", Parse.htmlToText("1 &nbsp; &nbsp; 2"));
-		assertEquals("1     2", Parse.htmlToText("1 \u00a0\u00a0\u00a0\u00a02"));
-		assertEquals("a", Parse.htmlToText("  <tag />a"));
-		assertEquals("a\nb", Parse.htmlToText("a<br />b"));
+		assertThat(Parse.htmlToText("&nbsp;"), is(equalTo("")));
+		assertThat(Parse.htmlToText("a <tag /> b"), is(equalTo("a b")));
+		assertThat(Parse.htmlToText("a &nbsp;"), is(equalTo("a")));
+		assertThat(Parse.htmlToText("&amp;nbsp;"), is(equalTo("&nbsp;")));
+		assertThat(Parse.htmlToText("1 &nbsp; &nbsp; 2"), is(equalTo("1     2")));
+		assertThat(Parse.htmlToText("1 \u00a0\u00a0\u00a0\u00a02"), is(equalTo("1     2")));
+		assertThat(Parse.htmlToText("  <tag />a"), is(equalTo("a")));
+		assertThat(Parse.htmlToText("a<br />b"), is(equalTo("a\nb")));
 
-		assertEquals("ab", Parse.htmlToText("<font size=+1>a</font>b"));
-		assertEquals("ab", Parse.htmlToText("a<font size=+1>b</font>"));
-		assertEquals("a<b", Parse.htmlToText("a<b"));
+		assertThat(Parse.htmlToText("<font size=+1>a</font>b"), is(equalTo("ab")));
+		assertThat(Parse.htmlToText("a<font size=+1>b</font>"), is(equalTo("ab")));
+		assertThat(Parse.htmlToText("a<b"), is(equalTo("a<b")));
 
-		assertEquals("a\nb\nc\nd", Parse.htmlToText("a<br>b<br/>c<  br   /   >d"));
-		assertEquals("a\nb", Parse.htmlToText("a</p><p>b"));
-		assertEquals("a\nb", Parse.htmlToText("a< / p >   <   p  >b"));
+		assertThat(Parse.htmlToText("a<br>b<br/>c<  br   /   >d"), is(equalTo("a\nb\nc\nd")));
+		assertThat(Parse.htmlToText("a</p><p>b"), is(equalTo("a\nb")));
+		assertThat(Parse.htmlToText("a< / p >   <   p  >b"), is(equalTo("a\nb")));
 	}
 
+	@Test
 	public void testUnescape () {
-		assertEquals("a<b", Parse.unescape("a&lt;b"));
-		assertEquals("a>b & b>c &&", Parse.unescape("a&gt;b&nbsp;&amp;&nbsp;b>c &&"));
-		assertEquals("&amp;&amp;", Parse.unescape("&amp;amp;&amp;amp;"));
-		assertEquals("a>b & b>c &&", Parse.unescape("a&gt;b&nbsp;&amp;&nbsp;b>c &&"));
-		assertEquals("\"\"''", Parse.unescape("“”‘’"));
+		assertThat(Parse.unescape("a&lt;b"), is(equalTo("a<b")));
+		assertThat(Parse.unescape("a&gt;b&nbsp;&amp;&nbsp;b>c &&"), is(equalTo("a>b & b>c &&")));
+		assertThat(Parse.unescape("&amp;amp;&amp;amp;"), is(equalTo("&amp;&amp;")));
+		assertThat(Parse.unescape("a&gt;b&nbsp;&amp;&nbsp;b>c &&"), is(equalTo("a>b & b>c &&")));
+		assertThat(Parse.unescape("“”‘’"), is(equalTo("\"\"''")));
 	}
 
+	@Test
 	public void testWhitespaceIsCondensed() {
-		assertEquals("a b", Parse.condenseWhitespace(" a  b  "));
-		assertEquals("a b", Parse.condenseWhitespace(" a  \n\tb  "));
-		assertEquals("", Parse.condenseWhitespace(" "));
-		assertEquals("", Parse.condenseWhitespace("  "));
-		assertEquals("", Parse.condenseWhitespace("   "));
-		assertEquals("", Parse.condenseWhitespace(new String(new char[]{(char) 160})));
+		assertThat(Parse.condenseWhitespace(" a  b  "), is(equalTo("a b")));
+		assertThat(Parse.condenseWhitespace(" a  \n\tb  "), is(equalTo("a b")));
+		assertThat(Parse.condenseWhitespace(" "), is(equalTo("")));
+		assertThat(Parse.condenseWhitespace("  "), is(equalTo("")));
+		assertThat(Parse.condenseWhitespace("   "), is(equalTo("")));
+		assertThat(Parse.condenseWhitespace(new String(new char[]{(char) 160})), is(equalTo("")));
 	}
 }
