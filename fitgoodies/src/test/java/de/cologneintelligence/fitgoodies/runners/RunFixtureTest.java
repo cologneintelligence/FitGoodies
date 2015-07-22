@@ -41,7 +41,7 @@ public final class RunFixtureTest extends FitGoodiesTestCase {
     private Parse table;
 
     @Before
-    public void setup() throws ParseException {
+    public void setup() {
         RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
         final Runner runner = mock(Runner.class);
 
@@ -75,13 +75,13 @@ public final class RunFixtureTest extends FitGoodiesTestCase {
         when(dirHelper.rel2abs("abspath", "../tests2/file2.html")).thenReturn(f3);
         when(dirHelper.subdir(outputDir, "file2.html")).thenReturn(f4);
 
-        table = new Parse("<table><tr><td>ignored</td></tr>"
-                + "<tr><td>file</td><td>file1.html</td></tr>"
-                + "<tr><td>file</td><td>../tests2/file2.html</td></tr></table>");
+        table = parseTable(
+                tr("file", "file1.html"),
+                tr("file", "../tests2/file2.html</td></tr></table>"));
     }
 
     @Test
-    public void testFile() throws ParseException {
+    public void testFile() {
         RunFixture fixture = new RunFixture();
         fixture.doTable(table);
 
@@ -92,7 +92,7 @@ public final class RunFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testFileTableProcessing() throws ParseException {
+    public void testFileTableProcessing() {
         RunFixture fixture = new RunFixture();
         fixture.doTable(table);
 

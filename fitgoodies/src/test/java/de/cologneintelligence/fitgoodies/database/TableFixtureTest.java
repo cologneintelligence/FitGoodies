@@ -85,12 +85,10 @@ public class TableFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testDoTable() throws Exception {
-        final Parse table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>name</td><td>age</td></tr>"
-                        + "<tr><td>Anika Hanson</td><td>30</td></tr>"
-                        + "</table>");
+        final Parse table = parseTable(
+                tr("name", "age"),
+                tr("Anika Hanson", "30"));
+
 
         fixture.setParams(new String[]{"table=tbl7"});
         ResultSetMockGenerator mocker = new ResultSetMockGenerator(
@@ -117,12 +115,7 @@ public class TableFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testDoTable2() throws Exception {
-        final Parse table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>age</td></tr>"
-                        + "<tr><td>42.3</td></tr>"
-                        + "</table>");
+        final Parse table = parseTable(tr("age"), tr("42.3"));
 
         fixture.setParams(new String[]{"table=table1"});
         ResultSetMockGenerator mocker = new ResultSetMockGenerator(
@@ -162,11 +155,7 @@ public class TableFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testWhereClause() throws Exception {
-        final Parse table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>x</td></tr>"
-                        + "</table>");
+        final Parse table = parseTable(tr("ignore"), tr("x"));
 
         ResultSetMockGenerator mocker = new ResultSetMockGenerator(
                 "tbl4", "x > 7",
@@ -182,11 +171,8 @@ public class TableFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testError() throws Exception {
-        final Parse table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>x</td></tr>"
-                        + "</table>");
+        final Parse table = parseTable(tr("ignore"), tr("x"));
+
         fixture.doTable(table);
         assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
     }

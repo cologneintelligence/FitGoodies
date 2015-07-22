@@ -33,11 +33,10 @@ import static org.junit.Assert.assertThat;
 
 public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {
     @Test
-    public void testExtractWidth() throws ParseException {
+    public void testExtractWidth() {
         FixedLengthFileRecordFixture fixture = new FixedLengthFileRecordFixture();
 
-        Parse row = new Parse("<tr><td>1</td><td>7</td><td>4</td></tr>",
-                new String[]{"tr", "td"});
+        Parse row = parseTr("1", "7", "4");
 
         int[] actual = fixture.extractWidth(row);
 
@@ -46,8 +45,7 @@ public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {
         assertThat(actual[1], is(equalTo((Object) 7)));
         assertThat(actual[2], is(equalTo((Object) 4)));
 
-        row = new Parse("<tr><td>3</td><td>1</td><td>9</td><td>0</td></tr>",
-                new String[]{"tr", "td"});
+        row = parseTr("3", "1", "9", "0");
 
         actual = fixture.extractWidth(row);
 
@@ -62,8 +60,7 @@ public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {
     public void testExtractWidthWithCrossRefs() throws Exception {
         FixedLengthFileRecordFixture fixture = new FixedLengthFileRecordFixture();
 
-        Parse row = new Parse("<tr><td>1</td><td>${width.get(col2)}</td></tr>",
-                new String[]{"tr", "td"});
+        Parse row = parseTr("1", "${width.get(col2)}");
 
         CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.parseBody("${width.put(col2)}", 23);
@@ -75,11 +72,10 @@ public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testErrors() throws ParseException {
+    public void testErrors() {
         FixedLengthFileRecordFixture fixture = new FixedLengthFileRecordFixture();
 
-        Parse row = new Parse("<tr><td>1</td><td>error</td><td>4</td></tr>",
-                new String[]{"tr", "td"});
+        Parse row = parseTr("1", "error", "4");
 
         int[] actual = fixture.extractWidth(row);
 

@@ -126,19 +126,13 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testParseContains() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>com.myproject.class1</td><td>stdout</td>"
-                + "<td>contains</td><td>a message</td></tr>"
-                + "<tr><td>com.myproject.class1</td><td>stdout</td>"
-                + "<td>notContains</td><td>a message</td></tr>"
-                + "<tr><td>rootLogger</td><td>R</td>"
-                + "<td>containsException</td><td>rOOt</td></tr>"
-                + "<tr><td>rootLogger</td><td>R</td>"
-                + "<td>contains</td><td>rOOt</td></tr>"
-                + "<tr><td>rootLogger</td><td>R</td>"
-                + "<td>notContainsException</td><td>rOOt</td></tr>"
-                + "</table>");
+    public void testParseContains() {
+        Parse table = parseTable(
+                tr("com.myproject.class1", "stdout", "contains", "a message"),
+                tr("com.myproject.class1", "stdout","notContains", "a message"),
+                tr("rootLogger", "R", "containsException", "rOOt"),
+                tr("rootLogger", "R", "contains", "rOOt"),
+                tr("rootLogger", "R", "notContainsException", "rOOt"));
 
         final int NO_OF_CLASS_CALLS = 2;
         final int NO_OF_ROOT_CALLS = 3;
@@ -161,11 +155,8 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testIllegalCommand() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>rootLogger</td><td>R</td>"
-                + "<td>what is this?</td><td>rOOt</td></tr>"
-                + "</table>");
+    public void testIllegalCommand() {
+        Parse table = parseTable(tr("rootLogger", "R", "what is this?", "rOOt"));
 
         final int NO_OF_CLASS_CALLS = 0;
         final int NO_OF_ROOT_CALLS = 1;
@@ -182,11 +173,9 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testIllegalParameters() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>com.myproject.class1</td><td>stdout</td>"
-                + "<td>notcontainsException[nonsense]</td><td>xxx</td></tr>"
-                + "</table>");
+    public void testIllegalParameters() {
+        Parse table = parseTable(
+                tr("com.myproject.class1", "stdout", "notcontainsException[nonsense]", "xxx"));
 
         LogFixture fixture = new LogFixture(logs, cellArgumentParserFactory,
                 logEventAnalyzerFactory);
@@ -205,13 +194,10 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
 
     @Test
     @SuppressWarnings("static-access")
-    public void testIllegalLogger() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>nonsense</td><td>stdout</td>"
-                + "<td>contains</td><td>error</td></tr>"
-                + "<tr><td>rootLogger</td><td>nonsense</td>"
-                + "<td>contains</td><td>error</td></tr>"
-                + "</table>");
+    public void testIllegalLogger() {
+        Parse table = parseTable(
+                tr("nonsense", "stdout", "contains", "error"),
+                tr("rootLogger", "nonsense", "contains", "error"));
 
         when(logs.getRootLogger()).thenReturn(rootLogger);
 
@@ -229,10 +215,8 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
     public void testCrossReferences() throws Exception {
         CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.parseBody("${a.put(message)}", "a message");
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>com.myproject.class1</td><td>stdout</td>"
-                + "<td>contains</td><td>${a.get(message)}</td></tr>"
-                + "</table>");
+        Parse table = parseTable(
+                tr("com.myproject.class1", "stdout", "contains", "${a.get(message)}"));
 
         final int NO_OF_CLASS_CALLS = 1;
         final int NO_OF_ROOT_CALLS = 0;

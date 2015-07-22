@@ -25,7 +25,6 @@ import fit.Parse;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.ParseException;
 import java.util.Locale;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -42,14 +41,12 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testSetup() throws ParseException {
+    public void testSetup() {
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
 
-        Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>locale</td><td>de_DE</td></tr>"
-                + "<tr><td>format</td><td>hh:mm:ss</td></tr>"
-                + "</table>");
+        Parse table = parseTable(
+                tr("locale", "de_DE"),
+                tr("format", "hh:mm:ss"));
 
         fixture.doTable(table);
 
@@ -57,11 +54,8 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         assertThat(helper.getFormat(), is(equalTo("hh:mm:ss")));
         assertThat(helper.getLocale(), is(equalTo(Locale.GERMANY)));
 
-        table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>locale</td><td>en_US</td></tr>"
-                + "<tr><td>format</td><td>MM/dd/yyyy</td></tr>"
-                + "</table>");
+        table = parseTable(tr("locale", "en_US"),
+                tr("format", "MM/dd/yyyy"));
 
         fixture.doTable(table);
 

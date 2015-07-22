@@ -48,10 +48,8 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testParsing() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>addProperty</td><td>-DtestKey=${System.getProperty(testSetupFixtureKey)}</td></tr>"
-                + "</table>");
+    public void testParsing() {
+        Parse table = parseTable(tr("addProperty", "-DtestKey=${System.getProperty(testSetupFixtureKey)}"));
 
         SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);

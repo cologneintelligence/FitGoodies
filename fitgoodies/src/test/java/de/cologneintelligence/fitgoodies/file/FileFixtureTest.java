@@ -33,11 +33,10 @@ import static org.junit.Assert.assertThat;
 
 public class FileFixtureTest extends FitGoodiesTestCase {
     @Test
-    public void testErrors() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>too short</td></tr>"
-                + "<tr><td>wrong</td><td>value</td></tr></table>"
-                );
+    public void testErrors() {
+        Parse table = parseTable(
+                tr("too short"),
+                tr("wrong", "value"));
 
         FileFixture fixture = new FileFixture();
         fixture.doTable(table);
@@ -47,9 +46,8 @@ public class FileFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testPattern() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>pattern</td><td>.*\\.txt</td></tr></table>");
+    public void testPattern() {
+        Parse table = parseTable(tr("pattern", ".*\\.txt"));
 
         FileFixture fixture = new FileFixture();
         fixture.doTable(table);
@@ -59,9 +57,7 @@ public class FileFixtureTest extends FitGoodiesTestCase {
         FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         assertThat(helper.getPattern(), is(equalTo(".*\\.txt")));
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>pattern</td><td>testfile</td></tr></table>"
-                );
+        table = parseTable(tr("pattern", "testfile"));
 
         fixture.doTable(table);
 
@@ -72,11 +68,10 @@ public class FileFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testEncoding() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>directory</td><td>dir</td></tr>"
-                + "<tr><td>encoding</td><td>utf-8</td></tr>"
-                + "</table>");
+    public void testEncoding() {
+        Parse table = parseTable(
+                tr("directory", "dir"),
+                tr("encoding", "utf-8"));
 
         FileFixture fixture = new FileFixture();
         fixture.doTable(table);
@@ -88,10 +83,9 @@ public class FileFixtureTest extends FitGoodiesTestCase {
         assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
         assertThat(helper.getEncoding(), is(equalTo("utf-8")));
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>directory</td><td>c:\\</td></tr>"
-                + "<tr><td>encoding</td><td>latin-1</td></tr>"
-                + "</table>");
+        table = parseTable(
+                tr("directory", "c:\\"),
+                        tr("encoding", "latin-1"));
 
         fixture.doTable(table);
 

@@ -50,10 +50,7 @@ public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
         helper.setPattern(pattern);
 
         TestFixture fixture = new TestFixture();
-        Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr>"
-                + "</table>");
+        Parse table = parseTable(tr("x"));
 
         fixture.doTable(table);
 
@@ -64,10 +61,7 @@ public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
     @Test
     public void testDefaultParameters2() throws Exception {
         TestFixture fixture = new TestFixture();
-        Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr>"
-                + "</table>");
+        Parse table = parseTable(tr("x"));
 
         helper.setEncoding("utf-16");
         String pattern = ".*";
@@ -83,10 +77,7 @@ public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
     @Test
     public void testErrors() throws Exception {
         TestFixture fixture = new TestFixture();
-        Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr>"
-                + "</table>");
+        Parse table = parseTable(tr("x"));
 
         fixture.doTable(table);
 
@@ -96,10 +87,7 @@ public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
     @Test
     public final void testCustomParameters() throws Exception {
         TestFixture fixture = new TestFixture();
-        Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr>"
-                + "</table>");
+        Parse table = parseTable(tr("x"));
 
         final String pattern = ".*\\.bat";
         helper.setDirectory(mockDirectory(pattern, "f.txt.bat"));

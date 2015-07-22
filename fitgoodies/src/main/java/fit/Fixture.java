@@ -10,7 +10,7 @@ import java.text.DateFormat;
 
 public class Fixture {
 
-    public Map summary = new HashMap();
+    public Map<String, Object> summary = new HashMap<>();
     public Counts counts = new Counts();
     protected String[] args;
 
@@ -96,7 +96,7 @@ public class Fixture {
 		fixture.getArgsForTable(tables);
 		return fixture;
 	}
-	
+
 	public Parse fixtureName(Parse tables) {
 		return tables.at(0, 0, 0);
 	}
@@ -110,21 +110,18 @@ public class Fixture {
 		catch (ClassCastException e) {
 			throw new RuntimeException("\"" + fixtureName + "\" was found, but it's not a fixture.", e);
 		}
-		catch (ClassNotFoundException e) {
+		catch (ClassNotFoundException | NoClassDefFoundError e) {
 			throw new RuntimeException(notFound, e);
 		}
-		catch (NoClassDefFoundError e) {
-			throw new RuntimeException(notFound, e);
-		}
-	}
+    }
 
 	/* Added by Rick Mugridge, from FitNesse */
 	protected void getArgsForTable(Parse table) {
-	    ArrayList argumentList = new ArrayList();
+	    List<String> argumentList = new ArrayList<>();
 	    Parse parameters = table.parts.parts.more;
 	    for (; parameters != null; parameters = parameters.more)
 	        argumentList.add(parameters.text());
-	    args = (String[]) argumentList.toArray(new String[0]);
+	    args = argumentList.toArray(new String[argumentList.size()]);
 	}
 
     public void doTable(Parse table) {
@@ -232,7 +229,7 @@ public class Fixture {
     }
 
     public static String camel (String name) {
-        StringBuffer b = new StringBuffer(name.length());
+        StringBuilder b = new StringBuilder(name.length());
         StringTokenizer t = new StringTokenizer(name);
         if (!t.hasMoreTokens())
             return name;

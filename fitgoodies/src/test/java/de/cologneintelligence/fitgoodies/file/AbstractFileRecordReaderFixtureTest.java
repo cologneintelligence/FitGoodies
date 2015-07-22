@@ -19,13 +19,11 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReaderMock;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import fit.Parse;
 import org.junit.Test;
-
-import java.text.ParseException;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -45,13 +43,7 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testComparison() throws Exception {
-		Parse table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>x</td><td>y</td></tr>"
-				+ "<tr><td>1</td><td>2</td></tr>"
-				+ "</table>"
-				);
+		Parse table = parseTable(tr("x", "y"), tr("1", "2"));
 
 		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
 				new FileRecordReaderMock(new String[][] {
@@ -69,13 +61,9 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testComparisonWithErrors() throws Exception {
-		Parse table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>x</td><td>z</td><td>hello</td></tr>"
-				+ "<tr><td>1</td><td>u</td><td>4</td></tr>"
-				+ "</table>"
-				);
+		Parse table = parseTable(
+				tr("x", "z", "hello"),
+				tr("1", "u", "4"));
 
 		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
 				new FileRecordReaderMock(new String[][] {
@@ -91,12 +79,7 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testSurplusRows() throws Exception {
-		Parse table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>x</td><td>z</td><td>hello</td></tr>"
-				+ "</table>"
-				);
+		Parse table = parseTable(tr("x", "z", "hello"));
 
 		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
 				new FileRecordReaderMock(new String[][] {
@@ -116,14 +99,10 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testMissingRows() throws Exception {
-		Parse table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>x</td><td>z</td><td>hello</td></tr>"
-				+ "<tr><td>1</td><td>2</td><td>3</td></tr>"
-				+ "<tr><td>4</td><td>5</td><td>6</td></tr>"
-				+ "</table>"
-				);
+		Parse table = parseTable(
+				tr("x", "z", "hello"),
+				tr("1", "2", "3"),
+				tr("4", "5", "6"));
 
 		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
 				new FileRecordReaderMock(new String[][] {
@@ -140,11 +119,11 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testEmptyTable() throws ParseException {
-		Parse table = new Parse("<table><tr><td>ignore</td></tr></table>");
+	public void testEmptyTable() {
+		Parse table = parseTable();
 
 		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
-				new FileRecordReaderMock(new String[][] {
+				new FileRecordReaderMock(new String[][]{
 						new String[]{"x", "z", "hello"},
 				}));
 

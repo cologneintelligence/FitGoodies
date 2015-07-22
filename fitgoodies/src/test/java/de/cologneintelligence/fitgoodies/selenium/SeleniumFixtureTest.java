@@ -20,26 +20,23 @@ package de.cologneintelligence.fitgoodies.selenium;
 
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.SeleniumException;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.processors.DateProvider;
 import de.cologneintelligence.fitgoodies.references.processors.DateProviderCrossReferenceProcessor;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.text.ParseException;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class SeleniumFixtureTest extends FitGoodiesTestCase {
     private CommandProcessor commandProcessor;
@@ -64,11 +61,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         runnerHelper.setResultFile(new File("fixture.html"));
         fixture = new SeleniumFixture();
 
-        table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>command</td><td>arg1</td><td>arg2</td></tr>"
-                        + "</table>");
+        table = parseTable(tr("command", "arg1", "arg2"));
     }
 
     @Test
@@ -159,11 +152,8 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testInvokeSeleniumWithCrossReference() throws Exception {
-        final Parse table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>command</td><td>arg1</td><td>${dateProvider.getCurrentDate()}</td></tr>"
-                        + "</table>");
+        final Parse table = parseTable(
+                        tr("command", "arg1", "${dateProvider.getCurrentDate()}"));
         final DateProvider dateProvider = mock(DateProvider.class);
         final String date = "21.01.2009";
         final DateProviderCrossReferenceProcessor processor = new DateProviderCrossReferenceProcessor(dateProvider);
@@ -182,12 +172,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
     public void testInvokeSeleniumWithoutParameters() throws Exception {
         when(commandProcessor.doCommand("command", new String[]{"", ""})).thenReturn("OK");
 
-        table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>command</td></tr>"
-                        + "</table>");
-
+        table = parseTable(tr("command"));
         fixture.doTable(table);
         assertRightCell();
     }
@@ -197,23 +182,14 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         when(commandProcessor.doCommand("open", new String[]{"", ""})).thenThrow(new SeleniumException("Error"));
         when(commandProcessor.doCommand("waitForPageToLoad", new String[] { "50000", })).thenReturn("OK");
 
-        table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>open</td></tr>"
-                        + "</table>");
+        table = parseTable(tr("open"));
 
         fixture.doTable(table);
         assertRightCell();
     }
 
-    private void createTwoCommandsTable() throws ParseException {
-        table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>command</td><td>arg1</td><td>arg2</td></tr>"
-                        + "<tr><td>command</td><td>arg1</td><td>arg2</td></tr>"
-                        + "</table>");
+    private void createTwoCommandsTable() {
+        table = parseTable(tr("command", "arg1", "arg2"), tr("command", "arg1", "arg2"));
     }
 
     private void doCommandThrowsRuntimeException() {
@@ -230,19 +206,15 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
                 .thenReturn("OK");
     }
 
-    private void createCommandAndRetryTable() throws ParseException {
-        table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>commandAndRetry</td><td>arg1</td><td>arg2</td></tr>"
-                        + "</table>");
+    private void createCommandAndRetryTable() {
+        table = parseTable(tr("commandAndRetry", "arg1", "arg2"));
     }
 
     private void doCommandThrowsExceptions() {
         when(commandProcessor.doCommand("command", args)).thenThrow(new SeleniumException("Error"));
     }
 
-    private void doCommandReturnsNOKs() throws ParseException {
+    private void doCommandReturnsNOKs() {
         when(commandProcessor.doCommand("command", args)).thenReturn("NOK");
     }
 

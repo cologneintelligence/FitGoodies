@@ -97,7 +97,7 @@ public class ColumnFixture extends Fixture {
         return TypeAdapter.on(this, getTargetClass().getField(camel(name)));
     }
 
-    protected Class getTargetClass() {
+    protected Class<?> getTargetClass() {
         return getClass();
     }
 }

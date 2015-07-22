@@ -29,7 +29,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.text.ParseException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -42,7 +41,7 @@ public final class FitParseResultTest extends FitGoodiesTestCase {
 
     private String tr(final String name, final String color,
                       final int r, final int w, final int i, final int e) {
-        return String.format("<tr><td><a href=\"%s\">%s</a></td><td bgcolor=\"#%s\">%d right, %d wrong, %d ignored, %d exceptions</td></tr>",
+        return String.format(tr("<a href=\"%s\">%s</a></td><td bgcolor=\"#%s\">%d right, %d wrong, %d ignored, %d exceptions"),
                 name, name, color, r, w, i, e);
     }
 
@@ -64,11 +63,8 @@ public final class FitParseResultTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testEmptyResult() throws ParseException {
-        Parse table = new Parse("<table>"
-                + "<tr><td>x</td></tr>"
-                + "<tr><td>y</td></tr>"
-                + "<tr><td>z</td></tr></table>");
+    public void testEmptyResult() {
+        Parse table = parseTableWithoutAnnotation(tr("x"), tr("y"), tr("z"));
 
         Parse line = table.parts.more;
         new FitParseResult().replaceLastIn(line);
@@ -94,11 +90,8 @@ public final class FitParseResultTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testReplaceLine() throws ParseException {
-        Parse table = new Parse("<table>"
-                + "<tr><td>x</td></tr>"
-                + "<tr><td>y</td></tr>"
-                + "<tr><td>z</td></tr></table>");
+    public void testReplaceLine() {
+        Parse table = parseTableWithoutAnnotation(tr("x"), tr("y"), tr("z"));
 
         Parse line = table.parts.more;
         result1.replaceLastIn(line);
@@ -111,14 +104,10 @@ public final class FitParseResultTest extends FitGoodiesTestCase {
         assertThat(table.parts.more.more.more.more.more.parts.text(), is(equalTo("z")));
 
 
+        line = table.parts.more;
+        result2.replaceLastIn(line);
 
-		line = table.parts.more;
-		result2.replaceLastIn(line);
-
-        table = new Parse("<table>"
-                + "<tr><td>a</td></tr>"
-                + "<tr><td>ignore me, replace me, forget me</td></tr>"
-                + "<tr><td>c</td></tr></table>");
+        table = parseTableWithoutAnnotation(tr("a"), tr("ignore me, replace me, forget me"), tr("c"));
 
         line = table.parts.more;
         result2.replaceLastIn(line);

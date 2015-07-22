@@ -25,90 +25,65 @@ import fit.Parse;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import java.text.ParseException;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 
 public class SetupFixtureTest extends FitGoodiesTestCase {
     @Test
-    public void testUse() throws ParseException {
+    public void testUse() {
         final Processors procs = new Processors();
         final SetupFixture setup = new SetupFixture(procs);
 
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>use</td><td>de.cologneintelligence.fitgoodies.references."
-                + "processors.EmptyCrossReferenceProcessor</td></tr>"
-                + "</table>");
+        Parse table = parseTable(
+                tr("use", "de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor"));
         setup.doTable(table);
         assertThat(de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor.class, (Matcher) is(sameInstance(procs.get(0).getClass())));
 
-        table = new Parse(
-                "<table><tr><td>ignore</td></tr>"
-                        + "<tr><td>use</td><td>de.cologneintelligence.fitgoodies.references."
-                        + "processors.StorageCrossReferenceProcessor</td></tr>"
-                        + "<tr><td>use</td><td>de.cologneintelligence.fitgoodies.references."
-                        + "processors.StorageCrossReferenceProcessor</td></tr>"
-                        + "</table>");
+        table = parseTable(
+                tr("use", "de.cologneintelligence.fitgoodies.references.processors.StorageCrossReferenceProcessor"),
+                tr("use", "de.cologneintelligence.fitgoodies.references.processors.StorageCrossReferenceProcessor"));
         setup.doTable(table);
         assertThat(de.cologneintelligence.fitgoodies.references.processors.StorageCrossReferenceProcessor.class, (Matcher) is(sameInstance(procs.get(1).getClass())));
     }
 
     @Test
-    public void testUseOutput() throws ParseException {
+    public void testUseOutput() {
         final Processors procs = new Processors();
         final SetupFixture setup = new SetupFixture(procs);
 
-        final Parse table = new Parse(
-                "<table><tr><td>ignore</td></tr>"
-                        + "<tr><td>use</td><td>de.cologneintelligence.fitgoodies.references."
-                        + "processors.EmptyCrossReferenceProcessor</td></tr>"
-                        + "</table>");
+        final Parse table = parseTable(
+                tr("use", "de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor"));
         setup.doTable(table);
         assertThat(table.parts.more.parts.more.text(), containsString("nonEmpty"));
     }
 
     @Test
-    public void testRemove() throws ParseException {
+    public void testRemove() {
         final Processors procs = new Processors();
         final SetupFixture setup = new SetupFixture(procs);
 
-        Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>use</td><td>de.cologneintelligence.fitgoodies.references."
-                + "processors.EmptyCrossReferenceProcessor</td></tr>"
-                + "<tr><td>use</td><td>de.cologneintelligence.fitgoodies.references."
-                + "processors.StorageCrossReferenceProcessor</td></tr>"
-                + "</table>");
+        Parse table = parseTable(
+                tr("use", "de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor"),
+                tr("use", "de.cologneintelligence.fitgoodies.references.processors.StorageCrossReferenceProcessor"));
         setup.doTable(table);
 
-        table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>remove</td><td>de.cologneintelligence.fitgoodies.references."
-                        + "processors.EmptyCrossReferenceProcessor</td></tr>"
-                        + "</table>");
+        table = parseTable(
+                tr("remove", "de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor"));
+
         setup.doTable(table);
 
         assertThat(procs.count(), is(equalTo((Object) 1)));
 
-        table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>remove</td><td>de.cologneintelligence.fitgoodies.references."
-                        + "processors.EmptyCrossReferenceProcessor</td></tr>"
-                        + "</table>");
+        table = parseTable(
+                "remove", "de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor");
         setup.doTable(table);
 
         assertThat(procs.count(), is(equalTo((Object) 1)));
     }
 
     @Test
-    public void testConstructor() throws ParseException  {
+    public void testConstructor()  {
         CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 
         while (helper.getProcessors().count() > 0) {
@@ -117,11 +92,9 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
         final SetupFixture setup = new SetupFixture();
 
-        final Parse table = new Parse(
-                "<table><tr><td>ignore</td></tr>"
-                        + "<tr><td>use</td><td>de.cologneintelligence.fitgoodies.references."
-                        + "processors.EmptyCrossReferenceProcessor</td></tr>"
-                        + "</table>");
+        final Parse table = parseTable(
+                tr("use", "de.cologneintelligence.fitgoodies.references.processors.EmptyCrossReferenceProcessor"));
+
         setup.doTable(table);
         assertThat(helper.getProcessors().count(), is(equalTo((Object) 1)));
     }

@@ -17,271 +17,264 @@
  */
 package de.cologneintelligence.fitgoodies;
 
-import java.text.ParseException;
-
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.processors.CrossReferenceProcessorMock;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
 import fit.Parse;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import java.text.ParseException;
+
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
- *
  * @author jwierum
- *
  */
 public final class RowFixtureTest extends FitGoodiesTestCase {
 
-    public static class DummyRowObject {
+	public static class DummyRowObject {
 
-        public Integer x;
-        public String y;
-        public Integer z;
+		public Integer x;
+		public String y;
+		public Integer z;
 
-        public DummyRowObject(
-                final Integer xVal,
-                final String yVal,
-                final Integer zVal) {
-            x = xVal;
-            y = yVal;
-            z = zVal;
-        }
-    }
+		public DummyRowObject(
+				final Integer xVal,
+				final String yVal,
+				final Integer zVal) {
+			x = xVal;
+			y = yVal;
+			z = zVal;
+		}
+	}
 
-    public static class TestRowObject {
+	public static class TestRowObject {
 
-        public String x;
-        public Integer y;
-        public Integer z;
+		public String x;
+		public Integer y;
+		public Integer z;
 
-        public TestRowObject(
-                final String xVal,
-                final Integer yVal,
-                final Integer zVal) {
-            x = xVal;
-            y = yVal;
-            z = zVal;
-        }
-    }
+		public TestRowObject(
+				final String xVal,
+				final Integer yVal,
+				final Integer zVal) {
+			x = xVal;
+			y = yVal;
+			z = zVal;
+		}
+	}
 
-    private static class DummyRowFixture extends RowFixture {
+	private static class DummyRowFixture extends RowFixture {
 
-        public boolean upCalled;
-        public boolean downCalled;
+		public boolean upCalled;
+		public boolean downCalled;
 
-        @Override
-        public Class<?> getTargetClass() {
-            return DummyRowObject.class;
-        }
+		@Override
+		public Class<?> getTargetClass() {
+			return DummyRowObject.class;
+		}
 
-        @Override
-        public Object[] query() throws Exception {
-            return new DummyRowObject[] {
-                    new DummyRowObject(1, "x", 3),
-                    new DummyRowObject(8, "matched", 6)
-            };
-        }
+		@Override
+		public Object[] query() throws Exception {
+			return new DummyRowObject[]{
+					new DummyRowObject(1, "x", 3),
+					new DummyRowObject(8, "matched", 6)
+			};
+		}
 
-        @Override
-        public void setUp() {
-            upCalled = true;
-        }
+		@Override
+		public void setUp() {
+			upCalled = true;
+		}
 
-        @Override
-        public void tearDown() {
-            downCalled = true;
-        }
-    }
+		@Override
+		public void tearDown() {
+			downCalled = true;
+		}
+	}
 
-    private static class TestRowFixture extends RowFixture {
+	private static class TestRowFixture extends RowFixture {
 
-        public boolean upCalled;
-        public boolean downCalled;
+		public boolean upCalled;
+		public boolean downCalled;
 
-        @Override
-        public Class<?> getTargetClass() {
-            return TestRowObject.class;
-        }
+		@Override
+		public Class<?> getTargetClass() {
+			return TestRowObject.class;
+		}
 
-        @Override
-        public Object[] query() throws Exception {
-            return new TestRowObject[] {
-                    new TestRowObject("x", 2, 3),
-                    new TestRowObject("x", 5, 6)
-            };
-        }
+		@Override
+		public Object[] query() throws Exception {
+			return new TestRowObject[]{
+					new TestRowObject("x", 2, 3),
+					new TestRowObject("x", 5, 6)
+			};
+		}
 
-        @Override
-        public void setUp() {
-            upCalled = true;
-        }
+		@Override
+		public void setUp() {
+			upCalled = true;
+		}
 
-        @Override
-        public void tearDown() {
-            downCalled = true;
-        }
-    }
+		@Override
+		public void tearDown() {
+			downCalled = true;
+		}
+	}
 
-    public static final class ErrorFixture extends DummyRowFixture {
+	public static final class ErrorFixture extends DummyRowFixture {
 
-        private boolean downCalled = false;
+		private boolean downCalled = false;
 
-        public boolean isDownCalled() {
-            return downCalled;
-        }
+		public boolean isDownCalled() {
+			return downCalled;
+		}
 
-        @Override
-        public void tearDown() {
-            downCalled = true;
-        }
-    }
+		@Override
+		public void tearDown() {
+			downCalled = true;
+		}
+	}
 
-    private DummyRowFixture rowFixture;
+	private DummyRowFixture rowFixture;
 
-    @Before
-    public void setUp() throws Exception {
-        rowFixture = new DummyRowFixture();
-    }
+	@Before
+	public void setUp() throws Exception {
+		rowFixture = new DummyRowFixture();
+	}
 
-    @Test
-    public void testNumberCases() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
-                + "<tr><td>1</td><td>x</td><td>3</td></tr></table>");
-        rowFixture.doTable(table);
-        assertThat(rowFixture.counts.right, is(equalTo((Object) 3)));
-        assertThat(rowFixture.counts.wrong, is(equalTo((Object) 1)));
+	@Test
+	public void testNumberCases() {
+		Parse table = parseTable(
+				tr("x", "y", "z"),
+				tr("1", "x", "3"));
+		rowFixture.doTable(table);
+		assertThat(rowFixture.counts.right, is(equalTo((Object) 3)));
+		assertThat(rowFixture.counts.wrong, is(equalTo((Object) 1)));
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
-                + "<tr><td>1</td><td>match</td><td>3</td></tr></table>");
-        rowFixture.doTable(table);
-        assertThat(rowFixture.counts.wrong, is(equalTo((Object) 4)));
-        assertThat(rowFixture.counts.right, is(equalTo((Object) 5)));
-    }
+		table = parseTable(
+				tr("x", "y", "z"),
+				tr("1", "match", "3"));
+		rowFixture.doTable(table);
+		assertThat(rowFixture.counts.wrong, is(equalTo((Object) 4)));
+		assertThat(rowFixture.counts.right, is(equalTo((Object) 5)));
+	}
 
-    @Test
-    public void testCrossReferencesForStringValues() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
-                + "<tr><td>8</td><td>${2}</td><td>6</td></tr></table>");
+	@Test
+	public void testCrossReferencesForStringValues() {
+		Parse table = parseTable(
+				tr("x", "y", "z"),
+				tr("8", "${2}", "6"));
 
-        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        helper.getProcessors().add(new CrossReferenceProcessorMock("2"));
+		CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+		helper.getProcessors().add(new CrossReferenceProcessorMock("2"));
 
-        rowFixture.doTable(table);
-        assertThat(rowFixture.counts.right, is(equalTo((Object) 3)));
+		rowFixture.doTable(table);
+		assertThat(rowFixture.counts.right, is(equalTo((Object) 3)));
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td></tr>"
-                + "<tr><td>8</td><td>${test}</td></tr></table>");
-        rowFixture.doTable(table);
-        assertThat(rowFixture.counts.wrong, is(equalTo((Object) 4)));
-    }
+		table = parseTable(
+				tr("x", "y"),
+				tr("8", "${test}"));
+		rowFixture.doTable(table);
+		assertThat(rowFixture.counts.wrong, is(equalTo((Object) 4)));
+	}
 
-    @Test
-    public void testCrossReferencesForIntegerValues() throws ParseException {
-        TestRowFixture sameValueRowFixture = new TestRowFixture();
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
-                + "<tr><td>x</td><td>${test}</td><td>3</td></tr></table>");
+	@Test
+	public void testCrossReferencesForIntegerValues() {
+		TestRowFixture sameValueRowFixture = new TestRowFixture();
+		Parse table = parseTable(
+				tr("x", "y", "z"),
+				tr("x", "${test}", "3"));
 
-        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        helper.getProcessors().add(new CrossReferenceProcessorMock("test", "2"));
+		CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+		helper.getProcessors().add(new CrossReferenceProcessorMock("test", "2"));
 
-        sameValueRowFixture.doTable(table);
-        assertThat(sameValueRowFixture.counts.right, is(3));
-    }
+		sameValueRowFixture.doTable(table);
+		assertThat(sameValueRowFixture.counts.right, is(3));
+	}
 
-    @Test
-    public void testCrossReferencesExpectedRowsCountEqualsComputedRowsCount() throws ParseException {
-        TestRowFixture sameValueRowFixture = new TestRowFixture();
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
-                + "<tr><td>x</td><td>${test2}</td><td>3</td></tr>"
-                + "<tr><td>x</td><td>5</td><td>6</td></tr></table>");
+	@Test
+	public void testCrossReferencesExpectedRowsCountEqualsComputedRowsCount() {
+		TestRowFixture sameValueRowFixture = new TestRowFixture();
+		Parse table = parseTable(
+				tr("x", "y", "z"),
+				tr("x", "${test2}", "3"),
+				tr("x", "5", "6"));
 
-        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        helper.getProcessors().add(new CrossReferenceProcessorMock("test2", "2"));
+		CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+		helper.getProcessors().add(new CrossReferenceProcessorMock("test2", "2"));
 
-        sameValueRowFixture.doTable(table);
-        assertThat(sameValueRowFixture.counts.right, is(6));
-    }
+		sameValueRowFixture.doTable(table);
+		assertThat(sameValueRowFixture.counts.right, is(6));
+	}
 
-    @Test
-    public void testUpDown() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>number</td><td>n()</td></tr>"
-                + "<tr><td>1</td></tr>1</table>");
-        rowFixture.doTable(table);
+	@Test
+	public void testUpDown() {
+		Parse table = parseTable(
+				tr("number", "n()"),
+				tr("1", "1"));
+		rowFixture.doTable(table);
 
-        assertThat(rowFixture.upCalled, is(true));
-        assertThat(rowFixture.downCalled, is(true));
-    }
+		assertThat(rowFixture.upCalled, is(true));
+		assertThat(rowFixture.downCalled, is(true));
+	}
 
-    @Test
-    public void testGetParams() {
-        rowFixture.setParams(new String[] { "x=y", "a=b" });
+	@Test
+	public void testGetParams() {
+		rowFixture.setParams(new String[]{"x=y", "a=b"});
 
-        assertThat(rowFixture.getParam("x"), is(equalTo("y")));
-        assertThat(rowFixture.getParam("y"), is(nullValue()));
+		assertThat(rowFixture.getParam("x"), is(equalTo("y")));
+		assertThat(rowFixture.getParam("y"), is(nullValue()));
 
-        assertThat(rowFixture.getParam("a", "z"), is(equalTo("b")));
-        assertThat(rowFixture.getParam("u", "z"), is(equalTo("z")));
-    }
+		assertThat(rowFixture.getParam("a", "z"), is(equalTo("b")));
+		assertThat(rowFixture.getParam("u", "z"), is(equalTo("z")));
+	}
 
-    @Test
-    public void testUpWithErrors() throws Exception {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr></table>");
+	@Test
+	public void testUpWithErrors() throws Exception {
+		Parse table = parseTable(tr("x"));
 
-        RowFixture fixture = new RowFixture() {
-            @Override
-            public Class<?> getTargetClass() {
-                return null;
-            }
+		RowFixture fixture = new RowFixture() {
+			@Override
+			public Class<?> getTargetClass() {
+				return null;
+			}
 
-            @Override
-            public Object[] query() throws Exception {
-                return null;
-            }
+			@Override
+			public Object[] query() throws Exception {
+				return null;
+			}
 
-            @Override
-            public void setUp() throws Exception {
-                throw new RuntimeException("x");
-            }
+			@Override
+			public void setUp() throws Exception {
+				throw new RuntimeException("x");
+			}
 
-            @Override
-            public void tearDown() throws Exception {
-                throw new RuntimeException("x");
-            }
-        };
-        fixture.doTable(table);
+			@Override
+			public void tearDown() throws Exception {
+				throw new RuntimeException("x");
+			}
+		};
+		fixture.doTable(table);
 
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
-    }
+		assertThat(fixture.counts.right, is(equalTo((Object) 0)));
+		assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
+		assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+	}
 
-    @Test
-    public void testDownWithErrors() throws Exception {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "</table>");
+	@Test
+	public void testDownWithErrors() throws Exception {
+		Parse table = parseTable();
 
-        ErrorFixture fixture = new ErrorFixture();
-        fixture.doTable(table);
+		ErrorFixture fixture = new ErrorFixture();
+		fixture.doTable(table);
 
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
-        assertThat(fixture.isDownCalled(), is(true));
-    }
+		assertThat(fixture.counts.right, is(equalTo((Object) 0)));
+		assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
+		assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+		assertThat(fixture.isDownCalled(), is(true));
+	}
 }

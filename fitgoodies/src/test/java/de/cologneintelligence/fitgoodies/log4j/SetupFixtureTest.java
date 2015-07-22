@@ -52,10 +52,10 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 
 		SetupFixture fixture = new SetupFixture(provider);
 
-		Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-				+ "<tr><td>monitor</td><td>com.example.class1</td><td>R</td></tr>"
-				+ "<tr><td>monitor</td><td>com.example.testclass2</td><td>stdout</td></tr>"
-				+ "<tr><td>monitorRoot</td><td>R</td></tr></table>");
+		Parse table = parseTable(
+				tr("monitor", "com.example.class1", "R"),
+				tr("monitor", "com.example.testclass2", "stdout"),
+				tr("monitorRoot", "R</td></tr></table>"));
 
 		when(provider.getLogger("com.example.class1")).thenReturn(attachable1);
 		when(attachable1.getAppender("R")).thenReturn(appender1);
@@ -98,10 +98,9 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 
 		SetupFixture fixture = new SetupFixture(provider);
 
-		Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-				+ "<tr><td>monitor</td><td>com.example.class2</td><td>stderr</td></tr>"
-				+ "<tr><td>monitor</td><td>com.example.testclass1</td><td>R</td></tr>"
-				+ "</table>");
+		Parse table = parseTable(
+				tr("monitor", "com.example.class2", "stderr"),
+				tr("monitor", "com.example.testclass1", "R"));
 
 		fixture.doTable(table);
 		assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
@@ -111,7 +110,7 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testClear() throws ParseException {
+	public void testClear() {
 		final LoggerProvider provider = mock(LoggerProvider.class, "provider");
 		final AppenderAttachable logger = mock(AppenderAttachable.class, "logger");
 		final CaptureAppender appender = mock(CaptureAppender.class, "appender");
@@ -122,9 +121,7 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 
 		SetupFixture fixture = new SetupFixture(provider);
 
-		Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-				+ "<tr><td>clear</td><td>com.example.class2</td><td>stderr</td></tr>"
-				+ "</table>");
+		Parse table = parseTable(tr("clear", "com.example.class2", "stderr"));
 
 		fixture.doTable(table);
 

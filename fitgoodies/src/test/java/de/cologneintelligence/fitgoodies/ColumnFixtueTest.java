@@ -27,12 +27,11 @@ import fit.Parse;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.ParseException;
-
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class ColumnFixtueTest extends FitGoodiesTestCase {
+    @SuppressWarnings("unused")
     public static class NumberObjFixture extends ColumnFixture {
         public Integer testNr;
         public Integer testNrAtStart;
@@ -81,34 +80,34 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testSimpleStringCases() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>string</td><td>s()</td></tr>"
-                + "<tr><td>x</td><td>x</td></tr></table>");
+    public void testSimpleStringCases() {
+        Parse table = parseTable(
+                tr("string", "s()"),
+                tr("x", "x</td></tr></table>"));
         stringObjFixture.doTable(table);
         assertThat(stringObjFixture.counts.right, is(equalTo((Object) 1)));
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>string</td><td>s()</td></tr>"
-                + "<tr><td>x</td><td>y</td></tr></table>");
+        table = parseTable(
+                tr("string", "s()"),
+                tr("x", "y</td></tr></table>"));
         stringObjFixture.doTable(table);
         assertThat(stringObjFixture.counts.wrong, is(equalTo((Object) 1)));
     }
 
     @Test
-    public void testSimpleNumberCase() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>number</td><td>n()</td></tr>"
-                + "<tr><td>2</td><td>2</td></tr></table>");
+    public void testSimpleNumberCase() {
+        Parse table = parseTable(
+                tr("number", "n()"),
+                tr("2", "2"));
         numberObjFixture.doTable(table);
         assertThat(numberObjFixture.counts.right, is(equalTo((Object) 1)));
     }
 
     @Test
-    public void testCrossReferencesWithoutException() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>string</td><td>s()</td></tr>"
-                + "<tr><td>matched</td><td>${test}</td></tr></table>");
+    public void testCrossReferencesWithoutException() {
+        Parse table = parseTable(
+                tr("string", "s()"),
+                tr("matched", "${test}"));
 
         CrossReferenceHelper helper = DependencyManager.getOrCreate(
                 CrossReferenceHelper.class);
@@ -117,35 +116,33 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
         stringObjFixture.doTable(table);
         assertThat(stringObjFixture.counts.right, is(equalTo((Object) 1)));
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>string</td><td>s()</td></tr>"
-                + "<tr><td>test2</td><td>${test}</td></tr></table>");
+        table = parseTable(
+                tr("string", "s()"),
+                tr("test2", "${test}"));
         stringObjFixture.doTable(table);
         assertThat(stringObjFixture.counts.wrong, is(equalTo((Object) 1)));
     }
 
     @Test
-    public void testCrossReferencesWithException() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>string</td><td>s()</td></tr>"
-                + "<tr><td>x</td><td>${nonEmpty()}</td></tr></table>");
+    public void testCrossReferencesWithException() {
+        Parse table = parseTable(tr("string", "s()"),
+                tr("x", "${nonEmpty()}"));
 
         stringObjFixture.doTable(table);
         assertThat(stringObjFixture.counts.wrong, is(equalTo((Object) 0)));
         assertThat(stringObjFixture.counts.right, is(equalTo((Object) 1)));
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>string</td><td>s()</td></tr>"
-                + "<tr><td>null</td><td>${nonEmpty()}</td></tr></table>");
+        table = parseTable(tr("string", "s()"),
+                tr("null", "${nonEmpty()}"));
 
         stringObjFixture.doTable(table);
         assertThat(stringObjFixture.counts.wrong, is(equalTo((Object) 1)));
         assertThat(stringObjFixture.counts.right, is(equalTo((Object) 1)));
         assertThat(table.parts.more.more.parts.more.text(), containsString("!"));
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>number</td><td>n()</td></tr>"
-                + "<tr><td>2</td><td>${empty()}</td></tr></table>");
+        table = parseTable(
+                tr("number", "n()"),
+                tr("2", "${empty()}"));
         numberObjFixture.doTable(table);
 
         assertThat(numberObjFixture.counts.wrong, is(equalTo((Object) 1)));
@@ -153,10 +150,10 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testUpDown() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>number</td><td>n()</td></tr>"
-                + "<tr><td>1</td></tr>1</table>");
+    public void testUpDown() {
+        Parse table = parseTable(
+                tr("number", "n()"),
+                tr("1", "1"));
         numberObjFixture.doTable(table);
 
         assertThat(numberObjFixture.upCalled, is(true));
@@ -165,11 +162,13 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
 
     @Test
     public void testUpWithErrors() throws Exception {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr></table>");
+        Parse table = parseTable(tr("x"));
 
         ColumnFixture fixture = new ColumnFixture() {
-            @Override public void setUp() { throw new RuntimeException("x"); }
+            @Override
+            public void setUp() {
+                throw new RuntimeException("x");
+            }
         };
         fixture.doTable(table);
 
@@ -180,8 +179,7 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
 
     @Test
     public void testDownWithErrors() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr></table>");
+        final Parse table = parseTable(tr("x"));
 
         ErrorFixture fixture = new ErrorFixture();
         fixture.doTable(table);
@@ -204,10 +202,10 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testInit() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>number</td><td>n()</td></tr>"
-                + "<tr><td>1</td></tr>1</table>");
+    public void testInit() {
+        Parse table = parseTable(
+                tr("number", "n()"),
+                tr("1", "1"));
 
         numberObjFixture.setParams(new String[]{"testNr = 9"});
         numberObjFixture.doTable(table);
@@ -216,11 +214,11 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testSetValue() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>number</td><td>n()</td></tr>"
-                + "<tr><td>2</td><td>${tests.put(x)}</td></tr>"
-                + "<tr><td>${tests.get(x)}</td><td>2</td></tr></table>");
+    public void testSetValue() {
+        Parse table = parseTable(
+                tr("number", "n()"),
+                tr("2", "${tests.put(x)}"),
+                tr("${tests.get(x)}", "2"));
         numberObjFixture.doTable(table);
         assertThat(numberObjFixture.counts.right, is(equalTo((Object) 2)));
         assertThat(numberObjFixture.counts.exceptions, is(equalTo((Object) 0)));

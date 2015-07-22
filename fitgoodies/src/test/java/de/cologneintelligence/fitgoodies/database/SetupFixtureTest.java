@@ -43,14 +43,11 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testHelperInteraction1() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>provider</td><td>"
-                + "de.cologneintelligence.fitgoodies.database.DriverMock</td></tr>"
-                + "<tr><td>user</td><td>username</td></tr>"
-                + "<tr><td>password</td><td>pass</td></tr>"
-                + "<tr><td>connectionString</td><td>db</td></tr>"
-                + "</table>"
-                );
+        final Parse table = parseTable(
+                tr("provider", "de.cologneintelligence.fitgoodies.database.DriverMock"),
+                tr("user", "username"),
+                tr("password", "pass"),
+                tr("connectionString", "db"));
 
         final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
@@ -64,14 +61,11 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testHelperInteraction2() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>provider</td><td>"
-                + "de.cologneintelligence.fitgoodies.database.DriverMock</td></tr>"
-                + "<tr><td>user</td><td>user2</td></tr>"
-                + "<tr><td>password</td><td>pw2</td></tr>"
-                + "<tr><td>connectionString</td><td>jdbc://test/db</td></tr>"
-                + "</table>"
-                );
+        final Parse table = parseTable(
+                tr("provider", "de.cologneintelligence.fitgoodies.database.DriverMock"),
+                tr("user", "user2"),
+                tr("password", "pw2"),
+                tr("connectionString", "jdbc://test/db"));
 
         final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);

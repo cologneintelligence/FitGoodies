@@ -24,7 +24,6 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.ParseException;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -41,16 +40,16 @@ public final class CellArgumentParserFactoryImplTest extends FitGoodiesTestCase 
 	}
 
 	@Test
-	public void testReturn() throws ParseException {
-		Parse cell = new Parse("<td>cell[x=y]</td>", new String[]{"td"});
+	public void testReturn() {
+		Parse cell = parseTd("cell[x=y]");
 		CellArgumentParser parser = factory.getParserFor(cell);
 
 		assertThat(parser.getClass(), (Matcher) is(equalTo(CellArgumentParserImpl.class)));
 	}
 
 	@Test
-	public void testParameterProcessing() throws ParseException {
-		Parse cell = new Parse("<td>cell[x=y]</td>", new String[]{"td"});
+	public void testParameterProcessing() {
+		Parse cell = parseTd("cell[x=y]");
 		CellArgumentParser parser = factory.getParserFor(cell);
 
 		Map<String, String> parameters = parser.getExtractedCommandParameters();

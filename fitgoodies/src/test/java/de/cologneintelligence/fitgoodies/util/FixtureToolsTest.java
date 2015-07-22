@@ -176,10 +176,9 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
 
     @Test
     public void testResolveQuestionMarks() throws Exception {
-        Parse table = new Parse("<table>"
-                + "<tr><td>ok</td><td>good()</td>"
-                + "<td>works?</td><td>y?n</td></tr>"
-                + "<tr><td>alone?</td></tr></table>");
+        Parse table = parseTableWithoutAnnotation(
+                tr("ok", "good()", "works?", "y?n"),
+                tr("alone?"));
 
         FixtureTools.resolveQuestionMarks(table.parts);
         assertThat(table.parts.parts.text(), is(equalTo("ok")));
@@ -188,9 +187,9 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
         assertThat(table.parts.parts.more.more.more.text(), is(equalTo("y?n")));
         assertThat(table.parts.more.parts.text(), is(equalTo("alone?")));
 
-        table = new Parse("<table>"
-                + "<tr><td>alone?</td><td>ok()</td><td>x</td></tr>"
-                + "<tr><td>works?</td></tr></table>");
+        table = parseTableWithoutAnnotation(
+                tr("alone?", "ok()", "x"),
+                tr("works?"));
 
         FixtureTools.resolveQuestionMarks(table.parts);
         assertThat(table.parts.parts.text(), is(equalTo("alone()")));
@@ -223,10 +222,9 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
 
     @Test
     public void testColumnParameters() throws Exception {
-        Parse table = new Parse("<table>"
-                + "<tr><td>x[1 2]</td><td>y[3 4]</td><td>z</td></tr>"
-                + "<tr><td>a[7]</td><td>b</td><td>c</td></tr>"
-                + "</table>");
+        Parse table = parseTableWithoutAnnotation(
+                tr("x[1 2]", "y[3 4]", "z"),
+                tr("a[7]", "b", "c"));
 
         String[] actual = FixtureTools.extractColumnParameters(table.parts);
         assertThat(Arrays.asList("1 2", "3 4", null), is(equalTo(Arrays.asList(actual))));
@@ -234,9 +232,7 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
         assertThat(table.parts.parts.more.text(), is(equalTo("y")));
         assertThat(table.parts.more.parts.text(), is(equalTo("a[7]")));
 
-        table = new Parse("<table>"
-                + "<tr><td>name</td><td>date [ de_DE, dd.MM.yyyy ] </td></tr>"
-                + "</table>");
+        table = parseTableWithoutAnnotation(tr("name", "date [ de_DE, dd.MM.yyyy ] "));
 
         actual = FixtureTools.extractColumnParameters(table.parts);
         assertThat(Arrays.asList(null, "de_DE, dd.MM.yyyy"), is(equalTo(Arrays.asList(actual))));

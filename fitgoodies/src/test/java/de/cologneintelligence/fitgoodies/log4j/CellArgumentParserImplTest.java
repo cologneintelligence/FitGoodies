@@ -32,13 +32,10 @@ import static org.junit.Assert.assertThat;
 
 
 public final class CellArgumentParserImplTest extends FitGoodiesTestCase {
-	private Parse makeCell(final String innerText) throws ParseException {
-		return new Parse("<td>" + innerText + "</td>", new String[]{"td"});
-	}
 
 	@Test
-	public void testRegularParsing() throws ParseException {
-		Parse cell = makeCell("x[a=b, C=d , d =  e]");
+	public void testRegularParsing() {
+		Parse cell = parseTd("x[a=b, C=d , d =  e]");
 
 		CellArgumentParserImpl parser = new CellArgumentParserImpl(cell);
 		Map<String, String> parameters = parser.getExtractedCommandParameters();
@@ -51,8 +48,8 @@ public final class CellArgumentParserImplTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testRegularParsingWithMultipleEqualSigns() throws ParseException {
-		Parse cell = makeCell("y [some=crazy=command, 1=2=3]");
+	public void testRegularParsingWithMultipleEqualSigns() {
+		Parse cell = parseTd("y [some=crazy=command, 1=2=3]");
 
 		CellArgumentParserImpl parser = new CellArgumentParserImpl(cell);
 		Map<String, String> parameters = parser.getExtractedCommandParameters();
@@ -64,8 +61,8 @@ public final class CellArgumentParserImplTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testError() throws ParseException {
-		Parse cell = makeCell("command[oops...]");
+	public void testError() {
+		Parse cell = parseTd("command[oops...]");
 		CellArgumentParserImpl parser = new CellArgumentParserImpl(cell);
 
 		try {
@@ -74,7 +71,7 @@ public final class CellArgumentParserImplTest extends FitGoodiesTestCase {
 		} catch (IllegalArgumentException e) {
 		}
 
-		cell = makeCell("command[a=b,,c=d]");
+		cell = parseTd("command[a=b,,c=d]");
 		parser = new CellArgumentParserImpl(cell);
 
 		try {

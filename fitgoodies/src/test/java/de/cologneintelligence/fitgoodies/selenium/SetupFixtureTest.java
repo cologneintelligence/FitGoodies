@@ -53,20 +53,18 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testHelperInteraction() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>serverHost</td><td>server-host</td></tr>"
-                + "<tr><td>serverPort</td><td>4444</td></tr>"
-                + "<tr><td>browserStartCommand</td><td>browser-Start-Command</td></tr>"
-                + "<tr><td>browserURL</td><td>browser-URL</td></tr>"
-                + "<tr><td>speed</td><td>400</td></tr>"
-                + "<tr><td>timeout</td><td>3000</td></tr>"
-                + "<tr><td>retryTimeout</td><td>40</td></tr>"
-                + "<tr><td>retryInterval</td><td>10</td></tr>"
-                + "<tr><td>takeScreenshots</td><td>true</td></tr>"
-                + "<tr><td>sleepBeforeScreenshot</td><td>500</td></tr>"
-                + "<tr><td>start</td><td>start config</td></tr>"
-                + "</table>"
-                );
+        final Parse table = parseTable(
+                tr("serverHost", "server-host"),
+                tr("serverPort", "4444"),
+                tr("browserStartCommand", "browser-Start-Command"),
+                tr("browserURL", "browser-URL"),
+                tr("speed", "400"),
+                tr("timeout", "3000"),
+                tr("retryTimeout", "40"),
+                tr("retryInterval", "10"),
+                tr("takeScreenshots", "true"),
+                tr("sleepBeforeScreenshot", "500"),
+                tr("start", "start config"));
 
         helper.setCommandProcessor(commandProcessor);
 
@@ -92,10 +90,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testHelperInteractionStopProcessor() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>stop</td><td></td></tr>"
-                + "</table>"
-                );
+        final Parse table = parseTable(tr("stop", ""));
 
         helper.setCommandProcessor(commandProcessor );
 

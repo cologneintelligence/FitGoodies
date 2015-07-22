@@ -208,7 +208,7 @@ public abstract class RowFixture extends fit.RowFixture {
     }
 
     @Override
-    protected void match(List expected, List computed, int col) {
+    protected void match(List<Parse> expected, List<Object> computed, int col) {
         final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 
         if (col < columnBindings.length) {

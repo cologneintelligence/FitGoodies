@@ -32,10 +32,8 @@ import static org.junit.Assert.assertThat;
 
 public class SetupFixtureTest extends FitGoodiesTestCase {
     @Test
-    public void testParsing() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>asdf</td><td>java.lang.String</td></tr>"
-                + "</table>");
+    public void testParsing() {
+        Parse table = parseTable(tr("asdf", "java.lang.String"));
 
         SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
@@ -44,19 +42,15 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         AliasHelper helper = DependencyManager.getOrCreate(AliasHelper.class);
         assertThat(helper.getClazz("asdf"), is(equalTo("java.lang.String")));
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>i</td><td>java.lang.Integer</td></tr>"
-                + "</table>");
+        table = parseTable(tr("i", "java.lang.Integer"));
 
         fixture.doTable(table);
         assertThat(helper.getClazz("i"), is(equalTo("java.lang.Integer")));
     }
 
     @Test
-    public void testError() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr>"
-                + "</table>");
+    public void testError() {
+        Parse table = parseTable(tr("x"));
 
         SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);

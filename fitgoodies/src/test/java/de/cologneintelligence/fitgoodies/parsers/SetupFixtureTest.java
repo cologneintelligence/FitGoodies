@@ -41,10 +41,8 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 		assertThat(FixtureTools.parse("42", Long.class, null, helper), is(nullValue()));
 		final Fixture fixture = new SetupFixture();
 
-		final Parse table = new Parse("<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>load</td><td>de.cologneintelligence.fitgoodies.parsers.LongParserMock</td></tr>"
-				+ "</table>");
+		final Parse table = parseTable(
+				tr("load", "de.cologneintelligence.fitgoodies.parsers.LongParserMock"));
 
 		fixture.doTable(table);
 		assertThat(FixtureTools.parse("42", Long.class, null, helper), not(CoreMatchers.is(nullValue())));

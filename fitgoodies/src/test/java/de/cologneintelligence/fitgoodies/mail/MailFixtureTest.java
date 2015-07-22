@@ -66,14 +66,12 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
         final Mail mail = mock(Mail.class);
         MailFixture fixture = prepareFixture(mail);
 
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>body</td><td>contains</td><td>Text</td></tr>"
-                + "<tr><td>SUBJECT</td><td>contains</td><td>Simple</td></tr>"
-                + "<tr><td>to</td><td>contains</td><td>server</td></tr>"
-                + "<tr><td>received</td><td>contains</td><td>tld</td></tr>"
-                + "<tr><td>date</td><td>regex</td><td>\\d{3}</td></tr>"
-                + "</table>"
-                );
+        Parse table = parseTable(
+                tr("body", "contains", "Text"),
+                tr("SUBJECT", "contains", "Simple"),
+                tr("to", "contains", "server"),
+                tr("received", "contains", "tld"),
+                tr("date", "regex", "\\d{3}"));
 
 
         when(mail.getHTMLContent()).thenReturn("A mail!\nThis is a simple TEXT");
@@ -101,16 +99,14 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
         final Mail mail = mock(Mail.class);
         MailFixture fixture = prepareFixture(mail);
 
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>body</td><td>contains</td><td>some text</td></tr>"
-                + "<tr><td>SUBJECT</td><td>is similar to</td><td>Simple</td></tr>"
-                + "<tr><td>to</td><td>contains</td><td>empty?!</td></tr>"
-                + "<tr><td>date</td><td>regex</td><td>^\\d{3}$</td></tr>"
-                + "<tr><td>custom</td><td>regex</td><td>x</td></tr>"
-                + "<tr><td>X-MyHeader</td><td>regex</td><td>7</td></tr>"
-                + "<tr><td>X-Null</td><td>regex</td><td>7</td></tr>"
-                + "</table>"
-                );
+        Parse table = parseTable(
+                tr("body", "contains", "some text"),
+                tr("SUBJECT", "is similar to", "Simple"),
+                tr("to", "contains", "empty?!"),
+                tr("date", "regex", "^\\d{3}$"),
+                tr("custom", "regex", "x"),
+                tr("X-MyHeader", "regex", "7"),
+                tr("X-Null", "regex", "7"));
 
 
         final String mailText = "A mail!\nThis is a simple TEXT!"
@@ -150,10 +146,7 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
     @Test
     public void testNoMail() throws Exception {
         MailFixture fixture = prepareFixture(null);
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>body</td><td>contains</td><td>some text</td></tr>"
-                + "</table>"
-                );
+        Parse table = parseTable(tr("body", "contains", "some text"));
 
         fixture.doTable(table);
         assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
@@ -165,9 +158,7 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
     public void testNoDelete() throws Exception {
         final Mail mail = mock(Mail.class);
         MailFixture fixture = prepareFixture(mail);
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "</table>"
-                );
+        Parse table = parseTable();
 
         fixture.setParams(new String[]{"delete=no"});
         fixture.doTable(table);
@@ -180,11 +171,9 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
         final Mail mail = mock(Mail.class);
         MailFixture fixture = prepareFixture(mail);
 
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>plainbody</td><td>contains</td><td>TEXT</td></tr>"
-                + "<tr><td>plainbody</td><td>contains</td><td>different</td></tr>"
-                + "</table>"
-                );
+        Parse table = parseTable(
+                tr("plainbody", "contains", "TEXT"),
+                tr("plainbody", "contains", "different"));
 
 
         when(mail.getPlainContent()).thenReturn("Something different");
@@ -206,11 +195,9 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
         final Mail mail = mock(Mail.class);
         MailFixture fixture = prepareFixture(mail);
 
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>htmlbody</td><td>contains</td><td>TEXT</td></tr>"
-                + "<tr><td>htmlbody</td><td>contains</td><td>different</td></tr>"
-                + "</table>"
-                );
+        Parse table = parseTable(
+                tr("htmlbody", "contains", "TEXT"),
+                tr("htmlbody", "contains", "different"));
 
 
         when(mail.getHTMLContent()).thenReturn("Something different");
@@ -234,9 +221,8 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
 
         CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.parseBody("${tests.put(body)}", "this goes to the body");
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>plainbody</td><td>contains</td><td>${tests.get(body)}</td></tr>"
-                + "</table>");
+        Parse table = parseTable(
+                tr("plainbody", "contains", "${tests.get(body)}"));
 
         when(mail.getPlainContent()).thenReturn("this goes to the body");
 

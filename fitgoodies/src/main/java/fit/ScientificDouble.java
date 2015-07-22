@@ -6,72 +6,72 @@ package fit;
 // Warning: not (yet) a general number usable in all calculations.
 
 public class ScientificDouble extends Number implements Comparable {
-    protected double value;
-    protected double precision;
+	protected double value;
+	protected double precision;
 
-    public ScientificDouble(double value) {
-        this.value = value;
-        this.precision = 0;
-    }
+	public ScientificDouble(double value) {
+		this.value = value;
+		this.precision = 0;
+	}
 
-    public static ScientificDouble valueOf(String s) {
-        ScientificDouble result = new ScientificDouble(Double.parseDouble(s));
-        result.precision = precision(s);
-        return result;
-    }
+	public static ScientificDouble valueOf(String s) {
+		ScientificDouble result = new ScientificDouble(Double.parseDouble(s));
+		result.precision = precision(s);
+		return result;
+	}
 
-    public static double precision (String s) {
-        double value = Double.parseDouble(s);
-        double bound = Double.parseDouble(tweak(s.trim()));
-        return Math.abs(bound-value);
-    }
+	public static double precision(String s) {
+		double value = Double.parseDouble(s);
+		double bound = Double.parseDouble(tweak(s.trim()));
+		return Math.abs(bound - value);
+	}
 
-    public static String tweak(String s) {
-        int pos;
-        if ((pos = s.toLowerCase().indexOf("e"))>=0) {
-            return tweak(s.substring(0,pos)) + s.substring(pos);
-        }
-        if (s.contains(".")) {
-            return s + "5";
-        }
-        return s+".5";
-    }
+	public static String tweak(String s) {
+		int pos;
+		if ((pos = s.toLowerCase().indexOf("e")) >= 0) {
+			return tweak(s.substring(0, pos)) + s.substring(pos);
+		}
+		if (s.contains(".")) {
+			return s + "5";
+		}
+		return s + ".5";
+	}
 
+	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+	public boolean equals(Object obj) {
+		return compareTo(obj) == 0;
+	}
 
+	@SuppressWarnings("NullableProblems")
+	public int compareTo(Object obj) {
+		double other = ((Number) obj).doubleValue();
+		double diff = value - other;
 
-    public boolean equals(Object obj) {
-        return compareTo(obj) == 0;
-    }
+		if (diff < -precision) return -1;
+		if (diff > precision) return 1;
+		if (Double.isNaN(value) && Double.isNaN(other)) return 0;
+		if (Double.isNaN(value)) return 1;
+		if (Double.isNaN(other)) return -1;
+		return 0;
+	}
 
-    public int compareTo(Object obj) {
-        double other = ((Number)obj).doubleValue();
-        double diff = value-other;
-        // System.out.println(value+" "+precision+" "+diff);
-        if (diff < -precision) return -1;
-        if (diff > precision) return 1;
-        if (Double.isNaN(value) && Double.isNaN(other)) return 0;
-        if (Double.isNaN(value)) return 1;
-        if (Double.isNaN(other)) return -1;
-        return 0;
-    }
+	public String toString() {
+		return Double.toString(value);
+	}
 
-    public String toString() {
-        return Double.toString(value);
-    }
+	public double doubleValue() {
+		return value;
+	}
 
-    public double doubleValue() {
-        return value;
-    }
+	public float floatValue() {
+		return (float) value;
+	}
 
-    public float floatValue() {
-        return (float)value;
-    }
+	public long longValue() {
+		return (long) value;
+	}
 
-    public long longValue() {
-        return (long)value;
-    }
-
-    public int intValue() {
-        return (int)value;
-    }
+	public int intValue() {
+		return (int) value;
+	}
 }

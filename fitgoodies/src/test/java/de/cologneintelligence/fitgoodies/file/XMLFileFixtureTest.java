@@ -28,11 +28,8 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
-import java.text.ParseException;
 
-import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -69,14 +66,11 @@ public class XMLFileFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testParsing() throws ParseException {
-        final Parse table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>/root/child1/child[1]</td><td>Content</td></tr>"
-                        + "<tr><td>/root/child1/child[2]</td><td>x</td></tr>"
-                        + "<tr><td>/root/sibling</td><td>Content 1</td></tr>"
-                        + "</table>");
+    public void testParsing() {
+        final Parse table = parseTable(
+                tr("/root/child1/child[1]", "Content"),
+                tr("/root/child1/child[2]", "x"),
+                tr("/root/sibling", "Content 1"));
 
         fixture.doTable(table);
 
@@ -84,13 +78,10 @@ public class XMLFileFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testParsingWithErrors() throws ParseException {
-        final Parse table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>/root/child1/child[1]</td></tr>"
-                        + "<tr><td>---</td><td>x</td></tr>"
-                        + "</table>");
+    public void testParsingWithErrors() {
+        final Parse table = parseTable(
+                tr("/root/child1/child[1]"),
+                tr("---", "x"));
 
         fixture.doTable(table);
 
@@ -98,13 +89,10 @@ public class XMLFileFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testParsingWithIgnores() throws ParseException {
-        final Parse table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>/root/child1/child[1]</td><td></td></tr>"
-                        + "<tr><td>/root/child1/child[2]</td><td></td></tr>"
-                        + "</table>");
+    public void testParsingWithIgnores() {
+        final Parse table = parseTable(
+                        tr("/root/child1/child[1]", ""),
+                        tr("/root/child1/child[2]", ""));
 
         fixture.doTable(table);
 

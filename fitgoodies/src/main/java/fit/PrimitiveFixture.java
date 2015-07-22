@@ -17,7 +17,7 @@ public class PrimitiveFixture extends Fixture {
     }
 
     public static boolean parseBoolean (Parse cell) {
-        return Boolean.valueOf(cell.text()).booleanValue();
+        return Boolean.valueOf(cell.text());
     }
 
     // answer comparisons ///////////////////////
@@ -50,7 +50,7 @@ public class PrimitiveFixture extends Fixture {
         if (parseBoolean(cell) == value) {
 			right(cell);
 		} else {
-            wrong(cell, ""+value);
+            wrong(cell, Boolean.toString(value));
         }
     }
 

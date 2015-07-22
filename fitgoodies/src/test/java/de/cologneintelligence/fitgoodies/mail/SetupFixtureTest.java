@@ -35,15 +35,14 @@ import static org.junit.Assert.assertThat;
 
 public final class SetupFixtureTest extends FitGoodiesTestCase {
     @Test
-    public void testPares1() throws ParseException {
-        Parse table1 = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>host</td><td>127.0.0.1</td></tr>"
-                + "<tr><td>protocol</td><td>pop3</td></tr>"
-                + "<tr><td>username</td><td>testuser</td></tr>"
-                + "<tr><td>password</td><td>testpassword</td></tr>"
-                + "<tr><td>ssl</td><td>true</td></tr>"
-                + "<tr><td>port</td><td>123</td></tr>"
-                + "</table>");
+    public void testPares1() {
+        Parse table1 = parseTable(
+                tr("host", "127.0.0.1"),
+                tr("protocol", "pop3"),
+                tr("username", "testuser"),
+                tr("password", "testpassword"),
+                tr("ssl", "true"),
+                tr("port", "123"));
 
         SetupFixture fixture = new SetupFixture();
         fixture.doTable(table1);
@@ -61,14 +60,13 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testPares2() throws ParseException {
-        Parse table1 = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>host</td><td>localhost</td></tr>"
-                + "<tr><td>protocol</td><td>imap</td></tr>"
-                + "<tr><td>username</td><td>user</td></tr>"
-                + "<tr><td>password</td><td>passwd</td></tr>"
-                + "<tr><td>inbox</td><td>INBOX</td></tr>"
-                + "</table>");
+    public void testPares2() {
+        Parse table1 = parseTable(
+                tr("host", "localhost"),
+                tr("protocol", "imap"),
+                tr("username", "user"),
+                tr("password", "passwd"),
+                tr("inbox", "INBOX"));
 
         SetupFixture fixture = new SetupFixture();
         fixture.doTable(table1);

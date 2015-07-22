@@ -45,10 +45,8 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testParse() throws Exception {
-        final Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>load</td><td>de.cologneintelligence.fitgoodies.adapters.DummyTypeAdapter</td></tr>"
-                + "</table>");
+        final Parse table = parseTable(
+                tr("load", "de.cologneintelligence.fitgoodies.adapters.DummyTypeAdapter"));
 
         fixture.doTable(table);
         assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));

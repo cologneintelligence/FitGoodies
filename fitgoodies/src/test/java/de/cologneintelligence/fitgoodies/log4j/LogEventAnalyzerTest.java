@@ -65,16 +65,12 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		return list.toArray(new LoggingEvent[list.size()]);
 	}
 
-	private Parse makeCell(final String string) throws ParseException {
-		return new Parse("<td>" + string + "</td>", new String[]{"td"});
-	}
-
 	@Test
-	public void testParseContains() throws ParseException {
+	public void testParseContains() {
 		final Fixture fixture = mock(Fixture.class);
-		final Parse cell1 = makeCell("a message");
-		final Parse cell2 = makeCell("rOOt");
-		final Parse cell3 = makeCell("non existing message");
+		final Parse cell1 = parseTd("a message");
+		final Parse cell2 = parseTd("rOOt");
+		final Parse cell3 = parseTd("non existing message");
 
 		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(
 				fixture, cell1, list);
@@ -100,12 +96,12 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testParseWithParameters() throws ParseException {
+	public void testParseWithParameters() {
 		final Fixture fixture = mock(Fixture.class);
-		final Parse cell1 = makeCell("no error");
-		final Parse cell2 = makeCell("root");
-		final Parse cell3 = makeCell("no error");
-		final Parse cell4 = makeCell("no error");
+		final Parse cell1 = parseTd("no error");
+		final Parse cell2 = parseTd("root");
+		final Parse cell3 = parseTd("no error");
+		final Parse cell4 = parseTd("no error");
 
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("minlevel", "Info");
@@ -142,11 +138,11 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testNotContains() throws ParseException {
+	public void testNotContains() {
 		final Fixture fixture = mock(Fixture.class);
-		final Parse cell1 = makeCell("an error");
-		final Parse cell2 = makeCell("toor");
-		final Parse cell3 = makeCell("root");
+		final Parse cell1 = parseTd("an error");
+		final Parse cell2 = parseTd("toor");
+		final Parse cell3 = parseTd("root");
 
 		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(
 				fixture, cell1, list);
@@ -170,11 +166,11 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testContainsException() throws ParseException {
+	public void testContainsException() {
 		final Fixture fixture = mock(Fixture.class);
-		final Parse cell1 = makeCell("xXx");
-		final Parse cell2 = makeCell("RuntiMEException");
-		final Parse cell3 = makeCell("IllegalStateException");
+		final Parse cell1 = parseTd("xXx");
+		final Parse cell2 = parseTd("RuntiMEException");
+		final Parse cell3 = parseTd("IllegalStateException");
 
 		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(
 				fixture, cell1, list);
@@ -200,11 +196,11 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testNotContainsException() throws ParseException {
+	public void testNotContainsException() {
 		final Fixture fixture = mock(Fixture.class);
-		final Parse cell1 = makeCell("Error message");
-		final Parse cell2 = makeCell("IllegalStateException");
-		final Parse cell3 = makeCell("Exception");
+		final Parse cell1 = parseTd("Error message");
+		final Parse cell2 = parseTd("IllegalStateException");
+		final Parse cell3 = parseTd("Exception");
 
 		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(fixture, cell1, list);
 		analyzer.processNotContainsException(new HashMap<String, String>());
