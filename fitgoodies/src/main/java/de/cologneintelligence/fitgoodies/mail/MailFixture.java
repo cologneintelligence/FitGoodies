@@ -131,7 +131,7 @@ public class MailFixture extends Fixture {
 
     private String parseContentCell(final Parse row) {
         try {
-            final TypeAdapter ta = TypeAdapter.on(this, String.class);
+            final TypeAdapter ta = TypeAdapter.on(this, this, String.class);
             final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
             FixtureTools.processCell(row.parts.more.more, ta, this, helper);
             return row.parts.more.more.text();

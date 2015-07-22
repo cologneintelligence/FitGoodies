@@ -133,14 +133,14 @@ public class LogFixture extends Fixture {
 
 		final Map<String, String> parameters = parser.getExtractedCommandParameters();
 		final String command = getCell(COMMAND_COLUMN).text();
-		final String checkExpression = getExpressionCellContent();
+		getExpressionCellContent();
 
 		dispatchCommand(command, parameters);
 	}
 
 	private String getExpressionCellContent() {
 		final Parse cell = getCell(CHECK_EXPRESSION_COLUMN);
-		final TypeAdapter ta = TypeAdapter.on(this, String.class);
+		final TypeAdapter ta = TypeAdapter.on(this, this, String.class);
 		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 		FixtureTools.processCell(cell, ta, this, helper);
 		return cell.text();

@@ -57,7 +57,7 @@ public class RowFixtureTest extends FitGoodiesTestCase {
         */
 
 		RowFixture fixture = new TestRowFixture();
-		TypeAdapter arrayAdapter = TypeAdapter.on(fixture,
+		TypeAdapter arrayAdapter = TypeAdapter.on(fixture, fixture,
 				BusinessObject.class.getMethod("getStrings", new Class[0]));
 		fixture.columnBindings = new TypeAdapter[]{arrayAdapter};
 

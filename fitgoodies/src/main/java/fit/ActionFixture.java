@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 
 public class ActionFixture extends Fixture {
 	protected Parse cells;
-	public static Fixture actor;
+	protected Object actor;
 	protected static Class empty[] = {};
 
 	// Traversal ////////////////////////////////
@@ -25,14 +25,14 @@ public class ActionFixture extends Fixture {
 	// Actions //////////////////////////////////
 
 	public void start() throws Exception {
-		actor = (Fixture) (Class.forName(cells.more.text()).newInstance());
+		actor = Class.forName(cells.more.text()).newInstance();
 	}
 
 	public void enter() throws Exception {
 		Method method = method(1);
 		Class type = method.getParameterTypes()[0];
 		String text = cells.more.more.text();
-		Object args[] = {TypeAdapter.on(actor, type).parse(text)};
+		Object args[] = {TypeAdapter.on(actor, this, type).parse(text)};
 		method.invoke(actor, args);
 	}
 
@@ -41,7 +41,7 @@ public class ActionFixture extends Fixture {
 	}
 
 	public void check() throws Exception {
-		TypeAdapter adapter = TypeAdapter.on(actor, method(0));
+		TypeAdapter adapter = TypeAdapter.on(actor, this, method(0));
 		check(cells.more.more, adapter);
 	}
 
@@ -54,8 +54,8 @@ public class ActionFixture extends Fixture {
 	protected Method method(String test, int args) throws NoSuchMethodException {
 		Method methods[] = actor.getClass().getMethods();
 		Method result = null;
-		for (int i = 0; i < methods.length; i++) {
-			Method m = methods[i];
+
+		for (Method m : methods) {
 			if (m.getName().equals(test) && m.getParameterTypes().length == args) {
 				if (result == null) {
 					result = m;

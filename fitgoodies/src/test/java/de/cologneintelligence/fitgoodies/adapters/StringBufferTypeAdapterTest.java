@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class StringBufferTypeAdapterTest extends FitGoodiesTestCase {
-	public class StringBufferContainer extends Fixture {
+	public class StringBufferContainer {
 		public StringBuffer builder = new StringBuffer();
 	}
 
@@ -49,11 +49,11 @@ public class StringBufferTypeAdapterTest extends FitGoodiesTestCase {
 		container2 = new StringBufferContainer();
 		container2.builder.append("Hello World");
 
-		TypeAdapter ta = TypeAdapter.on(container1,
+		TypeAdapter ta = TypeAdapter.on(container1, new Fixture(),
 				StringBufferContainer.class.getField("builder"));
 		ta1 = new StringBufferTypeAdapter(ta, null);
 
-		ta = TypeAdapter.on(container2,
+		ta = TypeAdapter.on(container2, new Fixture(),
 				StringBufferContainer.class.getField("builder"));
 		ta2 = new StringBufferTypeAdapter(ta, null);
 	}
@@ -100,8 +100,7 @@ public class StringBufferTypeAdapterTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testParse() throws Exception {
-		assertThat(((StringBuffer) ta1.parse("test")).toString(), is(equalTo("test")));
-		assertThat(((StringBuffer)
-                ta1.parse("another test")).toString(), is(equalTo("another test")));
+		assertThat(ta1.parse("test").toString(), is(equalTo("test")));
+		assertThat(ta1.parse("another test").toString(), is(equalTo("another test")));
 	}
 }

@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 public class TypeAdapterTest {
 
 	@SuppressWarnings("unused")
-	class TestFixture extends ColumnFixture { // used in testTypeAdapter
+	class TestObject { // used in testTypeAdapter
 		public byte sampleByte;
 		public short sampleShort;
 		public int sampleInt;
@@ -47,11 +47,11 @@ public class TypeAdapterTest {
 		public SimpleDateFormat error;
 	}
 
-	private TestFixture f;
+	private TestObject f;
 
 	@Before
 	public void setup() {
-		this.f = new TestFixture();
+		this.f = new TestObject();
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class TypeAdapterTest {
 		setFieldInF("sampleDoubleObject", "1.5");
 		assertThat(f.sampleDoubleObject, is(closeTo(1.5, 0.1)));
 
-		TypeAdapter a = TypeAdapter.on(f, f.getClass().getMethod("pi", new Class[]{}));
+		TypeAdapter a = TypeAdapter.on(f, new Fixture(), f.getClass().getMethod("pi", new Class[]{}));
 		assertThat(a.invoke(), (Matcher) is(closeTo(3.14159, 0.00001)));
 		assertThat(a.invoke(), (Matcher) is(equalTo(3.14159862)));
 	}
@@ -127,7 +127,7 @@ public class TypeAdapterTest {
 
 	@Test
 	public void arrayTypeAdapter() throws Exception {
-		TypeAdapter a = TypeAdapter.on(f, f.getClass().getField("sampleArray"));
+		TypeAdapter a = TypeAdapter.on(f, new Fixture(), f.getClass().getField("sampleArray"));
 		a.set(a.parse("1,2,3"));
 		assertThat(f.sampleArray[0], is(equalTo((Object) 1)));
 		assertThat(f.sampleArray[1], is(equalTo((Object) 2)));
@@ -137,7 +137,7 @@ public class TypeAdapterTest {
 	}
 
 	public void setFieldInF(String fieldName, String value) throws Exception {
-		TypeAdapter a = TypeAdapter.on(f, f.getClass().getField(fieldName));
+		TypeAdapter a = TypeAdapter.on(f, new Fixture(), f.getClass().getField(fieldName));
 		a.set(a.parse(value));
 	}
 
@@ -162,8 +162,8 @@ public class TypeAdapterTest {
 		f.sampleBool = true;
 		f.sampleInt = 42;
 
-		assertThat((Boolean) TypeAdapter.on(f, f.getClass().getField("sampleBool")).get(), is(true));
-		assertThat((Integer) TypeAdapter.on(f, f.getClass().getField("sampleInt")).get(), is(42));
+		assertThat((Boolean) TypeAdapter.on(f, new Fixture(), f.getClass().getField("sampleBool")).get(), is(true));
+		assertThat((Integer) TypeAdapter.on(f, new Fixture(), f.getClass().getField("sampleInt")).get(), is(42));
 	}
 
 	@Test

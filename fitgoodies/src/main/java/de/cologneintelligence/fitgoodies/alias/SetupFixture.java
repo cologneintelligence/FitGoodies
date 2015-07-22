@@ -45,8 +45,8 @@ public class SetupFixture extends Fixture {
      */
     public SetupFixture() {
         try {
-            aliasTypeAdapter = TypeAdapter.on(this, this.getClass().getField("alias"));
-            classNameTypeAdapter = TypeAdapter.on(this, this.getClass().getField("className"));
+            aliasTypeAdapter = TypeAdapter.on(this, this, this.getClass().getField("alias"));
+            classNameTypeAdapter = TypeAdapter.on(this, this, this.getClass().getField("className"));
         } catch (final SecurityException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }

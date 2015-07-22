@@ -25,7 +25,6 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import de.cologneintelligence.fitgoodies.util.WaitForResult;
-import fit.Fixture;
 import fit.Parse;
 import fit.TypeAdapter;
 
@@ -53,10 +52,10 @@ public class ActionFixture extends fit.ActionFixture {
 	 *
 	 * At runtime, the actor can be set using {@code start} in the input
 	 * table.
-	 * @param fixture the new actor
+	 * @param actor the new actor
 	 */
-	protected static void setActor(final Fixture fixture) {
-		actor = fixture;
+	protected void setActor(final Object actor) {
+		this.actor = actor;
 	}
 
 	/**
@@ -105,7 +104,7 @@ public class ActionFixture extends fit.ActionFixture {
 	}
 
 	private TypeAdapter getTypeAdapter(final Class<?> type) {
-		TypeAdapter ta = TypeAdapter.on(actor, type);
+		TypeAdapter ta = TypeAdapter.on(actor, this, type);
 		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
 		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         ta = FixtureTools.rebindTypeAdapter(ta, parameter, taHelper);
@@ -176,7 +175,7 @@ public class ActionFixture extends fit.ActionFixture {
 		cells.more.more = oldmore;
 		cells.body = "enter";
 
-		final Fixture oldActor = fit.ActionFixture.actor;
+		final Object oldActor = actor;
 		setActor(this);
 		enter();
 		setActor(oldActor);

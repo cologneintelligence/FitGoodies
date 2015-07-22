@@ -53,7 +53,7 @@ public class ArrayTypeAdapter extends TypeAdapter {
         parameter = convertParameter;
         helper = typeAdapterHelper;
 
-        init(ta.fixture, ta.type);
+        init(ta.target, ta.fixture, ta.type);
     }
 
     /**
@@ -64,15 +64,15 @@ public class ArrayTypeAdapter extends TypeAdapter {
     /**
      * Initializes the internal variables, especially the target, the target's
      * type and a type specific component adapter.
-     *
-     * @param target target fixture
+     * @param target target object
+     * @param fixture target fixture to parse objects
      * @param type type of the fixture data
      */
     @Override @SuppressWarnings("rawtypes")
-    protected void init(final Fixture target, final Class type) {
-        super.init(target, type);
+    protected void init(Object target, final Fixture fixture, final Class type) {
+        super.init(target, fixture, type);
 
-        componentAdapter = on(target, type.getComponentType());
+        componentAdapter = on(target, fixture, type.getComponentType());
         componentAdapter = helper.getAdapter(componentAdapter, parameter);
     }
 

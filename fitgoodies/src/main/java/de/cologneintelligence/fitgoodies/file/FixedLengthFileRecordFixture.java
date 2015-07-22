@@ -57,12 +57,10 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 		super.setUp();
 
 		final String skipEOL = getParam("skipEOL", "0");
-		noeol = false;
-		if (skipEOL.equalsIgnoreCase("true")
+
+		noeol = skipEOL.equalsIgnoreCase("true")
 				|| skipEOL.equalsIgnoreCase("yes")
-				|| skipEOL.equalsIgnoreCase("0")) {
-			noeol = true;
-		}
+				|| skipEOL.equalsIgnoreCase("0");
 	}
 
 	@Override
@@ -105,7 +103,7 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 		for (int i = 0; i < cellCount; ++i) {
 			try {
-				FixtureTools.processCell(cell, TypeAdapter.on(this, Integer.class), this, helper);
+				FixtureTools.processCell(cell, TypeAdapter.on(this, this, Integer.class), this, helper);
 				width[i] = Integer.parseInt(cell.text());
 			} catch (final Exception e) {
 				exception(cell, e);

@@ -19,7 +19,6 @@
 package fit;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -28,7 +27,7 @@ import static org.junit.Assert.assertThat;
 public class ActionFixtureTest extends FitGoodiesTestCase {
 
 	@SuppressWarnings("unused")
-	public static class TestFixture1 extends Fixture {
+	public static class TestFixture1 {
 		boolean pressed = false;
 
 		public String string1;
@@ -62,7 +61,7 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 	}
 
 	@SuppressWarnings("unused")
-	public static class TestFixture2 extends Fixture {
+	public static class TestFixture2 {
 		public void method(int x) {
 		}
 
@@ -86,21 +85,16 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 		return tr("check", name, expected);
 	}
 
-	@Before
-	public void setup() {
-		ActionFixture.actor = null;
-	}
-
 	@Test
 	public void testStart() throws Exception {
 		final String clazz = TestFixture1.class.getName();
 		Parse parse = parseTable(start(clazz));
 
 		final ActionFixture fixture = new ActionFixture();
-		assertThat(ActionFixture.actor, is(nullValue()));
+		assertThat(fixture.actor, is(nullValue()));
 		fixture.doTable(parse);
 		assertCounts(fixture.counts, parse, 0, 0, 0, 0);
-		assertThat(ActionFixture.actor, instanceOf(TestFixture1.class));
+		assertThat(fixture.actor, instanceOf(TestFixture1.class));
 	}
 
 	@Test
@@ -110,7 +104,7 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 
 		final ActionFixture fixture = new ActionFixture();
 		fixture.doTable(parse);
-		final TestFixture1 actor = (TestFixture1) ActionFixture.actor;
+		final TestFixture1 actor = (TestFixture1) fixture.actor;
 
 		assertCounts(fixture.counts, parse, 0, 0, 0, 0);
 		assertThat(actor.int1, is(42));
@@ -135,7 +129,7 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 
 		final ActionFixture fixture = new ActionFixture();
 		fixture.doTable(parse);
-		final TestFixture1 actor = (TestFixture1) ActionFixture.actor;
+		final TestFixture1 actor = (TestFixture1) fixture.actor;
 
 		assertCounts(fixture.counts, parse, 0, 0, 0, 0);
 		assertThat(actor.pressed, is(true));
@@ -148,7 +142,7 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 
 		final ActionFixture fixture = new ActionFixture();
 		fixture.doTable(parse);
-		final TestFixture1 actor = (TestFixture1) ActionFixture.actor;
+		final TestFixture1 actor = (TestFixture1) fixture.actor;
 
 		assertCounts(fixture.counts, parse, 0, 0, 0, 1);
 		assertThat(actor.pressed, is(false));

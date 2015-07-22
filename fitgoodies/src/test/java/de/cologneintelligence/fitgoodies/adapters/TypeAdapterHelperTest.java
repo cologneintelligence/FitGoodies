@@ -30,6 +30,7 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -128,7 +129,7 @@ public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
         helper.register(DummyTypeAdapter.class);
 
         final DummyValueFixture fixture = new DummyValueFixture();
-        ta = TypeAdapter.on(fixture, DummyValueFixture.class.getField("arr"));
+        ta = TypeAdapter.on(fixture, new Fixture(), DummyValueFixture.class.getField("arr"));
 
         actual = helper.getAdapter(ta, null);
 
@@ -138,6 +139,6 @@ public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
         assertThat(Arrays.asList(new BigInteger("42"), new BigInteger("42")), is(equalTo(Arrays.asList((BigInteger[]) actual.parse("x, y")))));
 
         actual = helper.getAdapter(ta, "parameter");
-        assertThat(Arrays.asList(new BigInteger("23")), is(equalTo(Arrays.asList((BigInteger[]) actual.parse("z")))));
+        assertThat(Collections.singletonList(new BigInteger("23")), is(equalTo(Arrays.asList((BigInteger[]) actual.parse("z")))));
     }
 }

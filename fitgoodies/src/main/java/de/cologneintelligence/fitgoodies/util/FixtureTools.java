@@ -284,7 +284,7 @@ public final class FixtureTools {
         for (final String fieldName : getArgs(args)) {
             try {
                 final Field field = fixture.getClass().getField(fieldName);
-                final TypeAdapter ta = rebindTypeAdapter(TypeAdapter.on(fixture, field), null,
+                final TypeAdapter ta = rebindTypeAdapter(TypeAdapter.on(fixture, fixture, field), null,
                         taHelper);
 
                 final String fieldValueString = getArg(args, fieldName, null, crossReferenceHelper);

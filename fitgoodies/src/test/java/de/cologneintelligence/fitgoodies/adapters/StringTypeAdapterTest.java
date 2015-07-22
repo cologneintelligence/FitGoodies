@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class StringTypeAdapterTest extends FitGoodiesTestCase {
-	public class StringContainer extends Fixture {
+	public class StringContainer {
 		public String string = "";
 	}
 
@@ -48,11 +48,11 @@ public class StringTypeAdapterTest extends FitGoodiesTestCase {
 		container2 = new StringContainer();
 		container2.string = "Hello World";
 
-		TypeAdapter ta = TypeAdapter.on(container1,
+		TypeAdapter ta = TypeAdapter.on(container1, new Fixture(),
 				StringContainer.class.getField("string"));
 		ta1 = new StringTypeAdapter(ta, null);
 
-		ta = TypeAdapter.on(container2,
+		ta = TypeAdapter.on(container2, new Fixture(),
 				StringContainer.class.getField("string"));
 		ta2 = new StringTypeAdapter(ta, null);
 	}

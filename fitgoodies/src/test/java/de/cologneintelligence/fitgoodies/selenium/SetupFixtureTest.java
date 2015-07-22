@@ -76,7 +76,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         assertThat(helper.getServerPort(), is(equalTo((Object) 4444)));
         assertThat(helper.getBrowserStartCommand(), is(equalTo("browser-Start-Command")));
         assertThat(helper.getBrowserURL(), is(equalTo("browser-URL")));
-        assertThat(helper.getSpeed(), is(equalTo(Integer.valueOf(400))));
+        assertThat(helper.getSpeed(), is(equalTo(400)));
         assertThat(helper.getTimeout(), is(equalTo((Object) 3000L)));
         assertThat(helper.getRetryTimeout(), is(equalTo((Object) 40L)));
         assertThat(helper.getRetryInterval(), is(equalTo((Object) 10L)));

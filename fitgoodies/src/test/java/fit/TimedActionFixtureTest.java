@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 public class TimedActionFixtureTest extends FitGoodiesTestCase {
 
-	public static class ActionTestFixture extends Fixture {
+	public static class ActionTestFixture {
 		public boolean called;
 
 		public void call() {
@@ -61,7 +61,7 @@ public class TimedActionFixtureTest extends FitGoodiesTestCase {
 		fixture.date2 = new Date(startTime + 300);
 		fixture.doTable(table);
 
-		assertThat(((ActionTestFixture) ActionFixture.actor).called, is(true));
+		assertThat(((ActionTestFixture) fixture.actor).called, is(true));
 
 		assertThat(table.at(0, 0, 1).text(), is(equalTo("time")));
 		assertThat(table.at(0, 0, 2).text(), is(equalTo("split")));
@@ -80,11 +80,9 @@ public class TimedActionFixtureTest extends FitGoodiesTestCase {
 		final int startTime = 1000;
 		fixture.date1 = new Date(startTime);
 		fixture.date2 = new Date(startTime + 7501);
-		System.out.println(fixture.date1);
-		System.out.println(fixture.date2);
 		fixture.doTable(table);
 
-		assertThat(((ActionTestFixture) ActionFixture.actor).called, is(true));
+		assertThat(((ActionTestFixture) fixture.actor).called, is(true));
 		assertThat(table.at(0, 0, 1).text(), is(equalTo("time")));
 		assertThat(table.at(0, 0, 2).text(), is(equalTo("split")));
 		assertThat(table.at(0, 1, 2).text(), is(equalTo("01:00:01")));

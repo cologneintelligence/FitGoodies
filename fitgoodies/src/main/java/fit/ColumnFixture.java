@@ -90,11 +90,11 @@ public class ColumnFixture extends Fixture {
     }
 
     protected TypeAdapter bindMethod (String name) throws Exception {
-        return TypeAdapter.on(this, getTargetClass().getMethod(camel(name), new Class[]{}));
+        return TypeAdapter.on(this, this, getTargetClass().getMethod(camel(name), new Class[]{}));
     }
 
     protected TypeAdapter bindField (String name) throws Exception {
-        return TypeAdapter.on(this, getTargetClass().getField(camel(name)));
+        return TypeAdapter.on(this, this, getTargetClass().getField(camel(name)));
     }
 
     protected Class<?> getTargetClass() {

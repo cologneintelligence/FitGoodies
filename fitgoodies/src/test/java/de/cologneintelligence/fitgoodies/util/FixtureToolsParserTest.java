@@ -23,6 +23,7 @@ import de.cologneintelligence.fitgoodies.ColumnFixture;
 import de.cologneintelligence.fitgoodies.adapters.CachingTypeAdapter;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import fit.Fixture;
 import fit.Parse;
 import fit.TypeAdapter;
 import org.hamcrest.Matcher;
@@ -49,9 +50,9 @@ public final class FixtureToolsParserTest extends FitGoodiesTestCase {
 	@Before
 	public void setUp() throws Exception {
 		dummy = new DummyFixture();
-		taMethod = TypeAdapter.on(dummy,
+		taMethod = TypeAdapter.on(dummy, new Fixture(),
 				DummyFixture.class.getMethod("getValue", new Class<?>[]{}));
-		taField = TypeAdapter.on(dummy,
+		taField = TypeAdapter.on(dummy, new Fixture(),
 				DummyFixture.class.getField("value"));
 	}
 

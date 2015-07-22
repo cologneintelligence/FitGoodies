@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class ArrayTypeAdapterTest extends FitGoodiesTestCase {
-    public class StringBuilderContainer extends Fixture {
+    public class StringBuilderContainer {
         public StringBuilder[] builder = new StringBuilder[10];
     }
 
@@ -48,11 +48,11 @@ public class ArrayTypeAdapterTest extends FitGoodiesTestCase {
         container2 = new StringBuilderContainer();
         container2.builder[0] = new StringBuilder("Hello World");
 
-        TypeAdapter ta = TypeAdapter.on(container1,
+        TypeAdapter ta = TypeAdapter.on(container1, new Fixture(),
                 StringBuilderContainer.class.getField("builder"));
         ta1 = new ArrayTypeAdapter(ta, null, new TypeAdapterHelper());
 
-        ta = TypeAdapter.on(container2,
+        ta = TypeAdapter.on(container2, new Fixture(),
                 StringBuilderContainer.class.getField("builder"));
         ta2 = new ArrayTypeAdapter(ta, null, new TypeAdapterHelper());
     }

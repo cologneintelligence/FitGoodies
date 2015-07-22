@@ -19,22 +19,20 @@ public class TypeAdapter {
 
 	// Factory //////////////////////////////////
 
-	public static TypeAdapter on(Fixture target, Class type) {
+	public static TypeAdapter on(Object target, Fixture fixture, Class type) {
 		TypeAdapter a = adapterFor(type);
-		a.init(target, type);
+		a.init(target, fixture, type);
 		return a;
 	}
 
-	public static TypeAdapter on(Fixture fixture, Field field) {
-		TypeAdapter a = on(fixture, field.getType());
-		a.target = fixture;
+	public static TypeAdapter on(Object target, Fixture fixture, Field field) {
+		TypeAdapter a = on(target, fixture, field.getType());
 		a.field = field;
 		return a;
 	}
 
-	public static TypeAdapter on(Fixture fixture, Method method) {
-		TypeAdapter a = on(fixture, method.getReturnType());
-		a.target = fixture;
+	public static TypeAdapter on(Object target, Fixture fixture, Method method) {
+		TypeAdapter a = on(target, fixture, method.getReturnType());
 		a.method = method;
 		return a;
 	}
@@ -68,7 +66,8 @@ public class TypeAdapter {
 
 	// Accessors ////////////////////////////////
 
-	protected void init(Fixture fixture, Class type) {
+	protected void init(Object target, Fixture fixture, Class type) {
+		this.target = target;
 		this.fixture = fixture;
 		this.type = type;
 	}
@@ -221,10 +220,10 @@ public class TypeAdapter {
 		Class componentType;
 		TypeAdapter componentAdapter;
 
-		protected void init(Fixture target, Class type) {
-			super.init(target, type);
+		protected void init(Object target, Fixture fixture, Class type) {
+			super.init(target, fixture, type);
 			componentType = type.getComponentType();
-			componentAdapter = on(target, componentType);
+			componentAdapter = on(target, fixture, componentType);
 		}
 
 		public Object parse(String s) throws Exception {

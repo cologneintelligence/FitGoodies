@@ -19,12 +19,11 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import java.io.IOException;
-
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
-
 import fit.Parse;
 import fit.TypeAdapter;
+
+import java.io.IOException;
 
 /**
  * This class takes a {@link de.cologneintelligence.fitgoodies.file.readers.FileRecordReader} and compares
@@ -45,7 +44,7 @@ public abstract class AbstractFileRecordReaderFixture extends
 	 */
 	public AbstractFileRecordReaderFixture() {
 		try {
-			typeAdapter = TypeAdapter.on(this, this.getClass().getField("actualValue"));
+			typeAdapter = TypeAdapter.on(this, this, this.getClass().getField("actualValue"));
 		} catch (SecurityException | NoSuchFieldException e) {
 			throw new RuntimeException(e);
 		}
