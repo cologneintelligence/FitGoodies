@@ -19,11 +19,11 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import de.cologneintelligence.fitgoodies.alias.AliasEnabledFixture;
+import de.cologneintelligence.fitgoodies.alias.AliasEnabledFixtureRunner;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Counts;
-import fit.Fixture;
+import fit.FixtureRunner;
 import fit.Parse;
 
 import java.io.*;
@@ -102,33 +102,30 @@ public class FitFileRunner implements Runner {
 
     private Counts process(final File inputFile, final File outputFile)
             throws IOException {
-        Fixture fixture;
+        FixtureRunner fixtureRunner;
         try (PrintWriter output = new PrintWriter(outputFile, encoding)) {
-            fixture = prepareFixture(inputFile, outputFile);
+            fixtureRunner = prepareFixture(inputFile, outputFile);
             String input = read(inputFile);
             Parse tables;
             try {
-                if (input.contains("<wiki>")) {
-                    tables = new Parse(input, new String[]{"wiki", "table", "tr", "td"});
-                    fixture.doTables(tables.parts);
-                } else {
-                    tables = new Parse(input, new String[]{"table", "tr", "td"});
-                    fixture.doTables(tables);
-                }
+                tables = new Parse(input, new String[]{"table", "tr", "td"});
+                fixtureRunner.doTables(tables);
             } catch (Exception e) {
                 tables = new Parse("body", "Unable to parse input. Input ignored.", null, null);
-                fixture.exception(tables, e);
+                Counts counts = new Counts();
+                counts.exceptions = 1;
             }
             tables.print(output);
-        }        return fixture.counts;
+        }
+        return fixtureRunner.counts;
     }
 
     @SuppressWarnings("unchecked")
-    private Fixture prepareFixture(final File in, final File out) {
-        Fixture fixture = new AliasEnabledFixture();
-        fixture.summary.put("input file", in.getAbsolutePath());
-        fixture.summary.put("input update", new Date(in.lastModified()));
-        fixture.summary.put("output file", out.getAbsolutePath());
-        return fixture;
+    private FixtureRunner prepareFixture(final File in, final File out) {
+        FixtureRunner fixtureRunner = new AliasEnabledFixtureRunner();
+        fixtureRunner.summary.put("input file", in.getAbsolutePath());
+        fixtureRunner.summary.put("input update", new Date(in.lastModified()));
+        fixtureRunner.summary.put("output file", out.getAbsolutePath());
+        return fixtureRunner;
     }
 }
