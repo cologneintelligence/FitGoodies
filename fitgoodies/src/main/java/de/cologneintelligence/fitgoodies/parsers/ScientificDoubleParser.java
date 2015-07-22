@@ -22,7 +22,7 @@ package de.cologneintelligence.fitgoodies.parsers;
 import de.cologneintelligence.fitgoodies.ScientificDouble;
 
 /**
- * Parser which is able to convert a string into a <code>ScientificDoubleParser</code>.
+ * Parser which is able to convert a string into a {@code ScientificDoubleParser}.
  *
  */
 public class ScientificDoubleParser implements Parser<ScientificDouble> {
@@ -36,35 +36,17 @@ public class ScientificDoubleParser implements Parser<ScientificDouble> {
 	}
 
 	/**
-	 * Parses a string and converts it into an <code>ScientificDouble</code>.
-	 * @param s <code>String</code> which will be converted
+	 * Parses a string and converts it into an {@code ScientificDouble}.
+	 * @param s {@code String} which will be converted
 	 * @param parameter ignored
-	 * @return <code>ScientificDouble</code> object which is represented by <code>s</code>
+	 * @return {@code ScientificDouble} object which is represented by {@code s}
 	 *
 	 * @throws Exception if the value can not be parsed
 	 */
 	@Override
 	public ScientificDouble parse(final String s, final String parameter)
 			throws Exception {
-		double value = Double.parseDouble(s);
-        double tolerance = precision(s);
-        return new ScientificDouble(value, tolerance);
+		return ScientificDouble.valueOf(s);
 	}
 
-    private static double precision(final String s) {
-        double value = Double.parseDouble(s);
-        double bound = Double.parseDouble(tweak(s.trim()));
-        return Math.abs(bound - value);
-    }
-
-    private static String tweak(final String s) {
-        int pos = s.toLowerCase().indexOf("e");
-        if (pos >= 0) {
-            return tweak(s.substring(0, pos)) + s.substring(pos);
-        }
-        if (s.contains(".")) {
-            return s + "5";
-        }
-        return s + ".5";
-    }
 }

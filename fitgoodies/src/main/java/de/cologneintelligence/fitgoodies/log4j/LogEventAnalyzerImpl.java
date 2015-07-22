@@ -18,7 +18,7 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import fit.FitUtils;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 import fit.Fixture;
 import fit.Parse;
 import org.apache.log4j.spi.LoggingEvent;

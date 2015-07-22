@@ -77,6 +77,6 @@ public class ScientificDouble extends Number implements Comparable {
 
 	@Override
 	public int hashCode() {
-		return 1;
+		return Double.valueOf(value).intValue();
 	}
 }

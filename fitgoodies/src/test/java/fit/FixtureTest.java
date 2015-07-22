@@ -1,5 +1,6 @@
 package fit;
 
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

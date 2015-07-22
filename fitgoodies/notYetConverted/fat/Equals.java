@@ -3,6 +3,8 @@
 
 package fat;
 
+import de.cologneintelligence.fitgoodies.ScientificDouble;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 import fit.*;
 import java.util.Date;
 

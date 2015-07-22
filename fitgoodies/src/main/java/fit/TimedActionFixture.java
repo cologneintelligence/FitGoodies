@@ -3,6 +3,8 @@
 
 package fit;
 
+import de.cologneintelligence.fitgoodies.util.FitUtils;
+
 import java.util.Date;
 import java.text.*;
 

@@ -19,8 +19,8 @@
 
 package de.cologneintelligence.fitgoodies.parsers;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.ScientificDouble;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;

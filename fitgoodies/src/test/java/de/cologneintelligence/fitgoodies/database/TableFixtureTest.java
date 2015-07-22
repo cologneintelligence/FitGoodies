@@ -19,8 +19,8 @@
 
 package de.cologneintelligence.fitgoodies.database;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.ScientificDouble;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 import org.hamcrest.Matcher;

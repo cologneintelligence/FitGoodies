@@ -24,7 +24,7 @@ import de.cologneintelligence.fitgoodies.file.FileInformation;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Counts;
-import fit.FitUtils;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 import fit.Parse;
 
 import java.io.File;

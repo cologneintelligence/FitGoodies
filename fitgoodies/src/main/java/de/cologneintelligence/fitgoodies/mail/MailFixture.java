@@ -25,7 +25,7 @@ import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
-import fit.FitUtils;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 import fit.Parse;
 import fit.TypeAdapter;
 

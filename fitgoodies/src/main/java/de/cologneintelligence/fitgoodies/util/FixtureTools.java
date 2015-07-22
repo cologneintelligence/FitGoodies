@@ -24,7 +24,6 @@ import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
 import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
-import fit.FitUtils;
 import fit.Fixture;
 import fit.Parse;
 import fit.TypeAdapter;

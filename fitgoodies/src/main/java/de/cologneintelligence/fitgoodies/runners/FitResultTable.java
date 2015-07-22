@@ -22,7 +22,7 @@ package de.cologneintelligence.fitgoodies.runners;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Counts;
-import fit.FitUtils;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 
 import java.io.*;
 import java.util.ArrayList;

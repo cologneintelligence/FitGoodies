@@ -21,7 +21,7 @@ package de.cologneintelligence.fitgoodies.test;
 
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Counts;
-import fit.FitUtils;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 import fit.Parse;
 import org.junit.After;
 import org.junit.Assert;

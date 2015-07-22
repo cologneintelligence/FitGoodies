@@ -3,6 +3,9 @@ package fit;
 // Copyright (c) 2002-2005 Cunningham & Cunningham, Inc.
 // Released under the terms of the GNU General Public License version 2 or later.
 
+import de.cologneintelligence.fitgoodies.ScientificDouble;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
+
 import java.text.DateFormat;
 import java.util.Date;
 

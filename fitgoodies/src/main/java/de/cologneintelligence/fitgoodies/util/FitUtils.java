@@ -1,4 +1,4 @@
-package fit;/*
+package de.cologneintelligence.fitgoodies.util;/*
  * Copyright (c) 2009-2015  Cologne Intelligence GmbH
  * This file is part of FitGoodies.
  *
@@ -16,13 +16,15 @@ package fit;/*
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import fit.Parse;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.StringTokenizer;
 
 public final class FitUtils {
-	private FitUtils() {};
+	private FitUtils() {}
 
 	public static String HTML_GREEN = "#cfffcf";
 	public static String HTML_RED = "#ffcfcf";
@@ -76,21 +78,21 @@ public final class FitUtils {
 		cell.addToBody(info(message));
 	}
 
-	protected static String info(String message) {
+	public static String info(String message) {
 		return " <font color=\"#808080\">" + escape(message) + "</font>";
 	}
 
-	protected static void ignore(Parse cell) {
+	public static void ignore(Parse cell) {
 		cell.addToTag(" bgcolor=\"" + HTML_GREY + "\"");
 	}
 
-	protected static void error(Parse cell, String message) {
+	public static void error(Parse cell, String message) {
 		cell.body = escape(cell.text());
 		cell.addToBody("<hr><pre>" + escape(message) + "</pre>");
 		cell.addToTag(" bgcolor=\"" + HTML_YELLOW + "\"");
 	}
 
-	protected static void exception(Parse cell, Throwable exception) {
+	public static void exception(Parse cell, Throwable exception) {
 		while (exception.getClass().equals(InvocationTargetException.class)) {
 			exception = ((InvocationTargetException) exception).getTargetException();
 		}

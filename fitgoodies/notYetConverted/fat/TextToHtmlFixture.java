@@ -1,5 +1,6 @@
 package fat;
 
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 import fit.*;
 import java.io.*;
 
