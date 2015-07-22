@@ -74,7 +74,7 @@ public class XMLFileFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertCounts(fixture.counts, table, 2, 1, 0, 0);
+        assertCounts(fixture.counts(), table, 2, 1, 0, 0);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class XMLFileFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertCounts(fixture.counts, table, 0, 0, 0, 1);
+        assertCounts(fixture.counts(), table, 0, 0, 0, 1);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class XMLFileFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
+        assertCounts(fixture.counts(), table, 0, 0, 0, 0);
         assertThat(table.parts.more.parts.more.text(), is(equalTo("Content")));
         assertThat(table.parts.more.more.parts.more.text(), is(equalTo("x")));
     }

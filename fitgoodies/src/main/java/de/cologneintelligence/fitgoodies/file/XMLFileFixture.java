@@ -71,7 +71,7 @@ public class XMLFileFixture extends AbstractFileReaderFixture {
 	}
 
 	@Override
-	public void doRow(final Parse row) {
+	protected void doRow(final Parse row) {
 		if (row.parts.more != null) {
 			String xpath = row.parts.text();
 			XPath path = xPathFactory.newXPath();

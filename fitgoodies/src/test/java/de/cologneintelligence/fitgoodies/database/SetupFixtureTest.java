@@ -52,7 +52,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         assertThat(helper.getUser(), is(equalTo("username")));
         assertThat(helper.getPassword(), is(equalTo("pass")));
         assertThat(helper.getConnectionString(), is(equalTo("db")));
@@ -70,7 +70,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         assertThat(helper.getUser(), is(equalTo("user2")));
         assertThat(helper.getPassword(), is(equalTo("pw2")));
         assertThat(helper.getConnectionString(), is(equalTo("jdbc://test/db")));

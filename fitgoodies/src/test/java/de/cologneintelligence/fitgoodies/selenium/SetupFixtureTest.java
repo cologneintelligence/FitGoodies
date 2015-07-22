@@ -71,7 +71,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         assertThat(helper.getServerHost(), is(equalTo("server-host")));
         assertThat(helper.getServerPort(), is(equalTo((Object) 4444)));
         assertThat(helper.getBrowserStartCommand(), is(equalTo("browser-Start-Command")));
@@ -97,7 +97,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         final SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
 
         verify(commandProcessor).stop();
     }

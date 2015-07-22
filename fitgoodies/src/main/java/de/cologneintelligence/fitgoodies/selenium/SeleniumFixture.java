@@ -77,7 +77,7 @@ public class SeleniumFixture extends ActionFixture {
     private int screenshotIndex = 0;
 
     @Override
-    public void doCells(final Parse cells) {
+    protected void doCells(final Parse cells) {
 
         final String command = cells.text();
         try {

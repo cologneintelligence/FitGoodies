@@ -59,7 +59,7 @@ public abstract class AbstractFileRecordReaderFixture extends
 	}
 
 	@Override
-	public void doRow(final Parse row) {
+	protected void doRow(final Parse row) {
 		Parse cell = row.parts;
 
 		while (cell != null) {
@@ -81,7 +81,7 @@ public abstract class AbstractFileRecordReaderFixture extends
 	}
 
 	@Override
-	public void doRows(final Parse rows) {
+	protected void doRows(final Parse rows) {
 		if (rows == null) {
 			throw new RuntimeException("Table must contain at least one row");
 		}

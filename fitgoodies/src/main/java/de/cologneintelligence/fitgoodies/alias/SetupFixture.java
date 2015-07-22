@@ -65,7 +65,7 @@ public class SetupFixture extends Fixture {
      * @param row row to parse
      */
     @Override
-    public void doRow(final Parse row) {
+    protected void doRow(final Parse row) {
         if (row.parts.more == null) {
             ignore(row);
             return;

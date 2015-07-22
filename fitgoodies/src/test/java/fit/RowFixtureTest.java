@@ -67,8 +67,8 @@ public class RowFixtureTest extends FitGoodiesTestCase {
 		expected.add(parseTr("1"));
 		fixture.match(expected, computed, 0);
 
-		assertThat("right", fixture.counts.right, is(1));
-		assertThat("exceptions", fixture.counts.exceptions, is(0));
+		assertThat("right", fixture.counts().right, is(1));
+		assertThat("exceptions", fixture.counts().exceptions, is(0));
 		assertThat("missing", fixture.missing.size(), is(0));
 		assertThat("surplus", fixture.surplus.size(), is(0));
 	}
@@ -89,7 +89,7 @@ public class RowFixtureTest extends FitGoodiesTestCase {
 
 		fixture.doTable(table);
 
-		assertCounts(fixture.counts, table, 5, 4, 0, 0);
+		assertCounts(fixture.counts(), table, 5, 4, 0, 0);
 		assertThat(table.at(0, 2, 0).body, is(equalTo("a")));
 		assertThat(table.at(0, 2, 1).body, is(equalTo("1")));
 		assertThat(table.at(0, 4, 0).body, is(equalTo("d")));

@@ -19,6 +19,7 @@
 package de.cologneintelligence.fitgoodies.log4j;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import fit.Counts;
 import fit.Fixture;
 import fit.Parse;
 import org.apache.log4j.Level;
@@ -27,7 +28,6 @@ import org.apache.log4j.spi.ThrowableInformation;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
@@ -67,7 +67,7 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testParseContains() {
-		final Fixture fixture = mock(Fixture.class);
+		final Fixture fixture = aFixture();
 		final Parse cell1 = parseTd("a message");
 		final Parse cell2 = parseTd("rOOt");
 		final Parse cell3 = parseTd("non existing message");
@@ -82,22 +82,17 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		analyzer = new LogEventAnalyzerImpl(fixture, cell3, list);
 		analyzer.processContains(new HashMap<String, String>());
 
-		assertThat(cell1.text(), is(equalTo("a messagea message")));
-		assertThat(cell2.text(), is(equalTo("rOOta root message")));
+		assertThat(cell1.text(), is(equalTo("a message (expected)a message (actual)")));
+		assertThat(cell2.text(), is(equalTo("rOOt (expected)a root message (actual)")));
 		assertThat(cell3.text(), is(equalTo("non existing message")));
 
-		verify(fixture).right(cell1);
-		verify(fixture).right(cell2);
-		verify(fixture).wrong(cell3);
-		verify(fixture).info(cell1, "(expected)");
-		verify(fixture).info(cell1, "(actual)");
-		verify(fixture).info(cell2, "(expected)");
-		verify(fixture).info(cell2, "(actual)");
+		assertThat(fixture.counts().right, is(2));
+		assertThat(fixture.counts().wrong, is(1));
 	}
 
 	@Test
 	public void testParseWithParameters() {
-		final Fixture fixture = mock(Fixture.class);
+		final Fixture fixture = aFixture();
 		final Parse cell1 = parseTd("no error");
 		final Parse cell2 = parseTd("root");
 		final Parse cell3 = parseTd("no error");
@@ -124,22 +119,18 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		analyzer = new LogEventAnalyzerImpl(fixture, cell4, list);
 		analyzer.processContains(parameters);
 
-		assertThat(cell1.text(), is(equalTo("no errorno error")));
+		assertThat(cell1.text(), is(equalTo("no error (expected)no error (actual)")));
 		assertThat(cell2.text(), is(equalTo("root")));
 		assertThat(cell3.text(), is(equalTo("no error")));
 		assertThat(cell4.text(), is(equalTo("no error")));
 
-		verify(fixture).right(cell1);
-		verify(fixture).right(cell2);
-		verify(fixture).right(cell3);
-		verify(fixture).wrong(cell4);
-		verify(fixture).info(cell1, "(expected)");
-		verify(fixture).info(cell1, "(actual)");
+		assertThat(fixture.counts().right, is(3));
+		assertThat(fixture.counts().wrong, is(1));
 	}
 
 	@Test
 	public void testNotContains() {
-		final Fixture fixture = mock(Fixture.class);
+		final Fixture fixture = aFixture();
 		final Parse cell1 = parseTd("an error");
 		final Parse cell2 = parseTd("toor");
 		final Parse cell3 = parseTd("root");
@@ -156,18 +147,22 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 
 		assertThat(cell1.text(), is(equalTo("an error")));
 		assertThat(cell2.text(), is(equalTo("toor")));
-		assertThat(cell3.text(), is(equalTo("roota root message")));
+		assertThat(cell3.text(), is(equalTo("root expecteda root message actual")));
 
-		verify(fixture).right(cell1);
-		verify(fixture).right(cell2);
-		verify(fixture).wrong(cell3);
-		verify(fixture).info(cell3, "(expected)");
-		verify(fixture).info(cell3, "(actual)");
+		assertThat(fixture.counts().right, is(2));
+		assertThat(fixture.counts().wrong, is(1));
+	}
+
+	public Fixture aFixture() {
+		Counts counts = new Counts();
+		final Fixture fixture = mock(Fixture.class);
+		when(fixture.counts()).thenReturn(counts);
+		return fixture;
 	}
 
 	@Test
 	public void testContainsException() {
-		final Fixture fixture = mock(Fixture.class);
+		final Fixture fixture = aFixture();
 		final Parse cell1 = parseTd("xXx");
 		final Parse cell2 = parseTd("RuntiMEException");
 		final Parse cell3 = parseTd("IllegalStateException");
@@ -182,22 +177,17 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		analyzer = new LogEventAnalyzerImpl(fixture, cell3, list);
 		analyzer.processContainsException(new HashMap<String, String>());
 
-		assertThat(cell1.text(), is(equalTo("xXxjava.lang.RuntimeException: xxx")));
-		assertThat(cell2.text(), is(equalTo("RuntiMEExceptionjava.lang.RuntimeException: xxx")));
+		assertThat(cell1.text(), is(equalTo("xXx (expected)java.lang.RuntimeException: xxx (actual)")));
+		assertThat(cell2.text(), is(equalTo("RuntiMEException (expected)java.lang.RuntimeException: xxx (actual)")));
 		assertThat(cell3.text(), is(equalTo("IllegalStateException")));
 
-		verify(fixture).right(cell1);
-		verify(fixture).right(cell2);
-		verify(fixture).wrong(cell3);
-		verify(fixture).info(cell1, "(expected)");
-		verify(fixture).info(cell1, "(actual)");
-		verify(fixture).info(cell2, "(expected)");
-		verify(fixture).info(cell2, "(actual)");
+		assertThat(fixture.counts().right, is(2));
+		assertThat(fixture.counts().wrong, is(1));
 	}
 
 	@Test
 	public void testNotContainsException() {
-		final Fixture fixture = mock(Fixture.class);
+		final Fixture fixture = aFixture();
 		final Parse cell1 = parseTd("Error message");
 		final Parse cell2 = parseTd("IllegalStateException");
 		final Parse cell3 = parseTd("Exception");
@@ -213,12 +203,9 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 
 		assertThat(cell1.text(), is(equalTo("Error message")));
 		assertThat(cell2.text(), is(equalTo("IllegalStateException")));
-		assertThat(cell3.text(), is(equalTo("Exceptionjava.lang.RuntimeException: xxx")));
+		assertThat(cell3.text(), is(equalTo("Exception expectedjava.lang.RuntimeException: xxx actual")));
 
-		verify(fixture).right(cell1);
-		verify(fixture).right(cell2);
-		verify(fixture).wrong(cell3);
-		verify(fixture).info(cell3, "(expected)");
-		verify(fixture).info(cell3, "(actual)");
+		assertThat(fixture.counts().right, is(2));
+		assertThat(fixture.counts().wrong, is(1));
 	}
 }

@@ -85,13 +85,13 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
                 tr("string", "s()"),
                 tr("x", "x</td></tr></table>"));
         stringObjFixture.doTable(table);
-        assertThat(stringObjFixture.counts.right, is(equalTo((Object) 1)));
+        assertThat(stringObjFixture.counts().right, is(equalTo((Object) 1)));
 
         table = parseTable(
                 tr("string", "s()"),
                 tr("x", "y</td></tr></table>"));
         stringObjFixture.doTable(table);
-        assertThat(stringObjFixture.counts.wrong, is(equalTo((Object) 1)));
+        assertThat(stringObjFixture.counts().wrong, is(equalTo((Object) 1)));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
                 tr("number", "n()"),
                 tr("2", "2"));
         numberObjFixture.doTable(table);
-        assertThat(numberObjFixture.counts.right, is(equalTo((Object) 1)));
+        assertThat(numberObjFixture.counts().right, is(equalTo((Object) 1)));
     }
 
     @Test
@@ -114,13 +114,13 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
         helper.getProcessors().add(new CrossReferenceProcessorMock("test"));
 
         stringObjFixture.doTable(table);
-        assertThat(stringObjFixture.counts.right, is(equalTo((Object) 1)));
+        assertThat(stringObjFixture.counts().right, is(equalTo((Object) 1)));
 
         table = parseTable(
                 tr("string", "s()"),
                 tr("test2", "${test}"));
         stringObjFixture.doTable(table);
-        assertThat(stringObjFixture.counts.wrong, is(equalTo((Object) 1)));
+        assertThat(stringObjFixture.counts().wrong, is(equalTo((Object) 1)));
     }
 
     @Test
@@ -129,15 +129,15 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
                 tr("x", "${nonEmpty()}"));
 
         stringObjFixture.doTable(table);
-        assertThat(stringObjFixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(stringObjFixture.counts.right, is(equalTo((Object) 1)));
+        assertThat(stringObjFixture.counts().wrong, is(equalTo((Object) 0)));
+        assertThat(stringObjFixture.counts().right, is(equalTo((Object) 1)));
 
         table = parseTable(tr("string", "s()"),
                 tr("null", "${nonEmpty()}"));
 
         stringObjFixture.doTable(table);
-        assertThat(stringObjFixture.counts.wrong, is(equalTo((Object) 1)));
-        assertThat(stringObjFixture.counts.right, is(equalTo((Object) 1)));
+        assertThat(stringObjFixture.counts().wrong, is(equalTo((Object) 1)));
+        assertThat(stringObjFixture.counts().right, is(equalTo((Object) 1)));
         assertThat(table.parts.more.more.parts.more.text(), containsString("!"));
 
         table = parseTable(
@@ -145,8 +145,8 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
                 tr("2", "${empty()}"));
         numberObjFixture.doTable(table);
 
-        assertThat(numberObjFixture.counts.wrong, is(equalTo((Object) 1)));
-        assertThat(numberObjFixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(numberObjFixture.counts().wrong, is(equalTo((Object) 1)));
+        assertThat(numberObjFixture.counts().exceptions, is(equalTo((Object) 0)));
     }
 
     @Test
@@ -172,9 +172,9 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
         };
         fixture.doTable(table);
 
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
     }
 
     @Test
@@ -184,9 +184,9 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
         ErrorFixture fixture = new ErrorFixture();
         fixture.doTable(table);
 
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
         assertThat(fixture.isDownCalled(), is(true));
     }
 
@@ -220,7 +220,7 @@ public class ColumnFixtueTest extends FitGoodiesTestCase {
                 tr("2", "${tests.put(x)}"),
                 tr("${tests.get(x)}", "2"));
         numberObjFixture.doTable(table);
-        assertThat(numberObjFixture.counts.right, is(equalTo((Object) 2)));
-        assertThat(numberObjFixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(numberObjFixture.counts().right, is(equalTo((Object) 2)));
+        assertThat(numberObjFixture.counts().exceptions, is(equalTo((Object) 0)));
     }
 }

@@ -81,7 +81,7 @@ public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
         fixture.setParams(new String[] {"pattern=" + pattern, "encoding=cp1252"});
         fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
 
         assertThat(fixture.getFile().toString(), is(equalTo("f.txt.bat")));
         assertThat(fixture.getEncoding(), is(equalTo("cp1252")));

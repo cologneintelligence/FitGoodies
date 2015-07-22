@@ -40,10 +40,10 @@ public class Color extends PrimitiveFixture {
 
     String decode(String code) {
         return
-            code.equals(Fixture.red) ?      "red" :
-            code.equals(Fixture.green) ?    "green" :
-            code.equals(Fixture.yellow) ?   "yellow" :
-            code.equals(Fixture.gray) ?     "gray" :
+            code.equals(FitUtils.HTML_RED) ?      "red" :
+            code.equals(FitUtils.HTML_GREEN) ?    "green" :
+            code.equals(FitUtils.HTML_YELLOW) ?   "yellow" :
+            code.equals(FitUtils.HTML_GREY) ?     "gray" :
             code.equals("#808080") ?        "gray" :
             code;
     }

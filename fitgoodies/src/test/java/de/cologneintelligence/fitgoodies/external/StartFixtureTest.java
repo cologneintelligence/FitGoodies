@@ -26,7 +26,7 @@ public class StartFixtureTest extends FitGoodiesTestCase {
         final Parse table = parseTable(tr("execute", "java"));
 
         fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
+        assertCounts(fixture.counts(), table, 0, 0, 0, 0);
 
         verify(processWrapper).start("java");
     }
@@ -36,7 +36,7 @@ public class StartFixtureTest extends FitGoodiesTestCase {
         final Parse table = parseTable(tr("execute", "ant"));
 
         fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
+        assertCounts(fixture.counts(), table, 0, 0, 0, 0);
 
         verify(processWrapper).start("ant");
     }
@@ -46,7 +46,7 @@ public class StartFixtureTest extends FitGoodiesTestCase {
         final Parse table = parseTable(tr("execute", "ant", "package"));
 
         fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
+        assertCounts(fixture.counts(), table, 0, 0, 0, 0);
 
         verify(processWrapper).start("ant", "package");
     }
@@ -56,7 +56,7 @@ public class StartFixtureTest extends FitGoodiesTestCase {
         final Parse table = parseTable(tr("execute", "ant", "test", "package"));
 
         fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
+        assertCounts(fixture.counts(), table, 0, 0, 0, 0);
 
         verify(processWrapper).start("ant", "test", "package");
     }
@@ -67,7 +67,7 @@ public class StartFixtureTest extends FitGoodiesTestCase {
 
         when(processWrapper.startAndWait("java")).thenReturn(0);
         fixture.doTable(table);
-        assertCounts(fixture.counts, table, 1, 0, 0, 0);
+        assertCounts(fixture.counts(), table, 1, 0, 0, 0);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class StartFixtureTest extends FitGoodiesTestCase {
         when(processWrapper.startAndWait("ant")).thenReturn(1);
 
         fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 1, 0, 0);
+        assertCounts(fixture.counts(), table, 0, 1, 0, 0);
     }
 
     @Test
@@ -86,7 +86,7 @@ public class StartFixtureTest extends FitGoodiesTestCase {
 
         when(processWrapper.startAndWait("ant", "package")).thenReturn(0);
         fixture.doTable(table);
-        assertCounts(fixture.counts, table, 1, 0, 0, 0);
+        assertCounts(fixture.counts(), table, 1, 0, 0, 0);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class StartFixtureTest extends FitGoodiesTestCase {
         final Parse table = parseTable(tr("changeDir", "c:\\test"));
 
         fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
+        assertCounts(fixture.counts(), table, 0, 0, 0, 0);
         verify(processWrapper).changeDir("c:\\test");
     }
 
@@ -106,7 +106,7 @@ public class StartFixtureTest extends FitGoodiesTestCase {
 
         when(processWrapper.startAndWait("ant", "test-target", "bla", "blubb")).thenReturn(0);
         fixture.doTable(table);
-        assertCounts(fixture.counts, table, 1, 0, 0, 0);
+        assertCounts(fixture.counts(), table, 1, 0, 0, 0);
     }
 
 }

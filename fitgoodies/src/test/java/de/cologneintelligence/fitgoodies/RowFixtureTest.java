@@ -25,8 +25,6 @@ import fit.Parse;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.ParseException;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -152,15 +150,15 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 				tr("x", "y", "z"),
 				tr("1", "x", "3"));
 		rowFixture.doTable(table);
-		assertThat(rowFixture.counts.right, is(equalTo((Object) 3)));
-		assertThat(rowFixture.counts.wrong, is(equalTo((Object) 1)));
+		assertThat(rowFixture.counts().right, is(equalTo((Object) 3)));
+		assertThat(rowFixture.counts().wrong, is(equalTo((Object) 1)));
 
 		table = parseTable(
 				tr("x", "y", "z"),
 				tr("1", "match", "3"));
 		rowFixture.doTable(table);
-		assertThat(rowFixture.counts.wrong, is(equalTo((Object) 4)));
-		assertThat(rowFixture.counts.right, is(equalTo((Object) 5)));
+		assertThat(rowFixture.counts().wrong, is(equalTo((Object) 4)));
+		assertThat(rowFixture.counts().right, is(equalTo((Object) 5)));
 	}
 
 	@Test
@@ -173,13 +171,13 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 		helper.getProcessors().add(new CrossReferenceProcessorMock("2"));
 
 		rowFixture.doTable(table);
-		assertThat(rowFixture.counts.right, is(equalTo((Object) 3)));
+		assertThat(rowFixture.counts().right, is(equalTo((Object) 3)));
 
 		table = parseTable(
 				tr("x", "y"),
 				tr("8", "${test}"));
 		rowFixture.doTable(table);
-		assertThat(rowFixture.counts.wrong, is(equalTo((Object) 4)));
+		assertThat(rowFixture.counts().wrong, is(equalTo((Object) 4)));
 	}
 
 	@Test
@@ -193,7 +191,7 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 		helper.getProcessors().add(new CrossReferenceProcessorMock("test", "2"));
 
 		sameValueRowFixture.doTable(table);
-		assertThat(sameValueRowFixture.counts.right, is(3));
+		assertThat(sameValueRowFixture.counts().right, is(3));
 	}
 
 	@Test
@@ -208,7 +206,7 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 		helper.getProcessors().add(new CrossReferenceProcessorMock("test2", "2"));
 
 		sameValueRowFixture.doTable(table);
-		assertThat(sameValueRowFixture.counts.right, is(6));
+		assertThat(sameValueRowFixture.counts().right, is(6));
 	}
 
 	@Test
@@ -260,9 +258,9 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 		};
 		fixture.doTable(table);
 
-		assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-		assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+		assertThat(fixture.counts().right, is(equalTo((Object) 0)));
+		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+		assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
 	}
 
 	@Test
@@ -272,9 +270,9 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 		ErrorFixture fixture = new ErrorFixture();
 		fixture.doTable(table);
 
-		assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-		assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+		assertThat(fixture.counts().right, is(equalTo((Object) 0)));
+		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+		assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
 		assertThat(fixture.isDownCalled(), is(true));
 	}
 }

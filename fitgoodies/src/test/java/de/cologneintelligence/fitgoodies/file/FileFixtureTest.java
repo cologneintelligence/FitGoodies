@@ -24,8 +24,6 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 import org.junit.Test;
 
-import java.text.ParseException;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -41,8 +39,8 @@ public class FileFixtureTest extends FitGoodiesTestCase {
         FileFixture fixture = new FileFixture();
         fixture.doTable(table);
 
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 2)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 2)));
     }
 
     @Test
@@ -52,8 +50,8 @@ public class FileFixtureTest extends FitGoodiesTestCase {
         FileFixture fixture = new FileFixture();
         fixture.doTable(table);
 
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         assertThat(helper.getPattern(), is(equalTo(".*\\.txt")));
 
@@ -61,9 +59,9 @@ public class FileFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 0)));
         assertThat(helper.getPattern(), is(equalTo("testfile")));
     }
 
@@ -78,9 +76,9 @@ public class FileFixtureTest extends FitGoodiesTestCase {
 
         FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
 
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         assertThat(helper.getEncoding(), is(equalTo("utf-8")));
 
         table = parseTable(
@@ -89,9 +87,9 @@ public class FileFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         assertThat(helper.getEncoding(), is(equalTo("latin-1")));
     }
 }

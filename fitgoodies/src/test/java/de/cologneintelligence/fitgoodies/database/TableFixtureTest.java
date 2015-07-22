@@ -107,8 +107,8 @@ public class TableFixtureTest extends FitGoodiesTestCase {
         assertThat(c.getField("name").getType(), (Matcher) is(sameInstance(String.class)));
         assertThat(c.getField("age").getType(), (Matcher) is(sameInstance(Integer.class)));
 
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 1)));
-        assertThat(fixture.counts.right, is(equalTo((Object) 2)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 2)));
 
         mocker.verifyInteractions();
     }
@@ -131,7 +131,7 @@ public class TableFixtureTest extends FitGoodiesTestCase {
 
         final Class<?> c = fixture.getTargetClass();
         assertThat(c.getField("age").getType(), (Matcher) is(sameInstance(ScientificDouble.class)));
-        assertThat(fixture.counts.right, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 1)));
         mocker.verifyInteractions();
     }
 
@@ -174,6 +174,6 @@ public class TableFixtureTest extends FitGoodiesTestCase {
         final Parse table = parseTable(tr("ignore"), tr("x"));
 
         fixture.doTable(table);
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
     }
 }

@@ -20,7 +20,7 @@
 package de.cologneintelligence.fitgoodies.runners;
 
 import fit.Counts;
-import fit.Fixture;
+import fit.FitUtils;
 import fit.Parse;
 
 import java.io.*;
@@ -42,11 +42,11 @@ public final class FitParseResult implements FitResult {
     public void print(final File directory, final OutputStream stream)
             throws IOException {
         try (Writer writer = new OutputStreamWriter(stream); BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
-            
+
             bufferedWriter.write("<table><tr><th colspan=\"2\">");
             bufferedWriter.write(directory.getName());
             bufferedWriter.write("</th></tr>");
-            
+
             for (FileCount fileCount : results) {
                 bufferedWriter.write("<tr><td><a href=\"");
                 String file = htmlSafeFile(fileCount.getFile());
@@ -60,7 +60,7 @@ public final class FitParseResult implements FitResult {
                 bufferedWriter.write(fileCount.getCounts().toString());
                 bufferedWriter.write("</td></tr>");
             }
-            
+
             bufferedWriter.write("</table>");
         }
     }
@@ -76,9 +76,9 @@ public final class FitParseResult implements FitResult {
 
     private String color(final Counts counts) {
         if (counts.wrong > 0 || counts.exceptions > 0) {
-            return Fixture.red;
+            return FitUtils.HTML_RED;
         } else {
-            return Fixture.green;
+            return FitUtils.HTML_GREEN;
         }
     }
 

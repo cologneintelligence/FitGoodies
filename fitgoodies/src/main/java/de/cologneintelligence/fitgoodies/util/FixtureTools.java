@@ -24,6 +24,7 @@ import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
 import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
+import fit.FitUtils;
 import fit.Fixture;
 import fit.Parse;
 import fit.TypeAdapter;
@@ -127,15 +128,18 @@ public final class FixtureTools {
             }
 
             cell.body += " <font color=\"#808080\">"
-                    + Fixture.escape(e.getMessage()) + "</font>";
-            parent.right(cell);
+                    + FitUtils.escape(e.getMessage()) + "</font>";
+            FitUtils.right(cell);
+            parent.counts().right++;
         } else {
             cell.body = e.getMessage();
 
             if (obj == null) {
-                parent.wrong(cell, "(null)");
+                FitUtils.wrong(cell, "(null)");
+                parent.counts().wrong++;
             } else {
-                parent.wrong(cell, actualStringValue);
+                FitUtils.wrong(cell, actualStringValue);
+                parent.counts().wrong++;
             }
         }
     }

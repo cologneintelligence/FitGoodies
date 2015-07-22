@@ -30,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -166,7 +165,7 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
                 logEventAnalyzerFactory);
 
         fixture.doTable(table);
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
         assertThat(table.parts.more.parts.more.more.text(), containsString("unknown command"));
 
         verifyFactories(NO_OF_ROOT_CALLS, NO_OF_CLASS_CALLS);
@@ -188,7 +187,7 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
         assertThat(table.parts.more.parts.more.more.text(), containsString("Illegal format"));
     }
 
@@ -206,7 +205,7 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 2)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 2)));
         assertThat(table.parts.more.parts.text(), containsString("Invalid logger"));
         assertThat(table.parts.more.more.parts.more.text(), containsString("Invalid appender"));
     }

@@ -25,7 +25,8 @@ public class Equals extends PrimitiveFixture {
                 case 'x':   x = type.parse(cell.text()); break;
                 case 'y':   y = type.parse(cell.text()); break;
                 case '=':   check(cell, type.equals(x, y)); break;
-                case '?':   cell.addToBody(info("x: " + print(x) + " y: " + print(y))); break;
+                case '?':
+                    cell.addToBody(FitUtils.info("x: " + print(x) + " y: " + print(y))); break;
 
                 default:    throw new Exception("don't do " + head);
             }

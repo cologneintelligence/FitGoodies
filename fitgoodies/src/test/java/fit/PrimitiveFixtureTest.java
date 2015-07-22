@@ -102,7 +102,7 @@ public class PrimitiveFixtureTest extends FitGoodiesTestCase {
 	}
 
 	private void assertResult(Parse cell, boolean correct) {
-		assertCounts(fixture.counts, cell, correct ? 1 : 0, correct ? 0 : 1, 0, 0);
+		assertCounts(fixture.counts(), cell, correct ? 1 : 0, correct ? 0 : 1, 0, 0);
 	}
 
 }

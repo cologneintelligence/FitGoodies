@@ -12,7 +12,7 @@ public class ActionFixture extends Fixture {
 
 	// Traversal ////////////////////////////////
 
-	public void doCells(Parse cells) {
+	protected void doCells(Parse cells) {
 		this.cells = cells;
 		try {
 			Method action = getClass().getMethod(cells.text(), empty);
@@ -48,7 +48,7 @@ public class ActionFixture extends Fixture {
 	// Utility //////////////////////////////////
 
 	protected Method method(int args) throws NoSuchMethodException {
-		return method(camel(cells.more.text()), args);
+		return method(FitUtils.camel(cells.more.text()), args);
 	}
 
 	protected Method method(String test, int args) throws NoSuchMethodException {

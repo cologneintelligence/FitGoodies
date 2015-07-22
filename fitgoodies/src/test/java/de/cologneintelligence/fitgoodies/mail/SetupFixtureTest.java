@@ -24,7 +24,6 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 import org.junit.Test;
 
-import java.text.ParseException;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -47,7 +46,7 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
         SetupFixture fixture = new SetupFixture();
         fixture.doTable(table1);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         Properties prop = helper.generateProperties();
 
@@ -71,7 +70,7 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
         SetupFixture fixture = new SetupFixture();
         fixture.doTable(table1);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         Properties prop = helper.generateProperties();
 

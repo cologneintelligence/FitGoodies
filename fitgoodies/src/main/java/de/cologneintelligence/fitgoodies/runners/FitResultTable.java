@@ -22,6 +22,7 @@ package de.cologneintelligence.fitgoodies.runners;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import fit.Counts;
+import fit.FitUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -108,11 +109,11 @@ public final class FitResultTable implements FitResult {
 
 	private static String color(final Counts counts) {
 		if (counts == null) {
-			return fit.Fixture.gray;
+			return FitUtils.HTML_GREY;
 		} else if (counts.exceptions > 0 || counts.wrong > 0) {
-			return fit.Fixture.red;
+			return FitUtils.HTML_RED;
 		} else {
-			return fit.Fixture.green;
+			return FitUtils.HTML_GREEN;
 		}
 	}
 

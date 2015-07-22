@@ -8,7 +8,7 @@ public class TextToHtmlFixture extends ColumnFixture {
 
 	public String HTML() {
 		Text = unescapeAscii(Text);
-		return Fixture.escape(Text);
+		return FitUtils.escape(Text);
 	}
 
 	private String unescapeAscii(String text) {
@@ -16,7 +16,7 @@ public class TextToHtmlFixture extends ColumnFixture {
 		text = text.replaceAll("\\\\r", "\r");
 		return text;
 	}
-	
+
 	private String GenerateOutput(Parse parse) {
 		StringWriter result = new StringWriter();
 		parse.print(new PrintWriter(result));

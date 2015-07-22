@@ -64,7 +64,7 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 	}
 
 	@Override
-	public void doRows(final Parse rows) {
+	protected void doRows(final Parse rows) {
 		final int[] width = extractWidth(rows);
 
 		if (width == null) {

@@ -18,7 +18,7 @@ public class TimedActionFixture extends ActionFixture {
         table.parts.parts.last().more = td("split");
     }
 
-    public void doCells(Parse cells) {
+    protected void doCells(Parse cells) {
         Date start  = time();
         super.doCells(cells);
         long split = time().getTime() - start.getTime();
@@ -33,7 +33,7 @@ public class TimedActionFixture extends ActionFixture {
     }
 
     public Parse td (String body) {
-        return new Parse("td", info(body), null, null);
+        return new Parse("td", FitUtils.info(body), null, null);
     }
 
 }

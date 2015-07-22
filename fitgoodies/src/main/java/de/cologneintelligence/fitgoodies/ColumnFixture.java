@@ -47,7 +47,7 @@ public class ColumnFixture extends fit.ColumnFixture {
      *  @see fit.Fixture#doCell(Parse, int) fit.Fixture.doCell(Parse, int)
      */
     @Override
-	public void doCell(final Parse cell, final int column) {
+    protected void doCell(final Parse cell, final int column) {
         TypeAdapter a = columnBindings[column];
 
         columnParameter = null;
@@ -181,7 +181,7 @@ public class ColumnFixture extends fit.ColumnFixture {
 	 */
 
 	@Override
-	public void doRows(final Parse rows) {
+	protected void doRows(final Parse rows) {
 		columnParameters = FixtureTools.extractColumnParameters(rows);
 		FixtureTools.resolveQuestionMarks(rows);
 		super.doRows(rows);

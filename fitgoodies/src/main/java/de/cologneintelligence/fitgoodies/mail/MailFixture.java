@@ -25,6 +25,7 @@ import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
+import fit.FitUtils;
 import fit.Parse;
 import fit.TypeAdapter;
 
@@ -104,7 +105,7 @@ public class MailFixture extends Fixture {
     }
 
     @Override
-    public void doRow(final Parse row) {
+    protected void doRow(final Parse row) {
         final String object = row.parts.text().toLowerCase();
         final String command = row.parts.more.text();
         final String content = parseContentCell(row);
@@ -194,7 +195,7 @@ public class MailFixture extends Fixture {
         for (final String line : actual.split("\n")) {
             if (line.toLowerCase().contains(expected.toLowerCase())) {
                 right(cell);
-                cell.addToBody("<hr />" + escape(line));
+                cell.addToBody("<hr />" + FitUtils.escape(line));
                 return true;
             }
         }
@@ -207,7 +208,7 @@ public class MailFixture extends Fixture {
 
         if (matcher.find()) {
             right(cell);
-            cell.addToBody("<hr />" + escape(matcher.group(0)));
+            cell.addToBody("<hr />" + FitUtils.escape(matcher.group(0)));
             return true;
         } else {
             return false;

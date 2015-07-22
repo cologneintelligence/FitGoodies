@@ -68,7 +68,7 @@ public class SetupFixture extends Fixture {
      * @param cells cells to process
      */
     @Override
-    public void doCells(final Parse cells) {
+    protected void doCells(final Parse cells) {
         String name = cells.text();
 
         processRowWithCommand(cells, name);

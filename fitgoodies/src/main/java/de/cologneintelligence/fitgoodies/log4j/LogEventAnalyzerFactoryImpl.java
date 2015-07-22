@@ -18,10 +18,9 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import org.apache.log4j.spi.LoggingEvent;
-
 import fit.Fixture;
 import fit.Parse;
+import org.apache.log4j.spi.LoggingEvent;
 
 /**
  * Implementation of LogEventAnalyzerFactory which provides {@link LogEventAnalyzerImpl}

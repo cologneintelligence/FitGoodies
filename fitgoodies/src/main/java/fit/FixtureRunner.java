@@ -42,7 +42,7 @@ public class FixtureRunner {
 				Fixture fixture = getLinkedFixtureWithArgs(tables);
 				try {
 					fixture.doTable(tables);
-					counts.tally(fixture.counts);
+					counts.tally(fixture.counts());
 				} catch (Throwable e) {
 					fixture.exception(fixtureName, e);
 				}

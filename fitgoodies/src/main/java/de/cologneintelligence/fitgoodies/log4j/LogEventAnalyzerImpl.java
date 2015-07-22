@@ -18,13 +18,13 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import java.util.Map;
-
+import fit.FitUtils;
+import fit.Fixture;
+import fit.Parse;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 
-import fit.Fixture;
-import fit.Parse;
+import java.util.Map;
 
 /**
  * Analyzes log events using an {@link AbstractLoggingEventMatcher}.
@@ -54,9 +54,11 @@ public final class LogEventAnalyzerImpl implements LogEventAnalyzer {
 		LoggingEvent match = getMessageWithException(parameters);
 
 		if (match == null) {
-			markCellAsRight();
+			FitUtils.right(cell);
+			parent.counts().right++;
 		} else {
-			markCellAsWrong(match.getThrowableInformation().getThrowableStrRep()[0]);
+			FitUtils.wrong(cell, match.getThrowableInformation().getThrowableStrRep()[0]);
+			parent.counts().wrong++;
 		}
 	}
 
@@ -65,9 +67,12 @@ public final class LogEventAnalyzerImpl implements LogEventAnalyzer {
 		LoggingEvent match = getMessageWithException(parameters);
 
 		if (match == null) {
-			markCellAsWrong();
+			FitUtils.wrong(cell);
+			parent.counts().wrong++;
 		} else {
-			markCellAsRight(match.getThrowableInformation().getThrowableStrRep()[0]);
+			FitUtils.right(cell);
+			parent.counts().right++;
+			appendActualAndExpected(match.getThrowableInformation().getThrowableStrRep()[0]);
 		}
 	}
 
@@ -79,11 +84,12 @@ public final class LogEventAnalyzerImpl implements LogEventAnalyzer {
 			final Map<String, String> parameters) {
 		final String lowerCaseCheckExpression = getLowerCaseCheckExpression();
 		return getMatchingEvent(new AbstractLoggingEventMatcher() {
-			@Override boolean matches(final LoggingEvent arg0) {
+			@Override
+			boolean matches(final LoggingEvent arg0) {
 				ThrowableInformation errorInfo = arg0.getThrowableInformation();
 				if (errorInfo != null) {
 					return errorInfo.getThrowableStrRep()[0].toLowerCase()
-						.contains(lowerCaseCheckExpression);
+							.contains(lowerCaseCheckExpression);
 				}
 				return false;
 			}
@@ -95,9 +101,12 @@ public final class LogEventAnalyzerImpl implements LogEventAnalyzer {
 		LoggingEvent match = getMessageWithString(parameters);
 
 		if (match == null) {
-			markCellAsWrong();
+			FitUtils.wrong(cell);
+			parent.counts().wrong++;
 		} else {
-			markCellAsRight(match.getMessage().toString());
+			FitUtils.right(cell);
+			appendActualAndExpected(match.getMessage().toString());
+			parent.counts().right++;
 		}
 	}
 
@@ -106,9 +115,12 @@ public final class LogEventAnalyzerImpl implements LogEventAnalyzer {
 		LoggingEvent match = getMessageWithString(parameters);
 
 		if (match == null) {
-			markCellAsRight();
+			FitUtils.right(cell);
+			parent.counts().right++;
 		} else {
-			markCellAsWrong(match.getMessage().toString());
+			FitUtils.wrong(cell, match.getMessage().toString());
+			parent.counts().wrong++;
+
 		}
 	}
 
@@ -116,7 +128,8 @@ public final class LogEventAnalyzerImpl implements LogEventAnalyzer {
 			final Map<String, String> parameters) {
 		final String checkExpression = getLowerCaseCheckExpression();
 		return getMatchingEvent(new AbstractLoggingEventMatcher() {
-			@Override boolean matches(final LoggingEvent arg0) {
+			@Override
+			boolean matches(final LoggingEvent arg0) {
 				return arg0.getRenderedMessage().toLowerCase().contains(checkExpression);
 			}
 		}, parameters);
@@ -127,28 +140,10 @@ public final class LogEventAnalyzerImpl implements LogEventAnalyzer {
 		return matcher.getFirstMatchingEvent(events, parameters);
 	}
 
-	private void markCellAsRight() {
-		parent.right(cell);
-	}
-
-	private void markCellAsRight(final String actual) {
-		parent.right(cell);
-		appendActualAndExpected(actual, cell);
-	}
-
-	private void markCellAsWrong() {
-		parent.wrong(cell);
-	}
-
-	private void markCellAsWrong(final String actual) {
-		parent.wrong(cell);
-		appendActualAndExpected(actual, cell);
-	}
-
-	private void appendActualAndExpected(final String actual, final Parse cell) {
-		parent.info(cell, "(expected)");
+	private void appendActualAndExpected(final String actual) {
+		FitUtils.info(cell, "(expected)");
 		cell.addToBody("<hr/>");
 		cell.addToBody(actual);
-		parent.info(cell, "(actual)");
+		FitUtils.info(cell, "(actual)");
 	}
 }

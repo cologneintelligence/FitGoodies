@@ -24,6 +24,7 @@ import de.cologneintelligence.fitgoodies.file.FileInformation;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Counts;
+import fit.FitUtils;
 import fit.Parse;
 
 import java.io.File;
@@ -65,7 +66,7 @@ public class RunFixture extends ActionFixture {
     }
 
     @Override
-    public void doRows(final Parse rows) {
+    protected void doRows(final Parse rows) {
         Parse nextRow = rows;
 
         while (nextRow != null) {
@@ -93,9 +94,9 @@ public class RunFixture extends ActionFixture {
 
     private String color(final Counts c) {
         if (c.wrong > 0 || c.exceptions > 0) {
-            return red;
+            return FitUtils.HTML_RED;
         } else {
-            return green;
+            return FitUtils.HTML_GREEN;
         }
     }
 
@@ -130,7 +131,7 @@ public class RunFixture extends ActionFixture {
         Counts result = runner.run(inputFile, outputFile);
 
         generateResultRow(cells, inputFile.getName(), result);
-        counts.tally(result);
+        counts().tally(result);
     }
 
     /**
@@ -157,6 +158,6 @@ public class RunFixture extends ActionFixture {
         FitParseResult results = new FitParseResult();
         fitRunner.run(results);
         results.replaceLastIn(thisRow);
-        counts.tally(results.getCounts());
+        counts().tally(results.getCounts());
     }
 }

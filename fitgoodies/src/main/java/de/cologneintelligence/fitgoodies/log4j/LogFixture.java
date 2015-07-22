@@ -114,7 +114,7 @@ public class LogFixture extends Fixture {
 	 * @param cells row to parse and process
 	 */
 	@Override
-	public void doCells(final Parse cells) {
+	protected void doCells(final Parse cells) {
 		this.cells = cells;
 		this.appender = getAppender();
 

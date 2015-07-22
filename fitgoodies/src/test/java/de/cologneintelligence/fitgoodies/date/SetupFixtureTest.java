@@ -50,7 +50,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         assertThat(helper.getFormat(), is(equalTo("hh:mm:ss")));
         assertThat(helper.getLocale(), is(equalTo(Locale.GERMANY)));
 
@@ -59,7 +59,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         assertThat(helper.getFormat(), is(equalTo("MM/dd/yyyy")));
         assertThat(helper.getLocale(), is(equalTo(Locale.US)));
     }

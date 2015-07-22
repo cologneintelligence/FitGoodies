@@ -83,9 +83,9 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertThat(fixture.counts.right, is(equalTo((Object) 5)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 5)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
 
         assertThat(table.parts.more.parts.more.more.body, is(equalTo("Text<hr />This is a simple TEXT")));
         assertThat(table.parts.more.more.more.parts.more.more.body, is(equalTo("server<hr />me@myserver.com")));
@@ -126,10 +126,10 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 6)));
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.ignores, is(equalTo((Object) 1)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 6)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().ignores, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
 
         assertThat(table.parts.more.parts.more.more.text(), is(equalTo("some text expected"
                 + mailText.substring(0, PREVIEW_SIZE)
@@ -149,7 +149,7 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
         Parse table = parseTable(tr("body", "contains", "some text"));
 
         fixture.doTable(table);
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
 
         verifyCalls(null, false);
     }
@@ -180,9 +180,9 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertThat(fixture.counts.right, is(equalTo((Object) 1)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 1)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
 
         assertThat(table.parts.more.parts.more.more.text(), is(equalTo("TEXT expectedSomething different actual")));
         assertThat(table.parts.more.more.parts.more.more.body, is(equalTo("different<hr />Something different")));
@@ -204,9 +204,9 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
 
         fixture.doTable(table);
 
-        assertThat(fixture.counts.right, is(equalTo((Object) 1)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 1)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
 
         assertThat(table.parts.more.parts.more.more.text(), is(equalTo("TEXT expectedSomething different actual")));
         assertThat(table.parts.more.more.parts.more.more.body, is(equalTo("different<hr />Something different")));
@@ -227,7 +227,7 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
         when(mail.getPlainContent()).thenReturn("this goes to the body");
 
         fixture.doTable(table);
-        assertThat(fixture.counts.right, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().right, is(equalTo((Object) 1)));
 
         verifyCalls(mail, true);
     }

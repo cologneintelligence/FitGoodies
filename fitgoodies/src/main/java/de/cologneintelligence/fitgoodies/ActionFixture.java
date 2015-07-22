@@ -292,7 +292,7 @@ public class ActionFixture extends fit.ActionFixture {
 	}
 
 	@Override
-	public void doRow(final Parse row) {
+	protected void doRow(final Parse row) {
 		parameter = FixtureTools.extractCellParameter(row.parts);
 		super.doRow(row);
 	}

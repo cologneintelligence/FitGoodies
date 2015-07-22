@@ -59,7 +59,7 @@ public class ColumnFixtureTest extends FitGoodiesTestCase {
 		final Parse table = parseTable(tr("x", "y()"));
 		fixture.doTable(table);
 
-		assertCounts(fixture.counts, table, 0, 0, 0, 0);
+		assertCounts(fixture.counts(), table, 0, 0, 0, 0);
 		assertThat(fixture.resetCalled, is(false));
 		assertThat(fixture.rowsCalled, is(0));
 	}
@@ -70,7 +70,7 @@ public class ColumnFixtureTest extends FitGoodiesTestCase {
 		final Parse table = parseTable(tr("x", "y()"), tr("1", "2"));
 		fixture.doTable(table);
 
-		assertCounts(fixture.counts, table, 1, 0, 0, 0);
+		assertCounts(fixture.counts(), table, 1, 0, 0, 0);
 		assertThat(fixture.resetCalled, is(true));
 		assertThat(fixture.rowsCalled, is(1));
 	}
@@ -81,7 +81,7 @@ public class ColumnFixtureTest extends FitGoodiesTestCase {
 		final Parse table = parseTable(tr("x", "y()"), tr("1", "2"), tr("5", "5"));
 		fixture.doTable(table);
 
-		assertCounts(fixture.counts, table, 1, 1, 0, 0);
+		assertCounts(fixture.counts(), table, 1, 1, 0, 0);
 		assertThat(fixture.resetCalled, is(true));
 		assertThat(fixture.rowsCalled, is(2));
 	}
@@ -94,7 +94,7 @@ public class ColumnFixtureTest extends FitGoodiesTestCase {
 
 		assertThat(table.at(0, 2, 0).body, containsString("X"));
 		assertThat(table.at(0, 3, 0).body, is(equalTo("X")));
-		assertCounts(fixture.counts, table, 1, 0, 0, 0);
+		assertCounts(fixture.counts(), table, 1, 0, 0, 0);
 	}
 
 	@Test
@@ -104,7 +104,7 @@ public class ColumnFixtureTest extends FitGoodiesTestCase {
 		fixture.doTable(table);
 
 		assertThat(table.at(0, 2, 1).body, containsString("Exception"));
-		assertCounts(fixture.counts, table, 0, 0, 0, 1);
+		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class ColumnFixtureTest extends FitGoodiesTestCase {
 		fixture.doTable(table);
 
 		assertThat(table.at(0, 2, 1).body, is(equalTo("test")));
-		assertCounts(fixture.counts, table, 0, 0, 1, 0);
+		assertCounts(fixture.counts(), table, 0, 0, 1, 0);
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class ColumnFixtureTest extends FitGoodiesTestCase {
 		final Parse table = parseTable(tr("x", "bla"), tr("5", "test"), tr("3", "bla"));
 		fixture.doTable(table);
 
-		assertCounts(fixture.counts, table, 0, 0, 2, 1);
+		assertCounts(fixture.counts(), table, 0, 0, 2, 1);
 	}
 
 }

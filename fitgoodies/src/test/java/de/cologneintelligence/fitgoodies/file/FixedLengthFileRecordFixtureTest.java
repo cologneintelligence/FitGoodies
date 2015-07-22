@@ -25,8 +25,6 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Parse;
 import org.junit.Test;
 
-import java.text.ParseException;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -80,7 +78,7 @@ public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {
         int[] actual = fixture.extractWidth(row);
 
         assertThat(actual, is(nullValue()));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
         assertThat(row.parts.more.text(), containsString("NumberFormatException"));
     }
 }

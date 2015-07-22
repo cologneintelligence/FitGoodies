@@ -24,8 +24,6 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.spi.AppenderAttachable;
 import org.junit.Test;
 
-import java.text.ParseException;
-
 import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -74,7 +72,7 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 		verify(attachable1).addAppender(argThat(any(CaptureAppender.class)));
 		verify(attachable2).addAppender(argThat(any(CaptureAppender.class)));
 		verify(attachable3).addAppender(argThat(any(CaptureAppender.class)));
-		assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
 	}
 
 	@Test
@@ -103,7 +101,7 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 				tr("monitor", "com.example.testclass1", "R"));
 
 		fixture.doTable(table);
-		assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
 
 		verify(attachable1).addAppender(argThat(any(CaptureAppender.class)));
 		verify(attachable2).addAppender(argThat(any(CaptureAppender.class)));
@@ -125,7 +123,7 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 
 		fixture.doTable(table);
 
-		assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
 
 		verify(appender).clear();
 	}

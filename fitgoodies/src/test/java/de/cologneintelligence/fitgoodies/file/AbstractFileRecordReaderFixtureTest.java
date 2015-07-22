@@ -53,10 +53,10 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 		fixture.doTable(table);
 
-		assertThat(fixture.counts.ignores, is(equalTo((Object) 0)));
-		assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-		assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts.right, is(equalTo((Object) 4)));
+		assertThat(fixture.counts().ignores, is(equalTo((Object) 0)));
+		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+		assertThat(fixture.counts().right, is(equalTo((Object) 4)));
 	}
 
 	@Test
@@ -73,8 +73,8 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 		fixture.doTable(table);
 
-		assertThat(fixture.counts.right, is(equalTo((Object) 3)));
-		assertThat(fixture.counts.wrong, is(equalTo((Object) 3)));
+		assertThat(fixture.counts().right, is(equalTo((Object) 3)));
+		assertThat(fixture.counts().wrong, is(equalTo((Object) 3)));
 	}
 
 	@Test
@@ -90,8 +90,8 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 		fixture.doTable(table);
 
-		assertThat(fixture.counts.right, is(equalTo((Object) 3)));
-		assertThat(fixture.counts.wrong, is(equalTo((Object) 6)));
+		assertThat(fixture.counts().right, is(equalTo((Object) 3)));
+		assertThat(fixture.counts().wrong, is(equalTo((Object) 6)));
 
 		assertThat(table.parts.more.more.parts.text(), containsString("surplus"));
 		assertThat(table.parts.more.more.parts.last().text(), containsString("surplus"));
@@ -111,8 +111,8 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 
 		fixture.doTable(table);
 
-		assertThat(fixture.counts.right, is(equalTo((Object) 3)));
-		assertThat(fixture.counts.wrong, is(equalTo((Object) 6)));
+		assertThat(fixture.counts().right, is(equalTo((Object) 3)));
+		assertThat(fixture.counts().wrong, is(equalTo((Object) 6)));
 
 		assertThat(table.parts.more.more.parts.text(), containsString("missing"));
 		assertThat(table.parts.more.more.parts.last().text(), containsString("missing"));
@@ -128,7 +128,7 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 				}));
 
 		fixture.doTable(table);
-		assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
+		assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
 		assertThat(table.parts.parts.text(), containsString("at least"));
 	}
 }

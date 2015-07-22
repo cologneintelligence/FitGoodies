@@ -10,12 +10,12 @@ public class ColumnFixture extends Fixture {
 
     // Traversal ////////////////////////////////
 
-    public void doRows(Parse rows) {
+    protected void doRows(Parse rows) {
         bind(rows.parts);
         super.doRows(rows.more);
     }
 
-    public void doRow(Parse row) {
+    protected void doRow(Parse row) {
         hasExecuted = false;
         try {
             reset();
@@ -28,7 +28,8 @@ public class ColumnFixture extends Fixture {
         }
     }
 
-    public void doCell(Parse cell, int column) {
+    @Override
+    protected void doCell(Parse cell, int column) {
         TypeAdapter a = columnBindings[column];
         try {
             String text = cell.text();
@@ -90,11 +91,11 @@ public class ColumnFixture extends Fixture {
     }
 
     protected TypeAdapter bindMethod (String name) throws Exception {
-        return TypeAdapter.on(this, this, getTargetClass().getMethod(camel(name), new Class[]{}));
+        return TypeAdapter.on(this, this, getTargetClass().getMethod(FitUtils.camel(name), new Class[]{}));
     }
 
     protected TypeAdapter bindField (String name) throws Exception {
-        return TypeAdapter.on(this, this, getTargetClass().getField(camel(name)));
+        return TypeAdapter.on(this, this, getTargetClass().getField(FitUtils.camel(name)));
     }
 
     protected Class<?> getTargetClass() {

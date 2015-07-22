@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.text.ParseException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -85,7 +84,7 @@ public final class RunFixtureTest extends FitGoodiesTestCase {
         RunFixture fixture = new RunFixture();
         fixture.doTable(table);
 
-        assertCounts(fixture.counts, table, 6, 2, 10, 0);
+        assertCounts(fixture.counts(), table, 6, 2, 10, 0);
 
         assertThat(table.parts.more.parts.more.tag.contains("ffcfcf"), is(true));
         assertThat(table.parts.more.more.parts.more.tag.contains("cfffcf"), is(true));

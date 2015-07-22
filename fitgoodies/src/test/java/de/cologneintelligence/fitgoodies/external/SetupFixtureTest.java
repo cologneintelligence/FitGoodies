@@ -26,8 +26,6 @@ import fit.Parse;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.ParseException;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -54,7 +52,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
         SetupFixture fixture = new SetupFixture();
         fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         assertThat(helper.getProperties().get(0), is(equalTo("-DtestKey=testValue")));
     }

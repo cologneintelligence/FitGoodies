@@ -49,8 +49,8 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
                 tr("load", "de.cologneintelligence.fitgoodies.adapters.DummyTypeAdapter"));
 
         fixture.doTable(table);
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
 
         final TypeAdapter ta = new TypeAdapter();
         ta.type = BigInteger.class;

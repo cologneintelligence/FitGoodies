@@ -93,7 +93,7 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 		final ActionFixture fixture = new ActionFixture();
 		assertThat(fixture.actor, is(nullValue()));
 		fixture.doTable(parse);
-		assertCounts(fixture.counts, parse, 0, 0, 0, 0);
+		assertCounts(fixture.counts(), parse, 0, 0, 0, 0);
 		assertThat(fixture.actor, instanceOf(TestFixture1.class));
 	}
 
@@ -106,7 +106,7 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 		fixture.doTable(parse);
 		final TestFixture1 actor = (TestFixture1) fixture.actor;
 
-		assertCounts(fixture.counts, parse, 0, 0, 0, 0);
+		assertCounts(fixture.counts(), parse, 0, 0, 0, 0);
 		assertThat(actor.int1, is(42));
 		assertThat(actor.string1, is("hello"));
 		assertThat(actor.pressed, is(false));
@@ -119,7 +119,7 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 
 		final ActionFixture fixture = new ActionFixture();
 		fixture.doTable(parse);
-		assertCounts(fixture.counts, parse, 0, 0, 0, 1);
+		assertCounts(fixture.counts(), parse, 0, 0, 0, 1);
 	}
 
 	@Test
@@ -131,7 +131,7 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 		fixture.doTable(parse);
 		final TestFixture1 actor = (TestFixture1) fixture.actor;
 
-		assertCounts(fixture.counts, parse, 0, 0, 0, 0);
+		assertCounts(fixture.counts(), parse, 0, 0, 0, 0);
 		assertThat(actor.pressed, is(true));
 	}
 
@@ -144,7 +144,7 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 		fixture.doTable(parse);
 		final TestFixture1 actor = (TestFixture1) fixture.actor;
 
-		assertCounts(fixture.counts, parse, 0, 0, 0, 1);
+		assertCounts(fixture.counts(), parse, 0, 0, 0, 1);
 		assertThat(actor.pressed, is(false));
 	}
 
@@ -157,7 +157,7 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 		final ActionFixture fixture = new ActionFixture();
 		fixture.doTable(parse);
 
-		assertCounts(fixture.counts, parse, 2, 1, 0, 0);
+		assertCounts(fixture.counts(), parse, 2, 1, 0, 0);
 	}
 
 }

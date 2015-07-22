@@ -144,7 +144,7 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testInvokeSeleniumCommandThrowsException() throws Exception {
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
         doCommandThrowsRuntimeException();
         fixture.doTable(table);
         assertExceptionCell("java.lang.RuntimeException: Error");
@@ -247,9 +247,9 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
     }
 
     private void assertCell(final int right, final int wrong, final int exceptions) {
-        assertThat(fixture.counts.right, is(equalTo((Object) right)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) wrong)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) exceptions)));
+        assertThat(fixture.counts().right, is(equalTo((Object) right)));
+        assertThat(fixture.counts().wrong, is(equalTo((Object) wrong)));
+        assertThat(fixture.counts().exceptions, is(equalTo((Object) exceptions)));
     }
 
     private void thirdCellContains(final String text) {

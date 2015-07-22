@@ -256,7 +256,7 @@ public abstract class RowFixture extends fit.RowFixture {
     }
 
     @Override
-    public void doRows(final Parse rows) {
+    protected void doRows(final Parse rows) {
         parameters = FixtureTools.extractColumnParameters(rows);
         FixtureTools.resolveQuestionMarks(rows);
         super.doRows(rows);

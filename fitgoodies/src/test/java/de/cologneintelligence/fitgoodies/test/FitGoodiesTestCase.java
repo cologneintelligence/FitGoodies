@@ -21,6 +21,7 @@ package de.cologneintelligence.fitgoodies.test;
 
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import fit.Counts;
+import fit.FitUtils;
 import fit.Parse;
 import org.junit.After;
 import org.junit.Assert;
@@ -81,7 +82,7 @@ public abstract class FitGoodiesTestCase {
 			Parse cell = row.parts;
 			while (cell != null) {
 
-				if (cell.tag.contains("bgcolor=\"" + fit.Fixture.yellow + "\"")) {
+				if (cell.tag.contains("bgcolor=\"" + FitUtils.HTML_YELLOW + "\"")) {
 					final String body = cell.body;
 					final String trace = body.replaceFirst("^.*<pre>", "").replaceFirst("</pre>.*$", "");
 					return Parse.unescape(trace);
