@@ -45,33 +45,6 @@ public final class FixtureTools {
     }
 
     /**
-     * Test whether a {@code String} has a boolean value.
-     * &quot;true&quot;, &quot;yes&quot; and &quot;1&quot; are recognized as
-     * {@code true}, &quot;false&quot;, &quot;no&quot; and &quot;0&quot;
-     * are recognized as {@code false}.<p>
-     *
-     * Values other than these six lead to an IllegalArgumentException.
-     *
-     * @param text text to parse
-     * @return the represented value
-     * @throws IllegalArgumentException if the {@code String}
-     * 		can not be parsed.
-     */
-    public static boolean convertToBoolean(final String text) {
-        if (text.equalsIgnoreCase("true")
-                || text.equalsIgnoreCase("yes")
-                || text.equalsIgnoreCase("1")) {
-            return true;
-        } else if (text.equalsIgnoreCase("false")
-                || text.equalsIgnoreCase("no")
-                || text.equalsIgnoreCase("0")) {
-            return false;
-        } else {
-            throw new IllegalArgumentException("should be true or false");
-        }
-    }
-
-    /**
      * Resolves cross references and decides, whether more processing
      * (a call to {@code check}) is necessary.
      * @param cell the cell to parse

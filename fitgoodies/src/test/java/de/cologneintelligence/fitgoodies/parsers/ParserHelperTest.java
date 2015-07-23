@@ -19,6 +19,7 @@
 
 package de.cologneintelligence.fitgoodies.parsers;
 
+import de.cologneintelligence.fitgoodies.ScientificDouble;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.hamcrest.CoreMatchers;
@@ -29,9 +30,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 
@@ -74,7 +73,19 @@ public class ParserHelperTest extends FitGoodiesTestCase {
 
     @Test
     public void testDefaultRegisters() throws Exception {
-        assertThat(helper.parse("42", BigInteger.class, null), not(CoreMatchers.is(nullValue())));
-        assertThat(helper.parse("3.14159", BigDecimal.class, null), not(CoreMatchers.is(nullValue())));
+        assertCanParse(BigInteger.class, "42");
+        assertCanParse(BigDecimal.class, "3.14159");
+        assertCanParse(Boolean.class, "true");
+        assertCanParse(ScientificDouble.class, "1.5");
+        assertCanParse(Object.class, "foo");
+    }
+
+    @Test
+    public void unknownTypesMapToNull() throws Exception {
+        assertThat(helper.parse("", StringBuffer.class, null), is(nullValue()));
+    }
+
+    public void assertCanParse(Class<?> targetClass, String value) throws Exception {
+        assertThat(helper.parse(value, targetClass, null), not(CoreMatchers.is(nullValue())));
     }
 }

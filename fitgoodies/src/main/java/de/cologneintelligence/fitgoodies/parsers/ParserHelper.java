@@ -33,6 +33,7 @@ public final class ParserHelper {
 
     public ParserHelper() {
         registerParser(new StringParser());
+        registerParser(new BooleanParser());
         registerParser(new DateParser());
         registerParser(new BigIntegerParser());
         registerParser(new BigDecimalParser());

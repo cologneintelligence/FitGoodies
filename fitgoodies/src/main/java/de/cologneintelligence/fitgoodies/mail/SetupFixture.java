@@ -20,8 +20,8 @@
 package de.cologneintelligence.fitgoodies.mail;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
+import de.cologneintelligence.fitgoodies.parsers.BooleanParser;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
 
 /**
  * This fixture is used to define a connection to an e-mail provider.
@@ -119,7 +119,7 @@ public class SetupFixture extends ActionFixture {
      */
     public void ssl(final String ssl) {
         DependencyManager.getOrCreate(SetupHelper.class)
-        .setSSL(FixtureTools.convertToBoolean(ssl));
+        .setSSL(BooleanParser.parse(ssl));
     }
 
     /**

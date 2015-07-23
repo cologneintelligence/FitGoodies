@@ -211,18 +211,4 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
         assertThat(table.parts.parts.text(), is(equalTo("name")));
         assertThat(table.parts.parts.more.text(), is(equalTo("date")));
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConvertBoolean() {
-        assertThat(FixtureTools.convertToBoolean("TrUe"), is(true));
-        assertThat(FixtureTools.convertToBoolean("1"), is(true));
-        assertThat(FixtureTools.convertToBoolean("yes"), is(true));
-        assertThat(FixtureTools.convertToBoolean("false"), is(false));
-
-        assertThat(FixtureTools.convertToBoolean("no"), is(false));
-
-        assertThat(FixtureTools.convertToBoolean("0"), is(false));
-
-        FixtureTools.convertToBoolean("non-bool");
-    }
 }

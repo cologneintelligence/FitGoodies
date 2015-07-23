@@ -22,6 +22,7 @@ package de.cologneintelligence.fitgoodies.mail;
 import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.mail.providers.JavaMailMessageProvider;
 import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
+import de.cologneintelligence.fitgoodies.parsers.BooleanParser;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
@@ -97,7 +98,7 @@ public class MailFixture extends Fixture {
 
     @Override
     public void tearDown() throws Exception {
-        if (FixtureTools.convertToBoolean(getParam("delete", "true"))) {
+        if (BooleanParser.parse(getParam("delete", "true"))) {
             mail.delete();
         }
         provider.disconnect();
