@@ -19,13 +19,12 @@
 
 package de.cologneintelligence.fitgoodies.database;
 
+import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.RowFixture;
 import de.cologneintelligence.fitgoodies.dynamic.ResultSetWrapper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
-import de.cologneintelligence.fitgoodies.Parse;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -52,7 +51,7 @@ import java.sql.Statement;
  * <tr>
  * 		<td>fitgoodies.database.TableFixture</td>
  * 		<td>table=tab1</td>
- * 		<td>where=c1 > 10</td>
+ * 		<td>where=c1 &gt; 10</td>
  * </tr>
  * <tr><td>c1</td><td>c2</td></tr>
  * <tr><td>15</td><td>20</td></tr>
@@ -111,11 +110,7 @@ public class TableFixture extends RowFixture {
     @Override
     public void doTable(final Parse parsedTable) {
         try {
-            final CrossReferenceHelper crossReferenceHelper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-            resultSetWrapper = new ResultSetWrapper(
-                    getResultSet(
-                            FixtureTools.getArg(getArgs(), "table", null, crossReferenceHelper),
-                            FixtureTools.getArg(getArgs(), "where", null, crossReferenceHelper)));
+            resultSetWrapper = new ResultSetWrapper(getResultSet(getArg("table"), getArg("where")));
         } catch (final RuntimeException | SQLException e) {
             exception(parsedTable.parts.parts, e);
             return;
@@ -146,10 +141,7 @@ public class TableFixture extends RowFixture {
             table = helper.parseBody(tableName, "");
 
             statement = connection.createStatement();
-            final ResultSet rs = statement.executeQuery("SELECT * FROM "
-                    + table + whereClause);
-            return rs;
-
+            return statement.executeQuery("SELECT * FROM " + table + whereClause);
         } catch (final CrossReferenceProcessorShortcutException | SQLException e) {
             throw new RuntimeException(e);
         }
@@ -167,7 +159,6 @@ public class TableFixture extends RowFixture {
     /**
      * Gets an array which represents the created ResultSet as an object array.
      * The type of these objects can be determined via {@code getTargetClass()}.
-     * @return
      * @throws java.lang.Exception
      */
     @Override

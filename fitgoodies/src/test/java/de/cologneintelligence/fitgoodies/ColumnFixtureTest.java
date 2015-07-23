@@ -25,6 +25,8 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -260,11 +262,11 @@ public class ColumnFixtureTest extends FitGoodiesTestCase {
 	public void testGetParams() {
 		stringObjFixture.setParams(new String[]{"x=y", "a=b"});
 
-		assertThat(stringObjFixture.getParam("x"), is(equalTo("y")));
-		assertThat(stringObjFixture.getParam("y"), is(nullValue()));
+		assertThat(stringObjFixture.getArg("x"), is(equalTo("y")));
+		assertThat(stringObjFixture.getArg("y"), is(nullValue()));
 
-		assertThat(stringObjFixture.getParam("a", "z"), is(equalTo("b")));
-		assertThat(stringObjFixture.getParam("u", "z"), is(equalTo("z")));
+		assertThat(stringObjFixture.getArg("a", "z"), is(equalTo("b")));
+		assertThat(stringObjFixture.getArg("u", "z"), is(equalTo("z")));
 	}
 
 	@Test
@@ -288,5 +290,27 @@ public class ColumnFixtureTest extends FitGoodiesTestCase {
 		numberObjFixture.doTable(table);
 		assertThat(numberObjFixture.counts().right, is(equalTo((Object) 2)));
 		assertThat(numberObjFixture.counts().exceptions, is(equalTo((Object) 0)));
+	}
+
+
+	@Test
+	public void testColumnParameters() throws Exception {
+		Parse table = parseTableWithoutAnnotation(
+				tr("x[1 2]", "y[3 4]", "z"),
+				tr("a[7]", "b", "c"));
+
+		String[] actual = new ColumnFixture().extractColumnParameters(table.parts);
+
+		assertThat(Arrays.asList("1 2", "3 4", null), is(equalTo(Arrays.asList(actual))));
+		assertThat(table.parts.parts.text(), is(equalTo("x")));
+		assertThat(table.parts.parts.more.text(), is(equalTo("y")));
+		assertThat(table.parts.more.parts.text(), is(equalTo("a[7]")));
+
+		table = parseTableWithoutAnnotation(tr("name", "date [ de_DE, dd.MM.yyyy ] "));
+
+		actual = new ColumnFixture().extractColumnParameters(table.parts);
+		assertThat(Arrays.asList(null, "de_DE, dd.MM.yyyy"), is(equalTo(Arrays.asList(actual))));
+		assertThat(table.parts.parts.text(), is(equalTo("name")));
+		assertThat(table.parts.parts.more.text(), is(equalTo("date")));
 	}
 }

@@ -6,7 +6,6 @@ package de.cologneintelligence.fitgoodies;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
 
 import java.util.*;
 
@@ -21,7 +20,7 @@ abstract public class RowFixture extends ColumnFixture {
 
 	protected void doRows(Parse rows) {
 		try {
-			columnParameters = FixtureTools.extractColumnParameters(rows);
+			columnParameters = extractColumnParameters(rows);
 			bind(rows.parts);
 			results = query();
 			match(list(rows.more), list(results), 0);
@@ -48,7 +47,7 @@ abstract public class RowFixture extends ColumnFixture {
 				if (typeAdapter != null) {
 					typeAdapter.target = computed.get(0);
 				}
-				FixtureTools.processCell(cell, typeAdapter, this, helper);
+				processCell(cell, typeAdapter);
 			}
 		}
 

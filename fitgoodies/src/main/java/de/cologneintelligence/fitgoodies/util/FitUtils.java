@@ -18,6 +18,7 @@ package de.cologneintelligence.fitgoodies.util;/*
 
 import de.cologneintelligence.fitgoodies.Parse;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -99,5 +100,13 @@ public final class FitUtils {
 		final StringWriter buf = new StringWriter();
 		exception.printStackTrace(new PrintWriter(buf));
 		error(cell, buf.toString());
+	}
+
+	public static String htmlSafeFile(File file) {
+	    return htmlSafeFile(file.getPath());
+	}
+
+	public static String htmlSafeFile(String file) {
+	    return file.replace(File.separatorChar, '/');
 	}
 }

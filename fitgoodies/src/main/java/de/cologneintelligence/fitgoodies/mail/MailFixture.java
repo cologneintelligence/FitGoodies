@@ -20,15 +20,13 @@
 package de.cologneintelligence.fitgoodies.mail;
 
 import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 import de.cologneintelligence.fitgoodies.mail.providers.JavaMailMessageProvider;
 import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
 import de.cologneintelligence.fitgoodies.parsers.BooleanParser;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.TypeAdapter;
 
 import javax.mail.MessagingException;
 import java.util.regex.Matcher;
@@ -98,7 +96,7 @@ public class MailFixture extends Fixture {
 
     @Override
     public void tearDown() throws Exception {
-        if (BooleanParser.parse(getParam("delete", "true"))) {
+        if (BooleanParser.parse(getArg("delete", "true"))) {
             mail.delete();
         }
         provider.disconnect();
@@ -134,8 +132,7 @@ public class MailFixture extends Fixture {
     private String parseContentCell(final Parse row) {
         try {
             final TypeAdapter ta = TypeAdapter.on(this, this, String.class);
-            final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-            FixtureTools.processCell(row.parts.more.more, ta, this, helper);
+            processCell(row.parts.more.more, ta);
             return row.parts.more.more.text();
         } catch (final SecurityException e) {
             throw new RuntimeException(e);

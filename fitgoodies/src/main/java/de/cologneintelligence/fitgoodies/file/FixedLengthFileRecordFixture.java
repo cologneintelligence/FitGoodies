@@ -19,12 +19,9 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.file.readers.FixedLengthRecordReader;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.TypeAdapter;
+import de.cologneintelligence.fitgoodies.file.readers.FixedLengthRecordReader;
 
 import java.io.IOException;
 
@@ -56,7 +53,7 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 	public void setUp() throws Exception {
 		super.setUp();
 
-		final String skipEOL = getParam("skipEOL", "0");
+		final String skipEOL = getArg("skipEOL", "0");
 
 		noeol = skipEOL.equalsIgnoreCase("true")
 				|| skipEOL.equalsIgnoreCase("yes")
@@ -100,10 +97,9 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 
 		cell = row.parts;
 		final int[] width = new int[cellCount];
-		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 		for (int i = 0; i < cellCount; ++i) {
 			try {
-				FixtureTools.processCell(cell, TypeAdapter.on(this, this, Integer.class), this, helper);
+				processCell(cell, TypeAdapter.on(this, this, Integer.class));
 				width[i] = Integer.parseInt(cell.text());
 			} catch (final Exception e) {
 				exception(cell, e);

@@ -20,11 +20,9 @@
 package de.cologneintelligence.fitgoodies.alias;
 
 import de.cologneintelligence.fitgoodies.Fixture;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.TypeAdapter;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
  * Fixture to register aliases at runtime.
@@ -74,9 +72,8 @@ public class SetupFixture extends Fixture {
         alias = row.parts.text();
         className = row.parts.more.text();
 
-        final CrossReferenceHelper crossReferenceHelper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        FixtureTools.processCell(row.parts, aliasTypeAdapter, this, crossReferenceHelper);
-        FixtureTools.processCell(row.parts.more, classNameTypeAdapter, this, crossReferenceHelper);
+        processCell(row.parts, aliasTypeAdapter);
+        processCell(row.parts.more, classNameTypeAdapter);
 
         final AliasHelper aliasHelper = DependencyManager.getOrCreate(AliasHelper.class);
         aliasHelper.register(alias, className);

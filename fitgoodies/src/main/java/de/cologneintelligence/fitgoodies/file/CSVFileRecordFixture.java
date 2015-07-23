@@ -42,7 +42,7 @@ public class CSVFileRecordFixture extends AbstractFileRecordReaderFixture {
     }
 
     private char getMaskedParam(final String name, final String defaultValue) {
-        final String param = getParam(name, defaultValue);
+        final String param = getArg(name, defaultValue);
 
         if (param.startsWith("\\")) {
             final char masked = param.charAt(1);

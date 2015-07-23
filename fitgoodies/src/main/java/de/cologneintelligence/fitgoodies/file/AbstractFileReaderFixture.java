@@ -20,9 +20,7 @@
 package de.cologneintelligence.fitgoodies.file;
 
 import de.cologneintelligence.fitgoodies.Fixture;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
 
 import java.io.File;
 
@@ -77,17 +75,15 @@ public abstract class AbstractFileReaderFixture extends Fixture {
     public void setUp() throws Exception {
         super.setUp();
 
-        final CrossReferenceHelper crossReferenceHelper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         final FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
         encoding = helper.getEncoding();
-        encoding = FixtureTools.getArg(args, "encoding", encoding,
-                crossReferenceHelper);
+        encoding = getArg("encoding", encoding);
 
-        String fileName = FixtureTools.getArg(args, "file", null, crossReferenceHelper);
+        String fileName = getArg("file");
         if (fileName == null) {
             File provider = helper.getDirectory();
 
-            final String dir = FixtureTools.getArg(args, "dir", null, crossReferenceHelper);
+            final String dir = getArg("dir");
             if (dir != null) {
                 provider = new File(dir);
             }
@@ -97,7 +93,7 @@ public abstract class AbstractFileReaderFixture extends Fixture {
             }
 
             String pattern = helper.getPattern();
-            pattern = FixtureTools.getArg(args, "pattern", pattern, crossReferenceHelper);
+            pattern = getArg("pattern", pattern);
 
             final FileSelector fs = new FileSelector(provider, pattern);
             file = wrapper.wrap(fs.getFirstFile());

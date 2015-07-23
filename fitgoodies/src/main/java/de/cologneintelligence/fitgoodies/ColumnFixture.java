@@ -4,15 +4,16 @@ package de.cologneintelligence.fitgoodies;
 // Released under the terms of the GNU General Public License version 2 or later.
 
 import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ColumnFixture extends Fixture {
+
 	// FIXME: make this private again
 	protected String[] columnParameters;
 	public TypeAdapter[] columnBindings;
@@ -20,6 +21,24 @@ public class ColumnFixture extends Fixture {
 	private boolean hasExecuted = false;
 
 	// Traversal ////////////////////////////////
+
+
+	/**
+	 * extracts and removes parameters from a row.
+	 * @param row row to process
+	 * @return extracted parameters
+	 */
+	protected String[] extractColumnParameters(final Parse row) {
+		Parse cell = row.parts;
+		final List<String> result = new ArrayList<>();
+
+		while (cell != null) {
+			result.add(extractCellParameter(cell));
+			cell = cell.more;
+		}
+
+		return result.toArray(new String[result.size()]);
+	}
 
 	/**
 	 * Replacement of {@code doRows(Parse)} which resolves question marks
@@ -33,7 +52,7 @@ public class ColumnFixture extends Fixture {
 
 	@Override
 	protected void doRows(final Parse rows) {
-		columnParameters = FixtureTools.extractColumnParameters(rows);
+		columnParameters = extractColumnParameters(rows);
 		bind(rows.parts);
 		super.doRows(rows.more);
 	}
@@ -91,8 +110,7 @@ public class ColumnFixture extends Fixture {
 		if (a == null) {
 			ignore(cell);
 		} else {
-			final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-			a = FixtureTools.processCell(cell, a, this, helper);
+			a = processCell(cell, a);
 
 			try {
 				String text = cell.text();
@@ -169,14 +187,14 @@ public class ColumnFixture extends Fixture {
 			throws Exception {
 		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
 		TypeAdapter ta = TypeAdapter.on(this, this, getTargetClass().getMethod(FitUtils.camel(name), new Class[]{}));
-		return FixtureTools.rebindTypeAdapter(ta, parameter, taHelper);
+		return taHelper.getAdapter(ta, parameter);
 	}
 
 	protected TypeAdapter bindField(final String name, final String parameter)
 			throws Exception {
 		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
 		TypeAdapter ta = TypeAdapter.on(this, this, getTargetClass().getField(FitUtils.camel(name)));
-		return FixtureTools.rebindTypeAdapter(ta, parameter, taHelper);
+		return taHelper.getAdapter(ta, parameter);
 	}
 
 	protected Class<?> getTargetClass() {

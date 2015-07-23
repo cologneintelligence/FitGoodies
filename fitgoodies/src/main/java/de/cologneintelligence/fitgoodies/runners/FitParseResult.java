@@ -28,7 +28,7 @@ import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.cologneintelligence.fitgoodies.util.FixtureTools.htmlSafeFile;
+import static de.cologneintelligence.fitgoodies.util.FitUtils.htmlSafeFile;
 
 /**
  * Implementation of {@link FitResult} which replaces a Parse-Row with one
@@ -49,7 +49,7 @@ public final class FitParseResult implements FitResult {
 
             for (FileCount fileCount : results) {
                 bufferedWriter.write("<tr><td><a href=\"");
-                String file = htmlSafeFile(fileCount.getFile());
+                String file = FitUtils.htmlSafeFile(fileCount.getFile());
                 bufferedWriter.write(file);
                 bufferedWriter.write("\">");
                 bufferedWriter.write(file);
@@ -88,8 +88,8 @@ public final class FitParseResult implements FitResult {
         for (FileCount fileCount : results) {
             Parse row = makeTrTd();
 
-            row.parts.body = "<a href=\"" + htmlSafeFile(fileCount.getFile()) + "\">"
-                    + htmlSafeFile(fileCount.getFile()) + "</a>";
+            row.parts.body = "<a href=\"" + FitUtils.htmlSafeFile(fileCount.getFile()) + "\">"
+                    + FitUtils.htmlSafeFile(fileCount.getFile()) + "</a>";
             row.parts.more.addToBody(fileCount.getCounts().toString());
             row.parts.more.addToTag(" bgcolor=\"" + color(fileCount.getCounts()) + "\"");
 

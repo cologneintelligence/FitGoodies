@@ -4,10 +4,8 @@ package de.cologneintelligence.fitgoodies;
 // Released under the terms of the GNU General Public License version 2 or later.
 
 import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import de.cologneintelligence.fitgoodies.util.WaitForResult;
 
 import java.lang.reflect.Method;
@@ -128,9 +126,8 @@ public class ActionFixture extends Fixture {
 	private TypeAdapter getTypeAdapter(final Class<?> type) {
 		TypeAdapter ta = TypeAdapter.on(actor, this, type);
 		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-		ta = FixtureTools.rebindTypeAdapter(ta, getCellParameter(), taHelper);
-		ta = FixtureTools.processCell(cells.more.more, ta, this, helper);
+		ta = taHelper.getAdapter(ta, getCellParameter());
+		ta = processCell(cells.more.more, ta);
 		return ta;
 	}
 
@@ -171,7 +168,7 @@ public class ActionFixture extends Fixture {
 
 	@Override
 	protected void doRow(final Parse row) {
-		setCellParameter(FixtureTools.extractCellParameter(row.parts));
+		setCellParameter(extractCellParameter(row.parts));
 		super.doRow(row);
 	}
 }

@@ -20,7 +20,6 @@
 package de.cologneintelligence.fitgoodies.runners;
 
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import de.cologneintelligence.fitgoodies.Counts;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
 
@@ -30,7 +29,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.cologneintelligence.fitgoodies.util.FixtureTools.htmlSafeFile;
+import static de.cologneintelligence.fitgoodies.util.FitUtils.htmlSafeFile;
 
 /**
  * Implementation of FitResult which generates a indented HTML table.
@@ -136,7 +135,7 @@ public final class FitResultTable implements FitResult {
 		indent(depth, builder);
 
 		builder.append("<a href=\"");
-		builder.append(htmlSafeFile(file));
+		builder.append(FitUtils.htmlSafeFile(file));
 		builder.append("\">");
 		builder.append(file.getName());
 		builder.append("</a>");
@@ -223,7 +222,7 @@ public final class FitResultTable implements FitResult {
 		Counts sum = subDirSum(path);
 
 		return String.format("<tr bgcolor=\"%s\"><th style=\"text-align: left\">%s</th><td>%s</td></tr>",
-				color(sum), FixtureTools.htmlSafeFile(dirHelper.abs2rel(new File("").getAbsolutePath(), path.getAbsolutePath())), sum.toString());
+				color(sum), FitUtils.htmlSafeFile(dirHelper.abs2rel(new File("").getAbsolutePath(), path.getAbsolutePath())), sum.toString());
 	}
 
 	private Counts subDirSum(final File fullPath) throws IOException {

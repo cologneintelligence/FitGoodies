@@ -3,21 +3,27 @@ package de.cologneintelligence.fitgoodies;
 // Copyright (c) 2002-2005 Cunningham & Cunningham, Inc.
 // Released under the terms of the GNU General Public License version 2 or later.
 
+import de.cologneintelligence.fitgoodies.adapters.CachingTypeAdapter;
 import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
 import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Fixture {
 
+	private static Pattern parameterPattern = Pattern.compile("^(.*)\\s*\\[\\s*(.*?)\\s*\\]\\s*$");
+
 	private Counts counts = new Counts();
-
 	protected String[] args;
-
 	private String cellParameter;
-
 
 	/**
 	 * Sets the fixture parameters.
@@ -37,26 +43,57 @@ public class Fixture {
 	 * Looks up a given parameter in the fixture's argument list.
 	 *
 	 * @param paramName the parameter name to look up
-	 * @return  the parameter value, if it could be found, {@code null} otherwise
-	 * @see #getParam(String, String) {@link #getParam(String, String)}
-	 * @see FixtureTools#getArg(String[], String, String, de.cologneintelligence.fitgoodies.references.CrossReferenceHelper)
-	 * 		{@link FixtureTools#getArg(String[], String, String, de.cologneintelligence.fitgoodies.references.CrossReferenceHelper)}
+	 * @return the parameter value, if it could be found, {@code null} otherwise
+	 * @see #getArg(String, String) {@link #getArg(String, String)}
+	 * @see #getArg(String, String)
+	 * {@link #getArg(String, String)}
 	 */
-	public final String getParam(final String paramName) {
-		return getParam(paramName, null);
+	public final String getArg(final String paramName) {
+		return getArg(paramName, null);
 	}
 
 	/**
-	 * Looks up a given parameter in the fixture's argument list.
+	 * Finds an argument in an given argument list.
+	 * <p/>
+	 * The search for an argument is case-insensitive and whitespaces at the
+	 * beginning and the end are ignored. The argument's name and its value are
+	 * separated by an equal sign. All these inputs will result in
+	 * &quot;world&quot;, if you look up &quot;hello&quot;:
+	 * <p>
+	 * &quot;hello=world&quot;, &quot; hello = world &quot;,
+	 * &quot;HeLLo = world&quot;.</p>
+	 * <p/>
+	 * Note: the case of the value is unchanged.
+	 * <p/>
 	 *
-	 * If the value does not exist, the given default value is returned.
-	 * @param paramName paramName the parameter name to look up
-	 * @param defaultValue defaultValue the value to be returned if the parameter is missing
-	 * @return the parameter value, if it could be found, {@code defaultValue} otherwise
+	 * @param argName      the argument name to look up
+	 * @param defaultValue the result value if the argument does not exist
+	 * @return the argument's value without namespaces, or defaultValue
+	 * @see #getArgNames() getArgs
+	 * @see #copyParamsToFixture(Fixture, TypeAdapterHelper) copyParamsToFixture
 	 */
-	public final String getParam(final String paramName, final String defaultValue) {
-		return FixtureTools.getArg(args, paramName, defaultValue,
-				DependencyManager.getOrCreate(CrossReferenceHelper.class));
+	public String getArg(final String argName, final String defaultValue) {
+		CrossReferenceHelper crossReferenceHelper =
+				DependencyManager.getOrCreate(CrossReferenceHelper.class);
+
+		if (args == null) {
+			return defaultValue;
+		}
+
+		for (final String argument : args) {
+			final String[] pair = argument.split("=", 2);
+			if (pair.length == 2) {
+				if (pair[0].trim().equalsIgnoreCase(argName)) {
+					try {
+						return crossReferenceHelper.parseBody(pair[1].trim(), "");
+					} catch (final CrossReferenceProcessorShortcutException e) {
+						return "";
+					}
+				}
+			}
+		}
+
+		return defaultValue;
 	}
 
 
@@ -69,8 +106,7 @@ public class Fixture {
 	 * @param table the table to be processed
 	 */
 	public void doTable(final Parse table) {
-		FixtureTools.copyParamsToFixture(args, this,
-				DependencyManager.getOrCreate(CrossReferenceHelper.class),
+		copyParamsToFixture(this,
 				DependencyManager.getOrCreate(TypeAdapterHelper.class));
 
 		try {
@@ -118,6 +154,7 @@ public class Fixture {
 	/**
 	 * Does nothing. Override it to initialize the fixture.
 	 * The method is called before doTables.
+	 *
 	 * @throws Exception any kind of exception aborts the execution of this fixture
 	 */
 	public void setUp() throws Exception {
@@ -131,6 +168,74 @@ public class Fixture {
 	 */
 	public void tearDown() throws Exception {
 	}
+
+	// Parameters ///////////////////////////////
+
+	/**
+	 * Reads the argument list and copies all values in public members
+	 * with the same name.
+	 * <p/>
+	 * If these members do not exist, the argument is skipped. You can still
+	 * read the values using {@link #getArg(String, String)}.
+	 *
+	 * @param fixture  fixture to copy the values to
+	 * @param taHelper TypeAdapterHelper to resolve types
+	 * @see #getArg(String, String) getArg
+	 */
+	public void copyParamsToFixture(final Fixture fixture,
+	                                final TypeAdapterHelper taHelper) {
+		for (final String fieldName : getArgNames()) {
+			try {
+				final Field field = fixture.getClass().getField(fieldName);
+				final TypeAdapter ta = taHelper.getAdapter(TypeAdapter.on(fixture, fixture, field), null);
+
+				final String fieldValueString = getArg(fieldName, null);
+				final Object fieldValue = ta.parse(fieldValueString);
+				ta.set(fieldValue);
+			} catch (final Exception ignored) {
+			}
+		}
+	}
+
+	/**
+	 * extracts and removes parameters from a cell.
+	 * @param cell cell to process
+	 * @return the extracted parameter or {@code null}
+	 */
+	public static String extractCellParameter(final Parse cell) {
+		final Matcher matcher = parameterPattern.matcher(cell.text());
+		if (matcher.matches()) {
+			cell.body = matcher.group(1);
+			return matcher.group(2);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns all argument names.
+	 *
+	 * @return a list of all given argument names.
+	 * @see #getArg(String, String) getArg
+	 * @see #copyParamsToFixture(Fixture, TypeAdapterHelper)  copyParamsToFixture
+	 */
+	protected String[] getArgNames() {
+		final List<String> result = new ArrayList<>();
+
+		if (args == null) {
+			return new String[]{};
+		}
+
+		for (final String argument : args) {
+			final String[] pair = argument.split("=", 2);
+			if (pair.length == 2) {
+				result.add(pair[0].trim());
+			}
+		}
+
+		return result.toArray(new String[result.size()]);
+	}
+
 
 	// Annotation ///////////////////////////////
 
@@ -184,14 +289,13 @@ public class Fixture {
 	 * Replacement of {@code check} which resolves cross-references
 	 * before calling the original check method of fit.
 	 *
-	 *  @param cell the cell to check
-	 *  @param a - TypeAdapter to use
+	 * @param cell the cell to check
+	 * @param a    - TypeAdapter to use
 	 */
 	public void check(final Parse cell, final TypeAdapter a) {
 		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-		TypeAdapter ta = FixtureTools.rebindTypeAdapter(a, cellParameter, taHelper);
-		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-		ta = FixtureTools.processCell(cell, ta, this, helper);
+		TypeAdapter ta = taHelper.getAdapter(a, cellParameter);
+		ta = processCell(cell, ta);
 		if (ta != null) {
 			check2(cell, ta);
 		}
@@ -241,6 +345,7 @@ public class Fixture {
 
 	/**
 	 * Sets the parameter of the selected cell.
+	 *
 	 * @param parameter the cell parameter to set
 	 * @see #getCellParameter() getCellParameter()
 	 */
@@ -250,11 +355,86 @@ public class Fixture {
 
 	/**
 	 * Returns the parameter of the selected cell.
+	 *
 	 * @return the cell parameter
 	 * @see #setCellParameter(String) setCellParameter(String)
 	 */
 	protected String getCellParameter() {
 		return cellParameter;
+	}
+
+
+	/**
+	 * Resolves cross references and decides, whether more processing
+	 * (a call to {@code check}) is necessary.
+	 * @param cell the cell to parse
+	 * @param ta the type bound adapter which is used to compare the cell content
+	 * @return a cached {@code TypeAdapter}, whether the cell should be
+	 * 		{@code check}'ed, {@code null} if no more processing is
+	 * 		required (the cell is then marked as right or wrong from
+	 * 		{@code processCell})
+	 */
+	protected TypeAdapter processCell(final Parse cell, final TypeAdapter ta) {
+		CrossReferenceHelper crossReferenceHelper =
+				DependencyManager.getOrCreate(CrossReferenceHelper.class);
+
+		String actualStringValue = "";
+		boolean callParentCheck = true;
+
+		if (ta == null) {
+			return null;
+		}
+
+		final TypeAdapter adapter = new CachingTypeAdapter(ta);
+
+		Object obj;
+		try {
+			obj = adapter.get();
+			if (obj != null) {
+				actualStringValue = adapter.toString(obj);
+			}
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		try {
+			cell.body = crossReferenceHelper.parseBody(cell.body, actualStringValue);
+		} catch (final CrossReferenceProcessorShortcutException e) {
+			setShortCutMessage(cell, actualStringValue, obj, e);
+			callParentCheck = false;
+		}
+		if (callParentCheck) {
+			return adapter;
+		} else {
+			return null;
+		}
+	}
+
+	protected void setShortCutMessage(final Parse cell,
+	                                       final String actualStringValue, final Object obj,
+	                                       final CrossReferenceProcessorShortcutException e) {
+		if (e.isOk()) {
+			if (obj == null) {
+				cell.body = "(null)";
+			} else {
+				cell.body = actualStringValue;
+			}
+
+			cell.body += " <font color=\"#808080\">"
+					+ FitUtils.escape(e.getMessage()) + "</font>";
+			FitUtils.right(cell);
+			counts.right++;
+		} else {
+			cell.body = e.getMessage();
+
+			if (obj == null) {
+				FitUtils.wrong(cell, "(null)");
+				counts.wrong++;
+			} else {
+				FitUtils.wrong(cell, actualStringValue);
+				counts.wrong++;
+			}
+		}
 	}
 
 }

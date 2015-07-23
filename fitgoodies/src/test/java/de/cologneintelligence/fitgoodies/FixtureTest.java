@@ -1,7 +1,9 @@
 package de.cologneintelligence.fitgoodies;
 
+import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
 import de.cologneintelligence.fitgoodies.parsers.LongParserMock;
 import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
+import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
@@ -34,17 +36,18 @@ public class FixtureTest extends FitGoodiesTestCase {
 		}
 	}
 
-	public static class BrokenParserFixture extends Fixture {
+	public static class TestFixture extends Fixture {
+		public int x;
+		public String y;
 
-		@Override
-		public Object parse(String s, Class type) throws Exception {
-			throw new RuntimeException();
-		}
+		public int a;
+		public String b;
 	}
 
 	private static class UpDownSpy extends Fixture {
 		public boolean upCalled;
 		public boolean downCalled;
+		public boolean doRowsCalled;
 
 		@Override
 		public void setUp() {
@@ -58,24 +61,8 @@ public class FixtureTest extends FitGoodiesTestCase {
 
 		@Override
 		protected void doRows(Parse rows) {
-			throw new RuntimeException("");
-		}
-	}
-
-
-	private static class ErrorUpDownSpy extends UpDownSpy {
-		public boolean doRowsCalled;
-
-		@Override
-		protected void doRows(Parse rows) {
 			doRowsCalled = true;
-			super.doRows(rows);
-		}
-
-		@Override
-		public void setUp() {
-			super.setUp();
-			throw new RuntimeException("expected");
+			throw new RuntimeException("");
 		}
 	}
 
@@ -128,7 +115,12 @@ public class FixtureTest extends FitGoodiesTestCase {
 
 		final Fixture fixture = new Fixture();
 		TestClass target = new TestClass();
-		fixture.check(aCell, TypeAdapter.on(target, new BrokenParserFixture(), TestClass.class.getField("value")));
+		fixture.check(aCell, TypeAdapter.on(target, new Fixture() {
+			@Override
+			public Object parse(String s, Class type) throws Exception {
+				throw new RuntimeException();
+			}
+		}, TestClass.class.getField("value")));
 
 		assertCounts(fixture.counts(), 0, 0, 1, 0);
 	}
@@ -186,7 +178,7 @@ public class FixtureTest extends FitGoodiesTestCase {
 	public Counts checkInvocation(Parse aCell, String methodName) throws NoSuchMethodException {
 		final Fixture fixture = new Fixture();
 		TestClass target = new TestClass();
-		fixture.check2(aCell, TypeAdapter.on(target, new BrokenParserFixture(),
+		fixture.check2(aCell, TypeAdapter.on(target, fixture,
 				TestClass.class.getMethod(methodName, new Class<?>[0])));
 		return fixture.counts();
 	}
@@ -223,7 +215,13 @@ public class FixtureTest extends FitGoodiesTestCase {
 	public void downIsNotCalledOnUpErrors() throws Exception {
 		final Parse table = parseTable(tr("x"));
 
-		ErrorUpDownSpy fixture = new ErrorUpDownSpy();
+		UpDownSpy fixture = new UpDownSpy() {
+			@Override
+			public void setUp() {
+				super.setUp();
+				throw new RuntimeException("expected");
+			}
+		};
 		fixture.doTable(table);
 
 		assertTableException(fixture);
@@ -246,7 +244,8 @@ public class FixtureTest extends FitGoodiesTestCase {
 			final Integer intExpected = 42;
 			assertThat(fixture.parse("42", intExpected.getClass()), is(nullValue()));
 			Assert.fail();
-		} catch(IllegalArgumentException ignored) {}
+		} catch (IllegalArgumentException ignored) {
+		}
 
 		BigInteger biExpected = new BigInteger("123");
 		assertThat(fixture.parse("123", biExpected.getClass()), (Matcher) is(equalTo(biExpected)));
@@ -265,4 +264,98 @@ public class FixtureTest extends FitGoodiesTestCase {
 		fixture.setCellParameter("true");
 		assertThat(fixture.parse("5", Long.class), (Matcher) is(equalTo(7L)));
 	}
+
+
+	@Test
+	public void testGetParameter() throws Exception {
+		CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+
+		Fixture fixture = new Fixture();
+		fixture.setParams(new String[]{
+				"x = y", " param = value "
+		});
+
+		assertThat(fixture.getArg("x", null), is(equalTo("y")));
+		assertThat(fixture.getArg("param", null), is(equalTo("value")));
+		assertThat(fixture.getArg("not-good", "good"), is(equalTo("good")));
+
+		fixture = new Fixture();
+		fixture.setParams(new String[]{
+				"x =z", " a b=test "
+		});
+
+		assertThat(fixture.getArg("param", "bad"), is(equalTo("bad")));
+		assertThat(fixture.getArg("X", null), is(equalTo("z")));
+		assertThat(fixture.getArg("A B", null), is(equalTo("test")));
+
+		fixture = new Fixture();
+		fixture.setParams(null);
+		assertThat(fixture.getArg("x", "null"), is(equalTo("null")));
+		assertThat(fixture.getArg("y", "error"), is(equalTo("error")));
+
+		fixture = new Fixture();
+		fixture.setParams(new String[]{
+				"y = a${tests.get(x)}b", " a b=test "
+		});
+
+		helper.parseBody("${tests.put(x)}", "x");
+		assertThat(fixture.getArg("y", null), is(equalTo("axb")));
+	}
+
+	@Test
+	public void testGetParameters() {
+		String[] actual = getArgNamesFromFixture(new String[]{
+				"x = y", " param = value "
+		});
+		assertThat(actual.length, is(equalTo((Object) 2)));
+		assertThat(actual[0], is(equalTo("x")));
+		assertThat(actual[1], is(equalTo("param")));
+
+		actual = getArgNamesFromFixture(new String[]{
+				"x =z", " a b=test "
+		});
+		assertThat(actual.length, is(equalTo((Object) 2)));
+		assertThat(actual[0], is(equalTo("x")));
+		assertThat(actual[1], is(equalTo("a b")));
+
+		actual = getArgNamesFromFixture(null);
+		assertThat(actual.length, is(equalTo(0)));
+
+		actual = getArgNamesFromFixture(new String[0]);
+		assertThat(actual.length, is(equalTo(0)));
+	}
+
+	public String[] getArgNamesFromFixture(String[] values) {
+		String[] actual;Fixture fixture2 = new Fixture();
+		fixture2.setParams(values);
+		actual = fixture2.getArgNames();
+		return actual;
+	}
+
+
+	@Test
+	public void testCopyParamsToFixture() {
+		final TypeAdapterHelper taHelper = new TypeAdapterHelper();
+
+		TestFixture fixture = new TestFixture();
+		fixture.setParams(new String[]{" x = 8 ", "y=string", "z=error"});
+
+		fixture.a = 9;
+		fixture.copyParamsToFixture(fixture, taHelper);
+		assertThat(fixture.a, is(equalTo(9)));
+		assertThat(fixture.x, is(equalTo(8)));
+		assertThat(fixture.y, is(equalTo("string")));
+
+		fixture = new TestFixture();
+		fixture.setParams(new String[]{" a = 42 ", "b=c"});
+		fixture.copyParamsToFixture(fixture, taHelper);
+
+		assertThat(fixture.a, is(equalTo(42)));
+		assertThat(fixture.b, is(equalTo("c")));
+
+		fixture = new TestFixture();
+		fixture.setParams(null);
+		fixture.copyParamsToFixture(fixture, taHelper);
+	}
+
 }

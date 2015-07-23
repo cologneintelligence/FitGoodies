@@ -17,15 +17,10 @@
  */
 
 
-package de.cologneintelligence.fitgoodies.util;
+package de.cologneintelligence.fitgoodies;
 
 import de.cologneintelligence.fitgoodies.adapters.CachingTypeAdapter;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.ColumnFixture;
-import de.cologneintelligence.fitgoodies.Fixture;
-import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.TypeAdapter;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +29,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 
-public final class FixtureToolsParserTest extends FitGoodiesTestCase {
+public final class FixtureTest2 extends FitGoodiesTestCase {
 	public static class DummyFixture extends ColumnFixture {
 		public String value = "xyz";
 
@@ -59,25 +54,25 @@ public final class FixtureToolsParserTest extends FitGoodiesTestCase {
 	@Test
 	public void testCachedAdapter() {
 		Parse cell = parseTd("x");
-		TypeAdapter ta = FixtureTools.processCell(cell, taMethod, dummy, new CrossReferenceHelper());
+		TypeAdapter ta = new Fixture().processCell(cell, taMethod);
 		assertThat(CachingTypeAdapter.class, (Matcher) is(equalTo(ta.getClass())));
 
 		cell = parseTd("another value</td>");
-		ta = FixtureTools.processCell(cell, taMethod, dummy, new CrossReferenceHelper());
+		ta = new Fixture().processCell(cell, taMethod);
 		assertThat(CachingTypeAdapter.class, (Matcher) is(equalTo(ta.getClass())));
 	}
 
 	@Test
 	public void testProcessWithPositiveShortcuts() {
 		Parse cell = parseTd("${nonEmpty()}");
-		TypeAdapter ta = FixtureTools.processCell(cell, taField, dummy, new CrossReferenceHelper());
+		TypeAdapter ta = new Fixture().processCell(cell, taField);
 
 		assertThat(ta, is(nullValue()));
 		assertThat(cell.text(), containsString("empty"));
 
 		cell = parseTd("${nonEmpty()}</td>");
 		dummy.value = null;
-		ta = FixtureTools.processCell(cell, taField, dummy, new CrossReferenceHelper());
+		ta = new Fixture().processCell(cell, taField);
 
 		assertThat(ta, is(nullValue()));
 		assertThat(cell.text(), containsString("(null)"));
@@ -87,14 +82,14 @@ public final class FixtureToolsParserTest extends FitGoodiesTestCase {
 	@Test
 	public void testProcessWithNegativeShortcuts()  {
 		Parse cell = parseTd("${empty()}");
-		TypeAdapter ta = FixtureTools.processCell(cell, taField, dummy, new CrossReferenceHelper());
+		TypeAdapter ta = new Fixture().processCell(cell, taField);
 
 		assertThat(ta, is(nullValue()));
 		assertThat(cell.text(), containsString("value must be empty"));
 
 		cell = parseTd("${empty()}");
 		dummy.value = null;
-		ta = FixtureTools.processCell(cell, taField, dummy, new CrossReferenceHelper());
+		ta = new Fixture().processCell(cell, taField);
 		assertThat(ta, is(nullValue()));
 		assertThat(cell.text().startsWith("(null)"), is(true));
 		assertThat(cell.text(), containsString("value is empty"));
@@ -102,7 +97,7 @@ public final class FixtureToolsParserTest extends FitGoodiesTestCase {
 
 		cell = parseTd("${empty()}");
 		dummy.value = "";
-		ta = FixtureTools.processCell(cell, taField, dummy, new CrossReferenceHelper());
+		ta = new Fixture().processCell(cell, taField);
 		assertThat(ta, is(nullValue()));
 		assertThat(cell.text(), containsString("value is empty"));
 	}

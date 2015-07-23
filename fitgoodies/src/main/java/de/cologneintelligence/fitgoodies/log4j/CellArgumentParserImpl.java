@@ -18,12 +18,11 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
+import de.cologneintelligence.fitgoodies.ColumnFixture;
+import de.cologneintelligence.fitgoodies.Parse;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
-
-import de.cologneintelligence.fitgoodies.Parse;
 
 /**
  * Removes the parameters from a cell value and stores it in a <code>Map</code>.
@@ -38,7 +37,7 @@ public final class CellArgumentParserImpl implements CellArgumentParser {
 	 * @param cell the cell to process
 	 */
 	public CellArgumentParserImpl(final Parse cell) {
-		cellParameters = FixtureTools.extractCellParameter(cell);
+		cellParameters = ColumnFixture.extractCellParameter(cell);
 	}
 
 	/**

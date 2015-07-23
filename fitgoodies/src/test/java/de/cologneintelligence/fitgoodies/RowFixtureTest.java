@@ -207,11 +207,11 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 
 		rowFixture.setParams(new String[]{"x=y", "a=b"});
 
-		assertThat(rowFixture.getParam("x"), is(equalTo("y")));
-		assertThat(rowFixture.getParam("y"), is(nullValue()));
+		assertThat(rowFixture.getArg("x"), is(equalTo("y")));
+		assertThat(rowFixture.getArg("y"), is(nullValue()));
 
-		assertThat(rowFixture.getParam("a", "z"), is(equalTo("b")));
-		assertThat(rowFixture.getParam("u", "z"), is(equalTo("z")));
+		assertThat(rowFixture.getArg("a", "z"), is(equalTo("b")));
+		assertThat(rowFixture.getArg("u", "z"), is(equalTo("z")));
 	}
 
 	@Test
