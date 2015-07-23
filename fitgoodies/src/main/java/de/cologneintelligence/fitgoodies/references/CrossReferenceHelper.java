@@ -21,7 +21,7 @@ package de.cologneintelligence.fitgoodies.references;
 
 import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
 import de.cologneintelligence.fitgoodies.references.processors.*;
-import de.cologneintelligence.fitgoodies.util.DateProviderImpl;
+import de.cologneintelligence.fitgoodies.util.DateProvider;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.SystemPropertyProvider;
 
@@ -44,7 +44,7 @@ public final class CrossReferenceHelper {
                 DependencyManager.getOrCreate(FileFixtureHelper.class)));
         processors.add(new PropertyCrossReferenceProcessor());
         processors.add(new EnvironmentPropertyCrossReferenceProcessor(DependencyManager.getOrCreate(SystemPropertyProvider.class)));
-        processors.add(new DateProviderCrossReferenceProcessor(new DateProviderImpl()));
+        processors.add(new DateProviderCrossReferenceProcessor(new DateProvider()));
     };
 
     /**

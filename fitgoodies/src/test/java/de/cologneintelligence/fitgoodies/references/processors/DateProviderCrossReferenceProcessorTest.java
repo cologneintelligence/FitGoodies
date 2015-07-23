@@ -19,7 +19,7 @@
 package de.cologneintelligence.fitgoodies.references.processors;
 
 import de.cologneintelligence.fitgoodies.references.CrossReference;
-import de.cologneintelligence.fitgoodies.util.DateProviderImpl;
+import de.cologneintelligence.fitgoodies.util.DateProvider;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
@@ -51,7 +51,7 @@ public class DateProviderCrossReferenceProcessorTest {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
         final String date = simpleDateFormat.format(new Date());
 
-        final DateProvider dateProvider = new DateProviderImpl();
+        final DateProvider dateProvider = new DateProvider();
         DateProviderCrossReferenceProcessor processor = new DateProviderCrossReferenceProcessor(dateProvider);
 
         CrossReference cr = new CrossReference("getCurrentDate", "dateProvider", format, processor);
@@ -65,7 +65,7 @@ public class DateProviderCrossReferenceProcessorTest {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
         final String date = simpleDateFormat.format(new Date());
 
-        final DateProvider dateProvider = new DateProviderImpl();
+        final DateProvider dateProvider = new DateProvider();
         DateProviderCrossReferenceProcessor processor = new DateProviderCrossReferenceProcessor(dateProvider);
 
         CrossReference cr = new CrossReference("getCurrentDate", "dateProvider", null, processor);

@@ -19,11 +19,10 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FixtureToolsTest.DummyValueFixture;
 import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.TypeAdapter;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +36,19 @@ import static org.junit.Assert.assertThat;
 
 
 public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
+    public static class DummyValueFixture extends Fixture {
+        public int x;
+        public String y;
+
+        public int a;
+        public String b;
+
+        public BigInteger[] arr = new BigInteger[]{
+                new BigInteger("1"),
+                new BigInteger("2"),
+                new BigInteger("3")};
+    }
+
     private TypeAdapterHelper helper;
 
     @Before
@@ -140,5 +152,22 @@ public final class TypeAdapterHelperTest extends FitGoodiesTestCase {
 
         actual = helper.getAdapter(ta, "parameter");
         assertThat(Collections.singletonList(new BigInteger("23")), is(equalTo(Arrays.asList((BigInteger[]) actual.parse("z")))));
+    }
+
+    @Test
+    public void testRebindTypeAdapterWithParameter() throws Exception {
+        final TypeAdapter ta = new TypeAdapter();
+        AbstractTypeAdapter<?> actual;
+
+        ta.type = BigInteger.class;
+
+        TypeAdapterHelper helper = new TypeAdapterHelper();
+        helper.register(DummyTypeAdapter.class);
+
+        actual = (AbstractTypeAdapter<?>) helper.getAdapter(ta, "test");
+        assertThat(actual.getParameter(), is(equalTo("test")));
+
+        actual = (AbstractTypeAdapter<?>) helper.getAdapter(ta, "parameter");
+        assertThat(actual.getParameter(), is(equalTo("parameter")));
     }
 }

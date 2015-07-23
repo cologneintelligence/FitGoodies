@@ -20,6 +20,7 @@ package de.cologneintelligence.fitgoodies.references.processors;
 
 import de.cologneintelligence.fitgoodies.references.CrossReference;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
+import de.cologneintelligence.fitgoodies.util.DateProvider;
 
 /**
  * This fixture provides the current date.
