@@ -19,6 +19,7 @@
 package de.cologneintelligence.fitgoodies;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -91,7 +92,7 @@ public class ActionFixtureTest extends FitGoodiesTestCase {
 		Parse parse = parseTable(start(clazz));
 
 		final ActionFixture fixture = new ActionFixture();
-		assertThat(fixture.actor, is(nullValue()));
+		assertThat(fixture.actor, (Matcher) is(sameInstance(fixture)));
 		fixture.doTable(parse);
 		assertCounts(fixture.counts(), parse, 0, 0, 0, 0);
 		assertThat(fixture.actor, instanceOf(TestFixture1.class));
