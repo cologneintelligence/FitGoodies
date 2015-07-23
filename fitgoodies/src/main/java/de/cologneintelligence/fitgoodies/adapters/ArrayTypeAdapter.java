@@ -19,8 +19,8 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import fit.Fixture;
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 
 import java.lang.reflect.Array;
 import java.util.StringTokenizer;

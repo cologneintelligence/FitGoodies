@@ -20,8 +20,8 @@
 package de.cologneintelligence.fitgoodies.runners;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import fit.Counts;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Counts;
+import de.cologneintelligence.fitgoodies.Parse;
 import org.junit.Before;
 import org.junit.Test;
 

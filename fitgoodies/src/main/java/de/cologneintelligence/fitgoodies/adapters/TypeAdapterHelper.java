@@ -18,10 +18,10 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
+import de.cologneintelligence.fitgoodies.TypeAdapter;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import fit.TypeAdapter;
 
 public final class TypeAdapterHelper {
     private final Map<Class<?>, Class<? extends AbstractTypeAdapter<?>>> adapters =
@@ -71,7 +71,9 @@ public final class TypeAdapterHelper {
      */
     public TypeAdapter getAdapter(final TypeAdapter typeAdapter,
             final String parameter) {
-        if (typeAdapter.type.isArray()) {
+        if (typeAdapter == null) {
+            return null;
+        } else if (typeAdapter.type.isArray()) {
             return new ArrayTypeAdapter(typeAdapter, parameter, this);
         } else if (adapters.containsKey(typeAdapter.type)) {
             return instantiate(adapters.get(typeAdapter.type), typeAdapter, parameter);

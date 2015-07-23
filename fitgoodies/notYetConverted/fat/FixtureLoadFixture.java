@@ -1,10 +1,11 @@
 package fat;
 
-import fit.*;
+import de.cologneintelligence.fitgoodies.ColumnFixture;
+import de.cologneintelligence.fitgoodies.Fixture;
 
 public class FixtureLoadFixture extends ColumnFixture {
 	public String FixtureName;
-	
+
 	public String LoadResult() throws Exception {
         loadFixture();
 		return "loaded";    // we'll get an exception if it didn't load
@@ -15,7 +16,7 @@ public class FixtureLoadFixture extends ColumnFixture {
         Fixture fixture = new Fixture();
         fixture.loadFixture(FixtureName);
     }
-	
+
 	public String ErrorMessage() {
 		try {
 			loadFixture();

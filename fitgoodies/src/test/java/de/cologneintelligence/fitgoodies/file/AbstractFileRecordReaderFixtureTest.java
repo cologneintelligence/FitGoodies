@@ -22,7 +22,7 @@ package de.cologneintelligence.fitgoodies.file;
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReaderMock;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;

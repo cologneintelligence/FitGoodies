@@ -22,7 +22,7 @@ package de.cologneintelligence.fitgoodies.adapters;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.date.SetupHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 import org.junit.Test;
 
 import java.sql.Date;

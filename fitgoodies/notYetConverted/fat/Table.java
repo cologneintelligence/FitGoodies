@@ -3,8 +3,8 @@
 
 package fat;
 
-import fit.Parse;
-import fit.Fixture;
+import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.Fixture;
 
 public class Table extends Fixture {
     public static Parse table;

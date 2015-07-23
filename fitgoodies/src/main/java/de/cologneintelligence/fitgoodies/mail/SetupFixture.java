@@ -19,6 +19,7 @@
 
 package de.cologneintelligence.fitgoodies.mail;
 
+import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 
@@ -53,7 +54,7 @@ import de.cologneintelligence.fitgoodies.util.FixtureTools;
  * </table>
  *
  */
-public class SetupFixture extends de.cologneintelligence.fitgoodies.ActionFixture {
+public class SetupFixture extends ActionFixture {
 
     /**
      * Calls {@link #host(String)}, using the next cell as its parameter.

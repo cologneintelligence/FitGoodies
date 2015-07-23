@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2009-2015  Cologne Intelligence GmbH
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -17,32 +17,30 @@
  */
 
 
-package de.cologneintelligence.fitgoodies.adapters;
+package de.cologneintelligence.fitgoodies.parsers;
 
-import de.cologneintelligence.fitgoodies.TypeAdapter;
-
-import java.math.BigInteger;
-
-
-public class DummyTypeAdapter extends AbstractTypeAdapter<BigInteger> {
-	public DummyTypeAdapter(final TypeAdapter ta, final String x) {
-		super(ta, x);
+/**
+ * Parser which is able to convert a string into a {@code String}.
+ *
+ */
+public class StringParser implements Parser<String> {
+	/**
+	 * Parses a string and converts it into a {@code String} object.
+	 * @param s {@code String} which will be converted
+	 * @param parameter ignored
+	 * @return {@code String} object which is represented by {@code s}
+	 */
+	@Override
+	public final String parse(final String s, final String parameter) {
+		return s;
 	}
 
+	/**
+	 * Returns the destination class which is managed by this parser.
+	 * @return BigInteger.class
+	 */
 	@Override
-	public final String toString(final Object o) { return null; }
-
-	@Override
-	public final Class<BigInteger> getType() {
-		return BigInteger.class;
-	}
-
-	@Override
-	public final Object parse(final String x) {
-		if (getParameter() != null) {
-			return new BigInteger("23");
-		} else {
-			return new BigInteger("42");
-		}
+	public final Class<String> getType() {
+		return String.class;
 	}
 }

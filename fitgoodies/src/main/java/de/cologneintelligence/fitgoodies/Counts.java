@@ -1,7 +1,7 @@
 // Copyright (c) 2002-2005 Cunningham & Cunningham, Inc.
 // Released under the terms of the GNU General Public License version 2 or later.
 
-package fit;
+package de.cologneintelligence.fitgoodies;
 
 public class Counts {
     public int right = 0;

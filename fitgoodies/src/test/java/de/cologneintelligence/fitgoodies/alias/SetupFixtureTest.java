@@ -21,7 +21,7 @@ package de.cologneintelligence.fitgoodies.alias;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;

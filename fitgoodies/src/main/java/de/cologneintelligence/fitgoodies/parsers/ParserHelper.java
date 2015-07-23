@@ -32,6 +32,8 @@ public final class ParserHelper {
             new HashMap<>();
 
     public ParserHelper() {
+        registerParser(new StringParser());
+        registerParser(new DateParser());
         registerParser(new BigIntegerParser());
         registerParser(new BigDecimalParser());
         registerParser(new ObjectParser());
@@ -41,21 +43,21 @@ public final class ParserHelper {
      * Registers a parser.
      * @param <T> destination type which the parser processes
      * @param type destination type which the parser processes
-     * @param parser parser which converts <code>String</code> to
-     * 		<code>&lt;T&gt;</code>
+     * @param parser parser which converts {@code String} to
+     * 		{@code &lt;T&gt;}
      */
     public <T> void registerParser(final Class<T> type, final Parser<T> parser) {
         parsers.put(type, parser);
     }
 
     /**
-     * Parses <code>s</code> into an instance of a class of the type
-     * <code>type</code>. If no suitable parser could be found,
-     * <code>null</code> is returned.
+     * Parses {@code s} into an instance of a class of the type
+     * {@code type}. If no suitable parser could be found,
+     * {@code null} is returned.
      * @param s the string to parse
      * @param type the destination type
-     * @param parameter <code>String</code> which holds the column parameter
-     * @return parsed <code>s</code> as class of the type <code>type</code> or null
+     * @param parameter {@code String} which holds the column parameter
+     * @return parsed {@code s} as class of the type {@code type} or null
      * @throws Exception exception which is thrown by a parser. Propagated to fit.
      */
     public Object parse(final String s, final Class<?> type, final String parameter)
@@ -71,10 +73,10 @@ public final class ParserHelper {
 
     /**
      * Registers a parser. The type is automatically determined by asking
-     * 		<code>parser</code> for its type.
+     * 		{@code parser} for its type.
      * @param <T> destination type which the parser processes
-     * @param parser parser parser which converts <code>String</code> to
-     * 		<code>&lt;T&gt;</code>
+     * @param parser parser parser which converts {@code String} to
+     * 		{@code &lt;T&gt;}
      */
     public <T> void registerParser(final Parser<T> parser) {
         registerParser(parser.getType(), parser);

@@ -16,7 +16,7 @@ package de.cologneintelligence.fitgoodies.util;/*
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

@@ -20,9 +20,9 @@
 package de.cologneintelligence.fitgoodies.test;
 
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Counts;
+import de.cologneintelligence.fitgoodies.Counts;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

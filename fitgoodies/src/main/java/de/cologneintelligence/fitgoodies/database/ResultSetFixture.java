@@ -59,7 +59,7 @@ public class ResultSetFixture extends RowFixture {
 	/**
 	 * Gets an array which represents the ResultSet as an object array.
 	 * The type of these objects can be determined via <code>getTargetClass()</code>.
-         * @return 
+         * @return
          * @throws java.lang.Exception
 	 */
 	@Override

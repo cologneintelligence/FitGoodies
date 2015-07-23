@@ -3,8 +3,9 @@
 
 package fat;
 
+import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.PrimitiveFixture;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import fit.*;
 
 public class Color extends PrimitiveFixture {
 

@@ -21,10 +21,12 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.processors.CrossReferenceProcessorMock;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
-import org.junit.Before;
 import org.junit.Test;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -33,13 +35,12 @@ import static org.junit.Assert.assertThat;
  */
 public final class RowFixtureTest extends FitGoodiesTestCase {
 
-	public static class DummyRowObject {
-
+	public static class BusinessObject1 {
 		public Integer x;
 		public String y;
 		public Integer z;
 
-		public DummyRowObject(
+		public BusinessObject1(
 				final Integer xVal,
 				final String yVal,
 				final Integer zVal) {
@@ -49,103 +50,91 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 		}
 	}
 
-	public static class TestRowObject {
+	public static class BusinessObject2 {
+		private String[] strs;
+		private String str;
+		private String str2;
 
-		public String x;
-		public Integer y;
-		public Integer z;
+		public BusinessObject2(String str, String str2) {
+			this.str = str;
+			this.str2 = str2;
+		}
 
-		public TestRowObject(
-				final String xVal,
-				final Integer yVal,
-				final Integer zVal) {
-			x = xVal;
-			y = yVal;
-			z = zVal;
+		public BusinessObject2(String[] strs) {
+			this.strs = strs;
+		}
+
+		public String[] getStrings() {
+			return strs;
+		}
+
+		public String getString1() {
+			return str;
+		}
+
+		public String getString2() {
+			return str2;
 		}
 	}
 
-	private static class DummyRowFixture extends RowFixture {
+	private class TestRowFixture2 extends RowFixture {
 
-		public boolean upCalled;
-		public boolean downCalled;
+		private Object[] result;
+
+		private TestRowFixture2() {
+			this(new Object[0]);
+		}
+
+		private TestRowFixture2(Object[] result) {
+			this.result = result;
+		}
+
+		public Object[] query() {
+			return result;
+		}
+
+		public Class getTargetClass() {
+			return BusinessObject2.class;
+		}
+	}
+
+	private static class TestRowFixture1 extends RowFixture {
 
 		@Override
 		public Class<?> getTargetClass() {
-			return DummyRowObject.class;
+			return BusinessObject1.class;
 		}
 
 		@Override
 		public Object[] query() throws Exception {
-			return new DummyRowObject[]{
-					new DummyRowObject(1, "x", 3),
-					new DummyRowObject(8, "matched", 6)
+			return new BusinessObject1[]{
+					new BusinessObject1(1, "x", 3),
+					new BusinessObject1(8, "matched", 6)
 			};
-		}
-
-		@Override
-		public void setUp() {
-			upCalled = true;
-		}
-
-		@Override
-		public void tearDown() {
-			downCalled = true;
 		}
 	}
 
-	private static class TestRowFixture extends RowFixture {
-
-		public boolean upCalled;
-		public boolean downCalled;
+	private static class TestRowFixture3 extends RowFixture {
 
 		@Override
 		public Class<?> getTargetClass() {
-			return TestRowObject.class;
+			return BusinessObject1.class;
 		}
 
 		@Override
 		public Object[] query() throws Exception {
-			return new TestRowObject[]{
-					new TestRowObject("x", 2, 3),
-					new TestRowObject("x", 5, 6)
+			return new BusinessObject1[]{
+					new BusinessObject1(2, "x", 3),
+					new BusinessObject1(5, "x", 6)
 			};
 		}
-
-		@Override
-		public void setUp() {
-			upCalled = true;
-		}
-
-		@Override
-		public void tearDown() {
-			downCalled = true;
-		}
 	}
 
-	public static final class ErrorFixture extends DummyRowFixture {
-
-		private boolean downCalled = false;
-
-		public boolean isDownCalled() {
-			return downCalled;
-		}
-
-		@Override
-		public void tearDown() {
-			downCalled = true;
-		}
-	}
-
-	private DummyRowFixture rowFixture;
-
-	@Before
-	public void setUp() throws Exception {
-		rowFixture = new DummyRowFixture();
-	}
 
 	@Test
 	public void testNumberCases() {
+		TestRowFixture1 rowFixture = new TestRowFixture1();
+
 		Parse table = parseTable(
 				tr("x", "y", "z"),
 				tr("1", "x", "3"));
@@ -163,6 +152,8 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testCrossReferencesForStringValues() {
+		TestRowFixture1 rowFixture = new TestRowFixture1();
+
 		Parse table = parseTable(
 				tr("x", "y", "z"),
 				tr("8", "${2}", "6"));
@@ -182,10 +173,10 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testCrossReferencesForIntegerValues() {
-		TestRowFixture sameValueRowFixture = new TestRowFixture();
+		TestRowFixture3 sameValueRowFixture = new TestRowFixture3();
 		Parse table = parseTable(
 				tr("x", "y", "z"),
-				tr("x", "${test}", "3"));
+				tr("${test}", "x", "3"));
 
 		CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 		helper.getProcessors().add(new CrossReferenceProcessorMock("test", "2"));
@@ -196,11 +187,12 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testCrossReferencesExpectedRowsCountEqualsComputedRowsCount() {
-		TestRowFixture sameValueRowFixture = new TestRowFixture();
+		TestRowFixture3 sameValueRowFixture = new TestRowFixture3();
+
 		Parse table = parseTable(
 				tr("x", "y", "z"),
-				tr("x", "${test2}", "3"),
-				tr("x", "5", "6"));
+				tr("${test2}", "x", "3"),
+				tr("5", "x", "6"));
 
 		CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 		helper.getProcessors().add(new CrossReferenceProcessorMock("test2", "2"));
@@ -210,18 +202,9 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testUpDown() {
-		Parse table = parseTable(
-				tr("number", "n()"),
-				tr("1", "1"));
-		rowFixture.doTable(table);
-
-		assertThat(rowFixture.upCalled, is(true));
-		assertThat(rowFixture.downCalled, is(true));
-	}
-
-	@Test
 	public void testGetParams() {
+		TestRowFixture1 rowFixture = new TestRowFixture1();
+
 		rowFixture.setParams(new String[]{"x=y", "a=b"});
 
 		assertThat(rowFixture.getParam("x"), is(equalTo("y")));
@@ -232,47 +215,60 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testUpWithErrors() throws Exception {
-		Parse table = parseTable(tr("x"));
+	public void testMatch() throws Exception {
 
-		RowFixture fixture = new RowFixture() {
-			@Override
-			public Class<?> getTargetClass() {
-				return null;
-			}
+        /*
+        Now back to the bug I found: The problem stems from the fact
+        that java doesn't do deep equality for arrays. Little known to
+        me (I forget easily ;-), java arrays are equal only if they
+        are identical. Unfortunately the 2 sort methods returns a map
+        that is directly keyed on the value of the column without
+        considering this little fact. Conclusion there is a missing
+        and a surplus row where there should be one right row.
+        -- Jacques Morel
+        */
 
-			@Override
-			public Object[] query() throws Exception {
-				return null;
-			}
+		RowFixture fixture = new TestRowFixture2();
+		TypeAdapter arrayAdapter = TypeAdapter.on(fixture, fixture,
+				BusinessObject2.class.getMethod("getStrings", new Class[0]));
+		fixture.columnBindings = new TypeAdapter[]{arrayAdapter};
 
-			@Override
-			public void setUp() throws Exception {
-				throw new RuntimeException("x");
-			}
+		List<Object> computed = new LinkedList<>();
+		computed.add(new BusinessObject2(new String[]{"1"}));
+		List<Parse> expected = new LinkedList<>();
+		expected.add(parseTr("1"));
+		fixture.match(expected, computed, 0);
 
-			@Override
-			public void tearDown() throws Exception {
-				throw new RuntimeException("x");
-			}
-		};
-		fixture.doTable(table);
-
-		assertThat(fixture.counts().right, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
+		assertThat("right", fixture.counts().right, is(1));
+		assertThat("exceptions", fixture.counts().exceptions, is(0));
+		assertThat("missing", fixture.missing.size(), is(0));
+		assertThat("surplus", fixture.surplus.size(), is(0));
 	}
 
 	@Test
-	public void testDownWithErrors() throws Exception {
-		Parse table = parseTable();
+	public void testMismatch() throws NoSuchMethodException {
+		List<Object> computed = new LinkedList<>();
+		computed.add(new BusinessObject2("a", "1"));
+		computed.add(new BusinessObject2("b", "2"));
+		computed.add(new BusinessObject2("c", "3"));
+		computed.add(new BusinessObject2("d", "4"));
+		computed.add(new BusinessObject2("e", "5"));
 
-		ErrorFixture fixture = new ErrorFixture();
+		RowFixture fixture = new TestRowFixture2(computed.toArray());
+
+		Parse table = parseTable(tr("getString1()", "getString2()"), tr("a", "1"),
+				tr("b", "2"), tr("d", "5"), tr("f", "7"));
+
 		fixture.doTable(table);
 
-		assertThat(fixture.counts().right, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
-		assertThat(fixture.isDownCalled(), is(true));
+		assertCounts(fixture.counts(), table, 5, 4, 0, 0);
+		assertThat(table.at(0, 2, 0).body, is(equalTo("a")));
+		assertThat(table.at(0, 2, 1).body, is(equalTo("1")));
+		assertThat(table.at(0, 4, 0).body, is(equalTo("d")));
+		assertThat(table.at(0, 4, 1).body, allOf(containsString("4"), containsString("5"),
+				containsString("expected"), containsString("actual")));
+		assertThat(table.at(0, 5, 0).body, allOf(startsWith("f"), containsString("missing")));
+		assertThat(table.at(0, 6, 0).body, allOf(startsWith("e"), containsString("surplus")));
 	}
+
 }

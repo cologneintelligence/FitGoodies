@@ -20,7 +20,7 @@
 package de.cologneintelligence.fitgoodies.runners;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import fit.Counts;
+import de.cologneintelligence.fitgoodies.Counts;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 

@@ -2,7 +2,7 @@ package de.cologneintelligence.fitgoodies.external;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 
 import java.io.IOException;
 import java.util.LinkedList;

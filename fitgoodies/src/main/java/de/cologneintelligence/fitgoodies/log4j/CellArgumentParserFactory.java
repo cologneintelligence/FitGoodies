@@ -18,7 +18,7 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 
 /**
  * Factory interface which creates CellArgumentParsers.

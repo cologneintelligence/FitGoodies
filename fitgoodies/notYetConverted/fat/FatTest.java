@@ -6,8 +6,8 @@ package fat;
 import java.text.ParseException;
 
 import junit.framework.TestCase;
-import fit.Fixture;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.Parse;
 
 public class FatTest extends TestCase {
 

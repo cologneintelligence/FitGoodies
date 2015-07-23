@@ -23,7 +23,7 @@ import com.thoughtworks.selenium.CommandProcessor;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.selenium.command.SeleniumFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;

@@ -23,7 +23,7 @@ import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 import org.junit.Test;
 
 import javax.mail.MessagingException;

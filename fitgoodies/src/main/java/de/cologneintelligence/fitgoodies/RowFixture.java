@@ -1,264 +1,225 @@
-/*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
- * This file is part of FitGoodies.
- *
- * FitGoodies is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * FitGoodies is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright (c) 2002 Cunningham & Cunningham, Inc.
+// Released under the terms of the GNU General Public License version 2 or later.
+
 package de.cologneintelligence.fitgoodies;
 
-import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
-import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
-import fit.Parse;
-import fit.TypeAdapter;
 
-import java.util.List;
+import java.util.*;
 
-/**
- * In contrast to {@code fit.RowFixture}, this {@code RowFixture}
- * enables all fitgoodies features (for example custom type adapters, custom
- * parsers and cross references).
- *
- */
-public abstract class RowFixture extends fit.RowFixture {
+abstract public class RowFixture extends ColumnFixture {
 
-    private String[] parameters;
+	protected Object results[];
 
-    /**
-     * Replacement of {@code check} which resolves cross-references before
-     * calling the original check method of fit.
-     *
-     * @param cell the cell to check
-     * @param a    - TypeAdapter to use
-     * @see fit.Fixture#check {@link fit.Fixture#check(Parse, TypeAdapter)}
-     */
-    @Override
-    public void check(final Parse cell, final TypeAdapter a) {
-        final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        final TypeAdapter ta = FixtureTools.processCell(cell, a, this, helper);
-        if (ta != null) {
-            super.check(cell, a);
-        }
-    }
+	// FIXME: should be protected
+	public List<Object> missing = new LinkedList<>();
+	public List<Object> surplus = new LinkedList<>();
 
-    /**
-     * Replacement of {@code parse} which uses the extended parse features
-     * of fitgoodies and uses fit's parse as a fallback.
-     *
-     * @param text text to parse
-     * @param type type to transform text to
-     * @return Object of type {@code type} which represents
-     * {@code text}
-     * @throws Exception if the value can't be parsed
-     * @see fit.Fixture#parse(String, Class)
-     * {@link fit.Fixture#parse(String, Class)}
-     */
-    @Override
-    @SuppressWarnings("rawtypes")
-    public Object parse(final String text, final Class type) throws Exception {
-        final ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
-        final Object result = FixtureTools.parse(text, type, null, helper);
-        if (result == null) {
-            return super.parse(text, type);
-        } else {
-            return result;
-        }
-    }
 
-    @Override
-    protected void bind(final Parse heads) {
-        Parse head = heads;
-        columnBindings = new TypeAdapter[head.size()];
-        for (int i = 0; head != null; i++, head = head.more) {
-            final String name = head.text();
-            final String suffix = "()";
-            try {
-                String parameter = null;
-                if (i < parameters.length) {
-                    parameter = parameters[i];
-                }
+	protected void doRows(Parse rows) {
+		try {
+			columnParameters = FixtureTools.extractColumnParameters(rows);
+			bind(rows.parts);
+			results = query();
+			match(list(rows.more), list(results), 0);
+			Parse last = rows.last();
+			last.more = buildRows(surplus.toArray());
+			mark(last.more, "surplus");
+			mark(missing.iterator(), "missing");
+		} catch (Exception e) {
+			exception(rows.leaf(), e);
+		}
+	}
 
-                if (name.equals("")) {
-                    columnBindings[i] = null;
-                } else if (name.endsWith(suffix)) {
-                    columnBindings[i] = bindMethod(name.substring(0,
-                            name.length() - suffix.length()), parameter);
-                } else {
-                    columnBindings[i] = bindField(name, parameter);
-                }
-            } catch (final Exception e) {
-                exception(head, e);
-            }
-        }
-    }
+	abstract protected Object[] query() throws Exception;  // get rows to be compared
 
-    /**
-     * Replacement of {@code bindField(String)}, which calls
-     * {@code fit.RowFixture.bindField(String)} and rebinds the returned
-     * {@code TypeAdapter} to a custom registered, more specific one, if
-     * possible.
-     *
-     * @param name field name to bind
-     * @return TypeAdapter which is bound to the field
-     * @throws Exception stops the fixture if the field does not exist or is not
-     *                   accessible
-     * @see fit.RowFixture#bindField(String)
-     * {@link fit.RowFixture#bindField(String)}
-     */
-    private TypeAdapter bindField(final String name, final String parameter)
-            throws Exception {
-        final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-        TypeAdapter a = super.bindField(name);
-        a = FixtureTools.rebindTypeAdapter(a, parameter, taHelper);
-        return a;
-    }
+	abstract protected Class getTargetClass();             // get expected type of row
 
-    /**
-     * Replacement of {@code bindMethod(String)}, which calls
-     * {@code fit.RowFixture.bindMethod(String)} and rebinds the returned
-     * {@code TypeAdapter} to a custom registered, more specific one, if
-     * possible.
-     *
-     * @param name method name to bind
-     * @return TypeAdapter which is bound to the method
-     * @throws Exception stops the fixture if the method does not exist or is
-     *                   not accessible
-     * @see fit.RowFixture#bindMethod(String)
-     * {@link fit.RowFixture#bindMethod(String)}
-     */
-    private TypeAdapter bindMethod(final String name, final String parameter) throws Exception {
-        final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-        TypeAdapter a = super.bindMethod(name);
-        a = FixtureTools.rebindTypeAdapter(a, parameter, taHelper);
-        return a;
-    }
+	public void match(List<Parse> expected, List<Object> computed, int col) {
+		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
 
-    /**
-     * Sets the fixture parameters.
-     * <p/>
-     * Normally, these values are generated by reading the first line of the
-     * table. This method is primary useful for debugging. You won't need it
-     * otherwise.
-     *
-     * @param args parameters to store in {@code args}
-     */
-    public final void setParams(final String[] args) {
-        this.args = args;
-    }
+		if (col < columnBindings.length) {
+			for (Object row : expected) {
+				Parse cell = ((Parse) row).parts.at(col);
+				TypeAdapter typeAdapter = columnBindings[col];
+				if (typeAdapter != null) {
+					typeAdapter.target = computed.get(0);
+				}
+				FixtureTools.processCell(cell, typeAdapter, this, helper);
+			}
+		}
 
-    /**
-     * Initializes the fixture arguments, call {@code setUp},
-     * {@code fit.RowFixture.doTable(Parse)} and {@code tearDown()}.
-     *
-     * @param table the table to be processed
-     * @see fit.RowFixture#doTable(Parse) {@link fit.RowFixture#doTable(Parse)}
-     */
-    @Override
-    public void doTable(final Parse table) {
-        FixtureTools.copyParamsToFixture(args, this,
-                DependencyManager.getOrCreate(CrossReferenceHelper.class),
-                DependencyManager.getOrCreate(TypeAdapterHelper.class));
+		match2(expected, computed, col);
+	}
 
-        try {
-            setUp();
+	public void match2(List<Parse> expected, List<Object> computed, int col) {
+		if (col >= columnBindings.length) {
+			check(expected, computed);
+		} else if (columnBindings[col] == null) {
+			match(expected, computed, col + 1);
+		} else {
+			Map<Object, List<Parse>> eMap = eSort(expected, col);
+			Map<Object, List<Object>> cMap = cSort(computed, col);
+			Set keys = union(eMap.keySet(), cMap.keySet());
+			for (Object key : keys) {
+				List<Parse> eList = eMap.get(key);
+				List<Object> cList = cMap.get(key);
+				if (eList == null) {
+					surplus.addAll(cList);
+				} else if (cList == null) {
+					missing.addAll(eList);
+				} else if (eList.size() == 1 && cList.size() == 1) {
+					check(eList, cList);
+				} else {
+					match(eList, cList, col + 1);
+				}
+			}
+		}
+	}
 
-            try {
-                super.doTable(table);
-            } catch (final Exception e) {
-                exception(table.parts.parts, e);
-            }
+	protected List<Parse> list(Parse rows) {
+		List<Parse> result = new LinkedList<>();
+		while (rows != null) {
+			result.add(rows);
+			rows = rows.more;
+		}
+		return result;
+	}
 
-            tearDown();
-        } catch (final Exception e) {
-            exception(table.parts.parts, e);
-        }
-    }
+	protected List<Object> list(Object[] rows) {
+		List<Object> result = new LinkedList<>();
+		Collections.addAll(result, rows);
+		return result;
+	}
 
-    /**
-     * Does nothing. Override it to initialize the fixture. The method is called
-     * before doTables.
-     *
-     * @throws Exception any kind of exception aborts the execution of this
-     *                   fixture
-     */
-    public void setUp() throws Exception {
-    }
+	protected Map<Object, List<Parse>> eSort(List<Parse> list, int col) {
+		TypeAdapter a = columnBindings[col];
+		Map<Object, List<Parse>> result = new HashMap<>(list.size());
+		for (Parse row : list) {
+			Parse cell = row.parts.at(col);
+			try {
+				Object key = a.parse(cell.text());
+				bin(result, key, row);
+			} catch (Exception e) {
+				exception(cell, e);
+				for (Parse rest = cell.more; rest != null; rest = rest.more) {
+					ignore(rest);
+				}
+			}
+		}
+		return result;
+	}
 
-    /**
-     * Does nothing. Override it to tear down the fixture. The method is called
-     * after doTables.
-     *
-     * @throws Exception any kind of exception aborts the execution of this
-     *                   fixture
-     */
-    public void tearDown() throws Exception {
-    }
+	protected Map<Object, List<Object>> cSort(List<Object> list, int col) {
+		TypeAdapter a = columnBindings[col];
+		Map<Object, List<Object>> result = new HashMap<>(list.size());
+		for (Object row : list) {
+			try {
+				a.target = row;
+				Object key = a.get();
+				bin(result, key, row);
+			} catch (Exception e) {
+				// surplus anything with bad keys, including null
+				surplus.add(row);
+			}
+		}
+		return result;
+	}
 
-    @Override
-    protected void match(List<Parse> expected, List<Object> computed, int col) {
-        final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+	protected <T> void bin(Map<Object, List<T>> map, Object key, T row) {
+		if (key.getClass().isArray()) {
+			key = Arrays.asList((Object[]) key);
+		}
+		if (map.containsKey(key)) {
+			map.get(key).add(row);
+		} else {
+			List<T> list = new LinkedList<>();
+			list.add(row);
+			map.put(key, list);
+		}
+	}
 
-        if (col < columnBindings.length) {
-            for (Object row : expected) {
-                Parse cell = ((Parse) row).parts.at(col);
-                TypeAdapter typeAdapter = columnBindings[col];
-                if (typeAdapter != null) {
-                    typeAdapter.target = computed.get(0);
-                }
-                FixtureTools.processCell(cell, typeAdapter, this, helper);
-            }
-        }
+	protected <T> Set<T> union(Set<T> a, Set<T> b) {
+		Set<T> result = new HashSet<>();
+		result.addAll(a);
+		result.addAll(b);
+		return result;
+	}
 
-        super.match(expected, computed, col);
-    }
+	protected void check(List eList, List cList) {
+		if (eList.size() == 0) {
+			surplus.addAll(cList);
+			return;
+		}
+		if (cList.size() == 0) {
+			missing.addAll(eList);
+			return;
+		}
+		Parse row = (Parse) eList.remove(0);
+		Parse cell = row.parts;
+		Object obj = cList.remove(0);
+		for (int i = 0; i < columnBindings.length && cell != null; i++) {
+			TypeAdapter a = columnBindings[i];
+			if (a != null) {
+				a.target = obj;
+			}
+			check(cell, a);
+			cell = cell.more;
+		}
+		check(eList, cList);
+	}
 
-    /**
-     * Looks up a given parameter in the fixture's argument list.
-     *
-     * @param paramName the parameter name to look up
-     * @return the parameter value, if it could be found, {@code null}
-     * otherwise
-     * @see #getParam(String, String) {@link #getParam(String, String)}
-     * @see FixtureTools#getArg(String[], String, String, CrossReferenceHelper)
-     * {@link FixtureTools#getArg(String[], String, String, CrossReferenceHelper)}
-     */
-    public final String getParam(final String paramName) {
-        return getParam(paramName, null);
-    }
+	protected void mark(Parse rows, String message) {
+		String annotation = FitUtils.label(message);
+		while (rows != null) {
+			wrong(rows.parts);
+			rows.parts.addToBody(annotation);
+			rows = rows.more;
+		}
+	}
 
-    /**
-     * Looks up a given parameter in the fixture's argument list.
-     * <p/>
-     * If the value does not exist, the given default value is returned.
-     *
-     * @param paramName    paramName the parameter name to look up
-     * @param defaultValue defaultValue the value to be returned if the
-     *                     parameter is missing
-     * @return the parameter value, if it could be found,
-     * {@code defaultValue} otherwise
-     */
-    public final String getParam(final String paramName, final String defaultValue) {
-        return FixtureTools.getArg(args, paramName, defaultValue,
-                DependencyManager.getOrCreate(CrossReferenceHelper.class));
-    }
+	protected void mark(Iterator rows, String message) {
+		String annotation = FitUtils.label(message);
+		while (rows.hasNext()) {
+			Parse row = (Parse) rows.next();
+			wrong(row.parts);
+			row.parts.addToBody(annotation);
+		}
+	}
 
-    @Override
-    protected void doRows(final Parse rows) {
-        parameters = FixtureTools.extractColumnParameters(rows);
-        FixtureTools.resolveQuestionMarks(rows);
-        super.doRows(rows);
-    }
+	protected Parse buildRows(Object[] rows) {
+		Parse root = new Parse(null, null, null, null);
+		Parse next = root;
+		for (Object row : rows) {
+			next = next.more = new Parse("tr", null, buildCells(row), null);
+		}
+		return root.more;
+	}
+
+	protected Parse buildCells(Object row) {
+		if (row == null) {
+			Parse nil = new Parse("td", "null", null, null);
+			nil.addToTag(" colspan=" + columnBindings.length);
+			return nil;
+		}
+		Parse root = new Parse(null, null, null, null);
+		Parse next = root;
+		for (TypeAdapter columnBinding : columnBindings) {
+			next = next.more = new Parse("td", "&nbsp;", null, null);
+			if (columnBinding == null) {
+				ignore(next);
+			} else {
+				try {
+					columnBinding.target = row;
+					info(next, columnBinding.toString(columnBinding.get()));
+				} catch (Exception e) {
+					exception(next, e);
+				}
+			}
+		}
+		return root.more;
+	}
 }

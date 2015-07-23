@@ -19,13 +19,13 @@
 
 package de.cologneintelligence.fitgoodies.util;
 
-import de.cologneintelligence.fitgoodies.ColumnFixture;
 import de.cologneintelligence.fitgoodies.adapters.CachingTypeAdapter;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import fit.Fixture;
-import fit.Parse;
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.ColumnFixture;
+import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;

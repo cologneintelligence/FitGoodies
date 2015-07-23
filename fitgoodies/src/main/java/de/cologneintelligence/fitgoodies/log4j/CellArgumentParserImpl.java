@@ -23,7 +23,7 @@ import java.util.Map;
 
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 
 /**
  * Removes the parameters from a cell value and stores it in a <code>Map</code>.

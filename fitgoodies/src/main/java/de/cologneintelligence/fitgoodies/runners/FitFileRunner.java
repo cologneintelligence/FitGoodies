@@ -22,9 +22,9 @@ package de.cologneintelligence.fitgoodies.runners;
 import de.cologneintelligence.fitgoodies.alias.AliasEnabledFixtureRunner;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Counts;
-import fit.FixtureRunner;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Counts;
+import de.cologneintelligence.fitgoodies.FixtureRunner;
+import de.cologneintelligence.fitgoodies.Parse;
 
 import java.io.*;
 import java.util.Date;

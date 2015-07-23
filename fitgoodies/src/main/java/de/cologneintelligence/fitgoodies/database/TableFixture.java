@@ -25,7 +25,7 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -167,7 +167,7 @@ public class TableFixture extends RowFixture {
     /**
      * Gets an array which represents the created ResultSet as an object array.
      * The type of these objects can be determined via {@code getTargetClass()}.
-     * @return 
+     * @return
      * @throws java.lang.Exception
      */
     @Override

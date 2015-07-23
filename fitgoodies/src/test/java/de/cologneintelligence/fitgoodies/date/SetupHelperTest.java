@@ -91,9 +91,9 @@ public class SetupHelperTest extends FitGoodiesTestCase {
         helper.setLocale("de_DE");
         helper.setFormat("dd.MM.yy");
 
-        assertThat(helper.getDate("18.01.1987", "de_DE", "dd.MM.yyyy"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
+        assertThat(helper.getDate("18.01.1987", "dd.MM.yyyy", "de_DE"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
 
-        assertThat(helper.getDate("01/18/1987", "en_US", "MM/dd/yyyy"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
+        assertThat(helper.getDate("01/18/1987", "MM/dd/yyyy", "en_US"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
 
         assertThat(helper.getLocale().toString(), is(equalTo("de_DE")));
         assertThat(helper.getFormat(), is(equalTo("dd.MM.yy")));

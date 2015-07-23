@@ -1,14 +1,15 @@
-package fit;
+package de.cologneintelligence.fitgoodies;
 
 // Copyright (c) 2002 Cunningham & Cunningham, Inc.
 // Released under the terms of the GNU General Public License version 2 or later.
 
+import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -109,7 +110,7 @@ public class TypeAdapterTest {
 	@Test
 	public void dateTypeAdapter() throws Exception {
 		Date date = new GregorianCalendar(1949, 4, 26).getTime();
-		setFieldInF("sampleDate", DateFormat.getDateInstance().format(date));
+		setFieldInF("sampleDate", new SimpleDateFormat("MM/dd/yyyy").format(date));
 		assertThat(f.sampleDate, is(equalTo(date)));
 	}
 

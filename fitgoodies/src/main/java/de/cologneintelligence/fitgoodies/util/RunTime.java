@@ -16,7 +16,7 @@
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fit;
+package de.cologneintelligence.fitgoodies.util;
 
 public class RunTime {
 	long start = System.currentTimeMillis();

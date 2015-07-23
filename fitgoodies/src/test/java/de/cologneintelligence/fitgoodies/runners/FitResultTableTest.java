@@ -21,7 +21,7 @@ package de.cologneintelligence.fitgoodies.runners;
 
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import fit.Counts;
+import de.cologneintelligence.fitgoodies.Counts;
 import org.junit.Before;
 import org.junit.Test;
 

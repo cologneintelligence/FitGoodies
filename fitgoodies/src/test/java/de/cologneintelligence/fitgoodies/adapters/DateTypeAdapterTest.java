@@ -20,7 +20,7 @@
 package de.cologneintelligence.fitgoodies.adapters;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Test;

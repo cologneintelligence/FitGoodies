@@ -20,7 +20,7 @@ package de.cologneintelligence.fitgoodies.runners;
 
 import de.cologneintelligence.fitgoodies.file.FileInformation;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
-import fit.Counts;
+import de.cologneintelligence.fitgoodies.Counts;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -145,9 +145,9 @@ public class FitRunner {
             pw.println("<html><head><title>Fit Report</title></head><body>");
             pw.println("<h1>Fit Report</h1>");
             pw.println("<p>" + DateFormat.getDateTimeInstance().format(new Date()) + "</p>");
-            
+
             result.print(new File(System.getProperty("user.dir")), fos);
-            
+
             pw.println("</body></html>");
         }
     }

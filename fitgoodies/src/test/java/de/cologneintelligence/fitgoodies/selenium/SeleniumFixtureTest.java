@@ -26,7 +26,7 @@ import de.cologneintelligence.fitgoodies.references.processors.DateProviderCross
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 import org.junit.Before;
 import org.junit.Test;
 

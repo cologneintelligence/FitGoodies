@@ -1,136 +1,94 @@
-/*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
- * This file is part of FitGoodies.
- *
- * FitGoodies is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * FitGoodies is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-
 package de.cologneintelligence.fitgoodies;
 
+// Copyright (c) 2002 Cunningham & Cunningham, Inc.
+// Released under the terms of the GNU General Public License version 2 or later.
+
 import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
-import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import de.cologneintelligence.fitgoodies.util.WaitForResult;
-import fit.Parse;
-import fit.TypeAdapter;
 
 import java.lang.reflect.Method;
 
-/**
- * In contrast to {@code fit.ActionFixture}, this {@code ActionFixture}
- * enables all fitgoodies features (for example custom type adapters,
- * custom parsers and cross references).
- * <p>
- * In addition, {@code waitFor} was added. The command takes a method name
- * without parameters and a return value of {@code Boolean} as the first
- * parameter and a timeout in ms as the second parameter.<br>
- * The method is called every {@code sleepTime} ms, until it returns true or the timeout is
- * exceeded.
- *
- */
-public class ActionFixture extends fit.ActionFixture {
+public class ActionFixture extends Fixture {
 
 	private static final int DEFAULT_SLEEP_TIME = 100;
-	private String parameter;
 
-	/**
-	 * Sets the actor of a fixture.
-	 *
-	 * At runtime, the actor can be set using {@code start} in the input
-	 * table.
-	 * @param actor the new actor
-	 */
-	protected void setActor(final Object actor) {
-		this.actor = actor;
-	}
+	protected Parse cells;
+	protected Object actor;
+	protected static Class empty[] = {};
 
-	/**
-	 * Creates a new ActionFixture. The actor of this fixture defaults to "this".
-	 */
 	public ActionFixture() {
-		setActor(this);
+		this.actor = this;
 	}
 
-	/**
-	 * Replacement of {@code check} which resolves cross-references
-	 * before calling the original check method of fit.
-	 *
-	 *  @param cell the cell to check
-     *  @param a - TypeAdapter to use
-     *
-     *  @see fit.Fixture#check {@link fit.Fixture#check(Parse, TypeAdapter)}
-     */
-	@Override
-	public void check(final Parse cell, final TypeAdapter a) {
-	    final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-		TypeAdapter ta = FixtureTools.rebindTypeAdapter(a, parameter, taHelper);
-		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-		ta = FixtureTools.processCell(cell, ta, this, helper);
-		if (ta != null) {
-			super.check(cell, ta);
+	// Traversal ////////////////////////////////
+
+	protected void doCells(Parse cells) {
+		this.cells = cells;
+		try {
+			Method action = getClass().getMethod(cells.text(), empty);
+			action.invoke(this, empty);
+		} catch (Exception e) {
+			exception(cells, e);
 		}
 	}
 
+	// Actions //////////////////////////////////
+
+	public void start() throws Exception {
+		actor = Class.forName(cells.more.text()).newInstance();
+	}
+
+	public void enter() throws Exception {
+		final Method method = method(1);
+		final Class<?> type = method.getParameterTypes()[0];
+		final TypeAdapter ta = getTypeAdapter(type);
+		if (ta != null) {
+			final Object[] args = {ta.parse(cells.more.more.text())};
+			method.invoke(actor, args);
+		}
+	}
+
+
+	public void press() throws Exception {
+		method(0).invoke(actor, empty);
+	}
+
+	public void check() throws Exception {
+		TypeAdapter adapter = TypeAdapter.on(actor, this, method(0));
+		check(cells.more.more, adapter);
+	}
+
+	// Utility //////////////////////////////////
+
+	protected Method method(int args) throws NoSuchMethodException {
+		return method(FitUtils.camel(cells.more.text()), args);
+	}
+
+	protected Method method(String test, int args) throws NoSuchMethodException {
+		Method methods[] = actor.getClass().getMethods();
+		Method result = null;
+
+		for (Method m : methods) {
+			if (m.getName().equals(test) && m.getParameterTypes().length == args) {
+				if (result == null) {
+					result = m;
+				} else {
+					throw new NoSuchMethodException("too many implementations");
+				}
+			}
+		}
+		if (result == null) {
+			throw new NoSuchMethodException();
+		}
+		return result;
+	}
+
+
 	/**
-	 * Replacement of {@code enter()} which resolves cross-references
-	 * and calls the original {@code fit.enter()}.
-	 *
-         * @throws java.lang.Exception
-	 * @see fit.ActionFixture#enter() {@link fit.ActionFixture#enter()}
-	 */
-	@Override
-    public void enter() throws Exception {
-        final Method method = method(1);
-        final Class<?> type = method.getParameterTypes()[0];
-        final TypeAdapter ta = getTypeAdapter(type);
-        if (ta != null) {
-        	final Object[] args = {ta.parse(cells.more.more.text())};
-            method.invoke(actor, args);
-        }
-	}
-
-	private TypeAdapter getTypeAdapter(final Class<?> type) {
-		TypeAdapter ta = TypeAdapter.on(actor, this, type);
-		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        ta = FixtureTools.rebindTypeAdapter(ta, parameter, taHelper);
-        ta = FixtureTools.processCell(cells.more.more, ta, this, helper);
-		return ta;
-	}
-
-    private long getSleepTime(final TypeAdapter typeAdapter) throws Exception {
-        long sleepTime = DEFAULT_SLEEP_TIME;
-        if (cells.more.more.more != null) {
-            sleepTime = (Long) typeAdapter.parse(cells.more.more.more.text());
-        }
-        return sleepTime;
-    }
-
-    private void writeResultIntoCell(final WaitForResult waitForResult) {
-        cells.more.more.body = Long.toString(waitForResult.getLastElapsedTime());
-        if (waitForResult.lastCallWasSuccessful()) {
-        	right(cells.more.more);
-        } else {
-        	wrong(cells.more.more);
-            info(cells.more.more, "(Timeout)");
-        }
-    }
-
-    /**
 	 * Waits until a method returns true. The command takes a method name
 	 * without parameters and a return value of {@code Boolean} as the first
 	 * parameter and a timeout in ms as the second parameter.<br>
@@ -147,6 +105,33 @@ public class ActionFixture extends fit.ActionFixture {
 		waitForResult.setSleepTime(sleepTime);
 		waitForResult.repeatInvokeWithTimeout();
 		writeResultIntoCell(waitForResult);
+	}
+
+	private long getSleepTime(final TypeAdapter typeAdapter) throws Exception {
+		long sleepTime = DEFAULT_SLEEP_TIME;
+		if (cells.more.more.more != null) {
+			sleepTime = (Long) typeAdapter.parse(cells.more.more.more.text());
+		}
+		return sleepTime;
+	}
+
+	private void writeResultIntoCell(final WaitForResult waitForResult) {
+		cells.more.more.body = Long.toString(waitForResult.getLastElapsedTime());
+		if (waitForResult.lastCallWasSuccessful()) {
+			right(cells.more.more);
+		} else {
+			wrong(cells.more.more);
+			info(cells.more.more, "(Timeout)");
+		}
+	}
+
+	private TypeAdapter getTypeAdapter(final Class<?> type) {
+		TypeAdapter ta = TypeAdapter.on(actor, this, type);
+		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
+		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
+		ta = FixtureTools.rebindTypeAdapter(ta, getCellParameter(), taHelper);
+		ta = FixtureTools.processCell(cells.more.more, ta, this, helper);
+		return ta;
 	}
 
 	/**
@@ -176,124 +161,17 @@ public class ActionFixture extends fit.ActionFixture {
 		cells.body = "enter";
 
 		final Object oldActor = actor;
-		setActor(this);
+		actor = this;
 		enter();
-		setActor(oldActor);
+		actor = oldActor;
+
 		cells.body = cells.more.body;
 		cells.more = cells.more.more;
 	}
 
-	/**
-	 * Replacement of {@code parse} which uses the extended parse features of
-	 * fitgoodies and uses fit's parse as a fallback.
-	 *
-	 *  @param text text to parse
-     *  @param type type to transform text to
-     *
-     *  @return Object of type {@code type} which represents {@code text}
-     *  @throws Exception if the value can't be parsed
-     *
-     *  @see fit.Fixture#parse(String, Class) {@link fit.Fixture#parse(String, Class)}
-	 */
-	@Override @SuppressWarnings("rawtypes")
-	public Object parse(final String text, final Class type) throws Exception {
-	    final ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
-		final Object result = FixtureTools.parse(text, type, parameter, helper);
-
-		if (result == null) {
-			return super.parse(text, type);
-		} else {
-			return result;
-		}
-	}
-
-	/**
-	 * Sets the fixture parameters.
-	 *
-	 * Normally, these values are generated by reading the first
-	 * line of the table. This method is primary useful for debugging.
-	 * You won't need it otherwise.
-	 *
-	 * @param parameters parameters to store in {@code args}
-	 */
-	public void setParams(final String[] parameters) {
-		this.args = parameters;
-	}
-
-	/**
-	 * Initializes the fixture arguments, call {@code setUp},
-	 * {@code fit.ActionFixture.doTable(Parse)} and {@code tearDown()}.
-	 *
-     * @param table the table to be processed
-	 * @see fit.Fixture#doTable(Parse) {@link fit.Fixture#doTable(Parse)}
-	 */
-	@Override
-	public void doTable(final Parse table) {
-    	FixtureTools.copyParamsToFixture(args, this,
-    	        DependencyManager.getOrCreate(CrossReferenceHelper.class),
-    	        DependencyManager.getOrCreate(TypeAdapterHelper.class));
-
-    	try {
-    		setUp();
-
-            try {
-                super.doTable(table);
-            } catch (final Exception e) {
-                exception(table.parts.parts, e);
-            }
-
-            tearDown();
-    	} catch (final Exception e) {
-            exception(table.parts.parts, e);
-        }
-	}
-
-    /**
-     * Does nothing. Override it to initialize the fixture.
-     * The method is called before doTables.
-     * @throws Exception any kind of exception aborts the execution of this fixture
-     */
-	public void setUp() throws Exception {
-	}
-
-    /**
-     * Does nothing. Override it to tear down the fixture.
-     * The method is called after doTables.
-     *
-     * @throws Exception any kind of exception aborts the execution of this fixture
-     */
-	public void tearDown() throws Exception {
-	}
-
-    /**
-     * Looks up a given parameter in the fixture's argument list.
-     *
-     * @param paramName the parameter name to look up
-     * @return  the parameter value, if it could be found, {@code null} otherwise
-     * @see #getParam(String, String) {@link #getParam(String, String)}
-     * @see FixtureTools#getArg(String[], String, String, de.cologneintelligence.fitgoodies.references.CrossReferenceHelper)
-     * 		{@link FixtureTools#getArg(String[], String, String, de.cologneintelligence.fitgoodies.references.CrossReferenceHelper)}
-     */
-	public final String getParam(final String paramName) {
-		return getParam(paramName, null);
-	}
-
-	/**
-	 * Looks up a given parameter in the fixture's argument list.
-	 *
-	 * If the value does not exist, the given default value is returned.
-     * @param paramName paramName the parameter name to look up
-     * @param defaultValue defaultValue the value to be returned if the parameter is missing
-     * @return the parameter value, if it could be found, {@code defaultValue} otherwise
-	 */
-	public final String getParam(final String paramName, final String defaultValue) {
-		return FixtureTools.getArg(args, paramName, defaultValue,
-		        DependencyManager.getOrCreate(CrossReferenceHelper.class));
-	}
-
 	@Override
 	protected void doRow(final Parse row) {
-		parameter = FixtureTools.extractCellParameter(row.parts);
+		setCellParameter(FixtureTools.extractCellParameter(row.parts));
 		super.doRow(row);
 	}
 }

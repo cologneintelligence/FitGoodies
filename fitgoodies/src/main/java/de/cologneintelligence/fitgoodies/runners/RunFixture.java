@@ -23,9 +23,9 @@ import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.file.FileInformation;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Counts;
+import de.cologneintelligence.fitgoodies.Counts;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 
 import java.io.File;
 import java.text.ParseException;

@@ -21,7 +21,7 @@ package de.cologneintelligence.fitgoodies.adapters;
 
 import de.cologneintelligence.fitgoodies.date.SetupHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -59,16 +59,8 @@ public class DateTypeAdapter extends AbstractTypeAdapter<Date> {
      */
     @Override
     public final Date parse(final String s) throws ParseException {
-        if (getParameter() == null) {
-            return dateSetupHelper.getDate(s);
-        } else {
-            final String[] parameters = getParameter().split("\\s*,\\s*", 2);
-            if (parameters.length < 2) {
-                throw new ParseException(
-                        "Parameter must have the format [localname, format]", 0);
-            }
-            return dateSetupHelper.getDate(s, parameters[0], parameters[1]);
-        }
+        final String parameter = getParameter();
+        return dateSetupHelper.parse(s, parameter);
     }
 
     /**

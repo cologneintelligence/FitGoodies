@@ -1,8 +1,9 @@
-package fit;
+package de.cologneintelligence.fitgoodies;
 
 //Copyright (c) 2002 Cunningham & Cunningham, Inc.
 //Released under the terms of the GNU General Public License version 2 or later.
 
+import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.junit.Assert;
 import org.junit.Test;

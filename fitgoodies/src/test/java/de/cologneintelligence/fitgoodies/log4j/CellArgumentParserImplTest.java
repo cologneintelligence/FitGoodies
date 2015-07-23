@@ -19,11 +19,10 @@
 package de.cologneintelligence.fitgoodies.log4j;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.text.ParseException;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;

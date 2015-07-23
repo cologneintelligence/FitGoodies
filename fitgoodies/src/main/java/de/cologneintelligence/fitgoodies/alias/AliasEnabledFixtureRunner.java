@@ -19,8 +19,9 @@
 
 package de.cologneintelligence.fitgoodies.alias;
 
+import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.FixtureRunner;
+import de.cologneintelligence.fitgoodies.FixtureRunner;
 
 /**
  * This class is for internal use only. <strong>Do not use it.</strong>
@@ -43,7 +44,7 @@ public final class AliasEnabledFixtureRunner extends FixtureRunner {
      * 		thrown if something different went wrong
      */
     @Override
-    public fit.Fixture loadFixture(final String fixtureName) {
+    public Fixture loadFixture(final String fixtureName) {
         AliasHelper helper = DependencyManager.getOrCreate(AliasHelper.class);
         String realName = helper.getClazz(fixtureName);
 

@@ -21,7 +21,7 @@ package de.cologneintelligence.fitgoodies.runners;
 
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
-import fit.Counts;
+import de.cologneintelligence.fitgoodies.Counts;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
 
 import java.io.*;

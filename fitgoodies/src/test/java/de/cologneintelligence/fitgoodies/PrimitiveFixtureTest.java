@@ -16,7 +16,7 @@
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fit;
+package de.cologneintelligence.fitgoodies;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.junit.Before;

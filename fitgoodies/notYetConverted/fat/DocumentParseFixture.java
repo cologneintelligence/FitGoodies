@@ -1,27 +1,29 @@
 package fat;
 
-import fit.*;
+import de.cologneintelligence.fitgoodies.ColumnFixture;
+import de.cologneintelligence.fitgoodies.Parse;
+
 import java.text.*;
 import java.io.*;
 
 public class DocumentParseFixture extends ColumnFixture {
 	public String HTML;
 	public String Note;  // non-functional
-	
+
 	public String Output() throws ParseException {
 		return GenerateOutput(new Parse(HTML));
 	}
 
 	public String Structure() throws ParseException {
-		return dumpTables(new Parse(HTML));		
+		return dumpTables(new Parse(HTML));
 	}
-	
+
 	private String GenerateOutput(Parse parse) {
 		StringWriter result = new StringWriter();
 		parse.print(new PrintWriter(result));
 		return result.toString();
 	}
-		
+
 	private String dumpTables(Parse table) {
 		String result = "";
 		String separator = "";
@@ -33,7 +35,7 @@ public class DocumentParseFixture extends ColumnFixture {
 		}
 		return result;
 	}
-	
+
 	private String dumpRows(Parse row) {
 		String result = "";
 		String separator = "";
@@ -45,7 +47,7 @@ public class DocumentParseFixture extends ColumnFixture {
 		}
 		return result;
 	}
-	
+
 	private String dumpCells(Parse cell) {
 		String result = "";
 		String separator = "";

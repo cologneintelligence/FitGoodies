@@ -1,10 +1,11 @@
 package fat;
 
-import fit.*;
+import de.cologneintelligence.fitgoodies.ColumnFixture;
+import de.cologneintelligence.fitgoodies.Parse;
 
 public class HtmlToTextFixture extends ColumnFixture {
 	public String HTML;
-	
+
 	public String Text() {
 		HTML = HTML.replaceAll("\\\\u00a0", "\u00a0");
 		return escapeAscii(Parse.htmlToText(HTML));

@@ -19,7 +19,7 @@
 
 package de.cologneintelligence.fitgoodies.adapters;
 
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 
 /**
  * The {@code AbstractTypeAdapter} is used to implement a custom

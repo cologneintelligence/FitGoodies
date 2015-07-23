@@ -26,8 +26,8 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import fit.Parse;
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 
 import javax.mail.MessagingException;
 import java.util.regex.Matcher;

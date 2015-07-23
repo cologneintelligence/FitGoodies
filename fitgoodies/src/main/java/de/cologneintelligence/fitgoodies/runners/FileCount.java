@@ -19,7 +19,7 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import fit.Counts;
+import de.cologneintelligence.fitgoodies.Counts;
 
 import java.io.File;
 

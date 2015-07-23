@@ -23,8 +23,8 @@ import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FixtureTools;
-import fit.Parse;
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 
 /**
  * Fixture to register aliases at runtime.

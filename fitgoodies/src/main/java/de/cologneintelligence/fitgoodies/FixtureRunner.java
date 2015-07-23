@@ -16,7 +16,10 @@
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fit;
+package de.cologneintelligence.fitgoodies;
+
+import de.cologneintelligence.fitgoodies.util.FitUtils;
+import de.cologneintelligence.fitgoodies.util.RunTime;
 
 import java.util.*;
 
@@ -44,7 +47,8 @@ public class FixtureRunner {
 					fixture.doTable(tables);
 					counts.tally(fixture.counts());
 				} catch (Throwable e) {
-					fixture.exception(fixtureName, e);
+					FitUtils.exception(fixtureName, e);
+					fixture.counts().exceptions++;
 				}
 			}
 			//listener.tableFinished(tables);
@@ -56,7 +60,7 @@ public class FixtureRunner {
 	protected Fixture getLinkedFixtureWithArgs(Parse tables) {
 		Parse header = tables.at(0, 0, 0);
 		Fixture fixture = loadFixture(header.text());
-		fixture.args = getArgsForTable(tables);
+		fixture.setParams(getArgsForTable(tables));
 		return fixture;
 	}
 

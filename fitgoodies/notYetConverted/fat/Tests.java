@@ -3,7 +3,9 @@
 
 package fat;
 
-import fit.*;
+import de.cologneintelligence.fitgoodies.Counts;
+import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.Parse;
 
 import java.net.URL;
 import java.io.*;

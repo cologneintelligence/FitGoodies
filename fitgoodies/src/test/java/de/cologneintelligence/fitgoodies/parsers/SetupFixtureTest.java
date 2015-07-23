@@ -20,31 +20,35 @@
 package de.cologneintelligence.fitgoodies.parsers;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
-import fit.Fixture;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.Parse;
 import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 
 public class SetupFixtureTest extends FitGoodiesTestCase {
 	@Test
 	public void testSetup() throws Exception {
-	    final ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
+		Fixture fixture = new Fixture();
 
-		assertThat(FixtureTools.parse("42", Long.class, null, helper), is(nullValue()));
+		try {
+			assertThat(fixture.parse("42", Long.class), is(nullValue()));
+			Assert.fail();
+		} catch(IllegalArgumentException ignore) {}
+
+		registerLongParser();
+		assertThat(fixture.parse("42", Long.class), not(CoreMatchers.is(nullValue())));
+	}
+
+	public void registerLongParser() {
 		final Fixture fixture = new SetupFixture();
-
-		final Parse table = parseTable(
-				tr("load", "de.cologneintelligence.fitgoodies.parsers.LongParserMock"));
-
+		final Parse table = parseTable(tr("load", "de.cologneintelligence.fitgoodies.parsers.LongParserMock"));
 		fixture.doTable(table);
-		assertThat(FixtureTools.parse("42", Long.class, null, helper), not(CoreMatchers.is(nullValue())));
 	}
 }

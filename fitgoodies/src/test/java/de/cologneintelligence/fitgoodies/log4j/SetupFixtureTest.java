@@ -19,7 +19,7 @@
 package de.cologneintelligence.fitgoodies.log4j;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 import org.apache.log4j.Appender;
 import org.apache.log4j.spi.AppenderAttachable;
 import org.junit.Test;

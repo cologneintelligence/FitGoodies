@@ -20,7 +20,7 @@ package de.cologneintelligence.fitgoodies.log4j;
 
 import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 
 
 /**

@@ -19,7 +19,7 @@
 package de.cologneintelligence.fitgoodies.log4j;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,7 +1,9 @@
 package fat;
 
+import de.cologneintelligence.fitgoodies.ColumnFixture;
+import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import fit.*;
+
 import java.io.*;
 
 public class TextToHtmlFixture extends ColumnFixture {

@@ -22,7 +22,7 @@ package de.cologneintelligence.fitgoodies.adapters;
 import java.sql.Timestamp;
 import java.text.ParseException;
 
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 
 /**
  * Parser which is able to convert a string into a <code>java.sql.Timestamp</code>.

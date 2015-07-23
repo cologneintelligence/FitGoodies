@@ -21,12 +21,11 @@ package de.cologneintelligence.fitgoodies.util;
 
 import de.cologneintelligence.fitgoodies.adapters.CachingTypeAdapter;
 import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
-import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
-import fit.Fixture;
-import fit.Parse;
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -91,6 +90,10 @@ public final class FixtureTools {
         String actualStringValue = "";
         boolean callParentCheck = true;
 
+        if (ta == null) {
+            return null;
+        }
+
         final TypeAdapter adapter = new CachingTypeAdapter(ta);
 
         Object obj;
@@ -141,25 +144,6 @@ public final class FixtureTools {
                 parent.counts().wrong++;
             }
         }
-    }
-
-    /**
-     * Tries to parse a {@code text} into an object of the type
-     * {@code type} by looking up a registered parser. If no parser
-     * could be found, {@code null} is returned.
-     * @param text the text to be parsed
-     * @param type the destination type of the return value
-     * @param parameter provided row/column parameter
-     * @param parserHelper ParserHelper to parse text
-     * @return an Object of the type {@code type} which represents
-     * 	{@code text} or null, if no parser was found.
-     * @throws Exception should be propagated to fit.
-     */
-    public static Object parse(final String text, final Class<?> type,
-            final String parameter, final ParserHelper parserHelper)
-                    throws Exception {
-
-        return parserHelper.parse(text, type, parameter);
     }
 
     /**

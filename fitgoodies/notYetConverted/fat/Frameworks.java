@@ -4,7 +4,8 @@
 
 package fat;
 
-import fit.*;
+import de.cologneintelligence.fitgoodies.ColumnFixture;
+
 import java.util.*;
 
 public class Frameworks extends ColumnFixture {

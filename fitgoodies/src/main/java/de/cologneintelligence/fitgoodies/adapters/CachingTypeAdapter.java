@@ -21,7 +21,7 @@ package de.cologneintelligence.fitgoodies.adapters;
 
 import java.lang.reflect.InvocationTargetException;
 
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 
 /**
  * This <code>TypeAdapter</code> encapsulates another <code>TypeAdapter</code>

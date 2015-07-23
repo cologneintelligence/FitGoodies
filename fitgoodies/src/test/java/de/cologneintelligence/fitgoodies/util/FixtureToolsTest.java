@@ -19,29 +19,20 @@
 
 package de.cologneintelligence.fitgoodies.util;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
 import de.cologneintelligence.fitgoodies.adapters.DummyTypeAdapter;
 import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
-import de.cologneintelligence.fitgoodies.parsers.LongParserMock;
-import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import fit.Fixture;
-import fit.Parse;
-import fit.TypeAdapter;
-import org.hamcrest.Matcher;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 
@@ -59,25 +50,6 @@ public class FixtureToolsTest extends FitGoodiesTestCase {
                 new BigInteger("3")};
     }
 
-    @Test
-    public void testParse() throws Exception {
-        final ParserHelper helper = new ParserHelper();
-        final Integer intExpected = 42;
-        assertThat(FixtureTools.parse("42", intExpected.getClass(), null, helper), is(nullValue()));
-
-        BigInteger biExpected = new BigInteger("123");
-        assertThat(FixtureTools.parse("123", biExpected.getClass(), null, helper), (Matcher) is(equalTo(biExpected)));
-        biExpected = new BigInteger("7");
-        assertThat(FixtureTools.parse("7", biExpected.getClass(), null, helper), (Matcher) is(equalTo(biExpected)));
-
-        BigDecimal bdExpected = new BigDecimal("312.45");
-        assertThat(FixtureTools.parse("312.45", bdExpected.getClass(), null, helper), (Matcher) is(equalTo(bdExpected)));
-        bdExpected = new BigDecimal("331.0");
-        assertThat(FixtureTools.parse("331.0", bdExpected.getClass(), null, helper), (Matcher) is(equalTo(bdExpected)));
-
-        helper.registerParser(new LongParserMock());
-        assertThat(FixtureTools.parse("7", Long.class, "x", helper), (Matcher) is(equalTo((long) 7)));
-    }
 
     @Test
     public void testRebindTypeAdapter() {

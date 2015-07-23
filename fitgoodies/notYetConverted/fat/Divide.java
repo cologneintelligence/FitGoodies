@@ -3,7 +3,7 @@
 
 package fat;
 
-import fit.ColumnFixture;
+import de.cologneintelligence.fitgoodies.ColumnFixture;
 
 public class Divide extends ColumnFixture {
     public int x, y;

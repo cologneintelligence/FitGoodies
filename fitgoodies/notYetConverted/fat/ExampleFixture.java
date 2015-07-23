@@ -1,6 +1,6 @@
 package fat;
 
-import fit.Fixture;
+import de.cologneintelligence.fitgoodies.Fixture;
 
 public class ExampleFixture extends Fixture {
 

@@ -26,7 +26,7 @@ import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShort
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
 import de.cologneintelligence.fitgoodies.selenium.command.CommandFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 
 /**
  * Run the selenium-IDE and record your test-case. Save the result as html and

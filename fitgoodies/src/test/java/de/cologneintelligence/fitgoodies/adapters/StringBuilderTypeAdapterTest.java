@@ -20,8 +20,8 @@
 package de.cologneintelligence.fitgoodies.adapters;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import fit.Fixture;
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;

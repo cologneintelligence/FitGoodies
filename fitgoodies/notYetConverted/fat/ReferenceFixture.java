@@ -1,6 +1,8 @@
 package fat;
 
-import fit.*;
+import de.cologneintelligence.fitgoodies.ColumnFixture;
+import de.cologneintelligence.fitgoodies.Counts;
+
 import java.io.*;
 
 /** A fixture that processes other Fit documents. */

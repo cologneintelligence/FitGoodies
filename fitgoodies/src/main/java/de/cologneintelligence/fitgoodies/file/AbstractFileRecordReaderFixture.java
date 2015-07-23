@@ -20,8 +20,8 @@
 package de.cologneintelligence.fitgoodies.file;
 
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
-import fit.Parse;
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.TypeAdapter;
 
 import java.io.IOException;
 

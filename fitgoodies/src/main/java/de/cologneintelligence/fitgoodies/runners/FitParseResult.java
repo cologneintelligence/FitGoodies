@@ -19,9 +19,9 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import fit.Counts;
+import de.cologneintelligence.fitgoodies.Counts;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.Parse;
 
 import java.io.*;
 import java.text.ParseException;

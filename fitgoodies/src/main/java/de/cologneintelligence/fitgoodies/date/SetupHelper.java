@@ -58,17 +58,22 @@ public final class SetupHelper {
      * @see #getLocale() getLocale
      */
     public void setLocale(final String localeName) {
-        String[] parts = localeName.split("_");
+        locale = parseLocale(localeName);
+    }
 
+    public Locale parseLocale(String localeName) {
+        String[] parts = localeName.split("_");
+        Locale result;
         if (parts.length == 1) {
-            locale = new Locale(parts[0]);
+            result = new Locale(parts[0]);
         } else if (parts.length == 2) {
-            locale = new Locale(parts[0], parts[1]);
+            result = new Locale(parts[0], parts[1]);
         } else if (parts.length == 3) {
-            locale = new Locale(parts[0], parts[1], parts[2]);
+            result = new Locale(parts[0], parts[1], parts[2]);
         } else {
             throw new IllegalArgumentException("Locale " + localeName + " not valid");
         }
+        return result;
     }
 
     /**
@@ -107,31 +112,36 @@ public final class SetupHelper {
      * @throws ParseException thrown, if {@code string} can not be parsed.
      */
     public Date getDate(final String string) throws ParseException {
-        return new SimpleDateFormat(format, locale).parse(string);
+        return getDate(string, format, locale);
+    }
+
+    private Date getDate(final String string, String dateFormat, Locale dateLocale) throws ParseException {
+        return new SimpleDateFormat(dateFormat, dateLocale).parse(string);
     }
 
     /**
      * Parses {@code string} and returns a valid Date object.
      * For parsing, a {@link SimpleDateFormat} object is used.
      * @param string the string which represents the date
-     * @param localeName the name of the locale to use, for example en_US
      * @param formatString a valid SimpleDateFormat format string
+     * @param localeName the name of the locale to use, for example en_US
      * @return the date which is represented by {@code string}
      * @throws ParseException thrown, if {@code string} can not be parsed.
      */
-    public Date getDate(final String string, final String localeName,
-            final String formatString) throws ParseException {
-        Locale oldLocale = locale;
-        String oldFormat = format;
+    public Date getDate(final String string, final String formatString, final String localeName) throws ParseException {
+        return getDate(string, formatString, parseLocale(localeName));
+    }
 
-        try {
-            setLocale(localeName);
-            setFormat(formatString);
-
-            return getDate(string);
-        } finally {
-            locale = oldLocale;
-            format = oldFormat;
+    public Date parse(String s, String parameter) throws ParseException {
+        if (parameter == null) {
+            return getDate(s);
+        } else {
+            final String[] parameters = parameter.split("\\s*,\\s*", 2);
+            if (parameters.length < 2) {
+                throw new ParseException(
+                        "Parameter must have the format [localname, format]", 0);
+            }
+            return getDate(s, parameters[1], parameters[0]);
         }
     }
 }

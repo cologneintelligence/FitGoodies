@@ -44,8 +44,7 @@ public class ScientificDoubleParser implements Parser<ScientificDouble> {
 	 * @throws Exception if the value can not be parsed
 	 */
 	@Override
-	public ScientificDouble parse(final String s, final String parameter)
-			throws Exception {
+	public ScientificDouble parse(final String s, final String parameter) throws Exception {
 		return ScientificDouble.valueOf(s);
 	}
 
