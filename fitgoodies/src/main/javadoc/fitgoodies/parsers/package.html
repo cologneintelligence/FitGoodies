@@ -17,16 +17,10 @@ This is done via a parse method. Fit can parse numbers and strings.
 <p>
 This package provides tools to extend the parse features. This makes it possible
 to add parsers for custom data types. A parser must implement
-{@link fitgoodies.parsers.Parser} and can be registered via java code using
-{@link fitgoodies.parsers.ParserHelper} or via HTML using
-{@link fitgoodies.parsers.SetupFixture}.<br />
+{@link de.cologneintellicende.fitgoodies.typehandler.TypeHandler} and can be registered via java code using
+{@link de.cologneintellicende.fitgoodies.typehandler.SetupFixture} or via HTML using
+{@link de.cologneintellicende.fitgoodies.typehandler.TypeHandlerFactory<br />
 All Parsers in this namespace are registered by default.
-</p>
-
-<p>
-If parsing is not enough and you want to provide your own <code>toString</code>
-or <code>equals</code> method, it is better to implement a
-{@link fitgoodies.adapters.AbstractTypeAdapter}.
 </p>
 
 <p>
