@@ -3,13 +3,15 @@
 
 package de.cologneintelligence.fitgoodies;
 
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandlerFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
 
+import java.lang.reflect.Field;
 import java.util.*;
+import java.util.regex.Matcher;
 
-abstract public class RowFixture extends ColumnFixture {
+abstract public class RowFixture extends Fixture {
 
 	protected Object results[];
 
@@ -17,12 +19,14 @@ abstract public class RowFixture extends ColumnFixture {
 	public List<Object> missing = new LinkedList<>();
 	public List<Object> surplus = new LinkedList<>();
 
+	private String[] columnParameters;
+	private String[] columnNames;
 
 	protected void doRows(Parse rows) {
 		try {
 			columnParameters = extractColumnParameters(rows);
-			bind(rows.parts);
 			results = query();
+			columnNames = findColumnNames(rows.parts);
 			match(list(rows.more), list(results), 0);
 			Parse last = rows.last();
 			last.more = buildRows(surplus.toArray());
@@ -33,31 +37,35 @@ abstract public class RowFixture extends ColumnFixture {
 		}
 	}
 
+	protected String[] findColumnNames(Parse heads) {
+		String[] names = new String[heads.size()];
+		for (int i = 0; heads != null; i++, heads = heads.more) {
+			names[i] = heads.text();
+		}
+		return names;
+	}
+
 	abstract protected Object[] query() throws Exception;  // get rows to be compared
 
 	abstract protected Class getTargetClass();             // get expected type of row
 
-	public void match(List<Parse> expected, List<Object> computed, int col) {
-		final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-
-		if (col < columnBindings.length) {
-			for (Object row : expected) {
-				Parse cell = ((Parse) row).parts.at(col);
-				TypeAdapter typeAdapter = columnBindings[col];
-				if (typeAdapter != null) {
-					typeAdapter.target = computed.get(0);
+	private void match(List<Parse> expected, List<Object> computed, int col) {
+		if (col < columnNames.length) {
+			for (Parse row : expected) {
+				Parse cell = row.parts.at(col);
+				try {
+					// FIXME: throws an exception on an empty computed list
+					ValueReceiver valueReceiver = createReceiver(computed.get(0), columnNames[col]);
+					processCell(cell, valueReceiver);
+				} catch (NoSuchMethodException | NoSuchFieldException e) {
+					exception(cell, e);
 				}
-				processCell(cell, typeAdapter);
 			}
 		}
 
-		match2(expected, computed, col);
-	}
-
-	public void match2(List<Parse> expected, List<Object> computed, int col) {
-		if (col >= columnBindings.length) {
+		if (col >= columnNames.length) {
 			check(expected, computed);
-		} else if (columnBindings[col] == null) {
+		} else if (columnNames[col] == null) {
 			match(expected, computed, col + 1);
 		} else {
 			Map<Object, List<Parse>> eMap = eSort(expected, col);
@@ -79,7 +87,7 @@ abstract public class RowFixture extends ColumnFixture {
 		}
 	}
 
-	protected List<Parse> list(Parse rows) {
+	private List<Parse> list(Parse rows) {
 		List<Parse> result = new LinkedList<>();
 		while (rows != null) {
 			result.add(rows);
@@ -88,19 +96,22 @@ abstract public class RowFixture extends ColumnFixture {
 		return result;
 	}
 
-	protected List<Object> list(Object[] rows) {
+	private List<Object> list(Object[] rows) {
 		List<Object> result = new LinkedList<>();
 		Collections.addAll(result, rows);
 		return result;
 	}
 
-	protected Map<Object, List<Parse>> eSort(List<Parse> list, int col) {
-		TypeAdapter a = columnBindings[col];
+	private Map<Object, List<Parse>> eSort(List<Parse> list, int col) {
+		setCurrentCellParameter(columnParameters[col]);
+
 		Map<Object, List<Parse>> result = new HashMap<>(list.size());
 		for (Parse row : list) {
 			Parse cell = row.parts.at(col);
 			try {
-				Object key = a.parse(cell.text());
+				Class<?> columnType = getColumnType(columnNames[col]);
+				Object key = DependencyManager.getOrCreate(TypeHandlerFactory.class)
+						.getHandler(columnType, columnParameters[col]).parse(cell.text());
 				bin(result, key, row);
 			} catch (Exception e) {
 				exception(cell, e);
@@ -112,13 +123,13 @@ abstract public class RowFixture extends ColumnFixture {
 		return result;
 	}
 
-	protected Map<Object, List<Object>> cSort(List<Object> list, int col) {
-		TypeAdapter a = columnBindings[col];
+	private Map<Object, List<Object>> cSort(List<Object> list, int col) {
+		setCurrentCellParameter(columnParameters[col]);
+
 		Map<Object, List<Object>> result = new HashMap<>(list.size());
 		for (Object row : list) {
 			try {
-				a.target = row;
-				Object key = a.get();
+				Object key = createReceiver(row, columnNames[col]).get();
 				bin(result, key, row);
 			} catch (Exception e) {
 				// surplus anything with bad keys, including null
@@ -128,7 +139,7 @@ abstract public class RowFixture extends ColumnFixture {
 		return result;
 	}
 
-	protected <T> void bin(Map<Object, List<T>> map, Object key, T row) {
+	private <T> void bin(Map<Object, List<T>> map, Object key, T row) {
 		if (key.getClass().isArray()) {
 			key = Arrays.asList((Object[]) key);
 		}
@@ -141,37 +152,40 @@ abstract public class RowFixture extends ColumnFixture {
 		}
 	}
 
-	protected <T> Set<T> union(Set<T> a, Set<T> b) {
+	private <T> Set<T> union(Set<T> a, Set<T> b) {
 		Set<T> result = new HashSet<>();
 		result.addAll(a);
 		result.addAll(b);
 		return result;
 	}
 
-	protected void check(List eList, List cList) {
+	protected void check(List<Parse> eList, List<Object> cList) {
 		if (eList.size() == 0) {
 			surplus.addAll(cList);
 			return;
 		}
+
 		if (cList.size() == 0) {
 			missing.addAll(eList);
 			return;
 		}
-		Parse row = (Parse) eList.remove(0);
+
+		Parse row = eList.remove(0);
 		Parse cell = row.parts;
 		Object obj = cList.remove(0);
-		for (int i = 0; i < columnBindings.length && cell != null; i++) {
-			TypeAdapter a = columnBindings[i];
-			if (a != null) {
-				a.target = obj;
+		for (int i = 0; i < columnNames.length && cell != null; i++) {
+			try {
+				ValueReceiver a = createReceiver(obj, columnNames[i]);
+				check(cell, a);
+				cell = cell.more;
+			} catch (NoSuchMethodException | NoSuchFieldException e) {
+				exception(cell, e);
 			}
-			check(cell, a);
-			cell = cell.more;
 		}
 		check(eList, cList);
 	}
 
-	protected void mark(Parse rows, String message) {
+	private void mark(Parse rows, String message) {
 		String annotation = FitUtils.label(message);
 		while (rows != null) {
 			wrong(rows.parts);
@@ -180,7 +194,7 @@ abstract public class RowFixture extends ColumnFixture {
 		}
 	}
 
-	protected void mark(Iterator rows, String message) {
+	private void mark(Iterator rows, String message) {
 		String annotation = FitUtils.label(message);
 		while (rows.hasNext()) {
 			Parse row = (Parse) rows.next();
@@ -189,7 +203,7 @@ abstract public class RowFixture extends ColumnFixture {
 		}
 	}
 
-	protected Parse buildRows(Object[] rows) {
+	private Parse buildRows(Object[] rows) {
 		Parse root = new Parse(null, null, null, null);
 		Parse next = root;
 		for (Object row : rows) {
@@ -198,27 +212,39 @@ abstract public class RowFixture extends ColumnFixture {
 		return root.more;
 	}
 
-	protected Parse buildCells(Object row) {
+	private Parse buildCells(Object row) {
 		if (row == null) {
 			Parse nil = new Parse("td", "null", null, null);
-			nil.addToTag(" colspan=" + columnBindings.length);
+			nil.addToTag(" colspan=" + columnNames.length);
 			return nil;
 		}
 		Parse root = new Parse(null, null, null, null);
 		Parse next = root;
-		for (TypeAdapter columnBinding : columnBindings) {
+		for (String name : columnNames) {
 			next = next.more = new Parse("td", "&nbsp;", null, null);
-			if (columnBinding == null) {
+			if (name == null) {
 				ignore(next);
 			} else {
 				try {
-					columnBinding.target = row;
-					info(next, columnBinding.toString(columnBinding.get()));
+					ValueReceiver receiver = createReceiver(row, name);
+					info(next, createTypeHandler(receiver).toString(receiver.get()));
 				} catch (Exception e) {
 					exception(next, e);
 				}
 			}
 		}
 		return root.more;
+	}
+
+	private Class<?> getColumnType(String name) throws NoSuchMethodException, NoSuchFieldException {
+		Matcher matcher = METHOD_PATTERN.matcher(name);
+
+		if (matcher.find()) {
+			final String methodName = FitUtils.camel(matcher.group(1));
+			return getTargetClass().getMethod(methodName).getReturnType();
+		} else {
+			final Field field = getTargetClass().getField(FitUtils.camel(name));
+			return field.getType();
+		}
 	}
 }

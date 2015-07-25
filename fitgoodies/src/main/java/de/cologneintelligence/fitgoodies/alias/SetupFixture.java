@@ -21,7 +21,7 @@ package de.cologneintelligence.fitgoodies.alias;
 
 import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.TypeAdapter;
+import de.cologneintelligence.fitgoodies.ValueReceiver;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
@@ -35,16 +35,16 @@ public class SetupFixture extends Fixture {
     /** class name to use. */
     public String className;
 
-    private TypeAdapter aliasTypeAdapter;
-    private TypeAdapter classNameTypeAdapter;
+    private ValueReceiver aliasValueReceiver;
+    private ValueReceiver classNameValueReceiver;
 
     /**
      * Default constructor.
      */
     public SetupFixture() {
         try {
-            aliasTypeAdapter = TypeAdapter.on(this, this, this.getClass().getField("alias"));
-            classNameTypeAdapter = TypeAdapter.on(this, this, this.getClass().getField("className"));
+            aliasValueReceiver = ValueReceiver.on(this, this.getClass().getField("alias"));
+            classNameValueReceiver = ValueReceiver.on(this, this.getClass().getField("className"));
         } catch (final SecurityException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -72,8 +72,8 @@ public class SetupFixture extends Fixture {
         alias = row.parts.text();
         className = row.parts.more.text();
 
-        processCell(row.parts, aliasTypeAdapter);
-        processCell(row.parts.more, classNameTypeAdapter);
+        processCell(row.parts, aliasValueReceiver);
+        processCell(row.parts.more, classNameValueReceiver);
 
         final AliasHelper aliasHelper = DependencyManager.getOrCreate(AliasHelper.class);
         aliasHelper.register(alias, className);

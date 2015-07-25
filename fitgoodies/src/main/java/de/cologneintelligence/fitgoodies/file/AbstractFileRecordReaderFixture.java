@@ -21,7 +21,7 @@ package de.cologneintelligence.fitgoodies.file;
 
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
 import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.TypeAdapter;
+import de.cologneintelligence.fitgoodies.ValueReceiver;
 
 import java.io.IOException;
 
@@ -37,21 +37,21 @@ public abstract class AbstractFileRecordReaderFixture extends
 	public String actualValue;
 
 	private FileRecordReader reader;
-	private final TypeAdapter typeAdapter;
+	private final ValueReceiver valueReceiver;
 
 	/**
-	 * Initializes a new <code>AbstractFileRecordReaderFixture</code>.
+	 * Initializes a new {@code AbstractFileRecordReaderFixture}.
 	 */
 	public AbstractFileRecordReaderFixture() {
 		try {
-			typeAdapter = TypeAdapter.on(this, this, this.getClass().getField("actualValue"));
+			valueReceiver = ValueReceiver.on(this, this.getClass().getField("actualValue"));
 		} catch (SecurityException | NoSuchFieldException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	/**
-	 * Sets the underlying <code>FileRecordReader</code>.
+	 * Sets the underlying {@code FileRecordReader}.
 	 * @param recordReader the reader to use
 	 */
 	public void setRecordReader(final FileRecordReader recordReader) {
@@ -65,7 +65,7 @@ public abstract class AbstractFileRecordReaderFixture extends
 		while (cell != null) {
 			if (reader.canRead()) {
 				actualValue = reader.nextField();
-				check(cell, typeAdapter);
+				check(cell, valueReceiver);
 			} else {
 				wrong(cell);
 				info(cell, "(missing)");

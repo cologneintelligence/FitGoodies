@@ -42,7 +42,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
     @Test
     public void testSetup() {
-        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
+        FitDateHelper helper = DependencyManager.getOrCreate(FitDateHelper.class);
 
         Parse table = parseTable(
                 tr("locale", "de_DE"),

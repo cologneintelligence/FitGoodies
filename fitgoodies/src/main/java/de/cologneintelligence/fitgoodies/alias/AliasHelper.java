@@ -43,11 +43,10 @@ public final class AliasHelper {
         classMapper.put("fitgoodies.selenium.SeleniumFixture", "de.cologneintelligence.fitgoodies.selenium.SeleniumFixture");
         classMapper.put("fitgoodies.selenium.SetupFixture", "de.cologneintelligence.fitgoodies.selenium.SetupFixture");
         classMapper.put("fitgoodies.references.SetupFixture", "de.cologneintelligence.fitgoodies.references.SetupFixture");
-        classMapper.put("fitgoodies.parsers.SetupFixture", "de.cologneintelligence.fitgoodies.parsers.SetupFixture");
         classMapper.put("fitgoodies.mail.SetupFixture", "de.cologneintelligence.fitgoodies.mail.SetupFixture");
         classMapper.put("fitgoodies.date.SetupFixture", "de.cologneintelligence.fitgoodies.date.SetupFixture");
         classMapper.put("fitgoodies.database.SetupFixture", "de.cologneintelligence.fitgoodies.database.SetupFixture");
-        classMapper.put("fitgoodies.adapters.SetupFixture", "de.cologneintelligence.fitgoodies.adapters.SetupFixture");
+        classMapper.put("fitgoodies.typehandler.SetupFixture", "de.cologneintelligence.fitgoodies.typehandler.SetupFixture");
 
         classMapper.put("fitgoodies.database.ResultSetFixture", "de.cologneintelligence.fitgoodies.database.ResultSetFixture");
         classMapper.put("fitgoodies.database.TableFixture", "de.cologneintelligence.fitgoodies.database.TableFixture");

@@ -3,7 +3,8 @@ package de.cologneintelligence.fitgoodies;
 // Copyright (c) 2002 Cunningham & Cunningham, Inc.
 // Released under the terms of the GNU General Public License version 2 or later.
 
-import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandlerFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.util.WaitForResult;
@@ -43,9 +44,10 @@ public class ActionFixture extends Fixture {
 	public void enter() throws Exception {
 		final Method method = method(1);
 		final Class<?> type = method.getParameterTypes()[0];
-		final TypeAdapter ta = getTypeAdapter(type);
-		if (ta != null) {
-			final Object[] args = {ta.parse(cells.more.more.text())};
+		final TypeHandler th = getTypeHandler(type);
+		if (th != null) {
+			// FIXME: resolve references
+			final Object[] args = {th.parse(cells.more.more.text())};
 			method.invoke(actor, args);
 		}
 	}
@@ -56,7 +58,7 @@ public class ActionFixture extends Fixture {
 	}
 
 	public void check() throws Exception {
-		TypeAdapter adapter = TypeAdapter.on(actor, this, method(0));
+		ValueReceiver adapter = ValueReceiver.on(actor, method(0));
 		check(cells.more.more, adapter);
 	}
 
@@ -96,19 +98,19 @@ public class ActionFixture extends Fixture {
 	 */
 	public void waitFor() throws Exception {
 		final Method method = method(0);
-		final TypeAdapter typeAdapter = getTypeAdapter(Long.class);
-		final long maxTime = (Long) typeAdapter.parse(cells.more.more.text());
-		final long sleepTime = getSleepTime(typeAdapter);
+		TypeHandler handler = getTypeHandler(Long.class);
+		final long maxTime = (Long) handler.parse(cells.more.more.text());
+		final long sleepTime = getSleepTime(handler);
 		final WaitForResult waitForResult = new WaitForResult(method, actor, maxTime);
 		waitForResult.setSleepTime(sleepTime);
 		waitForResult.repeatInvokeWithTimeout();
 		writeResultIntoCell(waitForResult);
 	}
 
-	private long getSleepTime(final TypeAdapter typeAdapter) throws Exception {
+	private long getSleepTime(final TypeHandler handler) throws Exception {
 		long sleepTime = DEFAULT_SLEEP_TIME;
 		if (cells.more.more.more != null) {
-			sleepTime = (Long) typeAdapter.parse(cells.more.more.more.text());
+			sleepTime = (Long) handler.parse(cells.more.more.more.text());
 		}
 		return sleepTime;
 	}
@@ -123,12 +125,9 @@ public class ActionFixture extends Fixture {
 		}
 	}
 
-	private TypeAdapter getTypeAdapter(final Class<?> type) {
-		TypeAdapter ta = TypeAdapter.on(actor, this, type);
-		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-		ta = taHelper.getAdapter(ta, getCellParameter());
-		ta = processCell(cells.more.more, ta);
-		return ta;
+	private TypeHandler getTypeHandler(final Class<?> type) {
+		final TypeHandlerFactory thFactory = DependencyManager.getOrCreate(TypeHandlerFactory.class);
+		return thFactory.getHandler(type, getCellParameter());
 	}
 
 	/**
@@ -168,7 +167,7 @@ public class ActionFixture extends Fixture {
 
 	@Override
 	protected void doRow(final Parse row) {
-		setCellParameter(extractCellParameter(row.parts));
+		setCurrentCellParameter(extractCellParameter(row.parts));
 		super.doRow(row);
 	}
 }

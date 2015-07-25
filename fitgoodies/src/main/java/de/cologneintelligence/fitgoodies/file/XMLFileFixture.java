@@ -20,7 +20,7 @@
 package de.cologneintelligence.fitgoodies.file;
 
 import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.TypeAdapter;
+import de.cologneintelligence.fitgoodies.ValueReceiver;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -78,7 +78,7 @@ public class XMLFileFixture extends AbstractFileReaderFixture {
 
 			try {
 				selectedValue = path.evaluate(xpath, doc);
-				check(row.parts.more, TypeAdapter.on(this, this,
+				check(row.parts.more, ValueReceiver.on(this,
 						this.getClass().getField("selectedValue")));
 			} catch (XPathExpressionException | SecurityException | NoSuchFieldException e) {
 				exception(row.parts, e);

@@ -3,42 +3,20 @@ package de.cologneintelligence.fitgoodies;
 // Copyright (c) 2002 Cunningham & Cunningham, Inc.
 // Released under the terms of the GNU General Public License version 2 or later.
 
-import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandlerFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FitUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ColumnFixture extends Fixture {
 
 	// FIXME: make this private again
 	protected String[] columnParameters;
-	public TypeAdapter[] columnBindings;
+	public ValueReceiver[] columnBindings;
 
 	private boolean hasExecuted = false;
 
 	// Traversal ////////////////////////////////
 
-
-	/**
-	 * extracts and removes parameters from a row.
-	 * @param row row to process
-	 * @return extracted parameters
-	 */
-	protected String[] extractColumnParameters(final Parse row) {
-		Parse cell = row.parts;
-		final List<String> result = new ArrayList<>();
-
-		while (cell != null) {
-			result.add(extractCellParameter(cell));
-			cell = cell.more;
-		}
-
-		return result.toArray(new String[result.size()]);
-	}
 
 	/**
 	 * Replacement of {@code doRows(Parse)} which resolves question marks
@@ -57,6 +35,7 @@ public class ColumnFixture extends Fixture {
 		super.doRows(rows.more);
 	}
 
+	@Override
 	protected void doRow(Parse row) {
 		hasExecuted = false;
 		try {
@@ -70,26 +49,6 @@ public class ColumnFixture extends Fixture {
 		}
 	}
 
-	// FIXME
-	protected void doCell_old(Parse cell, int column) {
-		TypeAdapter a = columnBindings[column];
-		try {
-			String text = cell.text();
-			if (text.equals("")) {
-				check(cell, a);
-			} else if (a == null) {
-				ignore(cell);
-			} else if (a.field != null) {
-				a.set(a.parse(text));
-			} else if (a.method != null) {
-				check(cell, a);
-			}
-		} catch (Exception e) {
-			exception(cell, e);
-		}
-	}
-
-
 	/**
 	 * Replacement of {@code doCell} which resolves cross-references
 	 * before calling the original {@code doCell} method of fit.
@@ -100,11 +59,11 @@ public class ColumnFixture extends Fixture {
 	 */
 	@Override
 	protected void doCell(final Parse cell, final int column) {
-		TypeAdapter a = columnBindings[column];
+		ValueReceiver a = columnBindings[column];
 
-		setCellParameter(null);
+		setCurrentCellParameter(null);
 		if (column < columnParameters.length) {
-			setCellParameter(columnParameters[column]);
+			setCurrentCellParameter(columnParameters[column]);
 		}
 
 		if (a == null) {
@@ -118,10 +77,15 @@ public class ColumnFixture extends Fixture {
 					check(cell, a);
 				} else if (a == null) {
 					ignore(cell);
-				} else if (a.field != null) {
-					a.set(a.parse(text));
-				} else if (a.method != null) {
-					check(cell, a);
+				} else {
+					TypeHandlerFactory factory = DependencyManager.getOrCreate(TypeHandlerFactory.class);
+					TypeHandler handler = factory.getHandler(a.getType(), getCellParameter());
+
+					if (a.canSet()) {
+						a.set(this, handler.parse(text));
+					} else {
+						check(cell, a);
+					}
 				}
 			} catch (Exception e) {
 				exception(cell, e);
@@ -130,7 +94,7 @@ public class ColumnFixture extends Fixture {
 	}
 
 
-	public void check(Parse cell, TypeAdapter a) {
+	public void check(Parse cell, ValueReceiver valueReceiver) {
 		if (!hasExecuted) {
 			try {
 				execute();
@@ -139,7 +103,7 @@ public class ColumnFixture extends Fixture {
 			}
 			hasExecuted = true;
 		}
-		super.check(cell, a);
+		super.check(cell, valueReceiver);
 	}
 
 	public void reset() throws Exception {
@@ -152,52 +116,16 @@ public class ColumnFixture extends Fixture {
 
 	// Utility //////////////////////////////////
 
-	private Pattern methodPattern = Pattern.compile("(.*)(?:\\(\\)|\\?)");
-
 	protected void bind(Parse heads) {
-		columnBindings = new TypeAdapter[heads.size()];
+		columnBindings = new ValueReceiver[heads.size()];
 		for (int i = 0; heads != null; i++, heads = heads.more) {
 			String name = heads.text();
 
 			try {
-				String parameter = null;
-				if (i < columnParameters.length) {
-					parameter = columnParameters[i];
-				}
-
-				if (name.equals("")) {
-					columnBindings[i] = null;
-				} else {
-					Matcher matcher = methodPattern.matcher(name);
-
-					if (matcher.find()) {
-						columnBindings[i] = bindMethod(matcher.group(1), parameter);
-					} else {
-						columnBindings[i] = bindField(name, parameter);
-					}
-				}
+				columnBindings[i] = createReceiver(this, name);
 			} catch (Exception e) {
 				exception(heads, e);
 			}
 		}
-
-	}
-
-	protected TypeAdapter bindMethod(final String name, final String parameter)
-			throws Exception {
-		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-		TypeAdapter ta = TypeAdapter.on(this, this, getTargetClass().getMethod(FitUtils.camel(name), new Class[]{}));
-		return taHelper.getAdapter(ta, parameter);
-	}
-
-	protected TypeAdapter bindField(final String name, final String parameter)
-			throws Exception {
-		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-		TypeAdapter ta = TypeAdapter.on(this, this, getTargetClass().getField(FitUtils.camel(name)));
-		return taHelper.getAdapter(ta, parameter);
-	}
-
-	protected Class<?> getTargetClass() {
-		return getClass();
 	}
 }

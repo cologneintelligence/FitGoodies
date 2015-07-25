@@ -20,8 +20,7 @@
 package de.cologneintelligence.fitgoodies.date;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
-import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
-import de.cologneintelligence.fitgoodies.parsers.Parser;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import java.text.SimpleDateFormat;
@@ -29,7 +28,7 @@ import java.text.SimpleDateFormat;
 
 /**
  * This fixture allows it to set the locale and format of dates.
- * {@link AbstractTypeAdapter} and {@link Parser} use these formats
+ * {@link TypeHandler} and {@link Parser} use these formats
  * when they parse dates.
  * <p>
  *
@@ -63,22 +62,22 @@ public class SetupFixture extends ActionFixture {
     /**
      * Sets the locale value to {@code locale}.
      * @param locale name of the local to use
-     * @see de.cologneintelligence.fitgoodies.date.SetupHelper#setLocale(String) SetupHelper.setLocale(String)
-     * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getLocale() SetupHelper.getLocale()
+     * @see FitDateHelper#setLocale(String) SetupHelper.setLocale(String)
+     * @see FitDateHelper#getLocale() SetupHelper.getLocale()
      */
     public void locale(final String locale) {
-        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
+        FitDateHelper helper = DependencyManager.getOrCreate(FitDateHelper.class);
         helper.setLocale(locale);
     }
 
     /**
      * Sets the format value to {@code format}.
      * @param format format string which is parsable by {@link SimpleDateFormat}
-     * @see de.cologneintelligence.fitgoodies.date.SetupHelper#setFormat(String) SetupHelper.setFormat(String)
-     * @see de.cologneintelligence.fitgoodies.date.SetupHelper#getFormat() SetupHelper.getFormat()
+     * @see FitDateHelper#setFormat(String) SetupHelper.setFormat(String)
+     * @see FitDateHelper#getFormat() SetupHelper.getFormat()
      */
     public void format(final String format) {
-        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
+        FitDateHelper helper = DependencyManager.getOrCreate(FitDateHelper.class);
         helper.setFormat(format);
     }
 }

@@ -57,11 +57,10 @@ public final class AliasHelperTest extends FitGoodiesTestCase {
         assertMapping("fitgoodies.selenium.SeleniumFixture");
         assertMapping("fitgoodies.selenium.SetupFixture");
         assertMapping("fitgoodies.references.SetupFixture");
-        assertMapping("fitgoodies.parsers.SetupFixture");
         assertMapping("fitgoodies.mail.SetupFixture");
         assertMapping("fitgoodies.date.SetupFixture");
         assertMapping("fitgoodies.database.SetupFixture");
-        assertMapping("fitgoodies.adapters.SetupFixture");
+        assertMapping("fitgoodies.typehandler.SetupFixture");
 
         assertMapping("fitgoodies.database.ResultSetFixture");
         assertMapping("fitgoodies.database.TableFixture");

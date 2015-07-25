@@ -27,6 +27,7 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -211,6 +212,7 @@ public final class LogFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
+    @Ignore
     public void testCrossReferences() throws Exception {
         CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
         helper.parseBody("${a.put(message)}", "a message");

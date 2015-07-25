@@ -20,7 +20,6 @@ package de.cologneintelligence.fitgoodies.log4j;
 
 import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.TypeAdapter;
 import org.apache.log4j.Appender;
 import org.apache.log4j.spi.AppenderAttachable;
 
@@ -119,55 +118,46 @@ public class LogFixture extends Fixture {
 			try {
 				executeCommand();
 			} catch (final IllegalArgumentException e) {
-				error(getCell(COMMAND_COLUMN), "Illegal format");
+				error(this.cells.at(COMMAND_COLUMN), "Illegal format");
 			}
 		}
 	}
 
 	private void executeCommand() {
 		final CellArgumentParser parser = cellArgumentParserFactory.getParserFor(
-				getCell(COMMAND_COLUMN));
+				cells.at(COMMAND_COLUMN));
 
 		final Map<String, String> parameters = parser.getExtractedCommandParameters();
-		final String command = getCell(COMMAND_COLUMN).text();
+		final String command = cells.at(COMMAND_COLUMN).text();
 		getExpressionCellContent();
 
 		dispatchCommand(command, parameters);
 	}
 
 	private String getExpressionCellContent() {
-		final Parse cell = getCell(CHECK_EXPRESSION_COLUMN);
-		final TypeAdapter ta = TypeAdapter.on(this, this, String.class);
-		processCell(cell, ta);
+		final Parse cell = cells.at(CHECK_EXPRESSION_COLUMN);
+		// FIXME: parse cell content
 		return cell.text();
 	}
 
 	private CaptureAppender getAppender() {
-		final String loggerName = getCell(LOGGER_COLUMN).text();
+		final String loggerName = cells.at(LOGGER_COLUMN).text();
 		final AppenderAttachable logger = getLogger(loggerName);
 
 		if (logger == null) {
-			error(getCell(LOGGER_COLUMN), "Invalid logger");
+			error(cells.at(LOGGER_COLUMN), "Invalid logger");
 			return null;
 		}
 
-		final String appenderName = getCell(APPENDER_COLUMN).text();
+		final String appenderName = cells.at(APPENDER_COLUMN).text();
 		final String captureAppenderName = CaptureAppender.getAppenderNameFor(appenderName);
 
 		final Appender appender = logger.getAppender(captureAppenderName);
 		if (appender == null) {
-			error(getCell(APPENDER_COLUMN), "Invalid appender or appender not captured");
+			error(cells.at(APPENDER_COLUMN), "Invalid appender or appender not captured");
 			return null;
 		}
 		return (CaptureAppender) appender;
-	}
-
-	private Parse getCell(final int column) {
-		Parse cell = this.cells;
-		for (int i = 0; i < column; ++i) {
-			cell = cell.more;
-		}
-		return cell;
 	}
 
 	private AppenderAttachable getLogger(final String loggerName) {
@@ -182,7 +172,7 @@ public class LogFixture extends Fixture {
 			final Map<String, String> parameters) {
 
 		final LogEventAnalyzer analyzer = logEventAnalyzerFactory.getLogEventAnalyzerFor(
-				this, getCell(CHECK_EXPRESSION_COLUMN), appender.getAllEvents());
+				this, cells.at(CHECK_EXPRESSION_COLUMN), appender.getAllEvents());
 
 		if ("contains".equalsIgnoreCase(command)) {
 			analyzer.processContains(parameters);
@@ -193,7 +183,7 @@ public class LogFixture extends Fixture {
 		} else if ("notContainsException".equalsIgnoreCase(command)) {
 			analyzer.processNotContainsException(parameters);
 		} else {
-			error(getCell(COMMAND_COLUMN), "unknown command");
+			error(cells.at(COMMAND_COLUMN), "unknown command");
 		}
 	}
 }

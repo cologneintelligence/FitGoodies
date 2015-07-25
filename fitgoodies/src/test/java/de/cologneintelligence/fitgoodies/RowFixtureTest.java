@@ -215,37 +215,6 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testMatch() throws Exception {
-
-        /*
-        Now back to the bug I found: The problem stems from the fact
-        that java doesn't do deep equality for arrays. Little known to
-        me (I forget easily ;-), java arrays are equal only if they
-        are identical. Unfortunately the 2 sort methods returns a map
-        that is directly keyed on the value of the column without
-        considering this little fact. Conclusion there is a missing
-        and a surplus row where there should be one right row.
-        -- Jacques Morel
-        */
-
-		RowFixture fixture = new TestRowFixture2();
-		TypeAdapter arrayAdapter = TypeAdapter.on(fixture, fixture,
-				BusinessObject2.class.getMethod("getStrings", new Class[0]));
-		fixture.columnBindings = new TypeAdapter[]{arrayAdapter};
-
-		List<Object> computed = new LinkedList<>();
-		computed.add(new BusinessObject2(new String[]{"1"}));
-		List<Parse> expected = new LinkedList<>();
-		expected.add(parseTr("1"));
-		fixture.match(expected, computed, 0);
-
-		assertThat("right", fixture.counts().right, is(1));
-		assertThat("exceptions", fixture.counts().exceptions, is(0));
-		assertThat("missing", fixture.missing.size(), is(0));
-		assertThat("surplus", fixture.surplus.size(), is(0));
-	}
-
-	@Test
 	public void testMismatch() throws NoSuchMethodException {
 		List<Object> computed = new LinkedList<>();
 		computed.add(new BusinessObject2("a", "1"));
@@ -256,8 +225,12 @@ public final class RowFixtureTest extends FitGoodiesTestCase {
 
 		RowFixture fixture = new TestRowFixture2(computed.toArray());
 
-		Parse table = parseTable(tr("getString1()", "getString2()"), tr("a", "1"),
-				tr("b", "2"), tr("d", "5"), tr("f", "7"));
+		Parse table = parseTable(
+				tr("getString1()", "getString2()"),
+				tr("a", "1"),
+				tr("b", "2"),
+				tr("d", "5"),
+				tr("f", "7"));
 
 		fixture.doTable(table);
 

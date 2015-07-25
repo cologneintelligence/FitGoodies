@@ -3,15 +3,15 @@ package de.cologneintelligence.fitgoodies;
 // Copyright (c) 2002-2005 Cunningham & Cunningham, Inc.
 // Released under the terms of the GNU General Public License version 2 or later.
 
-import de.cologneintelligence.fitgoodies.adapters.CachingTypeAdapter;
-import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
-import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandlerFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,7 +19,8 @@ import java.util.regex.Pattern;
 
 public class Fixture {
 
-	private static Pattern parameterPattern = Pattern.compile("^(.*)\\s*\\[\\s*(.*?)\\s*\\]\\s*$");
+	protected static Pattern METHOD_PATTERN = Pattern.compile("(.*)(?:\\(\\)|\\?)");
+	private static Pattern PAREMETER_PATTERN = Pattern.compile("^(.*)\\s*\\[\\s*(.*?)\\s*\\]\\s*$");
 
 	private Counts counts = new Counts();
 	protected String[] args;
@@ -70,7 +71,7 @@ public class Fixture {
 	 * @param defaultValue the result value if the argument does not exist
 	 * @return the argument's value without namespaces, or defaultValue
 	 * @see #getArgNames() getArgs
-	 * @see #copyParamsToFixture(Fixture, TypeAdapterHelper) copyParamsToFixture
+	 * @see #copyParamsToFixture(TypeHandlerFactory) copyParamsToFixture
 	 */
 	public String getArg(final String argName, final String defaultValue) {
 		CrossReferenceHelper crossReferenceHelper =
@@ -106,8 +107,7 @@ public class Fixture {
 	 * @param table the table to be processed
 	 */
 	public void doTable(final Parse table) {
-		copyParamsToFixture(this,
-				DependencyManager.getOrCreate(TypeAdapterHelper.class));
+		copyParamsToFixture(DependencyManager.getOrCreate(TypeHandlerFactory.class));
 
 		try {
 			setUp();
@@ -122,6 +122,23 @@ public class Fixture {
 		} catch (final Exception e) {
 			exception(table.parts.parts, e);
 		}
+	}
+
+	/**
+	 * extracts and removes parameters from a row.
+	 * @param row row to process
+	 * @return extracted parameters
+	 */
+	protected String[] extractColumnParameters(final Parse row) {
+		Parse cell = row.parts;
+		final List<String> result = new ArrayList<>();
+
+		while (cell != null) {
+			result.add(extractCellParameter(cell));
+			cell = cell.more;
+		}
+
+		return result.toArray(new String[result.size()]);
 	}
 
 	protected void doRows(Parse rows) {
@@ -178,20 +195,19 @@ public class Fixture {
 	 * If these members do not exist, the argument is skipped. You can still
 	 * read the values using {@link #getArg(String, String)}.
 	 *
-	 * @param fixture  fixture to copy the values to
-	 * @param taHelper TypeAdapterHelper to resolve types
+	 * @param thFactory TypeAdapterHelper to resolve types
 	 * @see #getArg(String, String) getArg
 	 */
-	public void copyParamsToFixture(final Fixture fixture,
-	                                final TypeAdapterHelper taHelper) {
+	public void copyParamsToFixture(final TypeHandlerFactory thFactory) {
 		for (final String fieldName : getArgNames()) {
 			try {
-				final Field field = fixture.getClass().getField(fieldName);
-				final TypeAdapter ta = taHelper.getAdapter(TypeAdapter.on(fixture, fixture, field), null);
+				final Field field = getClass().getField(fieldName);
+				ValueReceiver ta = ValueReceiver.on(this, field);
+				TypeHandler handler = thFactory.getHandler(ta.getType(), null);
 
 				final String fieldValueString = getArg(fieldName, null);
-				final Object fieldValue = ta.parse(fieldValueString);
-				ta.set(fieldValue);
+				final Object fieldValue = handler.parse(fieldValueString);
+				ta.set(this, fieldValue);
 			} catch (final Exception ignored) {
 			}
 		}
@@ -203,7 +219,7 @@ public class Fixture {
 	 * @return the extracted parameter or {@code null}
 	 */
 	public static String extractCellParameter(final Parse cell) {
-		final Matcher matcher = parameterPattern.matcher(cell.text());
+		final Matcher matcher = PAREMETER_PATTERN.matcher(cell.text());
 		if (matcher.matches()) {
 			cell.body = matcher.group(1);
 			return matcher.group(2);
@@ -217,7 +233,7 @@ public class Fixture {
 	 *
 	 * @return a list of all given argument names.
 	 * @see #getArg(String, String) getArg
-	 * @see #copyParamsToFixture(Fixture, TypeAdapterHelper)  copyParamsToFixture
+	 * @see #copyParamsToFixture(TypeHandlerFactory)  copyParamsToFixture
 	 */
 	protected String[] getArgNames() {
 		final List<String> result = new ArrayList<>();
@@ -275,46 +291,36 @@ public class Fixture {
 
 	// Utility //////////////////////////////////
 
-	public Object parse(final String text, final Class type) throws Exception {
-		final ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
-		final Object result = helper.parse(text, type, cellParameter);
-
-		if (result != null) {
-			return result;
-		}
-		throw new IllegalArgumentException("can't yet parse " + type);
-	}
-
 	/**
 	 * Replacement of {@code check} which resolves cross-references
 	 * before calling the original check method of fit.
 	 *
 	 * @param cell the cell to check
-	 * @param a    - TypeAdapter to use
+	 * @param valueReceiver    - TypeAdapter to use
 	 */
-	public void check(final Parse cell, final TypeAdapter a) {
-		final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-		TypeAdapter ta = taHelper.getAdapter(a, cellParameter);
-		ta = processCell(cell, ta);
-		if (ta != null) {
-			check2(cell, ta);
+	public void check(final Parse cell, ValueReceiver valueReceiver) {
+		TypeHandler typeHandler = createTypeHandler(valueReceiver);
+
+		valueReceiver = processCell(cell, valueReceiver);
+		if (valueReceiver != null) {
+			check2(cell, valueReceiver, typeHandler);
 		}
 	}
 
-	public void check2(Parse cell, TypeAdapter a) {
+	public void check2(Parse cell, ValueReceiver valueReceiver, TypeHandler typeHandler) {
 		String text = cell.text();
 		if (text.equals("")) {
 			try {
-				info(cell, a.toString(a.get()));
+				info(cell, typeHandler.toString(valueReceiver.get()));
 			} catch (Exception e) {
 				info(cell, "error");
 			}
-		} else if (a == null) {
+		} else if (valueReceiver == null) {
 			ignore(cell);
 		} else if (text.equals("error")) {
 			try {
-				Object result = a.invoke();
-				wrong(cell, a.toString(result));
+				Object result = valueReceiver.get();
+				wrong(cell, typeHandler.toString(result));
 			} catch (IllegalAccessException e) {
 				exception(cell, e);
 			} catch (Exception e) {
@@ -322,11 +328,11 @@ public class Fixture {
 			}
 		} else {
 			try {
-				Object result = a.get();
-				if (a.equals(a.parse(text), result)) {
+				Object result = valueReceiver.get();
+				if (typeHandler.equals(typeHandler.parse(text), result)) {
 					right(cell);
 				} else {
-					wrong(cell, a.toString(result));
+					wrong(cell, typeHandler.toString(result));
 				}
 			} catch (Exception e) {
 				exception(cell, e);
@@ -349,7 +355,7 @@ public class Fixture {
 	 * @param parameter the cell parameter to set
 	 * @see #getCellParameter() getCellParameter()
 	 */
-	protected void setCellParameter(final String parameter) {
+	protected void setCurrentCellParameter(final String parameter) {
 		this.cellParameter = parameter;
 	}
 
@@ -357,7 +363,7 @@ public class Fixture {
 	 * Returns the parameter of the selected cell.
 	 *
 	 * @return the cell parameter
-	 * @see #setCellParameter(String) setCellParameter(String)
+	 * @see #setCurrentCellParameter(String) setCellParameter(String)
 	 */
 	protected String getCellParameter() {
 		return cellParameter;
@@ -368,33 +374,30 @@ public class Fixture {
 	 * Resolves cross references and decides, whether more processing
 	 * (a call to {@code check}) is necessary.
 	 * @param cell the cell to parse
-	 * @param ta the type bound adapter which is used to compare the cell content
+	 * @param valueReceiver the type bound adapter which is used to compare the cell content
 	 * @return a cached {@code TypeAdapter}, whether the cell should be
 	 * 		{@code check}'ed, {@code null} if no more processing is
 	 * 		required (the cell is then marked as right or wrong from
 	 * 		{@code processCell})
 	 */
-	protected TypeAdapter processCell(final Parse cell, final TypeAdapter ta) {
+	protected ValueReceiver processCell(final Parse cell, final ValueReceiver valueReceiver) {
 		CrossReferenceHelper crossReferenceHelper =
 				DependencyManager.getOrCreate(CrossReferenceHelper.class);
+
+		TypeHandler typeHandler = createTypeHandler(valueReceiver);
 
 		String actualStringValue = "";
 		boolean callParentCheck = true;
 
-		if (ta == null) {
-			return null;
-		}
-
-		final TypeAdapter adapter = new CachingTypeAdapter(ta);
-
 		Object obj;
 		try {
-			obj = adapter.get();
+			obj = valueReceiver.get();
 			if (obj != null) {
-				actualStringValue = adapter.toString(obj);
+				actualStringValue = typeHandler.toString(obj);
 			}
 		} catch (final Exception e) {
-			throw new RuntimeException(e);
+			return valueReceiver;
+			// throw new RuntimeException(e);
 		}
 
 		try {
@@ -404,10 +407,17 @@ public class Fixture {
 			callParentCheck = false;
 		}
 		if (callParentCheck) {
-			return adapter;
+			return valueReceiver;
 		} else {
 			return null;
 		}
+	}
+
+	protected TypeHandler createTypeHandler(ValueReceiver valueReceiver) {
+		TypeHandlerFactory typeHandlerFactory =
+				DependencyManager.getOrCreate(TypeHandlerFactory.class);
+
+		return typeHandlerFactory.getHandler(valueReceiver.getType(), cellParameter);
 	}
 
 	protected void setShortCutMessage(final Parse cell,
@@ -437,4 +447,22 @@ public class Fixture {
 		}
 	}
 
+	protected ValueReceiver createReceiver(Object target, String name) throws NoSuchMethodException, NoSuchFieldException {
+		ValueReceiver receiver;
+		if (name.equals("")) {
+			receiver = null;
+		} else {
+			Matcher matcher = METHOD_PATTERN.matcher(name);
+
+			if (matcher.find()) {
+				final String methodName = FitUtils.camel(matcher.group(1));
+				final Method method = target.getClass().getMethod(methodName);
+				receiver = ValueReceiver.on(target, method);
+			} else {
+				final Field field = target.getClass().getField(FitUtils.camel(name));
+				receiver = ValueReceiver.on(target, field);
+			}
+		}
+		return receiver;
+	}
 }

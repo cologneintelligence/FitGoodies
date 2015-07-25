@@ -19,9 +19,7 @@
 
 package de.cologneintelligence.fitgoodies;
 
-import de.cologneintelligence.fitgoodies.adapters.CachingTypeAdapter;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,33 +37,18 @@ public final class FixtureTest2 extends FitGoodiesTestCase {
 	}
 
 	private DummyFixture dummy;
-	private TypeAdapter taMethod;
-	private TypeAdapter taField;
+	private ValueReceiver taField;
 
 	@Before
 	public void setUp() throws Exception {
 		dummy = new DummyFixture();
-		taMethod = TypeAdapter.on(dummy, new Fixture(),
-				DummyFixture.class.getMethod("getValue", new Class<?>[]{}));
-		taField = TypeAdapter.on(dummy, new Fixture(),
-				DummyFixture.class.getField("value"));
-	}
-
-	@Test
-	public void testCachedAdapter() {
-		Parse cell = parseTd("x");
-		TypeAdapter ta = new Fixture().processCell(cell, taMethod);
-		assertThat(CachingTypeAdapter.class, (Matcher) is(equalTo(ta.getClass())));
-
-		cell = parseTd("another value</td>");
-		ta = new Fixture().processCell(cell, taMethod);
-		assertThat(CachingTypeAdapter.class, (Matcher) is(equalTo(ta.getClass())));
+		taField = ValueReceiver.on(dummy, DummyFixture.class.getField("value"));
 	}
 
 	@Test
 	public void testProcessWithPositiveShortcuts() {
 		Parse cell = parseTd("${nonEmpty()}");
-		TypeAdapter ta = new Fixture().processCell(cell, taField);
+		ValueReceiver ta = new Fixture().processCell(cell, taField);
 
 		assertThat(ta, is(nullValue()));
 		assertThat(cell.text(), containsString("empty"));
@@ -82,7 +65,7 @@ public final class FixtureTest2 extends FitGoodiesTestCase {
 	@Test
 	public void testProcessWithNegativeShortcuts()  {
 		Parse cell = parseTd("${empty()}");
-		TypeAdapter ta = new Fixture().processCell(cell, taField);
+		ValueReceiver ta = new Fixture().processCell(cell, taField);
 
 		assertThat(ta, is(nullValue()));
 		assertThat(cell.text(), containsString("value must be empty"));

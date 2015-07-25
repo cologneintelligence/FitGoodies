@@ -20,7 +20,7 @@
 package de.cologneintelligence.fitgoodies.mail;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
-import de.cologneintelligence.fitgoodies.parsers.BooleanParser;
+import de.cologneintelligence.fitgoodies.typehandler.BooleanTypeHandler;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
@@ -119,7 +119,7 @@ public class SetupFixture extends ActionFixture {
      */
     public void ssl(final String ssl) {
         DependencyManager.getOrCreate(SetupHelper.class)
-        .setSSL(BooleanParser.parse(ssl));
+        .setSSL(BooleanTypeHandler.parseBool(ssl));
     }
 
     /**

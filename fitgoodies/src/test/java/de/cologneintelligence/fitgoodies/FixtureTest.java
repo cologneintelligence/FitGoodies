@@ -1,40 +1,27 @@
 package de.cologneintelligence.fitgoodies;
 
-import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
-import de.cologneintelligence.fitgoodies.parsers.LongParserMock;
-import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandlerFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
-import org.hamcrest.Matcher;
-import org.junit.Assert;
 import org.junit.Test;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import org.mockito.Mock;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 public class FixtureTest extends FitGoodiesTestCase {
 
-	public static class TestClass {
-		public String value;
+	@Mock
+	private TypeHandler typeHandler;
 
-		public String error() {
-			throw new RuntimeException("expected!");
-		}
-
-		public String noError() {
-			return "a result!";
-		}
-
-		private String privateMethod() {
-			return "a result!";
-		}
-	}
+	@Mock
+	private ValueReceiver valueReceiver;
 
 	public static class TestFixture extends Fixture {
 		public int x;
@@ -88,7 +75,10 @@ public class FixtureTest extends FitGoodiesTestCase {
 		final String value = "value";
 		Parse aCell = parseTd(value);
 
-		Counts counts = checkFieldWithContent(value, aCell);
+		when(valueReceiver.get()).thenReturn("another value");
+		when(typeHandler.parse("value")).thenReturn("parsed value");
+		when(typeHandler.equals("parsed value", "another value")).thenReturn(true);
+		Counts counts = checkFieldWithContent(aCell);
 		assertCounts(counts, 1, 0, 0, 0);
 	}
 
@@ -101,10 +91,11 @@ public class FixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testCheckFieldWrong() throws Exception {
-		final String value = "value";
 		Parse aCell = parseTd("another value");
 
-		Counts counts = checkFieldWithContent(value, aCell);
+		when(valueReceiver.get()).thenReturn("value");
+		when(typeHandler.toString("value")).thenReturn("a value");
+		Counts counts = checkFieldWithContent(aCell);
 
 		assertCounts(counts, 0, 1, 0, 0);
 	}
@@ -114,13 +105,8 @@ public class FixtureTest extends FitGoodiesTestCase {
 		Parse aCell = parseTd("another value");
 
 		final Fixture fixture = new Fixture();
-		TestClass target = new TestClass();
-		fixture.check(aCell, TypeAdapter.on(target, new Fixture() {
-			@Override
-			public Object parse(String s, Class type) throws Exception {
-				throw new RuntimeException();
-			}
-		}, TestClass.class.getField("value")));
+		when(valueReceiver.get()).thenThrow(new RuntimeException("an exception"));
+		fixture.check(aCell, valueReceiver);
 
 		assertCounts(fixture.counts(), 0, 0, 1, 0);
 	}
@@ -129,10 +115,12 @@ public class FixtureTest extends FitGoodiesTestCase {
 	public void testCheckFieldEmpty() throws Exception {
 		Parse aCell = parseTd("");
 
-		Counts counts = checkFieldWithContent("print me!", aCell);
+		when(valueReceiver.get()).thenReturn("print me!");
+		when(typeHandler.toString("print me!")).thenReturn("result!");
+		Counts counts = checkFieldWithContent(aCell);
 
 		assertCounts(counts, 0, 0, 0, 0);
-		assertThat(aCell.text(), is(equalTo("print me!")));
+		assertThat(aCell.text(), is(equalTo("result!")));
 	}
 
 	@Test
@@ -159,7 +147,8 @@ public class FixtureTest extends FitGoodiesTestCase {
 	public void testCheckForException() throws Exception {
 		Parse aCell = parseTd("error");
 
-		Counts counts = checkInvocation(aCell, "error");
+		when(valueReceiver.get()).thenThrow(new RuntimeException("expected this"));
+		Counts counts = checkInvocation(aCell);
 
 		assertCounts(counts, 1, 0, 0, 0);
 		assertThat(aCell.text(), is(equalTo("error")));
@@ -169,31 +158,29 @@ public class FixtureTest extends FitGoodiesTestCase {
 	public void testCheckForExceptionFail() throws Exception {
 		Parse aCell = parseTd("error");
 
-		Counts counts = checkInvocation(aCell, "noError");
+		when(valueReceiver.get()).thenReturn("a result!");
+		when(typeHandler.toString("a result!")).thenReturn("a result!");
+		Counts counts = checkInvocation(aCell);
 
 		assertCounts(counts, 0, 1, 0, 0);
 		assertThat(aCell.text(), is(equalTo("error expecteda result! actual")));
 	}
 
-	public Counts checkInvocation(Parse aCell, String methodName) throws NoSuchMethodException {
+	public Counts checkInvocation(Parse aCell) throws NoSuchMethodException {
 		final Fixture fixture = new Fixture();
-		TestClass target = new TestClass();
-		fixture.check2(aCell, TypeAdapter.on(target, fixture,
-				TestClass.class.getMethod(methodName, new Class<?>[0])));
+		fixture.check2(aCell, valueReceiver, typeHandler);
 		return fixture.counts();
 	}
 
-	public Counts checkFieldWithContent(String value, Parse aCell) throws NoSuchFieldException {
+	public Counts checkFieldWithContent(Parse aCell) throws NoSuchFieldException {
 		final Fixture fixture = new Fixture();
-		TestClass target = new TestClass();
-		target.value = value;
-		fixture.check2(aCell, TypeAdapter.on(target, fixture, TestClass.class.getField("value")));
+		fixture.check2(aCell, valueReceiver, typeHandler);
 		return fixture.counts();
 	}
 
 	public Fixture checkWithoutTypeAdapter(Parse aCell) {
 		final Fixture fixture = new Fixture();
-		fixture.check2(aCell, null);
+		fixture.check2(aCell, null, typeHandler);
 		return fixture;
 	}
 
@@ -234,35 +221,6 @@ public class FixtureTest extends FitGoodiesTestCase {
 		assertThat(fixture.counts().right, is(equalTo((Object) 0)));
 		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
 		assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
-	}
-
-	@Test
-	public void testParse() throws Exception {
-		Fixture fixture = new Fixture();
-
-		try {
-			final Integer intExpected = 42;
-			assertThat(fixture.parse("42", intExpected.getClass()), is(nullValue()));
-			Assert.fail();
-		} catch (IllegalArgumentException ignored) {
-		}
-
-		BigInteger biExpected = new BigInteger("123");
-		assertThat(fixture.parse("123", biExpected.getClass()), (Matcher) is(equalTo(biExpected)));
-		biExpected = new BigInteger("7");
-		assertThat(fixture.parse("7", biExpected.getClass()), (Matcher) is(equalTo(biExpected)));
-
-		BigDecimal bdExpected = new BigDecimal("312.45");
-		assertThat(fixture.parse("312.45", bdExpected.getClass()), (Matcher) is(equalTo(bdExpected)));
-		bdExpected = new BigDecimal("331.0");
-		assertThat(fixture.parse("331.0", bdExpected.getClass()), (Matcher) is(equalTo(bdExpected)));
-
-		final ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
-		helper.registerParser(new LongParserMock());
-		assertThat(fixture.parse("5", Long.class), (Matcher) is(equalTo(2L)));
-
-		fixture.setCellParameter("true");
-		assertThat(fixture.parse("5", Long.class), (Matcher) is(equalTo(7L)));
 	}
 
 
@@ -335,27 +293,27 @@ public class FixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testCopyParamsToFixture() {
-		final TypeAdapterHelper taHelper = new TypeAdapterHelper();
+		final TypeHandlerFactory taHelper = new TypeHandlerFactory();
 
 		TestFixture fixture = new TestFixture();
 		fixture.setParams(new String[]{" x = 8 ", "y=string", "z=error"});
 
 		fixture.a = 9;
-		fixture.copyParamsToFixture(fixture, taHelper);
+		fixture.copyParamsToFixture(taHelper);
 		assertThat(fixture.a, is(equalTo(9)));
 		assertThat(fixture.x, is(equalTo(8)));
 		assertThat(fixture.y, is(equalTo("string")));
 
 		fixture = new TestFixture();
 		fixture.setParams(new String[]{" a = 42 ", "b=c"});
-		fixture.copyParamsToFixture(fixture, taHelper);
+		fixture.copyParamsToFixture(taHelper);
 
 		assertThat(fixture.a, is(equalTo(42)));
 		assertThat(fixture.b, is(equalTo("c")));
 
 		fixture = new TestFixture();
 		fixture.setParams(null);
-		fixture.copyParamsToFixture(fixture, taHelper);
+		fixture.copyParamsToFixture(taHelper);
 	}
 
 }

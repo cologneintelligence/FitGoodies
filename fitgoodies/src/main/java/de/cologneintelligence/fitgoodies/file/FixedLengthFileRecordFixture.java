@@ -20,7 +20,6 @@
 package de.cologneintelligence.fitgoodies.file;
 
 import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.TypeAdapter;
 import de.cologneintelligence.fitgoodies.file.readers.FixedLengthRecordReader;
 
 import java.io.IOException;
@@ -80,7 +79,7 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 	}
 
 	/**
-	 * Parses the first table row and generates an <code>int</code> array
+	 * Parses the first table row and generates an {@code int} array
 	 * which contains the length of each record field.
 	 *
 	 * @param row row to process
@@ -99,7 +98,6 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 		final int[] width = new int[cellCount];
 		for (int i = 0; i < cellCount; ++i) {
 			try {
-				processCell(cell, TypeAdapter.on(this, this, Integer.class));
 				width[i] = Integer.parseInt(cell.text());
 			} catch (final Exception e) {
 				exception(cell, e);

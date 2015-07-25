@@ -6,7 +6,7 @@ package fat;
 import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.PrimitiveFixture;
 import de.cologneintelligence.fitgoodies.ScientificDouble;
-import de.cologneintelligence.fitgoodies.TypeAdapter;
+import de.cologneintelligence.fitgoodies.ValueReceiver;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
 
 import java.util.Date;
@@ -14,7 +14,7 @@ import java.util.Date;
 public class Equals extends PrimitiveFixture {
 
     Parse heads;
-    TypeAdapter type;
+    ValueReceiver type;
     Object x, y;
 
     public void doRows (Parse rows) {
@@ -44,7 +44,7 @@ public class Equals extends PrimitiveFixture {
     static private Boolean [] BooleanArray = {};
     static private String [] StringArray = {};
 
-    TypeAdapter type(String name) {
+    ValueReceiver type(String name) {
         Class type =
             name.equals("boolean") ?    Boolean.class :
             name.equals("integer") ?    Integer.class :
@@ -58,7 +58,7 @@ public class Equals extends PrimitiveFixture {
             name.equals("strings") ?    StringArray.getClass():
             null ;
         if (type == null) throw new RuntimeException("Unimplemented choice "+name);
-        return TypeAdapter.on(this, type);
+        return ValueReceiver.on(this, type);
     }
 
     public Object parse (String s, Class type) throws Exception {

@@ -19,11 +19,12 @@
 
 package de.cologneintelligence.fitgoodies.mail;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
 import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.Parse;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.mail.MessagingException;
@@ -31,9 +32,7 @@ import javax.mail.MessagingException;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 public final class MailFixtureTest extends FitGoodiesTestCase {
@@ -215,6 +214,7 @@ public final class MailFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
+    @Ignore
     public void testCRF() throws Exception {
         final Mail mail = mock(Mail.class);
         MailFixture fixture = prepareFixture(mail);
