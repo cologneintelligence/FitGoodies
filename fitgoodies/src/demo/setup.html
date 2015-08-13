@@ -1,164 +1,185 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+  ~ Copyright (c) 2002 Cunningham & Cunningham, Inc.
+  ~ Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+  ~
+  ~ This file is part of FitGoodies.
+  ~
+  ~ FitGoodies is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ FitGoodies is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+CTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<link rel="stylesheet" type="text/css" href="style.css" />
-<title>Setup</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <title>Setup</title>
 </head>
 <body>
-	<h1>Setup</h1>
-	<p>This file exists for technical reasons only. It is used to
-		define some aliases, load Custom type adapters, and so on.</p>
+<h1>Setup</h1>
 
-	<p>Define aliases to type less</p>
-	<table>
-		<tr>
-			<td>fitgoodies.alias.SetupFixture</td>
-		</tr>
-		<tr>
-			<td>ISBNFixture</td>
-			<td>com.mycompany.bookstore.fittests.ISBNFixture</td>
-		</tr>
-		<tr>
-			<td>BookFixture</td>
-			<td>com.mycompany.bookstore.fittests.BookFixture</td>
-		</tr>
-		<tr>
-			<td>TableFixture</td>
-			<td>fitgoodies.database.TableFixture</td>
-		</tr>
-		<tr>
-			<td>ActionFixture</td>
-			<td>fitgoodies.ActionFixture</td>
-		</tr>
-		<tr>
-			<td>FileRecords</td>
-			<td>fitgoodies.file.FixedLengthFileRecordFixture</td>
-		</tr>
-	</table>
+<p>This file exists for technical reasons only. It is used to
+    define some aliases, load Custom type adapters, and so on.</p>
 
-	<p>Load custom TypeAdapters</p>
-	<table>
-		<tr>
-			<td>fitgoodies.adapters.SetupFixture</td>
-		</tr>
-		<tr>
-			<td>load</td>
-			<td>com.mycompany.bookstore.fittests.ISBNTypeAdapter</td>
-		</tr>
-	</table>
+<p>Define aliases to type less</p>
+<table>
+    <tr>
+        <td>fitgoodies.alias.SetupFixture</td>
+    </tr>
+    <tr>
+        <td>ISBNFixture</td>
+        <td>com.mycompany.bookstore.fittests.ISBNFixture</td>
+    </tr>
+    <tr>
+        <td>BookFixture</td>
+        <td>com.mycompany.bookstore.fittests.BookFixture</td>
+    </tr>
+    <tr>
+        <td>TableFixture</td>
+        <td>fitgoodies.database.TableFixture</td>
+    </tr>
+    <tr>
+        <td>ActionFixture</td>
+        <td>fitgoodies.ActionFixture</td>
+    </tr>
+    <tr>
+        <td>FileRecords</td>
+        <td>fitgoodies.file.FixedLengthFileRecordFixture</td>
+    </tr>
+</table>
 
-	<p>Initialize a database connection (we need it later)</p>
-	<table>
-		<tr>
-			<td>fitgoodies.database.SetupFixture</td>
-		</tr>
-		<tr>
-			<td>provider</td>
-			<td>org.apache.derby.jdbc.EmbeddedDriver</td>
-		</tr>
-		<tr>
-			<td>connectionString</td>
-			<td>jdbc:derby:demo-output/db;create=true</td>
-		</tr>
-	</table>
+<p>Load custom TypeAdapters</p>
+<table>
+    <tr>
+        <td>fitgoodies.adapters.SetupFixture</td>
+    </tr>
+    <tr>
+        <td>load</td>
+        <td>com.mycompany.bookstore.fittests.ISBNTypeAdapter</td>
+    </tr>
+</table>
 
-	<p>All generated files will be text files in the demo application
-		folder.</p>
-	<table>
-		<tr>
-			<td>fitgoodies.file.FileFixture</td>
-		</tr>
-		<tr>
-			<td>directory</td>
-			<td>demo-output/</td>
-		</tr>
-		<tr>
-			<td>pattern</td>
-			<td>.*\.txt</td>
-		</tr>
-		<tr>
-			<td>encoding</td>
-			<td>utf-8</td>
-		</tr>
-	</table>
+<p>Initialize a database connection (we need it later)</p>
+<table>
+    <tr>
+        <td>fitgoodies.database.SetupFixture</td>
+    </tr>
+    <tr>
+        <td>provider</td>
+        <td>org.apache.derby.jdbc.EmbeddedDriver</td>
+    </tr>
+    <tr>
+        <td>connectionString</td>
+        <td>jdbc:derby:demo-output/db;create=true</td>
+    </tr>
+</table>
 
-	<p>Initialize logging</p>
-	<table>
-		<tr>
-			<td>fitgoodies.ActionFixture</td>
-		</tr>
-		<tr>
-			<td>start</td>
-			<td>com.mycompany.bookstore.fittests.LogPrepareFixture</td>
-		</tr>
-		<tr>
-			<td>press</td>
-			<td>initialize logging</td>
-		</tr>
-	</table>
+<p>All generated files will be text files in the demo application
+    folder.</p>
+<table>
+    <tr>
+        <td>fitgoodies.file.FileFixture</td>
+    </tr>
+    <tr>
+        <td>directory</td>
+        <td>demo-output/</td>
+    </tr>
+    <tr>
+        <td>pattern</td>
+        <td>.*\.txt</td>
+    </tr>
+    <tr>
+        <td>encoding</td>
+        <td>utf-8</td>
+    </tr>
+</table>
 
-	<p>In addition, the logging output will be captured to be analyzed
-		later</p>
-	<table>
-		<tr>
-			<td>fitgoodies.log4j.SetupFixture</td>
-		</tr>
-		<tr>
-			<td>monitorRoot</td>
-			<td>stdout</td>
-		</tr>
-	</table>
+<p>Initialize logging</p>
+<table>
+    <tr>
+        <td>fitgoodies.ActionFixture</td>
+    </tr>
+    <tr>
+        <td>start</td>
+        <td>com.mycompany.bookstore.fittests.LogPrepareFixture</td>
+    </tr>
+    <tr>
+        <td>press</td>
+        <td>initialize logging</td>
+    </tr>
+</table>
+
+<p>In addition, the logging output will be captured to be analyzed
+    later</p>
+<table>
+    <tr>
+        <td>fitgoodies.log4j.SetupFixture</td>
+    </tr>
+    <tr>
+        <td>monitorRoot</td>
+        <td>stdout</td>
+    </tr>
+</table>
 
 
-	<table>
-		<tr>
-			<td>fitgoodies.selenium.SetupFixture</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>serverHost</td>
-			<td>localhost</td>
-		</tr>
-		<tr>
-			<td>serverPort</td>
-			<td>4444</td>
-		</tr>
-		<tr>
-			<td>browserStartCommand</td>
-			<td>*firefox</td>
-		</tr>
-		<tr>
-			<td>browserURL</td>
-			<td>www.google.com</td>
-		</tr>
-		<tr>
-			<td>speed</td>
-			<td>0</td>
-		</tr>
-		<tr>
-			<td>takeScreenshots</td>
-			<td>true</td>
-		</tr>
-		<tr>
-			<td>start</td>
-			<td></td>
-		</tr>
-	</table>
-	<table>
-		<tr>
-			<td>fitgoodies.alias.SetupFixture</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>Selenium</td>
-			<td>de.cologneintelligence.fitgoodies.selenium.SeleniumFixture</td>
-		</tr>
-		<tr>
-			<td>TableFixture</td>
-			<td>de.cologneintelligence.fitgoodies.database.TableFixture</td>
-		</tr>
-	</table>
+<table>
+    <tr>
+        <td>fitgoodies.selenium.SetupFixture</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>serverHost</td>
+        <td>localhost</td>
+    </tr>
+    <tr>
+        <td>serverPort</td>
+        <td>4444</td>
+    </tr>
+    <tr>
+        <td>browserStartCommand</td>
+        <td>*firefox</td>
+    </tr>
+    <tr>
+        <td>browserURL</td>
+        <td>www.google.com</td>
+    </tr>
+    <tr>
+        <td>speed</td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>takeScreenshots</td>
+        <td>true</td>
+    </tr>
+    <tr>
+        <td>start</td>
+        <td></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td>fitgoodies.alias.SetupFixture</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Selenium</td>
+        <td>de.cologneintelligence.fitgoodies.selenium.SeleniumFixture</td>
+    </tr>
+    <tr>
+        <td>TableFixture</td>
+        <td>de.cologneintelligence.fitgoodies.database.TableFixture</td>
+    </tr>
+</table>
 
 </body>
 </html>

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2015  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -70,7 +72,7 @@ public class FixtureRunner {
 
 	public Fixture loadFixture(String fixtureName) {
 		try {
-			return (Fixture)(Class.forName(fixtureName).newInstance());
+			return (Fixture) (Class.forName(fixtureName).newInstance());
 		} catch (ClassCastException e) {
 			throw new RuntimeException("\"" + fixtureName + "\" was found, but it's not a fixture.", e);
 		} catch (ClassNotFoundException | NoClassDefFoundError e) {

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -29,11 +31,11 @@ import static org.junit.Assert.assertThat;
 
 public class DateUtilTest {
 
-    @Test
-    public void testGetDateAsString(){
-        Date date = new GregorianCalendar(2009, 1, 14).getTime();
-        assertThat(DateUtil.getDateAsString(date, DateUtil.DATE_PATTERN_DD_MM_YYYY),
-                is(equalTo("14.02.2009")));
-    }
+	@Test
+	public void testGetDateAsString() {
+		Date date = new GregorianCalendar(2009, 1, 14).getTime();
+		assertThat(DateUtil.getDateAsString(date, DateUtil.DATE_PATTERN_DD_MM_YYYY),
+				is(equalTo("14.02.2009")));
+	}
 
 }

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2014  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -25,42 +27,42 @@ import org.hamcrest.Matcher;
 import java.lang.reflect.Field;
 
 public class FieldMatcher extends DiagnosingMatcher<Object> {
-    private final String fieldName;
-    private final Matcher matcher;
+	private final String fieldName;
+	private final Matcher matcher;
 
-    public FieldMatcher(String fieldName, Matcher matcher) {
-        this.fieldName = fieldName;
-        this.matcher = matcher;
-    }
+	public FieldMatcher(String fieldName, Matcher matcher) {
+		this.fieldName = fieldName;
+		this.matcher = matcher;
+	}
 
-    public static FieldMatcher hasField(String name, Matcher matcher) {
-        return new FieldMatcher(name, matcher);
-    }
+	public static FieldMatcher hasField(String name, Matcher matcher) {
+		return new FieldMatcher(name, matcher);
+	}
 
-    @Override
-    public boolean matches(final Object item, Description mismatchDescription) {
-        try {
-            final Field fieldItem = item.getClass().getField(fieldName);
-            final Object fieldObjectItem = fieldItem.get(item);
+	@Override
+	public boolean matches(final Object item, Description mismatchDescription) {
+		try {
+			final Field fieldItem = item.getClass().getField(fieldName);
+			final Object fieldObjectItem = fieldItem.get(item);
 
-            if (matcher.matches(fieldObjectItem)) {
-                return true;
-            }
+			if (matcher.matches(fieldObjectItem)) {
+				return true;
+			}
 
-            matcher.describeMismatch(fieldObjectItem, mismatchDescription);
+			matcher.describeMismatch(fieldObjectItem, mismatchDescription);
 
-        } catch (IllegalAccessException e) {
-            mismatchDescription.appendText("is inaccessible");
-        } catch (NoSuchFieldException e) {
-            mismatchDescription.appendText("doesn't exist");
-        }
+		} catch (IllegalAccessException e) {
+			mismatchDescription.appendText("is inaccessible");
+		} catch (NoSuchFieldException e) {
+			mismatchDescription.appendText("doesn't exist");
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    @Override
-    public void describeTo(final Description description) {
-        description.appendText("Field " + fieldName + " that ");
-        matcher.describeTo(description);
-    }
+	@Override
+	public void describeTo(final Description description) {
+		description.appendText("Field " + fieldName + " that ");
+		matcher.describeTo(description);
+	}
 }

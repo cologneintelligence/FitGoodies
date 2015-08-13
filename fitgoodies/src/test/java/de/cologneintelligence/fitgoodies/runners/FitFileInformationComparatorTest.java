@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,8 +21,8 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.file.FileInformation;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.junit.Test;
 
 import java.io.File;
@@ -33,14 +35,14 @@ public class FitFileInformationComparatorTest extends FitGoodiesTestCase {
 	private final FitFileInformationComparator comp = new FitFileInformationComparator();
 
 	private void assertCompares(final int sign,
-			final String f1, final String f2) {
+	                            final String f1, final String f2) {
 
 		FileInformation fi1 = new FileInformation(new File(f1));
 		FileInformation fi2 = new FileInformation(new File(f2));
 
 		final String message = "Unexpected result when comparing: " + fi1.toString() + " <> " + fi2.toString();
-		assertThat(message, (int)Math.signum(comp.compare(fi1, fi2)), is(sign));
-		assertThat(message, (int)Math.signum(comp.compare(fi2, fi1)), is(-sign));
+		assertThat(message, (int) Math.signum(comp.compare(fi1, fi2)), is(sign));
+		assertThat(message, (int) Math.signum(comp.compare(fi2, fi1)), is(-sign));
 	}
 
 	@Test

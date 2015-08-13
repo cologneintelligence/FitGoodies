@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -30,19 +32,19 @@ import java.text.ParseException;
  * It uses the {@link Date#valueOf(String)} method first. If it fails, the
  * class uses the {@link FitDateHelper} to allow the user
  * to set individual formats.
- *
+ * <p/>
  * If the cell is parameterized, the date format can be set individually.
  * The parameter must have the format &quot;{@code locale, format}&quot;.
  * Example: &quot;{@code en_US, MM/dd/yyyy}&quot;.
- *
  */
 public class SqlDateTypeHandler extends TypeHandler<Date> {
 	private final FitDateHelper dateFitDateHelper;
 
 	/**
 	 * Creates a new TypeAdapter which bases on {@code ta}.
+	 *
 	 * @param convertParameter a parameter in the format [locale, format] which
-	 * 		represents the format to use
+	 *                         represents the format to use
 	 */
 	public SqlDateTypeHandler(final String convertParameter) {
 		super(convertParameter);
@@ -51,6 +53,7 @@ public class SqlDateTypeHandler extends TypeHandler<Date> {
 
 	/**
 	 * Returns the destination class which is managed by this parser.
+	 *
 	 * @return java.sql.Date.class
 	 */
 	@Override
@@ -60,6 +63,7 @@ public class SqlDateTypeHandler extends TypeHandler<Date> {
 
 	/**
 	 * Parses a string and converts it into a {@code java.sql.Date} object.
+	 *
 	 * @param s {@code String} which will be converted
 	 * @return {@code java.sql.Date} object which is represented by {@code s}
 	 */

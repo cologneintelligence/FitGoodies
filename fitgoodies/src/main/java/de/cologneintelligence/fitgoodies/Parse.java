@@ -1,65 +1,81 @@
-package de.cologneintelligence.fitgoodies;
+/*
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
+ * This file is part of FitGoodies.
+ *
+ * FitGoodies is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FitGoodies is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-// Copyright (c) 2002 Cunningham & Cunningham, Inc.
-// Released under the terms of the GNU General Public License version 2 or later.
+package de.cologneintelligence.fitgoodies;
 
 import java.io.*;
 import java.text.ParseException;
 
 public class Parse {
 
-    public String leader;
-    public String tag;
-    public String body;
-    public String end;
-    public String trailer;
+	public String leader;
+	public String tag;
+	public String body;
+	public String end;
+	public String trailer;
 
-    public Parse more;
-    public Parse parts;
+	public Parse more;
+	public Parse parts;
 
-    public Parse (String tag, String body, Parse parts, Parse more) {
-        this.leader = "\n";
-        this.tag = "<"+tag+">";
-        this.body = body;
-        this.end = "</"+tag+">";
-        this.trailer = "";
-        this.parts = parts;
-        this.more = more;
-    }
+	public Parse(String tag, String body, Parse parts, Parse more) {
+		this.leader = "\n";
+		this.tag = "<" + tag + ">";
+		this.body = body;
+		this.end = "</" + tag + ">";
+		this.trailer = "";
+		this.parts = parts;
+		this.more = more;
+	}
 
-    public static String tags[] = {"table", "tr", "td"};
+	public static String tags[] = {"table", "tr", "td"};
 
-    public Parse (String text) throws ParseException {
-        this (text, tags, 0, 0);
-    }
+	public Parse(String text) throws ParseException {
+		this(text, tags, 0, 0);
+	}
 
-    public Parse (String text, String tags[]) throws ParseException {
-        this (text, tags, 0, 0);
-    }
+	public Parse(String text, String tags[]) throws ParseException {
+		this(text, tags, 0, 0);
+	}
 
-    public Parse (String text, String tags[], int level, int offset) throws ParseException {
-        String lc = text.toLowerCase();
-        int startTag = lc.indexOf("<"+tags[level]);
-        int endTag = lc.indexOf(">", startTag) + 1;
+	public Parse(String text, String tags[], int level, int offset) throws ParseException {
+		String lc = text.toLowerCase();
+		int startTag = lc.indexOf("<" + tags[level]);
+		int endTag = lc.indexOf(">", startTag) + 1;
 //        int startEnd = lc.indexOf("</"+tags[level], endTag);
 		int startEnd = findMatchingEndTag(lc, endTag, tags[level], offset);
-        int endEnd = lc.indexOf(">", startEnd) + 1;
-        int startMore = lc.indexOf("<"+tags[level], endEnd);
-        if (startTag<0 || endTag<0 || startEnd<0 || endEnd<0) {
-            throw new ParseException ("Can't find tag: "+tags[level], offset);
-        }
+		int endEnd = lc.indexOf(">", startEnd) + 1;
+		int startMore = lc.indexOf("<" + tags[level], endEnd);
+		if (startTag < 0 || endTag < 0 || startEnd < 0 || endEnd < 0) {
+			throw new ParseException("Can't find tag: " + tags[level], offset);
+		}
 
-        leader = text.substring(0,startTag);
-        tag = text.substring(startTag, endTag);
-        body = text.substring(endTag, startEnd);
-        end = text.substring(startEnd,endEnd);
-        trailer = text.substring(endEnd);
+		leader = text.substring(0, startTag);
+		tag = text.substring(startTag, endTag);
+		body = text.substring(endTag, startEnd);
+		end = text.substring(startEnd, endEnd);
+		trailer = text.substring(endEnd);
 
-        if (level+1 < tags.length) {
-            parts = new Parse (body, tags, level+1, offset+endTag);
-            body = null;
-        }
-		else { // Check for nested table
+		if (level + 1 < tags.length) {
+			parts = new Parse(body, tags, level + 1, offset + endTag);
+			body = null;
+		} else { // Check for nested table
 			int index = body.indexOf("<" + tags[0]);
 			if (index >= 0) {
 				parts = new Parse(body, tags, 0, offset + endTag);
@@ -67,11 +83,11 @@ public class Parse {
 			}
 		}
 
-        if (startMore>=0) {
-            more = new Parse (trailer, tags, level, offset+endEnd);
-            trailer = null;
-        }
-    }
+		if (startMore >= 0) {
+			more = new Parse(trailer, tags, level, offset + endEnd);
+			trailer = null;
+		}
+	}
 
 	/* Added by Rick Mugridge, Feb 2005 */
 	protected static int findMatchingEndTag(String lc, int matchFromHere, String tag, int offset) throws ParseException {
@@ -92,8 +108,7 @@ public class Parse {
 				count++;
 				startEnd = embeddedTag;
 				fromHere = lc.indexOf(">", embeddedTag) + 1;
-			}
-			else if (embeddedTagEnd < embeddedTag) {
+			} else if (embeddedTagEnd < embeddedTag) {
 				count--;
 				startEnd = embeddedTagEnd;
 				fromHere = lc.indexOf(">", embeddedTagEnd) + 1;
@@ -102,61 +117,60 @@ public class Parse {
 		return startEnd;
 	}
 
-    public int size() {
-        return more==null ? 1 : more.size()+1;
-    }
+	public int size() {
+		return more == null ? 1 : more.size() + 1;
+	}
 
-    public Parse last() {
-        return more==null ? this : more.last();
-    }
+	public Parse last() {
+		return more == null ? this : more.last();
+	}
 
-    public Parse leaf() {
-        return parts==null ? this : parts.leaf();
-    }
+	public Parse leaf() {
+		return parts == null ? this : parts.leaf();
+	}
 
-    public Parse at(int i) {
-        return i==0 || more==null ? this : more.at(i-1);
-    }
+	public Parse at(int i) {
+		return i == 0 || more == null ? this : more.at(i - 1);
+	}
 
-    public Parse at(int i, int j) {
-        return at(i).parts.at(j);
-    }
+	public Parse at(int i, int j) {
+		return at(i).parts.at(j);
+	}
 
-    public Parse at(int i, int j, int k) {
-        return at(i,j).parts.at(k);
-    }
+	public Parse at(int i, int j, int k) {
+		return at(i, j).parts.at(k);
+	}
 
-    public String text() {
-    	return htmlToText(body);
-    }
+	public String text() {
+		return htmlToText(body);
+	}
 
-    public static String htmlToText(String s)
-    {
+	public static String htmlToText(String s) {
 		s = normalizeLineBreaks(s);
-    	s = removeNonBreakTags(s);
+		s = removeNonBreakTags(s);
 		s = condenseWhitespace(s);
 		s = unescape(s);
-    	return s;
-    }
+		return s;
+	}
 
-    private static String removeNonBreakTags(String s) {
-        int i=0, j;
-        while ((i=s.indexOf('<',i))>=0) {
-            if ((j=s.indexOf('>',i+1))>0) {
-                if (!(s.substring(i, j+1).equals("<br />"))) {
-                	s = s.substring(0,i) + s.substring(j+1);
-                } else i++;
-            } else break;
-        }
-        return s;
-    }
+	private static String removeNonBreakTags(String s) {
+		int i = 0, j;
+		while ((i = s.indexOf('<', i)) >= 0) {
+			if ((j = s.indexOf('>', i + 1)) > 0) {
+				if (!(s.substring(i, j + 1).equals("<br />"))) {
+					s = s.substring(0, i) + s.substring(j + 1);
+				} else i++;
+			} else break;
+		}
+		return s;
+	}
 
-    public static String unescape(String s) {
-    	s = s.replaceAll("<br />", "\n");
+	public static String unescape(String s) {
+		s = s.replaceAll("<br />", "\n");
 		s = unescapeEntities(s);
 		s = unescapeSmartQuotes(s);
-        return s;
-    }
+		return s;
+	}
 
 	private static String unescapeSmartQuotes(String s) {
 		s = s.replace('\u201c', '"');
@@ -181,58 +195,59 @@ public class Parse {
 		return s;
 	}
 
-    public static String condenseWhitespace(String s) {
-    	final char NON_BREAKING_SPACE = (char)160;
+	public static String condenseWhitespace(String s) {
+		final char NON_BREAKING_SPACE = (char) 160;
 
-    	s = s.replaceAll("\\s+", " ");
+		s = s.replaceAll("\\s+", " ");
 		s = s.replace(NON_BREAKING_SPACE, ' ');
 		s = s.replaceAll("&nbsp;", " ");
 		s = s.trim();
-    	return s;
-    }
+		return s;
+	}
 
-    public void addToTag(String text) {
-        int last = tag.length()-1;
-        tag = tag.substring(0,last) + text + ">";
-    }
+	public void addToTag(String text) {
+		int last = tag.length() - 1;
+		tag = tag.substring(0, last) + text + ">";
+	}
 
-    public void addToBody(String text) {
-        body = body + text;
-    }
+	public void addToBody(String text) {
+		body = body + text;
+	}
 
-    public void print(PrintWriter out) {
-        out.print(leader);
-        out.print(tag);
-        if (parts != null) {
-            parts.print(out);
-        } else {
-            out.print(body);
-        }
-        out.print(end);
-        if (more != null) {
-            more.print(out);
-        } else {
-            out.print(trailer);
-        }
-    }
+	public void print(PrintWriter out) {
+		out.print(leader);
+		out.print(tag);
+		if (parts != null) {
+			parts.print(out);
+		} else {
+			out.print(body);
+		}
+		out.print(end);
+		if (more != null) {
+			more.print(out);
+		} else {
+			out.print(trailer);
+		}
+	}
 
-    public static int footnoteFiles=0;
-    public String footnote () {
-        if (footnoteFiles>=25) {
-            return "[-]";
-        } else {
-            try {
-                int thisFootnote = ++footnoteFiles;
-                String html = "footnotes/" + thisFootnote + ".html";
-                File file = new File("Reports/" + html);
-                file.delete();
-                PrintWriter output = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-                print(output);
-                output.close();
-                return "<a href=/fit/Release/Reports/" + html + "> [" + thisFootnote + "]</a>";
-            } catch (IOException e) {
-                return "[!]";
-            }
-        }
-    }
+	public static int footnoteFiles = 0;
+
+	public String footnote() {
+		if (footnoteFiles >= 25) {
+			return "[-]";
+		} else {
+			try {
+				int thisFootnote = ++footnoteFiles;
+				String html = "footnotes/" + thisFootnote + ".html";
+				File file = new File("Reports/" + html);
+				file.delete();
+				PrintWriter output = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+				print(output);
+				output.close();
+				return "<a href=/fit/Release/Reports/" + html + "> [" + thisFootnote + "]</a>";
+			} catch (IOException e) {
+				return "[!]";
+			}
+		}
+	}
 }

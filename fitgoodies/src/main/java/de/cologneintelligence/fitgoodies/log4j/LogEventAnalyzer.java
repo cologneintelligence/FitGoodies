@@ -1,19 +1,21 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
- * Foobar is free software: you can redistribute it and/or modify
+ * FitGoodies is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Foobar is distributed in the hope that it will be useful,
+ * FitGoodies is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.cologneintelligence.fitgoodies.log4j;
@@ -38,10 +40,11 @@ public class LogEventAnalyzer {
 
 	/**
 	 * Creates a new analyzer.
-	 * @param counts counts
-	 * @param validator validator for cell
+	 *
+	 * @param counts        counts
+	 * @param validator     validator for cell
 	 * @param conditionCell cell which contains the reference value
-	 * @param events log events to process
+	 * @param events        log events to process
 	 */
 	public LogEventAnalyzer(Counts counts, Validator validator, Parse conditionCell, LoggingEvent[] events) {
 		this.counts = counts;
@@ -52,8 +55,9 @@ public class LogEventAnalyzer {
 
 	/**
 	 * Checks whether the log messages contain the expected exception.
+	 *
 	 * @param parameters parameters to filter the processing
-	 * 	(see {@link AbstractLoggingEventMatcher}
+	 *                   (see {@link AbstractLoggingEventMatcher}
 	 */
 	public void processNotContainsException(Map<String, String> parameters) {
 		LoggingEvent match = getMessageWithException(parameters);
@@ -69,8 +73,9 @@ public class LogEventAnalyzer {
 
 	/**
 	 * Checks whether the log messages do not contain the expected exception.
+	 *
 	 * @param parameters parameters to filter the processing
-	 * 	(see {@link AbstractLoggingEventMatcher}
+	 *                   (see {@link AbstractLoggingEventMatcher}
 	 */
 	public void processContainsException(Map<String, String> parameters) {
 		LoggingEvent match = getMessageWithException(parameters);
@@ -110,8 +115,9 @@ public class LogEventAnalyzer {
 
 	/**
 	 * Checks whether the log messages contain the expected text.
+	 *
 	 * @param parameters parameters to filter the processing
-	 * 	(see {@link AbstractLoggingEventMatcher}
+	 *                   (see {@link AbstractLoggingEventMatcher}
 	 */
 	public void processContains(Map<String, String> parameters) {
 		LoggingEvent match = getMessageWithString(parameters);
@@ -128,8 +134,9 @@ public class LogEventAnalyzer {
 
 	/**
 	 * Checks whether the log messages do not contain the expected text.
+	 *
 	 * @param parameters parameters to filter the processing
-	 * 	(see {@link AbstractLoggingEventMatcher}
+	 *                   (see {@link AbstractLoggingEventMatcher}
 	 */
 	public void processNotContains(Map<String, String> parameters) {
 		LoggingEvent match = getMessageWithString(parameters);
@@ -155,7 +162,7 @@ public class LogEventAnalyzer {
 	}
 
 	private LoggingEvent getMatchingEvent(AbstractLoggingEventMatcher matcher,
-			Map<String, String> parameters) {
+	                                      Map<String, String> parameters) {
 		return matcher.getFirstMatchingEvent(events, parameters);
 	}
 

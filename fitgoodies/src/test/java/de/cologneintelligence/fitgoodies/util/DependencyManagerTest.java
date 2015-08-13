@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -21,73 +23,72 @@ package de.cologneintelligence.fitgoodies.util;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class DependencyManagerTest {
-    public static class DependencyManagerTestDummy {}
-    public static class DependencyManagerTestDummySubclass extends DependencyManagerTestDummy {}
+	public static class DependencyManagerTestDummy {
+	}
 
-    @Before
-    public void setUp() throws Exception {
-        DependencyManager.clear();
-    }
+	public static class DependencyManagerTestDummySubclass extends DependencyManagerTestDummy {
+	}
 
-    @Test
-    public void testUnknownClassIsLoaded() {
-        final DependencyManagerTestDummy obj =
-                DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
+	@Before
+	public void setUp() throws Exception {
+		DependencyManager.clear();
+	}
 
-        assertThat(obj, is(not(nullValue())));
-    }
+	@Test
+	public void testUnknownClassIsLoaded() {
+		final DependencyManagerTestDummy obj =
+				DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
 
-    @Test
-    public void testUnknownSubClassIsLoaded() {
-        final DependencyManagerTestDummy obj =
-                DependencyManager.getOrCreate(DependencyManagerTestDummy.class,
-                        DependencyManagerTestDummySubclass.class);
-        final DependencyManagerTestDummy obj2 =
-                DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
+		assertThat(obj, is(not(nullValue())));
+	}
 
-        assertThat(obj, is(not(nullValue())));
-        assertThat(obj2, is(not(nullValue())));
-        assertThat(obj2, is(sameInstance(obj)));
-        assertThat(obj, is(instanceOf(DependencyManagerTestDummySubclass.class)));
-    }
+	@Test
+	public void testUnknownSubClassIsLoaded() {
+		final DependencyManagerTestDummy obj =
+				DependencyManager.getOrCreate(DependencyManagerTestDummy.class,
+						DependencyManagerTestDummySubclass.class);
+		final DependencyManagerTestDummy obj2 =
+				DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
 
-    @Test
-    public void testObjectsAreCached() {
-        final DependencyManagerTestDummy obj =
-                DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
-        final DependencyManagerTestDummy obj2 =
-                DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
+		assertThat(obj, is(not(nullValue())));
+		assertThat(obj2, is(not(nullValue())));
+		assertThat(obj2, is(sameInstance(obj)));
+		assertThat(obj, is(instanceOf(DependencyManagerTestDummySubclass.class)));
+	}
 
-        assertThat(obj, is(sameInstance(obj2)));
-    }
+	@Test
+	public void testObjectsAreCached() {
+		final DependencyManagerTestDummy obj =
+				DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
+		final DependencyManagerTestDummy obj2 =
+				DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
 
-    @Test
-    public void testClearResetsCache() {
-        final DependencyManagerTestDummy obj =
-                DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
-        DependencyManager.clear();
-        final DependencyManagerTestDummy obj2 =
-                DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
+		assertThat(obj, is(sameInstance(obj2)));
+	}
 
-        assertThat(obj, is(not(sameInstance(obj2))));
-    }
+	@Test
+	public void testClearResetsCache() {
+		final DependencyManagerTestDummy obj =
+				DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
+		DependencyManager.clear();
+		final DependencyManagerTestDummy obj2 =
+				DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
 
-    @Test
-    public void testInjectOverridesCache() {
-        final DependencyManagerTestDummy injected = new DependencyManagerTestDummy();
+		assertThat(obj, is(not(sameInstance(obj2))));
+	}
 
-        DependencyManager.inject(DependencyManagerTestDummy.class, injected);
-        final DependencyManagerTestDummy obj2 =
-                DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
+	@Test
+	public void testInjectOverridesCache() {
+		final DependencyManagerTestDummy injected = new DependencyManagerTestDummy();
 
-        assertThat(obj2, is(sameInstance(injected)));
-    }
+		DependencyManager.inject(DependencyManagerTestDummy.class, injected);
+		final DependencyManagerTestDummy obj2 =
+				DependencyManager.getOrCreate(DependencyManagerTestDummy.class);
+
+		assertThat(obj2, is(sameInstance(injected)));
+	}
 }

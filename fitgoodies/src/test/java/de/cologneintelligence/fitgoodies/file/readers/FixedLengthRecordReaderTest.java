@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -40,8 +42,8 @@ public class FixedLengthRecordReaderTest extends FitGoodiesTestCase {
 		FileRecordReader reader = new FixedLengthRecordReader(
 				//        1       8    12      18
 				mkReader("this    is   record  1"
-					   + "and     this record  2"
-					   + "and     a    record  3"),
+						+ "and     this record  2"
+						+ "and     a    record  3"),
 				new int[]{8, 5, 8, 1}, false);
 
 		assertTrue(reader.canRead());

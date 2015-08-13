@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,15 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.typehandler;
 
 /**
  * Implementation of {@code AbstractTypeAdapter} which is able to
  * handle StringBuffers.
- *
  */
 public class StringBufferTypeHandler extends TypeHandler<StringBuffer> {
 	/**
@@ -36,6 +36,7 @@ public class StringBufferTypeHandler extends TypeHandler<StringBuffer> {
 
 	/**
 	 * Returns the data type handled by the class.
+	 *
 	 * @return StringBuffer.class
 	 */
 	@Override
@@ -59,7 +60,7 @@ public class StringBufferTypeHandler extends TypeHandler<StringBuffer> {
 	/**
 	 * Checks whether two StringBuffer {@code a} and {@code b} are
 	 * equal.
-	 *
+	 * <p/>
 	 * This method removes whitespaces around both strings first.
 	 *
 	 * @param a first StringBuffer
@@ -78,6 +79,7 @@ public class StringBufferTypeHandler extends TypeHandler<StringBuffer> {
 
 	/**
 	 * Converts a {@code String} into a {@code StringBuffer}.
+	 *
 	 * @param s the {@code String} to convert
 	 * @return a {@code StringBuffer} which contains {@code s}
 	 */

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,8 +21,8 @@
 package de.cologneintelligence.fitgoodies.selenium.command;
 
 import com.thoughtworks.selenium.CommandProcessor;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.hamcrest.Matcher;
 import org.junit.Before;
@@ -33,38 +35,38 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class CommandFactoryTest extends FitGoodiesTestCase {
-    private final String[] args = new String[]{};
+	private final String[] args = new String[]{};
 
-    @Before
-    public void setUp() throws Exception {
-        SeleniumFactory factory = mock(SeleniumFactory.class);
-        CommandProcessor seleniumCommand = mock(CommandProcessor.class);
-        DependencyManager.inject(SeleniumFactory.class, factory);
+	@Before
+	public void setUp() throws Exception {
+		SeleniumFactory factory = mock(SeleniumFactory.class);
+		CommandProcessor seleniumCommand = mock(CommandProcessor.class);
+		DependencyManager.inject(SeleniumFactory.class, factory);
 
-        when(factory.createCommandProcessor("localhost", 4444, "*firefox", "http://localhost"))
-                .thenReturn(seleniumCommand);
-    }
+		when(factory.createCommandProcessor("localhost", 4444, "*firefox", "http://localhost"))
+				.thenReturn(seleniumCommand);
+	}
 
-    @Test
-    public void testCommandAndRetry() {
-        assertThat(CommandFactory.createCommand("commandAndRetry", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(RetryCommand.class)));
-        assertThat(CommandFactory.createCommand("blaAndRetry", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(RetryCommand.class)));
-    }
+	@Test
+	public void testCommandAndRetry() {
+		assertThat(CommandFactory.createCommand("commandAndRetry", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(RetryCommand.class)));
+		assertThat(CommandFactory.createCommand("blaAndRetry", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(RetryCommand.class)));
+	}
 
-    @Test
-    public void testCommandOpen() {
-        assertThat(CommandFactory.createCommand("open", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(OpenCommand.class)));
-    }
+	@Test
+	public void testCommandOpen() {
+		assertThat(CommandFactory.createCommand("open", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(OpenCommand.class)));
+	}
 
-    @Test
-    public void testCommandCaptureEntirePageScreenshot() {
-        assertThat(CommandFactory.createCommand("captureEntirePageScreenshot", args,
-                new SetupHelper()).getClass(), (Matcher) is(sameInstance(CaptureEntirePageScreenshotCommand.class)));
-    }
+	@Test
+	public void testCommandCaptureEntirePageScreenshot() {
+		assertThat(CommandFactory.createCommand("captureEntirePageScreenshot", args,
+				new SetupHelper()).getClass(), (Matcher) is(sameInstance(CaptureEntirePageScreenshotCommand.class)));
+	}
 
-    @Test
-    public void testCommand() {
-        assertThat(CommandFactory.createCommand("command", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(SeleniumCommand.class)));
-        assertThat(CommandFactory.createCommand("bla", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(SeleniumCommand.class)));
-    }
+	@Test
+	public void testCommand() {
+		assertThat(CommandFactory.createCommand("command", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(SeleniumCommand.class)));
+		assertThat(CommandFactory.createCommand("bla", args, new SetupHelper()).getClass(), (Matcher) is(sameInstance(SeleniumCommand.class)));
+	}
 }

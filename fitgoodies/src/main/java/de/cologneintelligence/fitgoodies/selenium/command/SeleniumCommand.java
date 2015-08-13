@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -22,14 +24,14 @@ import com.thoughtworks.selenium.CommandProcessor;
 
 public class SeleniumCommand extends WrappedCommand {
 
-    public SeleniumCommand(final String command, final String[] args,
-            final CommandProcessor commandProcessor) {
-        super(command, args, commandProcessor);
-    }
+	public SeleniumCommand(final String command, final String[] args,
+	                       final CommandProcessor commandProcessor) {
+		super(command, args, commandProcessor);
+	}
 
-    @Override
-    public String execute() {
-        return commandProcessor.doCommand(command, args);
-    }
+	@Override
+	public String execute() {
+		return commandProcessor.doCommand(command, args);
+	}
 
 }

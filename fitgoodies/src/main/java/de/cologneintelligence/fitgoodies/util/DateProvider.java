@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -22,13 +24,13 @@ import java.util.Date;
 
 public class DateProvider {
 
-    public String getCurrentDate() {
-        return getCurrentDate(DateUtil.DATE_PATTERN_DD_MM_YYYY);
+	public String getCurrentDate() {
+		return getCurrentDate(DateUtil.DATE_PATTERN_DD_MM_YYYY);
 
-    }
+	}
 
-    public String getCurrentDate(String format) {
-        return DateUtil.getDateAsString(new Date(), format);
-    }
+	public String getCurrentDate(String format) {
+		return DateUtil.getDateAsString(new Date(), format);
+	}
 
 }

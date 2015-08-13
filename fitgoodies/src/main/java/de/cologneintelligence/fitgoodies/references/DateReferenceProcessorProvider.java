@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -26,38 +28,39 @@ import java.util.regex.Pattern;
 
 /**
  * This fixture provides the current date.
+ *
  * @author nerdmann
  */
 public class DateReferenceProcessorProvider implements CellProcessorProvider {
-    private static Pattern PATTERN = Pattern.compile(
-            "\\$\\{(?:dateProvider\\.)?getCurrentDate\\(([^\\)]*)\\)\\}", Pattern.CASE_INSENSITIVE);
+	private static Pattern PATTERN = Pattern.compile(
+			"\\$\\{(?:dateProvider\\.)?getCurrentDate\\(([^\\)]*)\\)\\}", Pattern.CASE_INSENSITIVE);
 
-    private DateProvider dateProvider = DependencyManager.getOrCreate(DateProvider.class);
+	private DateProvider dateProvider = DependencyManager.getOrCreate(DateProvider.class);
 
-    @Override
-    public boolean canProcess(String strippedText) {
-        return strippedText != null &&  PATTERN.matcher(strippedText).find();
-    }
+	@Override
+	public boolean canProcess(String strippedText) {
+		return strippedText != null && PATTERN.matcher(strippedText).find();
+	}
 
-    @Override
-    public CellProcessor create(final String strippedText) {
-        return new CellProcessor() {
-            @Override
-            public String preprocess() {
-                Matcher matcher = PATTERN.matcher(strippedText);
-                matcher.find();
+	@Override
+	public CellProcessor create(final String strippedText) {
+		return new CellProcessor() {
+			@Override
+			public String preprocess() {
+				Matcher matcher = PATTERN.matcher(strippedText);
+				matcher.find();
 
-                String format = matcher.group(1);
+				String format = matcher.group(1);
 
-                String result;
-                if (format.isEmpty()) {
-                    result = dateProvider.getCurrentDate();
-                } else {
-                    result = dateProvider.getCurrentDate(format);
-                }
+				String result;
+				if (format.isEmpty()) {
+					result = dateProvider.getCurrentDate();
+				} else {
+					result = dateProvider.getCurrentDate(format);
+				}
 
-                return strippedText.replaceAll(Pattern.quote(matcher.group(0)), result);
-            }
-        };
-    }
+				return strippedText.replaceAll(Pattern.quote(matcher.group(0)), result);
+			}
+		};
+	}
 }

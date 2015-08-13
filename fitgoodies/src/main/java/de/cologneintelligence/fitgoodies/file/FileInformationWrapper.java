@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2014  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -21,5 +23,5 @@ package de.cologneintelligence.fitgoodies.file;
 import java.io.File;
 
 public interface FileInformationWrapper {
-    FileInformation wrap(File file);
+	FileInformation wrap(File file);
 }

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.file.readers;
 
@@ -26,7 +27,6 @@ import java.util.List;
 
 /**
  * Reader which is capable to process comma separated value files.
- *
  */
 public class CSVRecordReader implements FileRecordReader {
 	private static class ParserState {
@@ -58,9 +58,10 @@ public class CSVRecordReader implements FileRecordReader {
 
 	/**
 	 * Creates a new reader object.
+	 *
 	 * @param bufferedReader underlying stream to process
 	 * @param fieldDelimiter field delimiter character (usually a comma)
-	 * @param fieldMask masking character (usually a quotation mark)
+	 * @param fieldMask      masking character (usually a quotation mark)
 	 * @throws IOException thrown if <code>bufferedReader</code> reports a problem
 	 */
 	public CSVRecordReader(
@@ -77,7 +78,8 @@ public class CSVRecordReader implements FileRecordReader {
 
 	/**
 	 * Closes the underlying stream.
-         * @throws java.io.IOException
+	 *
+	 * @throws java.io.IOException
 	 */
 	@Override
 	public void close() throws IOException {
@@ -86,8 +88,9 @@ public class CSVRecordReader implements FileRecordReader {
 
 	/**
 	 * Returns the next field in the record set.
+	 *
 	 * @return next field's value, or <code>null</code>, if the last column has
-	 * 		been reached.
+	 * been reached.
 	 */
 	@Override
 	public final String nextField() {
@@ -102,8 +105,9 @@ public class CSVRecordReader implements FileRecordReader {
 
 	/**
 	 * Reads the next row.
+	 *
 	 * @return <code>true</code> if a record set could been read,
-	 * 		<code>false</code> on end of file.
+	 * <code>false</code> on end of file.
 	 * @throws IOException when the underlying Stream reports an error
 	 */
 	@Override
@@ -161,7 +165,7 @@ public class CSVRecordReader implements FileRecordReader {
 	}
 
 	private String processChar(final ParserState state,
-			final StringBuilder builder, final char character) {
+	                           final StringBuilder builder, final char character) {
 		String result = null;
 		if (character == delimiterChar && !state.masked()
 				&& !state.skipped()) {
@@ -189,8 +193,9 @@ public class CSVRecordReader implements FileRecordReader {
 	/**
 	 * Reports whether {@link #nextField()} can be called or whether no more
 	 * record set is available.
+	 *
 	 * @return <code>true</code> if {@link #nextField()} will return values,
-	 * 		<code>false</code> otherwise
+	 * <code>false</code> otherwise
 	 */
 	@Override
 	public final boolean canRead() {

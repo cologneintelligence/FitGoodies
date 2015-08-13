@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.typehandler;
 
@@ -25,7 +26,6 @@ package de.cologneintelligence.fitgoodies.typehandler;
  * strings is, that this implementation ignores whitespaces at the end of strings.
  * This is important if you use a database which returns something like CHAR(20)
  * and you don't want to type in all spaces into yout HTML table.
- *
  */
 public class StringTypeHandler extends TypeHandler<String> {
 	/**
@@ -39,6 +39,7 @@ public class StringTypeHandler extends TypeHandler<String> {
 
 	/**
 	 * Returns the data type handled by the class.
+	 *
 	 * @return String.class
 	 */
 	@Override
@@ -54,7 +55,7 @@ public class StringTypeHandler extends TypeHandler<String> {
 	/**
 	 * Checks whether two Strings {@code a} and {@code b} are
 	 * equal.
-	 *
+	 * <p/>
 	 * This method removes whitespaces around both strings first.
 	 *
 	 * @param a first String

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.file;
 
@@ -23,81 +24,83 @@ import java.io.*;
 
 /**
  * Represents a file and provides information about it.
- *
  */
 public class FileInformation {
 
-    private final File file;
+	private final File file;
 
-    /**
-     * Generates a new information object.
-     */
-    public FileInformation(final File file) {
-        this.file = file;
-    }
+	/**
+	 * Generates a new information object.
+	 */
+	public FileInformation(final File file) {
+		this.file = file;
+	}
 
-    /**
-     * Opens the file and returns a <code>BufferedReader</code> object using
-     * the given encoding.
-     * @param encoding the encoding to use
-     * @return the open file as <code>BufferdReader</code>
-     * @throws IOException thrown if the file could not be read
-     */
-    public BufferedReader openBufferedReader(final String encoding) throws IOException {
-        final InputStream fis = openInputStream();
-        final InputStreamReader isr = new InputStreamReader(fis, encoding);
-        return new BufferedReader(isr);
-    }
+	/**
+	 * Opens the file and returns a <code>BufferedReader</code> object using
+	 * the given encoding.
+	 *
+	 * @param encoding the encoding to use
+	 * @return the open file as <code>BufferdReader</code>
+	 * @throws IOException thrown if the file could not be read
+	 */
+	public BufferedReader openBufferedReader(final String encoding) throws IOException {
+		final InputStream fis = openInputStream();
+		final InputStreamReader isr = new InputStreamReader(fis, encoding);
+		return new BufferedReader(isr);
+	}
 
-    /**
-     * Alias to {@link #getFile()}.toString().
-     * @return the file's path and name
-     */
-    @Override
-    public String toString() {
-        return file.toString();
-    }
+	/**
+	 * Alias to {@link #getFile()}.toString().
+	 *
+	 * @return the file's path and name
+	 */
+	@Override
+	public String toString() {
+		return file.toString();
+	}
 
-    /**
-     * The file's name.
-     * @return the filename
-     */
-    public String filename() {
-        return file.getName();
-    }
+	/**
+	 * The file's name.
+	 *
+	 * @return the filename
+	 */
+	public String filename() {
+		return file.getName();
+	}
 
-    public File getFile() {
-        return file;
-    }
+	public File getFile() {
+		return file;
+	}
 
 
+	/**
+	 * Opens the file and returns a <code>InputStream</code> object.
+	 *
+	 * @return the open file as <code>InputStream</code>
+	 * @throws IOException thrown if the file could not be read
+	 */
+	public InputStream openInputStream() throws IOException {
+		return new FileInputStream(file);
+	}
 
-    /**
-     * Opens the file and returns a <code>InputStream</code> object.
-     * @return the open file as <code>InputStream</code>
-     * @throws IOException thrown if the file could not be read
-     */
-    public InputStream openInputStream() throws IOException {
-        return new FileInputStream(file);
-    }
+	public String[] getParts() {
+		return file.getAbsolutePath().split("[/\\\\]", -1);
+	}
 
-    public String[] getParts() {
-        return file.getAbsolutePath().split("[/\\\\]", -1);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+		FileInformation that = (FileInformation) o;
 
-        FileInformation that = (FileInformation) o;
+		return file.equals(that.file);
+	}
 
-        return file.equals(that.file);
-    }
-
-    @Override
-    public int hashCode() {
-        return file.hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return file.hashCode();
+	}
 
 }

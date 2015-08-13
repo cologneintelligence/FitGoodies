@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,10 +21,10 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
+import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReaderMock;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.Parse;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
@@ -37,7 +39,8 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 			super.setRecordReader(r);
 		}
 
-		@Override public void setUp() {
+		@Override
+		public void setUp() {
 		}
 	}
 
@@ -46,7 +49,7 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 		Parse table = parseTable(tr("x", "y"), tr("1", "2"));
 
 		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
-				new FileRecordReaderMock(new String[][] {
+				new FileRecordReaderMock(new String[][]{
 						new String[]{"x", "y"},
 						new String[]{"1", "2"}
 				}));
@@ -66,7 +69,7 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 				tr("1", "u", "4"));
 
 		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
-				new FileRecordReaderMock(new String[][] {
+				new FileRecordReaderMock(new String[][]{
 						new String[]{"x", "z", "test"},
 						new String[]{"2", "5", "4"}
 				}));
@@ -82,7 +85,7 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 		Parse table = parseTable(tr("x", "z", "hello"));
 
 		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
-				new FileRecordReaderMock(new String[][] {
+				new FileRecordReaderMock(new String[][]{
 						new String[]{"x", "z", "hello"},
 						new String[]{"2", "5", "4"},
 						new String[]{"2", "5", "4"}
@@ -105,7 +108,7 @@ public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
 				tr("4", "5", "6"));
 
 		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
-				new FileRecordReaderMock(new String[][] {
+				new FileRecordReaderMock(new String[][]{
 						new String[]{"x", "z", "hello"},
 				}));
 

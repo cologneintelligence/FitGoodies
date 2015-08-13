@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.file.readers;
 
@@ -35,7 +36,7 @@ public final class CSVRecordReaderTest extends FitGoodiesTestCase {
 		return new BufferedReader(sr);
 	}
 
-    @Test
+	@Test
 	public void testReading() throws IOException {
 		final FileRecordReader reader = new CSVRecordReader(
 				mkReader("this|is|a|test\n"
@@ -68,48 +69,48 @@ public final class CSVRecordReaderTest extends FitGoodiesTestCase {
 		reader.close();
 	}
 
-    @Test
-    public void testReadingNoTrim() throws IOException {
-        final CSVRecordReader reader = new CSVRecordReader(
-                mkReader("this; is ;' a ';test\n"), ';', '\'');
+	@Test
+	public void testReadingNoTrim() throws IOException {
+		final CSVRecordReader reader = new CSVRecordReader(
+				mkReader("this; is ;' a ';test\n"), ';', '\'');
 
-        assertTrue(reader.canRead());
-        assertEquals("this", reader.nextField());
-        assertEquals(" is ", reader.nextField());
-        assertEquals(" a ", reader.nextField());
-        assertEquals("test", reader.nextField());
-        assertNull(reader.nextField());
-        assertFalse(reader.nextRecord());
-        assertFalse(reader.canRead());
-        reader.close();
-    }
+		assertTrue(reader.canRead());
+		assertEquals("this", reader.nextField());
+		assertEquals(" is ", reader.nextField());
+		assertEquals(" a ", reader.nextField());
+		assertEquals("test", reader.nextField());
+		assertNull(reader.nextField());
+		assertFalse(reader.nextRecord());
+		assertFalse(reader.canRead());
+		reader.close();
+	}
 
-    @Test
-    public void testReadingNewlines() throws IOException {
-        final CSVRecordReader reader = new CSVRecordReader(
-                mkReader("this;is;\"more\ntricky\"\nthan;it;looks"), ';', '"');
+	@Test
+	public void testReadingNewlines() throws IOException {
+		final CSVRecordReader reader = new CSVRecordReader(
+				mkReader("this;is;\"more\ntricky\"\nthan;it;looks"), ';', '"');
 
-        assertTrue(reader.canRead());
-        assertEquals("this", reader.nextField());
-        assertEquals("is", reader.nextField());
-        assertEquals("more\ntricky", reader.nextField());
-        assertNull(reader.nextField());
-        assertTrue(reader.nextRecord());
-        assertEquals("than", reader.nextField());
-        reader.close();
-    }
+		assertTrue(reader.canRead());
+		assertEquals("this", reader.nextField());
+		assertEquals("is", reader.nextField());
+		assertEquals("more\ntricky", reader.nextField());
+		assertNull(reader.nextField());
+		assertTrue(reader.nextRecord());
+		assertEquals("than", reader.nextField());
+		reader.close();
+	}
 
-    @Test(expected = RuntimeException.class)
-    public void testReadingWithErrors1() throws IOException {
-        new CSVRecordReader(mkReader("this;is;\"more\ntricky\nthan;it;looks"), ';', '"');
-    }
+	@Test(expected = RuntimeException.class)
+	public void testReadingWithErrors1() throws IOException {
+		new CSVRecordReader(mkReader("this;is;\"more\ntricky\nthan;it;looks"), ';', '"');
+	}
 
-    @Test(expected = RuntimeException.class)
-    public void testReadingWithErrors2() throws IOException {
-        final CSVRecordReader reader = new CSVRecordReader(mkReader(
-                "x\nthis;is;\"more\ntricky\nthan;it;looks"), ';', '"');
+	@Test(expected = RuntimeException.class)
+	public void testReadingWithErrors2() throws IOException {
+		final CSVRecordReader reader = new CSVRecordReader(mkReader(
+				"x\nthis;is;\"more\ntricky\nthan;it;looks"), ';', '"');
 
-        reader.nextField();
-        reader.nextRecord();
-    }
+		reader.nextField();
+		reader.nextRecord();
+	}
 }

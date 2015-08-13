@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -33,40 +35,40 @@ import static org.junit.Assert.assertThat;
 
 public class SqlDateTypeHandlerTest extends FitGoodiesTestCase {
 
-    private SqlDateTypeHandler handler;
+	private SqlDateTypeHandler handler;
 
-    @Before
-    public void setup() {
-        handler = new SqlDateTypeHandler(null);
-    }
+	@Before
+	public void setup() {
+		handler = new SqlDateTypeHandler(null);
+	}
 
-    @Test
-    public void testGetType() {
-        final SqlDateTypeHandler p = new SqlDateTypeHandler(null);
-        assertThat(p.getType(), is(equalTo(Date.class)));
-    }
+	@Test
+	public void testGetType() {
+		final SqlDateTypeHandler p = new SqlDateTypeHandler(null);
+		assertThat(p.getType(), is(equalTo(Date.class)));
+	}
 
-    @Test
-    public void testParse() throws Exception {
-        final Date d = Date.valueOf("1987-12-01");
-        final SqlDateTypeHandler p = new SqlDateTypeHandler(null);
-        assertThat(p.unsafeParse("1987-12-01"), is(equalTo(d)));
-    }
+	@Test
+	public void testParse() throws Exception {
+		final Date d = Date.valueOf("1987-12-01");
+		final SqlDateTypeHandler p = new SqlDateTypeHandler(null);
+		assertThat(p.unsafeParse("1987-12-01"), is(equalTo(d)));
+	}
 
-    @Test
-    public void testDateFormat() throws Exception {
-        final FitDateHelper helper = DependencyManager.getOrCreate(FitDateHelper.class);
-        helper.setLocale("de_DE");
-        helper.setFormat("dd.MM.yyyy");
+	@Test
+	public void testDateFormat() throws Exception {
+		final FitDateHelper helper = DependencyManager.getOrCreate(FitDateHelper.class);
+		helper.setLocale("de_DE");
+		helper.setFormat("dd.MM.yyyy");
 
-        final SqlDateTypeHandler p = new SqlDateTypeHandler(null);
+		final SqlDateTypeHandler p = new SqlDateTypeHandler(null);
 
-        Date d = Date.valueOf("1987-12-01");
-        assertThat(p.unsafeParse("1987-12-01"), is(equalTo(d)));
+		Date d = Date.valueOf("1987-12-01");
+		assertThat(p.unsafeParse("1987-12-01"), is(equalTo(d)));
 
-        d = Date.valueOf("1989-03-08");
-        assertThat(p.unsafeParse("08.03.1989"), is(equalTo(d)));
-    }
+		d = Date.valueOf("1989-03-08");
+		assertThat(p.unsafeParse("08.03.1989"), is(equalTo(d)));
+	}
 
-    // TODO: test equals, parse with parameter, toString
+	// TODO: test equals, parse with parameter, toString
 }

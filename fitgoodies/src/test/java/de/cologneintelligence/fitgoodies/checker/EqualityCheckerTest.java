@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2015  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -20,9 +22,9 @@ package de.cologneintelligence.fitgoodies.checker;
 
 import de.cologneintelligence.fitgoodies.Counts;
 import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
+import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 import org.junit.Test;
 import org.mockito.Mock;
 

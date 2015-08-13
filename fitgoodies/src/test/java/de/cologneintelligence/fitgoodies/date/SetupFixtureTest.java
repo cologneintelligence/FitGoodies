@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,9 +21,9 @@
 
 package de.cologneintelligence.fitgoodies.date;
 
+import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.Parse;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,34 +35,34 @@ import static org.junit.Assert.assertThat;
 
 
 public class SetupFixtureTest extends FitGoodiesTestCase {
-    private SetupFixture fixture;
+	private SetupFixture fixture;
 
-    @Before
-    public void setUp() throws Exception {
-        fixture = new SetupFixture();
-    }
+	@Before
+	public void setUp() throws Exception {
+		fixture = new SetupFixture();
+	}
 
-    @Test
-    public void testSetup() {
-        FitDateHelper helper = DependencyManager.getOrCreate(FitDateHelper.class);
+	@Test
+	public void testSetup() {
+		FitDateHelper helper = DependencyManager.getOrCreate(FitDateHelper.class);
 
-        Parse table = parseTable(
-                tr("locale", "de_DE"),
-                tr("format", "hh:mm:ss"));
+		Parse table = parseTable(
+				tr("locale", "de_DE"),
+				tr("format", "hh:mm:ss"));
 
-        fixture.doTable(table);
+		fixture.doTable(table);
 
-        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-        assertThat(helper.getFormat(), is(equalTo("hh:mm:ss")));
-        assertThat(helper.getLocale(), is(equalTo(Locale.GERMANY)));
+		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+		assertThat(helper.getFormat(), is(equalTo("hh:mm:ss")));
+		assertThat(helper.getLocale(), is(equalTo(Locale.GERMANY)));
 
-        table = parseTable(tr("locale", "en_US"),
-                tr("format", "MM/dd/yyyy"));
+		table = parseTable(tr("locale", "en_US"),
+				tr("format", "MM/dd/yyyy"));
 
-        fixture.doTable(table);
+		fixture.doTable(table);
 
-        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-        assertThat(helper.getFormat(), is(equalTo("MM/dd/yyyy")));
-        assertThat(helper.getLocale(), is(equalTo(Locale.US)));
-    }
+		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+		assertThat(helper.getFormat(), is(equalTo("MM/dd/yyyy")));
+		assertThat(helper.getLocale(), is(equalTo(Locale.US)));
+	}
 }

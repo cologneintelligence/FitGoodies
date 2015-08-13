@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -20,8 +22,6 @@
 package de.cologneintelligence.fitgoodies.references;
 
 import de.cologneintelligence.fitgoodies.file.FileFixtureHelper;
-import de.cologneintelligence.fitgoodies.references.CellProcessor;
-import de.cologneintelligence.fitgoodies.references.CellProcessorProvider;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import java.io.FileNotFoundException;
@@ -33,48 +33,47 @@ import java.util.regex.Pattern;
  * This fixture can be used to retrieve a filename, which was selected earlier
  * using either the {@link de.cologneintelligence.fitgoodies.file.FileFixtureHelper} or a
  * {@link de.cologneintelligence.fitgoodies.file.FileFixture}.
- * <p>
+ * <p/>
  * This class provide ${selectedFile()} and ${selectedEncoding()}.
- *
  */
 public class FileFixtureReferenceProcessorProvider implements CellProcessorProvider {
-    private static final Pattern PATTERN = Pattern.compile(
-            "\\$\\{(selectedFile|selectedEncoding)(?:\\(\\))?\\}",
-            Pattern.CASE_INSENSITIVE);
-    private final FileFixtureHelper fileFixtureHelper;
+	private static final Pattern PATTERN = Pattern.compile(
+			"\\$\\{(selectedFile|selectedEncoding)(?:\\(\\))?\\}",
+			Pattern.CASE_INSENSITIVE);
+	private final FileFixtureHelper fileFixtureHelper;
 
-    public FileFixtureReferenceProcessorProvider() {
-        fileFixtureHelper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-    }
+	public FileFixtureReferenceProcessorProvider() {
+		fileFixtureHelper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+	}
 
-    @Override
-    public boolean canProcess(String strippedText) {
-        return strippedText != null && PATTERN.matcher(strippedText).find();
-    }
+	@Override
+	public boolean canProcess(String strippedText) {
+		return strippedText != null && PATTERN.matcher(strippedText).find();
+	}
 
-    @Override
-    public CellProcessor create(final String strippedText) {
-        return new CellProcessor() {
-            @Override
-            public String preprocess() {
-                final Matcher matcher = PATTERN.matcher(strippedText);
-                matcher.find();
+	@Override
+	public CellProcessor create(final String strippedText) {
+		return new CellProcessor() {
+			@Override
+			public String preprocess() {
+				final Matcher matcher = PATTERN.matcher(strippedText);
+				matcher.find();
 
-                final String select = matcher.group(1);
+				final String select = matcher.group(1);
 
-                String result;
-                if (select.equalsIgnoreCase("selectedEncoding")) {
-                    result = fileFixtureHelper.getEncoding();
-                } else {
-                    try {
-                        result = fileFixtureHelper.getSelector().getFirstFile().getName();
-                    } catch (FileNotFoundException e) {
-                        result = "error: no file selected";
-                    }
-                }
+				String result;
+				if (select.equalsIgnoreCase("selectedEncoding")) {
+					result = fileFixtureHelper.getEncoding();
+				} else {
+					try {
+						result = fileFixtureHelper.getSelector().getFirstFile().getName();
+					} catch (FileNotFoundException e) {
+						result = "error: no file selected";
+					}
+				}
 
-                return strippedText.replaceAll(Pattern.quote(matcher.group(0)), result);
-            }
-        };
-    }
+				return strippedText.replaceAll(Pattern.quote(matcher.group(0)), result);
+			}
+		};
+	}
 }

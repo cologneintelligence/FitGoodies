@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.file;
 
@@ -30,20 +31,21 @@ import javax.xml.xpath.XPathFactory;
 
 /**
  * This Fixture can be used to test the content of a XML file using XPath-Expressions.
- * <p>
- *
+ * <p/>
+ * <p/>
  * Example:
- * <p>
- *
+ * <p/>
+ * <p/>
  * <table border="1" summary="">
- * 		<tr><td>fitgoodies.file.XMLFileFixture</td><td>file=/myfile.xml</td></tr>
- * 		<tr><td>/books/book[0]/author</td><td>Terry Pratchett</td></tr>
- * 		<tr><td>/books/book[1]/id</td><td>326172</td></tr>
+ * <tr><td>fitgoodies.file.XMLFileFixture</td><td>file=/myfile.xml</td></tr>
+ * <tr><td>/books/book[0]/author</td><td>Terry Pratchett</td></tr>
+ * <tr><td>/books/book[1]/id</td><td>326172</td></tr>
  * </table>
- *
  */
 public class XMLFileFixture extends AbstractFileReaderFixture {
-	/** for internal use only - used to solve cross references. */
+	/**
+	 * for internal use only - used to solve cross references.
+	 */
 	public String selectedValue;
 
 	private Document doc;

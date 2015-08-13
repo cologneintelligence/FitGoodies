@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2015  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -45,7 +47,7 @@ public class BooleanTypeHandler extends TypeHandler<Boolean> {
 
 		if (input.equals("yes") || input.equals("true") || input.equals("1") || input.equals("on")) {
 			return true;
-		} else if(input.equals("no") || input.endsWith("false") || input.equals("0") || input.endsWith("off")) {
+		} else if (input.equals("no") || input.endsWith("false") || input.equals("0") || input.endsWith("off")) {
 			return false;
 		} else {
 			throw new IllegalArgumentException("Cannot parse '" + input + "' as boolean");

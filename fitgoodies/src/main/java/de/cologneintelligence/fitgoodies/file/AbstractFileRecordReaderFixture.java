@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -28,7 +30,6 @@ import java.io.IOException;
 /**
  * This class takes a {@link de.cologneintelligence.fitgoodies.file.readers.FileRecordReader} and compares
  * the value of this reader with the content of the HTML table.
- *
  */
 public abstract class AbstractFileRecordReaderFixture extends AbstractFileReaderFixture {
 
@@ -36,6 +37,7 @@ public abstract class AbstractFileRecordReaderFixture extends AbstractFileReader
 
 	/**
 	 * Sets the underlying {@code FileRecordReader}.
+	 *
 	 * @param recordReader the reader to use
 	 */
 	public void setRecordReader(final FileRecordReader recordReader) {

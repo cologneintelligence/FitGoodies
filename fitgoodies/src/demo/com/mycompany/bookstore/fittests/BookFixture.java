@@ -21,7 +21,6 @@ package com.mycompany.bookstore.fittests;
 
 import com.mycompany.bookstore.Book;
 import com.mycompany.bookstore.ISBN;
-
 import fitgoodies.ColumnFixture;
 
 public final class BookFixture extends ColumnFixture {
@@ -53,8 +52,19 @@ public final class BookFixture extends ColumnFixture {
 		}
 	}
 
-	public String author() { return author; }
-	public StringBuffer title() { return title; }
-	public float price() { return price; }
-	public ISBN isbn() { return isbn; }
+	public String author() {
+		return author;
+	}
+
+	public StringBuffer title() {
+		return title;
+	}
+
+	public float price() {
+		return price;
+	}
+
+	public ISBN isbn() {
+		return isbn;
+	}
 }

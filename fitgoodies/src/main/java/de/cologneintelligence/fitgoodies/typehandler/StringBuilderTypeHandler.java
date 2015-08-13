@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -22,7 +24,6 @@ package de.cologneintelligence.fitgoodies.typehandler;
 /**
  * Implementation of {@code AbstractTypeAdapter} which is able to
  * handle StringBuilder.
- *
  */
 public class StringBuilderTypeHandler extends TypeHandler<StringBuilder> {
 	/**
@@ -36,6 +37,7 @@ public class StringBuilderTypeHandler extends TypeHandler<StringBuilder> {
 
 	/**
 	 * Returns the data type handled by the class.
+	 *
 	 * @return StringBuilder.class
 	 */
 	@Override
@@ -46,7 +48,7 @@ public class StringBuilderTypeHandler extends TypeHandler<StringBuilder> {
 	/**
 	 * Checks whether two StringBuilder {@code a} and {@code b} are
 	 * equal.
-	 *
+	 * <p/>
 	 * This method removes whitespaces around both strings first.
 	 *
 	 * @param a first StringBuilder
@@ -78,6 +80,7 @@ public class StringBuilderTypeHandler extends TypeHandler<StringBuilder> {
 
 	/**
 	 * Converts a {@code String} into a {@code StringBuilder}.
+	 *
 	 * @param s the {@code String} to convert
 	 * @return a {@code StringBuilder} which contains {@code s}
 	 */

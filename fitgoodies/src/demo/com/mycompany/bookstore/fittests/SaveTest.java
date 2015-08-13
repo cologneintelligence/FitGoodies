@@ -23,15 +23,14 @@ import com.mycompany.bookstore.DerbyShelfWriter;
 import com.mycompany.bookstore.FileShelfWriter;
 import com.mycompany.bookstore.ShelfWriter;
 import com.mycompany.bookstore.XMLShelfWriter;
-
 import fitgoodies.Fixture;
 
 public final class SaveTest extends Fixture {
 	private boolean written;
 
-    public void savedb() {
-    	written = false;
-    	Thread t = new Thread(new Runnable() {
+	public void savedb() {
+		written = false;
+		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				ShelfWriter writer;
@@ -48,11 +47,11 @@ public final class SaveTest extends Fixture {
 
 				written = true;
 			}
-    	});
-    	t.start();
-    }
+		});
+		t.start();
+	}
 
-    public boolean isSaved() {
-    	return written;
-    }
+	public boolean isSaved() {
+		return written;
+	}
 }

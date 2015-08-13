@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -20,34 +22,32 @@
 package de.cologneintelligence.fitgoodies.alias;
 
 import de.cologneintelligence.fitgoodies.Fixture;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.FixtureRunner;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
  * This class is for internal use only. <strong>Do not use it.</strong>
- *
+ * <p/>
  * This class is used by {@link de.cologneintelligence.fitgoodies.runners.FitRunner} to
  * resolve aliases.
- *
  */
 public final class AliasEnabledFixtureRunner extends FixtureRunner {
 
 
-    /**
-     * Loads a fixutre by its fully quallified {@code className}.
-     * If the {@code className} is an alias, the referenced class is used.
-     *
-     * @param fixtureName name of the fixture to load.
-     * @return instance of the class which is referenced by {@code fixtureName}
-     *
-     * @throws RuntimeException propagated to fit,
-     * 		thrown if something different went wrong
-     */
-    @Override
-    public Fixture loadFixture(final String fixtureName) {
-        AliasHelper helper = DependencyManager.getOrCreate(AliasHelper.class);
-        String realName = helper.getClazz(fixtureName);
+	/**
+	 * Loads a fixutre by its fully quallified {@code className}.
+	 * If the {@code className} is an alias, the referenced class is used.
+	 *
+	 * @param fixtureName name of the fixture to load.
+	 * @return instance of the class which is referenced by {@code fixtureName}
+	 * @throws RuntimeException propagated to fit,
+	 *                          thrown if something different went wrong
+	 */
+	@Override
+	public Fixture loadFixture(final String fixtureName) {
+		AliasHelper helper = DependencyManager.getOrCreate(AliasHelper.class);
+		String realName = helper.getClazz(fixtureName);
 
-        return super.loadFixture(realName);
-    }
+		return super.loadFixture(realName);
+	}
 }

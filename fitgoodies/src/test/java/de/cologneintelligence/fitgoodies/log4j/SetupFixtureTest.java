@@ -1,25 +1,27 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
- * Foobar is free software: you can redistribute it and/or modify
+ * FitGoodies is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Foobar is distributed in the hope that it will be useful,
+ * FitGoodies is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.apache.log4j.Appender;
 import org.apache.log4j.spi.AppenderAttachable;
 import org.junit.Test;
@@ -29,9 +31,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 public final class SetupFixtureTest extends FitGoodiesTestCase {
@@ -39,11 +39,11 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 	public void testParse() throws Exception {
 		final LoggerProvider provider = mock(LoggerProvider.class);
 		final AppenderAttachable attachable1 =
-			mock(AppenderAttachable.class, "attachable1");
+				mock(AppenderAttachable.class, "attachable1");
 		final AppenderAttachable attachable2 =
-			mock(AppenderAttachable.class, "attachable2");
+				mock(AppenderAttachable.class, "attachable2");
 		final AppenderAttachable attachable3 =
-			mock(AppenderAttachable.class, "attachable3");
+				mock(AppenderAttachable.class, "attachable3");
 		final Appender appender1 = mock(Appender.class, "appender1");
 		final Appender appender2 = mock(Appender.class, "appender2");
 		final Appender appender3 = mock(Appender.class, "appender3");
@@ -79,9 +79,9 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 	public void testParse2() throws Exception {
 		final LoggerProvider provider = mock(LoggerProvider.class);
 		final AppenderAttachable attachable1 =
-			mock(AppenderAttachable.class, "attachable1");
+				mock(AppenderAttachable.class, "attachable1");
 		final AppenderAttachable attachable2 =
-			mock(AppenderAttachable.class, "attachable2");
+				mock(AppenderAttachable.class, "attachable2");
 		final Appender appender1 = mock(Appender.class, "appender1");
 		final Appender appender2 = mock(Appender.class, "appender2");
 

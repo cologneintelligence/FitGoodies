@@ -26,7 +26,7 @@ public final class Book {
 	private float price;
 
 	public Book(final StringBuffer bookTitle, final String bookAuthor,
-			final ISBN bookIsbn, final float bookPrice) {
+	            final ISBN bookIsbn, final float bookPrice) {
 		this.title = bookTitle;
 		this.author = bookAuthor;
 		this.isbn = bookIsbn;

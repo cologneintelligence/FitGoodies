@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -35,81 +37,81 @@ import static org.junit.Assert.assertThat;
 
 
 public class FitDateHelperTest extends FitGoodiesTestCase {
-    private FitDateHelper helper;
+	private FitDateHelper helper;
 
-    @Before
-    public void setUp() throws Exception {
-        helper = new FitDateHelper();
-    }
+	@Before
+	public void setUp() throws Exception {
+		helper = new FitDateHelper();
+	}
 
-    @Test
-    public void testSetLocale() {
-        helper.setLocale("de_DE");
-        assertThat(helper.getLocale(), is(equalTo(Locale.GERMANY)));
-        helper.setLocale("de");
-        assertThat(helper.getLocale(), is(equalTo(Locale.GERMAN)));
-        helper.setLocale("en_US");
-        assertThat(helper.getLocale(), is(equalTo(Locale.US)));
+	@Test
+	public void testSetLocale() {
+		helper.setLocale("de_DE");
+		assertThat(helper.getLocale(), is(equalTo(Locale.GERMANY)));
+		helper.setLocale("de");
+		assertThat(helper.getLocale(), is(equalTo(Locale.GERMAN)));
+		helper.setLocale("en_US");
+		assertThat(helper.getLocale(), is(equalTo(Locale.US)));
 
-        try {
-            helper.setLocale("this_is_an_error");
-            Assert.fail("Missing exception: invalid locale");
-        } catch (IllegalArgumentException ignored) {
-        }
-        assertThat(helper.getLocale(), is(equalTo(Locale.US)));
+		try {
+			helper.setLocale("this_is_an_error");
+			Assert.fail("Missing exception: invalid locale");
+		} catch (IllegalArgumentException ignored) {
+		}
+		assertThat(helper.getLocale(), is(equalTo(Locale.US)));
 
-        helper.setLocale("ja_JP_JP");
-        assertThat(helper.getLocale(), is(equalTo(new Locale("ja", "JP", "JP"))));
-    }
+		helper.setLocale("ja_JP_JP");
+		assertThat(helper.getLocale(), is(equalTo(new Locale("ja", "JP", "JP"))));
+	}
 
-    @Test
-    public void testSetFormat() {
-        helper.setFormat("dd.MM.yyyy");
-        assertThat(helper.getFormat(), is(equalTo("dd.MM.yyyy")));
+	@Test
+	public void testSetFormat() {
+		helper.setFormat("dd.MM.yyyy");
+		assertThat(helper.getFormat(), is(equalTo("dd.MM.yyyy")));
 
-        helper.setFormat("hh:mm:ss");
-        assertThat(helper.getFormat(), is(equalTo("hh:mm:ss")));
-    }
+		helper.setFormat("hh:mm:ss");
+		assertThat(helper.getFormat(), is(equalTo("hh:mm:ss")));
+	}
 
-    @Test
-    public void testGetDate() throws ParseException {
-        assertThat(helper.getDate("01/18/1987"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
+	@Test
+	public void testGetDate() throws ParseException {
+		assertThat(helper.getDate("01/18/1987"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
 
-        helper.setLocale("de_DE");
-        helper.setFormat("dd.MM.yyyy");
-        assertThat(helper.getDate("08.03.1989"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY).parse("08.03.1989"))));
-    }
+		helper.setLocale("de_DE");
+		helper.setFormat("dd.MM.yyyy");
+		assertThat(helper.getDate("08.03.1989"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY).parse("08.03.1989"))));
+	}
 
-    @Test
-    public void testGetDateWithShortYear() throws ParseException {
-        helper.setLocale("de_DE");
-        helper.setFormat("dd.MM.yy");
-        assertThat(helper.getDate("18.01.87"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
-    }
+	@Test
+	public void testGetDateWithShortYear() throws ParseException {
+		helper.setLocale("de_DE");
+		helper.setFormat("dd.MM.yy");
+		assertThat(helper.getDate("18.01.87"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
+	}
 
-    @Test
-    public void testGetDateWithFormat() throws ParseException {
-        helper.setLocale("de_DE");
-        helper.setFormat("dd.MM.yy");
+	@Test
+	public void testGetDateWithFormat() throws ParseException {
+		helper.setLocale("de_DE");
+		helper.setFormat("dd.MM.yy");
 
-        assertThat(helper.getDate("18.01.1987", "dd.MM.yyyy", "de_DE"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
+		assertThat(helper.getDate("18.01.1987", "dd.MM.yyyy", "de_DE"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
 
-        assertThat(helper.getDate("01/18/1987", "MM/dd/yyyy", "en_US"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
+		assertThat(helper.getDate("01/18/1987", "MM/dd/yyyy", "en_US"), is(equalTo(DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).parse("01/18/1987"))));
 
-        assertThat(helper.getLocale().toString(), is(equalTo("de_DE")));
-        assertThat(helper.getFormat(), is(equalTo("dd.MM.yy")));
-    }
+		assertThat(helper.getLocale().toString(), is(equalTo("de_DE")));
+		assertThat(helper.getFormat(), is(equalTo("dd.MM.yy")));
+	}
 
-    @Test
-    public void testToString() {
-        helper.setLocale("de_DE");
-        helper.setFormat("HH:mm");
-        assertThat(helper.toString(new Date(1000 * 60 * 5 + 1000 * 60 * 60 * 3)),
-                is(equalTo("04:05")));
+	@Test
+	public void testToString() {
+		helper.setLocale("de_DE");
+		helper.setFormat("HH:mm");
+		assertThat(helper.toString(new Date(1000 * 60 * 5 + 1000 * 60 * 60 * 3)),
+				is(equalTo("04:05")));
 
-        helper.setLocale("en_GB");
-        helper.setFormat("ss/mm");
-        assertThat(helper.toString(new Date(1000 * 60 * 17 + 1000 * 15)),
-                is(equalTo("15/17")));
-    }
+		helper.setLocale("en_GB");
+		helper.setFormat("ss/mm");
+		assertThat(helper.toString(new Date(1000 * 60 * 17 + 1000 * 15)),
+				is(equalTo("15/17")));
+	}
 }

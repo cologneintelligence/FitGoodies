@@ -1,7 +1,24 @@
-package de.cologneintelligence.fitgoodies;
+/*
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
+ * This file is part of FitGoodies.
+ *
+ * FitGoodies is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FitGoodies is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-// Copyright (c) 2002 Cunningham & Cunningham, Inc.
-// Released under the terms of the GNU General Public License version 2 or later.
+package de.cologneintelligence.fitgoodies;
 
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
@@ -145,17 +162,17 @@ public class ActionFixture extends Fixture {
 	/**
 	 * Transforms the selected row into an &quot;enter&quot; command and
 	 * reinterprets it.
-	 * <p>
+	 * <p/>
 	 * Example:
 	 * Row content: {@code setEncoding | utf-8} <br>
 	 * Code in the fixture:
 	 * {@code
 	 * public void setEncoding() throws Exception {
-	 *     transformAndEnter();
+	 * transformAndEnter();
 	 * }
-	 *
+	 * <p/>
 	 * public void setEncoding(String encoding) {
-	 *     // do stuff with encoding here
+	 * // do stuff with encoding here
 	 * }
 	 * }
 	 *
@@ -163,7 +180,7 @@ public class ActionFixture extends Fixture {
 	 */
 	protected final void transformAndEnter() throws Exception {
 		Parse oldMore = cells.more;
-		cells.more = new Parse("<td></td>", new String[] { "td" });
+		cells.more = new Parse("<td></td>", new String[]{"td"});
 		cells.more.body = cells.body;
 		cells.more.more = oldMore;
 		cells.body = "enter";

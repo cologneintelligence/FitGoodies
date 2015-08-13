@@ -21,5 +21,6 @@ package com.mycompany.bookstore;
 
 public interface ShelfWriter {
 	void write(Bookshelf shelf);
+
 	Bookshelf load();
 }

@@ -21,7 +21,6 @@ package com.mycompany.bookstore.fittests;
 
 
 import com.mycompany.bookstore.ISBN;
-
 import fitgoodies.ColumnFixture;
 
 public final class ISBNFixture extends ColumnFixture {

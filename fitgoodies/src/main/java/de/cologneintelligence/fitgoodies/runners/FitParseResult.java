@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,21 +16,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.runners;
 
 import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 
 import java.io.*;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
-
-import static de.cologneintelligence.fitgoodies.util.FitUtils.htmlSafeFile;
 
 /**
  * Implementation of {@link FitResult} which replaces a Parse-Row with one
@@ -36,112 +35,112 @@ import static de.cologneintelligence.fitgoodies.util.FitUtils.htmlSafeFile;
  * a dummy cell. This dummy cell is preserved.
  */
 public final class FitParseResult implements FitResult {
-    private final List<FileCount> results = new LinkedList<>();
+	private final List<FileCount> results = new LinkedList<>();
 
-    @Override
-    public void print(final File directory, final OutputStream stream)
-            throws IOException {
-        try (Writer writer = new OutputStreamWriter(stream); BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
+	@Override
+	public void print(final File directory, final OutputStream stream)
+			throws IOException {
+		try (Writer writer = new OutputStreamWriter(stream); BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
 
-            bufferedWriter.write("<table><tr><th colspan=\"2\">");
-            bufferedWriter.write(directory.getName());
-            bufferedWriter.write("</th></tr>");
+			bufferedWriter.write("<table><tr><th colspan=\"2\">");
+			bufferedWriter.write(directory.getName());
+			bufferedWriter.write("</th></tr>");
 
-            for (FileCount fileCount : results) {
-                bufferedWriter.write("<tr><td><a href=\"");
-                String file = FitUtils.htmlSafeFile(fileCount.getFile());
-                bufferedWriter.write(file);
-                bufferedWriter.write("\">");
-                bufferedWriter.write(file);
-                bufferedWriter.write("</a>");
-                bufferedWriter.write("</td><td bgcolor=\"");
-                bufferedWriter.write(color(fileCount.getCounts()));
-                bufferedWriter.write("\">");
-                bufferedWriter.write(fileCount.getCounts().toString());
-                bufferedWriter.write("</td></tr>");
-            }
+			for (FileCount fileCount : results) {
+				bufferedWriter.write("<tr><td><a href=\"");
+				String file = FitUtils.htmlSafeFile(fileCount.getFile());
+				bufferedWriter.write(file);
+				bufferedWriter.write("\">");
+				bufferedWriter.write(file);
+				bufferedWriter.write("</a>");
+				bufferedWriter.write("</td><td bgcolor=\"");
+				bufferedWriter.write(color(fileCount.getCounts()));
+				bufferedWriter.write("\">");
+				bufferedWriter.write(fileCount.getCounts().toString());
+				bufferedWriter.write("</td></tr>");
+			}
 
-            bufferedWriter.write("</table>");
-        }
-    }
+			bufferedWriter.write("</table>");
+		}
+	}
 
-    @Override
-    public void put(final File file, final Counts result) {
-        FileCount fileCount = new FileCount(file, result);
-        if (results.contains(fileCount)) {
-            results.remove(fileCount);
-        }
-        results.add(fileCount);
-    }
+	@Override
+	public void put(final File file, final Counts result) {
+		FileCount fileCount = new FileCount(file, result);
+		if (results.contains(fileCount)) {
+			results.remove(fileCount);
+		}
+		results.add(fileCount);
+	}
 
-    private String color(final Counts counts) {
-        if (counts.wrong > 0 || counts.exceptions > 0) {
-            return FitUtils.HTML_RED;
-        } else {
-            return FitUtils.HTML_GREEN;
-        }
-    }
+	private String color(final Counts counts) {
+		if (counts.wrong > 0 || counts.exceptions > 0) {
+			return FitUtils.HTML_RED;
+		} else {
+			return FitUtils.HTML_GREEN;
+		}
+	}
 
-    private Parse makeTable() {
-        Parse result = makeTd();
+	private Parse makeTable() {
+		Parse result = makeTd();
 
-        for (FileCount fileCount : results) {
-            Parse row = makeTrTd();
+		for (FileCount fileCount : results) {
+			Parse row = makeTrTd();
 
-            row.parts.body = "<a href=\"" + FitUtils.htmlSafeFile(fileCount.getFile()) + "\">"
-                    + FitUtils.htmlSafeFile(fileCount.getFile()) + "</a>";
-            row.parts.more.addToBody(fileCount.getCounts().toString());
-            row.parts.more.addToTag(" bgcolor=\"" + color(fileCount.getCounts()) + "\"");
+			row.parts.body = "<a href=\"" + FitUtils.htmlSafeFile(fileCount.getFile()) + "\">"
+					+ FitUtils.htmlSafeFile(fileCount.getFile()) + "</a>";
+			row.parts.more.addToBody(fileCount.getCounts().toString());
+			row.parts.more.addToTag(" bgcolor=\"" + color(fileCount.getCounts()) + "\"");
 
-            result.last().more = row;
-        }
+			result.last().more = row;
+		}
 
-        return result.more;
-    }
+		return result.more;
+	}
 
-    private Parse makeTrTd() {
-        return parse("<tr><td></td><td></td></tr>", new String[]{"tr", "td"});
-    }
+	private Parse makeTrTd() {
+		return parse("<tr><td></td><td></td></tr>", new String[]{"tr", "td"});
+	}
 
-    private Parse makeTd() {
-        return parse("<td></td>", new String[]{"td"});
-    }
+	private Parse makeTd() {
+		return parse("<td></td>", new String[]{"td"});
+	}
 
-    private Parse parse(String s, String[] strings) {
-        Parse row;
-        try {
-            row = new Parse(s, strings);
-        } catch (ParseException e) {
-            throw new AssertionError("Unable to parse table");
-        }
-        return row;
-    }
+	private Parse parse(String s, String[] strings) {
+		Parse row;
+		try {
+			row = new Parse(s, strings);
+		} catch (ParseException e) {
+			throw new AssertionError("Unable to parse table");
+		}
+		return row;
+	}
 
-    /**
-     * Replaces a row which one or more results.
-     *
-     * @param row the row to replace
-     */
-    public void replaceLastIn(final Parse row) {
-        Parse table = makeTable();
+	/**
+	 * Replaces a row which one or more results.
+	 *
+	 * @param row the row to replace
+	 */
+	public void replaceLastIn(final Parse row) {
+		Parse table = makeTable();
 
-        if (table != null) {
-            table.last().more = row.more;
-            row.more = table.more;
-            row.parts.more = table.parts;
-        }
-    }
+		if (table != null) {
+			table.last().more = row.more;
+			row.more = table.more;
+			row.parts.more = table.parts;
+		}
+	}
 
-    /**
-     * Gets the sum of all results.
-     *
-     * @return sum of all saved results
-     */
-    public Counts getCounts() {
-        Counts counts = new Counts();
-        for (FileCount fileCount : results) {
-            counts.tally(fileCount.getCounts());
-        }
-        return counts;
-    }
+	/**
+	 * Gets the sum of all results.
+	 *
+	 * @return sum of all saved results
+	 */
+	public Counts getCounts() {
+		Counts counts = new Counts();
+		for (FileCount fileCount : results) {
+			counts.tally(fileCount.getCounts());
+		}
+		return counts;
+	}
 }

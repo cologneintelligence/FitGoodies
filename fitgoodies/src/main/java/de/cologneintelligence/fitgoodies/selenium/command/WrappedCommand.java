@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -21,18 +23,18 @@ package de.cologneintelligence.fitgoodies.selenium.command;
 import com.thoughtworks.selenium.CommandProcessor;
 
 public abstract class WrappedCommand {
-    protected final String command;
-    protected final String[] args;
-    protected final CommandProcessor commandProcessor;
+	protected final String command;
+	protected final String[] args;
+	protected final CommandProcessor commandProcessor;
 
-    public WrappedCommand(final String command, final String[] args,
-            final CommandProcessor commandProcessor) {
-        this.command = command;
-        this.args = args;
-        this.commandProcessor = commandProcessor;
-    }
+	public WrappedCommand(final String command, final String[] args,
+	                      final CommandProcessor commandProcessor) {
+		this.command = command;
+		this.args = args;
+		this.commandProcessor = commandProcessor;
+	}
 
-    public abstract String execute();
+	public abstract String execute();
 
 
 }

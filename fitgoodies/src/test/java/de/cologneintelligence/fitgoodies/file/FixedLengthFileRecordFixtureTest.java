@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.file;
 
@@ -29,56 +30,56 @@ import static org.junit.Assert.assertThat;
 
 public class FixedLengthFileRecordFixtureTest extends FitGoodiesFixtureTestCase<FixedLengthFileRecordFixture> {
 
-    @Override
-    protected Class<FixedLengthFileRecordFixture> getFixtureClass() {
-        return FixedLengthFileRecordFixture.class;
-    }
+	@Override
+	protected Class<FixedLengthFileRecordFixture> getFixtureClass() {
+		return FixedLengthFileRecordFixture.class;
+	}
 
-    @Test
-    public void testExtractWidth1() {
-        Parse row = parseTr("1", "7", "4");
+	@Test
+	public void testExtractWidth1() {
+		Parse row = parseTr("1", "7", "4");
 
-        preparePreprocess("1", "1");
-        preparePreprocess("7", "7");
-        preparePreprocess("4", "4");
+		preparePreprocess("1", "1");
+		preparePreprocess("7", "7");
+		preparePreprocess("4", "4");
 
-        int[] actual = fixture.extractWidth(row);
+		int[] actual = fixture.extractWidth(row);
 
-        assertThat(actual.length, is(equalTo((Object) 3)));
-        assertThat(actual[0], is(equalTo((Object) 1)));
-        assertThat(actual[1], is(equalTo((Object) 7)));
-        assertThat(actual[2], is(equalTo((Object) 4)));
-    }
+		assertThat(actual.length, is(equalTo((Object) 3)));
+		assertThat(actual[0], is(equalTo((Object) 1)));
+		assertThat(actual[1], is(equalTo((Object) 7)));
+		assertThat(actual[2], is(equalTo((Object) 4)));
+	}
 
-    @Test
-    public void testExtractWidth2() {
-        Parse row = parseTr("3", "1", "9", "0");
+	@Test
+	public void testExtractWidth2() {
+		Parse row = parseTr("3", "1", "9", "0");
 
-        preparePreprocess("3", "4");
-        preparePreprocess("1", "2");
-        preparePreprocess("9", "10");
-        preparePreprocess("0", "0");
+		preparePreprocess("3", "4");
+		preparePreprocess("1", "2");
+		preparePreprocess("9", "10");
+		preparePreprocess("0", "0");
 
-        int[] actual = fixture.extractWidth(row);
+		int[] actual = fixture.extractWidth(row);
 
-        assertThat(actual.length, is(equalTo((Object) 4)));
-        assertThat(actual[0], is(equalTo((Object) 3)));
-        assertThat(actual[1], is(equalTo((Object) 1)));
-        assertThat(actual[2], is(equalTo((Object) 9)));
-        assertThat(actual[3], is(equalTo((Object) 0)));
+		assertThat(actual.length, is(equalTo((Object) 4)));
+		assertThat(actual[0], is(equalTo((Object) 3)));
+		assertThat(actual[1], is(equalTo((Object) 1)));
+		assertThat(actual[2], is(equalTo((Object) 9)));
+		assertThat(actual[3], is(equalTo((Object) 0)));
 
-    }
+	}
 
-    @Test
-    public void testErrors() {
-        Parse table = parseTable(tr("1", "error", "4"));
+	@Test
+	public void testErrors() {
+		Parse table = parseTable(tr("1", "error", "4"));
 
-        int[] actual = fixture.extractWidth(table.at(0, 1));
+		int[] actual = fixture.extractWidth(table.at(0, 1));
 
-        assertThat(actual, is(nullValue()));
+		assertThat(actual, is(nullValue()));
 
-        assertCounts(fixture.counts(), table, 0, 0, 0, 1);
-        assertThat(table.at(0, 1, 1).text(), containsString("NumberFormatException"));
-    }
+		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
+		assertThat(table.at(0, 1, 1).text(), containsString("NumberFormatException"));
+	}
 
 }

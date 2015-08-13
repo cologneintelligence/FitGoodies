@@ -22,7 +22,8 @@ package com.mycompany.bookstore.fittests;
 import com.mycompany.bookstore.Bookshelf;
 
 public final class FixtureObjects {
-	private FixtureObjects() { }
+	private FixtureObjects() {
+	}
 
 	public static final Bookshelf SHELF = new Bookshelf();
 }

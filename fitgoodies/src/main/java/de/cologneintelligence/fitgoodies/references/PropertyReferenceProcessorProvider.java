@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,9 +21,6 @@
 
 package de.cologneintelligence.fitgoodies.references;
 
-import de.cologneintelligence.fitgoodies.references.CellProcessor;
-import de.cologneintelligence.fitgoodies.references.CellProcessorProvider;
-
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,56 +34,57 @@ import java.util.regex.Pattern;
  */
 public class PropertyReferenceProcessorProvider implements CellProcessorProvider {
 	private static final Pattern PATTERN = Pattern.compile(
-            "\\$\\{([A-Za-z0-9\\-/]+)\\.getValue\\(([^)]+)\\)\\}",
-            Pattern.CASE_INSENSITIVE);
+			"\\$\\{([A-Za-z0-9\\-/]+)\\.getValue\\(([^)]+)\\)\\}",
+			Pattern.CASE_INSENSITIVE);
 
-    private final Map<String, ResourceBundle> resourceBundleMap = new HashMap<>();
+	private final Map<String, ResourceBundle> resourceBundleMap = new HashMap<>();
 
-    @Override
-    public boolean canProcess(String strippedText) {
-        return strippedText != null && PATTERN.matcher(strippedText).find();
-    }
+	@Override
+	public boolean canProcess(String strippedText) {
+		return strippedText != null && PATTERN.matcher(strippedText).find();
+	}
 
-    @Override
-    public CellProcessor create(final String strippedText) {
-        return new CellProcessor() {
-            @Override
-            public String preprocess() {
-                Matcher matcher = PATTERN.matcher(strippedText);
-                matcher.find();
-                String resource = matcher.group(1);
-                String key = matcher.group(2);
+	@Override
+	public CellProcessor create(final String strippedText) {
+		return new CellProcessor() {
+			@Override
+			public String preprocess() {
+				Matcher matcher = PATTERN.matcher(strippedText);
+				matcher.find();
+				String resource = matcher.group(1);
+				String key = matcher.group(2);
 
-                String replacement;
-                try {
-                    replacement = getResourceBundle(resource).getString(key);
-                } catch (MissingResourceException e) {
-                    replacement = "error: missing resource bundle: " + resource;
-                }
+				String replacement;
+				try {
+					replacement = getResourceBundle(resource).getString(key);
+				} catch (MissingResourceException e) {
+					replacement = "error: missing resource bundle: " + resource;
+				}
 
-                return strippedText.replaceAll(Pattern.quote(matcher.group(0)), replacement);
-            }
-        };
-    }
+				return strippedText.replaceAll(Pattern.quote(matcher.group(0)), replacement);
+			}
+		};
+	}
 
-    private ResourceBundle getResourceBundle(final String bundle) {
-        ResourceBundle resourceBundle = resourceBundleMap.get(bundle);
-        if (resourceBundle == null) {
-            resourceBundle = PropertyResourceBundle.getBundle(bundle);
-            setResourceBundle(bundle, resourceBundle);
-        }
-        return resourceBundle;
-    }
+	private ResourceBundle getResourceBundle(final String bundle) {
+		ResourceBundle resourceBundle = resourceBundleMap.get(bundle);
+		if (resourceBundle == null) {
+			resourceBundle = PropertyResourceBundle.getBundle(bundle);
+			setResourceBundle(bundle, resourceBundle);
+		}
+		return resourceBundle;
+	}
 
-    /**
-     * Loads a resource bundle into a namespace.
-     * @param name namespace to use
-     * @param resourceBundle the resourceBundle to set
-     */
-    protected void setResourceBundle(final String name,
-    		final ResourceBundle resourceBundle) {
-        this.resourceBundleMap.put(name, resourceBundle);
-    }
+	/**
+	 * Loads a resource bundle into a namespace.
+	 *
+	 * @param name           namespace to use
+	 * @param resourceBundle the resourceBundle to set
+	 */
+	protected void setResourceBundle(final String name,
+	                                 final ResourceBundle resourceBundle) {
+		this.resourceBundleMap.put(name, resourceBundle);
+	}
 
     /*
 	/ **

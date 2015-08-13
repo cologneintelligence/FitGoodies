@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -31,24 +33,24 @@ import static org.junit.Assert.assertThat;
 
 
 public class SetupFixtureTest extends FitGoodiesTestCase {
-    private Fixture fixture;
+	private Fixture fixture;
 
-    @Before
-    public void setUp() throws Exception {
-        fixture = new SetupFixture();
-    }
+	@Before
+	public void setUp() throws Exception {
+		fixture = new SetupFixture();
+	}
 
-    @Test
-    public void testParse() throws Exception {
-        TypeHandlerFactory helper = DependencyManager.getOrCreate(TypeHandlerFactory.class);
-        Parse table = parseTable(tr("load", "de.cologneintelligence.fitgoodies.typehandler.LongParserMock"));
+	@Test
+	public void testParse() throws Exception {
+		TypeHandlerFactory helper = DependencyManager.getOrCreate(TypeHandlerFactory.class);
+		Parse table = parseTable(tr("load", "de.cologneintelligence.fitgoodies.typehandler.LongParserMock"));
 
-        assertThat(helper.getHandler(Long.class, null), is(not(instanceOf(LongParserMock.class))));
+		assertThat(helper.getHandler(Long.class, null), is(not(instanceOf(LongParserMock.class))));
 
-        fixture.doTable(table);
-        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-        assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+		fixture.doTable(table);
+		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
 
-        assertThat(helper.getHandler(Long.class, null), is(instanceOf(LongParserMock.class)));
-    }
+		assertThat(helper.getHandler(Long.class, null), is(instanceOf(LongParserMock.class)));
+	}
 }

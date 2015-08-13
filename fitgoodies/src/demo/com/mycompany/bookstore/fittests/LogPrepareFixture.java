@@ -18,13 +18,12 @@
 
 package com.mycompany.bookstore.fittests;
 
-import java.io.PrintWriter;
-
+import fitgoodies.ActionFixture;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import fitgoodies.ActionFixture;
+import java.io.PrintWriter;
 
 public final class LogPrepareFixture extends ActionFixture {
 	public void initializeLogging() {

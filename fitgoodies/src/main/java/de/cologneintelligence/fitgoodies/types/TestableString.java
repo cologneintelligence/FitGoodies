@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2015  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -36,7 +38,7 @@ public class TestableString {
 
 		if (o instanceof InternalTestableString) {
 			return o.equals(this);
-		} else if (getClass() != o.getClass())  {
+		} else if (getClass() != o.getClass()) {
 			return false;
 		}
 

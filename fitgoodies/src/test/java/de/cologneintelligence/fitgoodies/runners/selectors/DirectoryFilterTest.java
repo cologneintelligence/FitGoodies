@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2015  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -37,138 +39,138 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DirectoryFilterTest extends FitGoodiesTestCase {
-    private FileSystemDirectoryHelper fsHelper;
+	private FileSystemDirectoryHelper fsHelper;
 
-    @Before
-    public void setup() {
-        fsHelper = mock(FileSystemDirectoryHelper.class);
-    }
+	@Before
+	public void setup() {
+		fsHelper = mock(FileSystemDirectoryHelper.class);
+	}
 
-    @Test
-    public void returnsAllFiles() {
-        File dir = mockDirectory("(?i).*\\.html?",
-                "file1.html",
-                "file2.html",
-                "file3.htm"
-        );
+	@Test
+	public void returnsAllFiles() {
+		File dir = mockDirectory("(?i).*\\.html?",
+				"file1.html",
+				"file2.html",
+				"file3.htm"
+		);
 
-        assertThat(new DirectoryFilter(dir, fsHelper).getSelectedFiles(),
-                contains(
-                        equalToFile("file1.html"),
-                        equalToFile("file2.html"),
-                        equalToFile("file3.htm")));
+		assertThat(new DirectoryFilter(dir, fsHelper).getSelectedFiles(),
+				contains(
+						equalToFile("file1.html"),
+						equalToFile("file2.html"),
+						equalToFile("file3.htm")));
 
-    }
+	}
 
-    @Test
-    public void returnsOrderedFiles() {
-        File dir = mockDirectory("(?i).*\\.html?",
-                "file1.html",
-                "setup.html",
-                "teardown.html"
-        );
+	@Test
+	public void returnsOrderedFiles() {
+		File dir = mockDirectory("(?i).*\\.html?",
+				"file1.html",
+				"setup.html",
+				"teardown.html"
+		);
 
-        assertThat(new DirectoryFilter(dir, fsHelper).getSelectedFiles(), contains(
-                equalToFile("setup.html"),
-                equalToFile("file1.html"),
-                equalToFile("teardown.html")));
+		assertThat(new DirectoryFilter(dir, fsHelper).getSelectedFiles(), contains(
+				equalToFile("setup.html"),
+				equalToFile("file1.html"),
+				equalToFile("teardown.html")));
 
-    }
+	}
 
-    @Test
-    public void returnsOrderedSubdirectories() {
-        File dir = mockDirectory("(?i).*\\.html?",
-                "file1.html",
-                "a/setup.html",
-                "a/file3.html",
-                "a/b/file0.html",
-                "a/teardown.html",
-                "setup.html",
-                "teardown.html"
-        );
+	@Test
+	public void returnsOrderedSubdirectories() {
+		File dir = mockDirectory("(?i).*\\.html?",
+				"file1.html",
+				"a/setup.html",
+				"a/file3.html",
+				"a/b/file0.html",
+				"a/teardown.html",
+				"setup.html",
+				"teardown.html"
+		);
 
-        assertThat(new DirectoryFilter(dir, fsHelper).getSelectedFiles(), contains(
-                equalToFile("setup.html"),
-                equalToFile("a/setup.html"),
-                equalToFile("a/b/file0.html"),
-                equalToFile("a/file3.html"),
-                equalToFile("a/teardown.html"),
-                equalToFile("file1.html"),
-                equalToFile("teardown.html")));
+		assertThat(new DirectoryFilter(dir, fsHelper).getSelectedFiles(), contains(
+				equalToFile("setup.html"),
+				equalToFile("a/setup.html"),
+				equalToFile("a/b/file0.html"),
+				equalToFile("a/file3.html"),
+				equalToFile("a/teardown.html"),
+				equalToFile("file1.html"),
+				equalToFile("teardown.html")));
 
-    }
+	}
 
-    @Test
-    public void limitingToUnknownFileReturnsEmptyList() {
-        File dir = mockDirectory("(?i).*\\.html?", "file1.html");
+	@Test
+	public void limitingToUnknownFileReturnsEmptyList() {
+		File dir = mockDirectory("(?i).*\\.html?", "file1.html");
 
-        final DirectoryFilter directoryFilter = new DirectoryFilter(dir, fsHelper);
-        directoryFilter.addLimit(new File("non-existend"));
-        assertThat(directoryFilter.getSelectedFiles(), Matchers.empty());
-    }
+		final DirectoryFilter directoryFilter = new DirectoryFilter(dir, fsHelper);
+		directoryFilter.addLimit(new File("non-existend"));
+		assertThat(directoryFilter.getSelectedFiles(), Matchers.empty());
+	}
 
-    @Test
-    public void returnsOrderedFilteredFiles() {
-        File dir = mockDirectory("(?i).*\\.html?",
-                "file1.html",
-                "a/file3.html",
-                "a/b/file0.html");
+	@Test
+	public void returnsOrderedFilteredFiles() {
+		File dir = mockDirectory("(?i).*\\.html?",
+				"file1.html",
+				"a/file3.html",
+				"a/b/file0.html");
 
-        final DirectoryFilter directoryFilter = new DirectoryFilter(dir, fsHelper);
-        directoryFilter.addLimit(getMockedFile(dir, "file1.html"));
-        directoryFilter.addLimit(getMockedFile(dir, "a", "b", "file0.html"));
-        assertThat(directoryFilter.getSelectedFiles(), contains(
-                equalToFile("a/b/file0.html"),
-                equalToFile("file1.html")));
-    }
+		final DirectoryFilter directoryFilter = new DirectoryFilter(dir, fsHelper);
+		directoryFilter.addLimit(getMockedFile(dir, "file1.html"));
+		directoryFilter.addLimit(getMockedFile(dir, "a", "b", "file0.html"));
+		assertThat(directoryFilter.getSelectedFiles(), contains(
+				equalToFile("a/b/file0.html"),
+				equalToFile("file1.html")));
+	}
 
-    @Test
-    public void filteredFilesIncludesSetupFiles() throws Exception {
-        File dir = mockDirectory("(?i).*\\.html?",
-                "file1.html",
-                "file2.html",
-                "a/file3.html",
-                "a/b/file0.html",
-                "a/b/file7.html",
-                "a/setup.html",
-                "setup.html",
-                "teardown.html",
-                "a/setup.html",
-                "a/b/teardown.html",
-                "b/setup.html");
+	@Test
+	public void filteredFilesIncludesSetupFiles() throws Exception {
+		File dir = mockDirectory("(?i).*\\.html?",
+				"file1.html",
+				"file2.html",
+				"a/file3.html",
+				"a/b/file0.html",
+				"a/b/file7.html",
+				"a/setup.html",
+				"setup.html",
+				"teardown.html",
+				"a/setup.html",
+				"a/b/teardown.html",
+				"b/setup.html");
 
-        when(fsHelper.isSubDir(getMockedFile(dir, "a", "b", "file0.html").getParentFile(), getMockedFile(dir, "setup.html").getParentFile())).thenReturn(true);
-        when(fsHelper.isSubDir(getMockedFile(dir, "a", "b", "file0.html").getParentFile(), getMockedFile(dir, "a", "setup.html").getParentFile())).thenReturn(true);
-        when(fsHelper.isSubDir(getMockedFile(dir, "a", "b", "teardown.html").getParentFile(), getMockedFile(dir, "a", "b", "file7.html").getParentFile())).thenReturn(true);
-        when(fsHelper.isSubDir(getMockedFile(dir, "teardown.html").getParentFile(), getMockedFile(dir, "file1.html").getParentFile())).thenReturn(true);
+		when(fsHelper.isSubDir(getMockedFile(dir, "a", "b", "file0.html").getParentFile(), getMockedFile(dir, "setup.html").getParentFile())).thenReturn(true);
+		when(fsHelper.isSubDir(getMockedFile(dir, "a", "b", "file0.html").getParentFile(), getMockedFile(dir, "a", "setup.html").getParentFile())).thenReturn(true);
+		when(fsHelper.isSubDir(getMockedFile(dir, "a", "b", "teardown.html").getParentFile(), getMockedFile(dir, "a", "b", "file7.html").getParentFile())).thenReturn(true);
+		when(fsHelper.isSubDir(getMockedFile(dir, "teardown.html").getParentFile(), getMockedFile(dir, "file1.html").getParentFile())).thenReturn(true);
 
-        final DirectoryFilter directoryFilter = new DirectoryFilter(dir, fsHelper);
-        directoryFilter.addLimit(getMockedFile(dir, "file1.html"));
-        directoryFilter.addLimit(getMockedFile(dir, "a", "b", "file0.html"));
-        directoryFilter.addLimit(getMockedFile(dir, "a", "b", "file7.html"));
-        assertThat(directoryFilter.getSelectedFiles(), contains(
-                equalToFile("setup.html"),
-                equalToFile("a/setup.html"),
-                equalToFile("a/b/file0.html"),
-                equalToFile("a/b/file7.html"),
-                equalToFile("a/b/teardown.html"),
-                equalToFile("file1.html"),
-                equalToFile("teardown.html")));
+		final DirectoryFilter directoryFilter = new DirectoryFilter(dir, fsHelper);
+		directoryFilter.addLimit(getMockedFile(dir, "file1.html"));
+		directoryFilter.addLimit(getMockedFile(dir, "a", "b", "file0.html"));
+		directoryFilter.addLimit(getMockedFile(dir, "a", "b", "file7.html"));
+		assertThat(directoryFilter.getSelectedFiles(), contains(
+				equalToFile("setup.html"),
+				equalToFile("a/setup.html"),
+				equalToFile("a/b/file0.html"),
+				equalToFile("a/b/file7.html"),
+				equalToFile("a/b/teardown.html"),
+				equalToFile("file1.html"),
+				equalToFile("teardown.html")));
 
-    }
+	}
 
-    private Matcher<FileInformation> equalToFile(final String name) {
-        return new BaseMatcher<FileInformation>() {
-            @Override
-            public boolean matches(Object item) {
-                return ((FileInformation) item).getFile().getPath().equals(name);
-            }
+	private Matcher<FileInformation> equalToFile(final String name) {
+		return new BaseMatcher<FileInformation>() {
+			@Override
+			public boolean matches(Object item) {
+				return ((FileInformation) item).getFile().getPath().equals(name);
+			}
 
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("<" + name + ">");
-            }
-        };
-    }
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("<" + name + ">");
+			}
+		};
+	}
 
 }

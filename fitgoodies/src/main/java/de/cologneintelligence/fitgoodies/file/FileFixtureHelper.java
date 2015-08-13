@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.file;
 
@@ -27,74 +28,80 @@ import java.io.File;
  * @see FileFixture FileFixture
  */
 public class FileFixtureHelper {
-    private String encoding;
-    private String pattern;
-    private File directory;
+	private String encoding;
+	private String pattern;
+	private File directory;
 
-    /**
-     * Sets the encoding.
-     * @param fileEncoding the encoding to set
-     * @see #getEncoding() getEncoding()
-     */
-    public void setEncoding(final String fileEncoding) {
-        this.encoding = fileEncoding;
-    }
+	/**
+	 * Sets the encoding.
+	 *
+	 * @param fileEncoding the encoding to set
+	 * @see #getEncoding() getEncoding()
+	 */
+	public void setEncoding(final String fileEncoding) {
+		this.encoding = fileEncoding;
+	}
 
-    /**
-     * Gets the encoding.
-     * @return the encoding
-     * @see #setEncoding(String) setEncoding()
-     * @see #getEncoding getEncoding()
-     */
-    public String getEncoding() {
-        return encoding;
-    }
+	/**
+	 * Gets the encoding.
+	 *
+	 * @return the encoding
+	 * @see #setEncoding(String) setEncoding()
+	 * @see #getEncoding getEncoding()
+	 */
+	public String getEncoding() {
+		return encoding;
+	}
 
-    /**
-     * Returns a <code>FileSelector</code> which can be used to receive
-     * the matching files.
-     * @return instance of <code>FileSelector</code> which provides all matching
-     * 		files
-     */
-    public FileSelector getSelector() {
-        return new FileSelector(directory, pattern);
-    }
+	/**
+	 * Returns a <code>FileSelector</code> which can be used to receive
+	 * the matching files.
+	 *
+	 * @return instance of <code>FileSelector</code> which provides all matching
+	 * files
+	 */
+	public FileSelector getSelector() {
+		return new FileSelector(directory, pattern);
+	}
 
-    /**
-     * Sets the directory provider. The directory provider is used to browse
-     * for matching files.
-     * @param directory selected directory
-     * @see #getDirectory() getProvider
-     */
-    public void setDirectory(final File directory) {
-        this.directory = directory;
-    }
+	/**
+	 * Sets the directory provider. The directory provider is used to browse
+	 * for matching files.
+	 *
+	 * @param directory selected directory
+	 * @see #getDirectory() getProvider
+	 */
+	public void setDirectory(final File directory) {
+		this.directory = directory;
+	}
 
-    /**
-     * Sets the file pattern. The file pattern must be a valid regular expression.
-     * @param fileNamePattern the pattern to set
-     * @see #getPattern() getPattern()
-     */
-    public void setPattern(final String fileNamePattern) {
-        this.pattern = fileNamePattern;
-    }
+	/**
+	 * Sets the file pattern. The file pattern must be a valid regular expression.
+	 *
+	 * @param fileNamePattern the pattern to set
+	 * @see #getPattern() getPattern()
+	 */
+	public void setPattern(final String fileNamePattern) {
+		this.pattern = fileNamePattern;
+	}
 
-    /**
-     * Gets the file pattern.
-     * @return the selected pattern
-     *
-     * @see #setPattern(String) setPattern()
-     */
-    public String getPattern() {
-        return pattern;
-    }
+	/**
+	 * Gets the file pattern.
+	 *
+	 * @return the selected pattern
+	 * @see #setPattern(String) setPattern()
+	 */
+	public String getPattern() {
+		return pattern;
+	}
 
-    /**
-     * Returns the selected directory.
-     * @return the selected directory
-     * @see #setDirectory(File) setProvider
-     */
-    public File getDirectory() {
-        return directory;
-    }
+	/**
+	 * Returns the selected directory.
+	 *
+	 * @return the selected directory
+	 * @see #setDirectory(File) setProvider
+	 */
+	public File getDirectory() {
+		return directory;
+	}
 }

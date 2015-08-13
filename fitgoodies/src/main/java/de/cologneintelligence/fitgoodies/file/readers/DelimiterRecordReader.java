@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -25,7 +27,6 @@ import java.util.regex.Pattern;
 
 /**
  * Reader which is capable to process char-delimited files.
- *
  */
 public class DelimiterRecordReader implements FileRecordReader {
 	private String[] parts;
@@ -35,12 +36,13 @@ public class DelimiterRecordReader implements FileRecordReader {
 
 	/**
 	 * Creates a new reader object.
+	 *
 	 * @param bufferedReader underlying stream to process
 	 * @param fieldDelimiter field delimiter character
 	 * @throws IOException thrown if <code>bufferedReader</code> reports a problem
 	 */
 	public DelimiterRecordReader(final BufferedReader bufferedReader,
-			final String fieldDelimiter) throws IOException {
+	                             final String fieldDelimiter) throws IOException {
 
 		delimiter = fieldDelimiter;
 		this.reader = bufferedReader;

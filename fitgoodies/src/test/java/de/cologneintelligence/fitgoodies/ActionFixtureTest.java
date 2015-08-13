@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2015  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -41,8 +43,13 @@ public class ActionFixtureTest extends FitGoodiesFixtureTestCase<ActionFixtureTe
 			super(mock(WaitForResult.class));
 		}
 
-		public void func1() throws Exception { transformAndEnter(); }
-		public void func2() throws Exception { transformAndEnter(); }
+		public void func1() throws Exception {
+			transformAndEnter();
+		}
+
+		public void func2() throws Exception {
+			transformAndEnter();
+		}
 
 		public void func1(Boolean value) {
 			arg1 = value;
@@ -72,7 +79,8 @@ public class ActionFixtureTest extends FitGoodiesFixtureTestCase<ActionFixtureTe
 			pressed = true;
 		}
 
-		public void s1() {}
+		public void s1() {
+		}
 
 		public void s1(String s) {
 			string1 = s;
@@ -82,9 +90,11 @@ public class ActionFixtureTest extends FitGoodiesFixtureTestCase<ActionFixtureTe
 			int1 = i;
 		}
 
-		public void method(int x) { }
+		public void method(int x) {
+		}
 
-		public void method(String s) { }
+		public void method(String s) {
+		}
 
 		public boolean waitForMe() {
 			return true;

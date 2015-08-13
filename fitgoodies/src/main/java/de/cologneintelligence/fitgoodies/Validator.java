@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2015  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -37,7 +39,7 @@ public class Validator {
 
 	public Validator() {
 		cellProcessorProviders = DependencyManager.getOrCreate(CellProcessorProviderHelper.class)
-						.getProviders();
+				.getProviders();
 	}
 
 	public String preProcess(Parse cell) {

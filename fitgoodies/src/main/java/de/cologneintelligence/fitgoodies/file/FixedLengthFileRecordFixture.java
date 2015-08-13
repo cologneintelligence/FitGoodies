@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -33,18 +35,16 @@ import java.io.IOException;
  * parameter of
  * {@link FixedLengthRecordReader#FixedLengthRecordReader(java.io.BufferedReader, int[], boolean)}.
  * It is called &quot;skipEOL&quot;.
- * <p>
- *
+ * <p/>
+ * <p/>
  * The first row must contain the field width of each field:
  * <table border="1" summary="">
  * <tr><td>fitgoodies.file.FixedLengthFileRecordFixture</td>
- * 		<td>file=/myfile.txt</td></tr>
+ * <td>file=/myfile.txt</td></tr>
  * <tr><td>3</td><td>10</td><td>25</td></tr>
  * <tr><td>1</td><td>record 1</td><td>more content</td></tr>
  * <tr><td>2</td><td>record 2</td><td>some text</td></tr>
  * </table>
- *
- *
  */
 public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixture {
 	private boolean noEol;

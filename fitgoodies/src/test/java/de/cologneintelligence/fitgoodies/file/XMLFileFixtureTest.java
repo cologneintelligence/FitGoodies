@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,9 +21,9 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
+import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.Parse;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,67 +39,67 @@ import static org.mockito.Mockito.when;
 
 
 public class XMLFileFixtureTest extends FitGoodiesTestCase {
-    private XMLFileFixture fixture;
+	private XMLFileFixture fixture;
 
-    @Before
-    public void setUp() throws Exception {
-        final byte[] fileContent = ("<?xml version=\"1.0\"?>"
-                + "<root><child1><child>Content</child><child>x</child></child1>"
-                + "<sibling>Content 2</sibling>"
-                + "</root>").getBytes("utf-16");
+	@Before
+	public void setUp() throws Exception {
+		final byte[] fileContent = ("<?xml version=\"1.0\"?>"
+				+ "<root><child1><child>Content</child><child>x</child></child1>"
+				+ "<sibling>Content 2</sibling>"
+				+ "</root>").getBytes("utf-16");
 
-        //final FileInformation fileInfo = new FileInformation("/", "file.xml", fileContent);
+		//final FileInformation fileInfo = new FileInformation("/", "file.xml", fileContent);
 
-        File directory = mock(File.class, "directory");
-        File file = mock(File.class, "file");
-        FileInformationWrapper wrapper = mock(FileInformationWrapper.class);
-        FileInformation fileInformation = mock(FileInformation.class);
+		File directory = mock(File.class, "directory");
+		File file = mock(File.class, "file");
+		FileInformationWrapper wrapper = mock(FileInformationWrapper.class);
+		FileInformation fileInformation = mock(FileInformation.class);
 
-        when(directory.listFiles(argThat(is(any(FileFilter.class)))))
-                .thenReturn(new File[]{file});
-        when(wrapper.wrap(file)).thenReturn(fileInformation);
-        when(fileInformation.openInputStream()).thenReturn(new ByteArrayInputStream(fileContent));
+		when(directory.listFiles(argThat(is(any(FileFilter.class)))))
+				.thenReturn(new File[]{file});
+		when(wrapper.wrap(file)).thenReturn(fileInformation);
+		when(fileInformation.openInputStream()).thenReturn(new ByteArrayInputStream(fileContent));
 
-        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-        helper.setDirectory(directory);
+		FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+		helper.setDirectory(directory);
 
-        fixture = new XMLFileFixture(wrapper);
-        fixture.setParams(new String[] {"pattern=.*", "encoding=utf-16"});
-    }
+		fixture = new XMLFileFixture(wrapper);
+		fixture.setParams(new String[]{"pattern=.*", "encoding=utf-16"});
+	}
 
-    @Test
-    public void testParsing() {
-        final Parse table = parseTable(
-                tr("/root/child1/child[1]", "Content"),
-                tr("/root/child1/child[2]", "x"),
-                tr("/root/sibling", "Content 1"));
+	@Test
+	public void testParsing() {
+		final Parse table = parseTable(
+				tr("/root/child1/child[1]", "Content"),
+				tr("/root/child1/child[2]", "x"),
+				tr("/root/sibling", "Content 1"));
 
-        fixture.doTable(table);
+		fixture.doTable(table);
 
-        assertCounts(fixture.counts(), table, 2, 1, 0, 0);
-    }
+		assertCounts(fixture.counts(), table, 2, 1, 0, 0);
+	}
 
-    @Test
-    public void testParsingWithErrors() {
-        final Parse table = parseTable(
-                tr("/root/child1/child[1]"),
-                tr("---", "x"));
+	@Test
+	public void testParsingWithErrors() {
+		final Parse table = parseTable(
+				tr("/root/child1/child[1]"),
+				tr("---", "x"));
 
-        fixture.doTable(table);
+		fixture.doTable(table);
 
-        assertCounts(fixture.counts(), table, 0, 0, 0, 1);
-    }
+		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
+	}
 
-    @Test
-    public void testParsingWithIgnores() {
-        final Parse table = parseTable(
-                        tr("/root/child1/child[1]", ""),
-                        tr("/root/child1/child[2]", ""));
+	@Test
+	public void testParsingWithIgnores() {
+		final Parse table = parseTable(
+				tr("/root/child1/child[1]", ""),
+				tr("/root/child1/child[2]", ""));
 
-        fixture.doTable(table);
+		fixture.doTable(table);
 
-        assertCounts(fixture.counts(), table, 0, 0, 0, 0);
-        assertThat(table.parts.more.parts.more.text(), is(equalTo("Content")));
-        assertThat(table.parts.more.more.parts.more.text(), is(equalTo("x")));
-    }
+		assertCounts(fixture.counts(), table, 0, 0, 0, 0);
+		assertThat(table.parts.more.parts.more.text(), is(equalTo("Content")));
+		assertThat(table.parts.more.more.parts.more.text(), is(equalTo("x")));
+	}
 }

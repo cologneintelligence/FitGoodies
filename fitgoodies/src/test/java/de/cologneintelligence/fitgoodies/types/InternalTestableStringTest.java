@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2015  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -23,9 +25,7 @@ import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import static de.cologneintelligence.fitgoodies.types.InternalTestableString.TestType;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class InternalTestableStringTest extends FitGoodiesTestCase {
@@ -115,8 +115,8 @@ public class InternalTestableStringTest extends FitGoodiesTestCase {
 
 	@Test
 	public void arraysAreDecomposed() {
-		assertMatchesNot("test2", new Object[] { new StringBuilder("test"), "test" }, TestType.EQUALS);
-		assertMatchesNot("test", new Object[] {2}, TestType.EQUALS);
+		assertMatchesNot("test2", new Object[]{new StringBuilder("test"), "test"}, TestType.EQUALS);
+		assertMatchesNot("test", new Object[]{2}, TestType.EQUALS);
 
 		assertMatches("test", new Object[]{new StringBuilder("test"), "test2"}, TestType.EQUALS);
 		assertMatches("test", new Object[]{new StringBuilder("test"), new TestableString("test2")}, TestType.EQUALS);

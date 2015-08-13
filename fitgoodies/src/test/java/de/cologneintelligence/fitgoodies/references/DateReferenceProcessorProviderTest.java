@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -18,8 +20,6 @@
 
 package de.cologneintelligence.fitgoodies.references;
 
-import de.cologneintelligence.fitgoodies.references.CellProcessor;
-import de.cologneintelligence.fitgoodies.references.DateReferenceProcessorProvider;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DateProvider;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;

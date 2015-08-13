@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -26,67 +28,73 @@ import java.io.File;
 
 /**
  * The file fixture is used to select files via HTML:
- *
+ * <p/>
  * <table border="1" summary="">
  * <tr><td>fitgoodies.file.FileFixture</td></tr>
  * <tr><td>directory</td><td>/my/dir</td></tr>
  * <tr><td>pattern</td><td>.*\.txt</td></tr>
  * <tr><td>encoding</td><td>utf-8</td></tr>
  * </table>
- *
+ * <p/>
  * The fixture sets the values in {@link FileFixtureHelper}.
  *
  * @see FileFixtureHelper FileFixtureHelper
  */
 public class FileFixture extends ActionFixture {
-    /**
-     * Sets the filename pattern to <code>pattern</code>.
-     * @param pattern pattern to use
-     */
-    public void pattern(final String pattern) {
-        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-        helper.setPattern(pattern);
-    }
+	/**
+	 * Sets the filename pattern to <code>pattern</code>.
+	 *
+	 * @param pattern pattern to use
+	 */
+	public void pattern(final String pattern) {
+		FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+		helper.setPattern(pattern);
+	}
 
-    /**
-     * Calls {@link #pattern(String)}, using the next cell as its parameter.
-     * @throws Exception propagated to fit
-     */
-    public void pattern() throws Exception {
-        transformAndEnter();
-    }
+	/**
+	 * Calls {@link #pattern(String)}, using the next cell as its parameter.
+	 *
+	 * @throws Exception propagated to fit
+	 */
+	public void pattern() throws Exception {
+		transformAndEnter();
+	}
 
-    /**
-     * Calls {@link #directory(String)}, using the next cell as its parameter.
-     * @throws Exception propagated to fit
-     */
-    public void directory() throws Exception {
-        transformAndEnter();
-    }
+	/**
+	 * Calls {@link #directory(String)}, using the next cell as its parameter.
+	 *
+	 * @throws Exception propagated to fit
+	 */
+	public void directory() throws Exception {
+		transformAndEnter();
+	}
 
-    /**
-     * Calls {@link #encoding(String)}, using the next cell as its parameter.
-     * @throws Exception propagated to fit
-     */
-    public void encoding() throws Exception {
-        transformAndEnter();
-    }
+	/**
+	 * Calls {@link #encoding(String)}, using the next cell as its parameter.
+	 *
+	 * @throws Exception propagated to fit
+	 */
+	public void encoding() throws Exception {
+		transformAndEnter();
+	}
 
-    /**
-     * Sets the directory to <code>directory</code>.
-     * @param directory directory to use
-     */
-    public void directory(final String directory) {
-        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-        helper.setDirectory(new File(directory));
-    }
+	/**
+	 * Sets the directory to <code>directory</code>.
+	 *
+	 * @param directory directory to use
+	 */
+	public void directory(final String directory) {
+		FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+		helper.setDirectory(new File(directory));
+	}
 
-    /**
-     * Sets the encoding to <code>encoding</code>.
-     * @param encoding encoding to use
-     */
-    public void encoding(final String encoding) {
-        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-        helper.setEncoding(encoding);
-    }
+	/**
+	 * Sets the encoding to <code>encoding</code>.
+	 *
+	 * @param encoding encoding to use
+	 */
+	public void encoding(final String encoding) {
+		FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+		helper.setEncoding(encoding);
+	}
 }

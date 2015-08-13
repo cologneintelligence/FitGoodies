@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.runners;
 
@@ -25,7 +26,6 @@ import java.io.File;
 
 /**
  * Saves the result count of a specific file.
- *
  */
 public class FileCount {
 	private final Counts result;
@@ -34,7 +34,7 @@ public class FileCount {
 	/**
 	 * Initializes a new FileCount object.
 	 *
-	 * @param file the processed file
+	 * @param file   the processed file
 	 * @param counts the results
 	 */
 	public FileCount(final File file, final Counts counts) {
@@ -44,6 +44,7 @@ public class FileCount {
 
 	/**
 	 * Returns the results of the file.
+	 *
 	 * @return fit results
 	 */
 	public final Counts getCounts() {
@@ -52,6 +53,7 @@ public class FileCount {
 
 	/**
 	 * Returns the filename.
+	 *
 	 * @return filename of the file
 	 */
 	public final File getFile() {
@@ -76,6 +78,7 @@ public class FileCount {
 
 	/**
 	 * Returns the hash code of a file.
+	 *
 	 * @return the hash code
 	 */
 	@Override

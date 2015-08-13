@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -30,16 +32,16 @@ import static org.mockito.Mockito.when;
 
 public class SeleniumCommandTest extends FitGoodiesTestCase {
 
-    @Test
-    public void testDoCommand() {
-        final CommandProcessor commandProcessor = mock(CommandProcessor.class);
+	@Test
+	public void testDoCommand() {
+		final CommandProcessor commandProcessor = mock(CommandProcessor.class);
 
-        final String[] args = new String[]{"arg1", "arg2"};
-        final SeleniumCommand wrappedCommand = new SeleniumCommand("command", args, commandProcessor);
+		final String[] args = new String[]{"arg1", "arg2"};
+		final SeleniumCommand wrappedCommand = new SeleniumCommand("command", args, commandProcessor);
 
-        when(commandProcessor.doCommand("command", args)).thenReturn("OK");
+		when(commandProcessor.doCommand("command", args)).thenReturn("OK");
 
-        assertThat(wrappedCommand.execute(), is(equalTo("OK")));
-    }
+		assertThat(wrappedCommand.execute(), is(equalTo("OK")));
+	}
 
 }

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.external;
 
@@ -32,26 +33,26 @@ import static org.junit.Assert.assertThat;
 
 public class SetupFixtureTest extends FitGoodiesTestCase {
 
-    @Before
-    public void setUp() {
-        System.setProperty("testSetupFixtureKey", "testValue");
-    }
+	@Before
+	public void setUp() {
+		System.setProperty("testSetupFixtureKey", "testValue");
+	}
 
-    @After
-    public void tearDown() {
-        System.clearProperty("testSetupFixtureKey");
-    }
+	@After
+	public void tearDown() {
+		System.clearProperty("testSetupFixtureKey");
+	}
 
-    @Test
-    public void testParsing() {
-        Parse table = parseTable(tr("addProperty", "-DtestKey=${System.getProperty(testSetupFixtureKey)}"));
+	@Test
+	public void testParsing() {
+		Parse table = parseTable(tr("addProperty", "-DtestKey=${System.getProperty(testSetupFixtureKey)}"));
 
-        SetupFixture fixture = new SetupFixture();
-        fixture.doTable(table);
+		SetupFixture fixture = new SetupFixture();
+		fixture.doTable(table);
 
-        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
-        assertThat(helper.getProperties().get(0), is(equalTo("-DtestKey=testValue")));
-    }
+		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+		SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
+		assertThat(helper.getProperties().get(0), is(equalTo("-DtestKey=testValue")));
+	}
 
 }

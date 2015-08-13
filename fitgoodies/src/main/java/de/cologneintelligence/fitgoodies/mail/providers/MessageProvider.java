@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,29 +16,29 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.mail.providers;
 
-import javax.mail.MessagingException;
-
 import de.cologneintelligence.fitgoodies.mail.Mail;
+
+import javax.mail.MessagingException;
 
 
 /**
  * Interface for a provider that can receive Mails.
- *
  */
 public interface MessageProvider {
 	/**
 	 * Connects to the message server.
+	 *
 	 * @throws MessagingException thrown by the underlying connection
 	 */
 	void connect() throws MessagingException;
 
 	/**
 	 * Closes the connection.
+	 *
 	 * @throws MessagingException thrown by the underlying connection
 	 */
 	void disconnect() throws MessagingException;

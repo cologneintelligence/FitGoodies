@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -31,51 +33,53 @@ import java.util.Date;
  * It uses the {@link Timestamp#valueOf(String)} method first. If it fails, the
  * class uses the {@link FitDateHelper} to allow the user
  * to set individual formats.
- *
+ * <p/>
  * If the cell is parameterized, the date format can be set individually.
  * The parameter must have the format &quot;{@code locale, format}&quot;.
  * Example: &quot;{@code en_US, MM/dd/yyyy}&quot;.
- *
  */
 public class SqlTimestampTypeHandler extends TypeHandler<Timestamp> {
-    private final FitDateHelper dateFitDateHelper;
+	private final FitDateHelper dateFitDateHelper;
 
-    /**
-     * Creates a new TypeAdapter which bases on {@code ta}.
-     * @param convertParameter a parameter in the format [locale, format] which
-     *      represents the format to use
-     */
-    public SqlTimestampTypeHandler(final String convertParameter) {
-        super(convertParameter);
-        this.dateFitDateHelper = DependencyManager.getOrCreate(FitDateHelper.class);
-    }
+	/**
+	 * Creates a new TypeAdapter which bases on {@code ta}.
+	 *
+	 * @param convertParameter a parameter in the format [locale, format] which
+	 *                         represents the format to use
+	 */
+	public SqlTimestampTypeHandler(final String convertParameter) {
+		super(convertParameter);
+		this.dateFitDateHelper = DependencyManager.getOrCreate(FitDateHelper.class);
+	}
 
-    /**
-     * Returns the destination class which is managed by this parser.
-     * @return java.sql.Timestamp.class
-     */
-    @Override
-    public Class<Timestamp> getType() {
-        return Timestamp.class;
-    }
+	/**
+	 * Returns the destination class which is managed by this parser.
+	 *
+	 * @return java.sql.Timestamp.class
+	 */
+	@Override
+	public Class<Timestamp> getType() {
+		return Timestamp.class;
+	}
 
-    /**
-     * Parses a string and converts it into a {@code java.sql.Timestamp} object.
-     * @param s {@code String} which will be converted
-     * @return {@code java.sql.Timestamp} object which is represented by {@code s}
-     * @throws ParseException if the date could not be parsed
-     */
-    @Override
-    public final Timestamp unsafeParse(final String s) throws ParseException {
-        try {
-            return Timestamp.valueOf(s);
-        } catch (final IllegalArgumentException e) {
-            return new Timestamp(dateFitDateHelper.parse(s, parameter).getTime());
-        }
-    }
+	/**
+	 * Parses a string and converts it into a {@code java.sql.Timestamp} object.
+	 *
+	 * @param s {@code String} which will be converted
+	 * @return {@code java.sql.Timestamp} object which is represented by {@code s}
+	 * @throws ParseException if the date could not be parsed
+	 */
+	@Override
+	public final Timestamp unsafeParse(final String s) throws ParseException {
+		try {
+			return Timestamp.valueOf(s);
+		} catch (final IllegalArgumentException e) {
+			return new Timestamp(dateFitDateHelper.parse(s, parameter).getTime());
+		}
+	}
 
-    @Override
-    public String toString(Timestamp s) {
-        return dateFitDateHelper.toString(new Date(s.getTime()));
-    }
+	@Override
+	public String toString(Timestamp s) {
+		return dateFitDateHelper.toString(new Date(s.getTime()));
+	}
 }

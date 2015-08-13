@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -21,15 +23,15 @@ package de.cologneintelligence.fitgoodies.selenium.command;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
 
 public abstract class CommandFactory {
-    public static WrappedCommand createCommand(final String command, final String[] args, final SetupHelper helper) {
-        if (command.endsWith("AndRetry")) {
-            return new RetryCommand(command, args, helper);
-        } else if (command.startsWith("open")){
-            return new OpenCommand(command, args, helper.getCommandProcessor());
-        } else if (command.startsWith("captureEntirePageScreenshot")){
-            return new CaptureEntirePageScreenshotCommand(command, args, helper);
-        } else {
-            return new SeleniumCommand(command, args, helper.getCommandProcessor());
-        }
-    }
+	public static WrappedCommand createCommand(final String command, final String[] args, final SetupHelper helper) {
+		if (command.endsWith("AndRetry")) {
+			return new RetryCommand(command, args, helper);
+		} else if (command.startsWith("open")) {
+			return new OpenCommand(command, args, helper.getCommandProcessor());
+		} else if (command.startsWith("captureEntirePageScreenshot")) {
+			return new CaptureEntirePageScreenshotCommand(command, args, helper);
+		} else {
+			return new SeleniumCommand(command, args, helper.getCommandProcessor());
+		}
+	}
 }

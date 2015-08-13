@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,11 +21,11 @@
 
 package de.cologneintelligence.fitgoodies.database;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import de.cologneintelligence.fitgoodies.RowFixture;
 import de.cologneintelligence.fitgoodies.dynamic.ResultSetWrapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 
 /**
@@ -32,16 +34,16 @@ import de.cologneintelligence.fitgoodies.dynamic.ResultSetWrapper;
  * temporary class which wraps the <code>ResultSet</code> using a
  * {@link de.cologneintelligence.fitgoodies.dynamic.DynamicObjectFactory} and fills these objects
  * with the individual rows of the <code>ResultSet</code>.
- *
  */
 public class ResultSetFixture extends RowFixture {
 	private ResultSetWrapper table;
 
 	/**
 	 * Sets the ResultSet which is compared with the input table.
+	 *
 	 * @param resultSet <code>ResultSet</code> to use
 	 * @throws SQLException Exception thrown by the <code>ResultSet</code>. You can propagate
-	 * 		it to fit.
+	 *                      it to fit.
 	 */
 	public void setResultSet(final ResultSet resultSet) throws SQLException {
 		table = new ResultSetWrapper(resultSet);
@@ -49,6 +51,7 @@ public class ResultSetFixture extends RowFixture {
 
 	/**
 	 * Gets the type of the dynamic created target class.
+	 *
 	 * @return the type of the target class.
 	 */
 	@Override
@@ -59,8 +62,9 @@ public class ResultSetFixture extends RowFixture {
 	/**
 	 * Gets an array which represents the ResultSet as an object array.
 	 * The type of these objects can be determined via <code>getTargetClass()</code>.
-         * @return
-         * @throws java.lang.Exception
+	 *
+	 * @return
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public final Object[] query() throws Exception {
