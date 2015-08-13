@@ -21,214 +21,246 @@ package de.cologneintelligence.fitgoodies.mail;
 
 import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import org.junit.Ignore;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
+import de.cologneintelligence.fitgoodies.valuereceivers.ConstantReceiver;
+import org.hamcrest.Matcher;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import javax.mail.MessagingException;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;
 
 
-public final class MailFixtureTest extends FitGoodiesTestCase {
-    private MessageProvider provider;
+public final class MailFixtureTest extends FitGoodiesFixtureTestCase<MailFixture> {
+	@Mock
+	Mail mail;
 
-    private MailFixture prepareFixture(final Mail mail)
-            throws Exception {
-        provider = mock(MessageProvider.class);
+	@Mock
+	MessageProvider provider;
 
-        when(provider.getLatestMessage()).thenReturn(mail);
+	@Override
+	protected Class<MailFixture> getFixtureClass() {
+		return MailFixture.class;
+	}
 
-        return new MailFixture(provider);
-    }
+	@Override
+	protected MailFixture newInstance() throws InstantiationException, IllegalAccessException {
+		return new MailFixture(provider);
+	}
 
-    public void verifyCalls(Mail mail, boolean expectDelete) {
-        try {
-            verify(provider).connect();
-            verify(provider).getLatestMessage();
-            verify(provider).disconnect();
-            if (expectDelete) {
-                verify(mail).delete();
-            }
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	@Before
+	public void prepareFixture() throws MessagingException {
+		when(provider.getLatestMessage()).thenReturn(mail);
+	}
 
-    @Test
-    public void testProcessing() throws Exception {
-        final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail);
+	public void verifyCalls(Mail mail, boolean expectDelete) {
+		try {
+			verify(provider).connect();
+			verify(provider).getLatestMessage();
+			verify(provider).disconnect();
+			if (expectDelete) {
+				verify(mail).delete();
+			}
+		} catch (MessagingException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-        Parse table = parseTable(
-                tr("body", "contains", "Text"),
-                tr("SUBJECT", "contains", "Simple"),
-                tr("to", "contains", "server"),
-                tr("received", "contains", "tld"),
-                tr("date", "regex", "\\d{3}"));
-
-
-        when(mail.getHTMLContent()).thenReturn("A mail!\nThis is a simple TEXT");
-        when(mail.getPlainContent()).thenReturn("Another view");
-        when(mail.getHeader("subject")).thenReturn(new String[]{null, "A Simple test mail", "uuh"});
-        when(mail.getHeader("to")).thenReturn(new String[]{"me@myserver.com"});
-        when(mail.getHeader("received")).thenReturn(new String[]{"by gateway.tld now"});
-        when(mail.getHeader("date")).thenReturn(new String[]{"a423b"});
-
-        fixture.doTable(table);
-
-        assertThat(fixture.counts().right, is(equalTo((Object) 5)));
-        assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-
-        assertThat(table.parts.more.parts.more.more.body, is(equalTo("Text<hr />This is a simple TEXT")));
-        assertThat(table.parts.more.more.more.parts.more.more.body, is(equalTo("server<hr />me@myserver.com")));
-        assertThat(table.parts.more.more.more.more.more.parts.more.more.body, is(equalTo("\\d{3}<hr />423")));
-
-        verifyCalls(mail, true);
-    }
-
-    @Test
-    public void testProcessingWithErrors() throws Exception {
-        final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail);
-
-        Parse table = parseTable(
-                tr("body", "contains", "some text"),
-                tr("SUBJECT", "is similar to", "Simple"),
-                tr("to", "contains", "empty?!"),
-                tr("date", "regex", "^\\d{3}$"),
-                tr("custom", "regex", "x"),
-                tr("X-MyHeader", "regex", "7"),
-                tr("X-Null", "regex", "7"));
+	@Test
+	public void testProcessing() throws Exception {
+		Parse table = parseTable(
+				tr("body", "contains", "Text"),
+				tr("SUBJECT", "contains", "Simple"),
+				tr("to", "contains", "server"),
+				tr("received", "contains", "tld"),
+				tr("date", "regex", "\\d{3}"));
 
 
-        final String mailText = "A mail!\nThis is a simple TEXT!"
-                + "This text is longer than 128 characters**************"
-                + "*****************************************************";
-        final int PREVIEW_SIZE = 128;
+		when(mail.getHTMLContent()).thenReturn("Another view");
+		when(mail.getPlainContent()).thenReturn("A mail!\nThis is a simple TEXT");
+		when(mail.getHeader("subject")).thenReturn(new String[]{null, "A Simple test mail", "uuh"});
+		when(mail.getHeader("to")).thenReturn(new String[]{"me@myserver.com"});
+		when(mail.getHeader("received")).thenReturn(new String[]{"by gateway.tld now"});
+		when(mail.getHeader("date")).thenReturn(new String[]{"a423b"});
+
+		expectValidationWithSuccess(table, 1, "contains");
+		expectValidationWithSuccess(table, 2, "contains");
+		expectValidationWithSuccess(table, 3, "contains");
+		expectValidationWithSuccess(table, 4, "contains");
+		expectValidationWithSuccess(table, 5, "regex");
 
 
-        when(mail.getHTMLContent()).thenReturn("Another view");
-        when(mail.getPlainContent()).thenReturn(mailText);
-        when(mail.getHeader("subject")).thenReturn(new String[]{"A Simple test mail"});
-        when(mail.getHeader("to")).thenReturn(new String[]{});
-        when(mail.getHeader("date")).thenReturn(new String[]{"4235", "1234", "xzy?"});
-        when(mail.getHeader("custom")).thenReturn(new String[]{null});
-        when(mail.getHeader("x-myheader")).thenReturn(new String[]{null, null, "3", "2", "1", "4"});
-        when(mail.getHeader("x-null")).thenReturn(null);
+		fixture.doTable(table);
 
-        fixture.doTable(table);
+		assertThat(table.at(0, 1, 2).body, containsAll("Text", "<hr />", "This is a simple TEXT"));
+		assertThat(table.at(0, 2, 2).body, containsAll("Simple", "<hr />", "A Simple test mail"));
+		assertThat(table.at(0, 3, 2).body, containsAll("server", "<hr />", "me@myserver.com"));
+		assertThat(table.at(0, 4, 2).body, containsAll("tld", "<hr />", "by gateway.tld now"));
+		assertThat(table.at(0, 5, 2).body, containsAll("\\d{3}", "<hr />", "423"));
 
-        assertThat(fixture.counts().wrong, is(equalTo((Object) 6)));
-        assertThat(fixture.counts().right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts().ignores, is(equalTo((Object) 1)));
-        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+		verifyCalls(mail, true);
+	}
 
-        assertThat(table.parts.more.parts.more.more.text(), is(equalTo("some text expected"
-                + mailText.substring(0, PREVIEW_SIZE)
-                + "... actual (+ 1 more)")));
-        assertThat(table.parts.more.more.more.parts.more.more.text(), is(equalTo("empty?! expected(unset) actual")));
-        assertThat(table.parts.more.more.more.more.parts.more.more.text(), is(equalTo("^\\d{3}$ expected4235 actual (+ 2 more)")));
-        assertThat(table.parts.more.more.more.more.more.parts.more.more.text(), is(equalTo("x expected(unset) actual")));
-        assertThat(table.parts.more.more.more.more.more.more.parts.more.more.text(), is(equalTo("7 expected3 actual (+ 5 more)")));
-        assertThat(table.parts.more.more.more.more.more.more.more.parts.more.more.text(), is(equalTo("7 expected(unset) actual")));
-
-        verifyCalls(mail, true);
-    }
-
-    @Test
-    public void testNoMail() throws Exception {
-        MailFixture fixture = prepareFixture(null);
-        Parse table = parseTable(tr("body", "contains", "some text"));
-
-        fixture.doTable(table);
-        assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
-
-        verifyCalls(null, false);
-    }
-
-    @Test
-    public void testNoDelete() throws Exception {
-        final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail);
-        Parse table = parseTable();
-
-        fixture.setParams(new String[]{"delete=no"});
-        fixture.doTable(table);
-
-        verifyCalls(mail, false);
-    }
-
-    @Test
-    public void testPlainBody() throws Exception {
-        final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail);
-
-        Parse table = parseTable(
-                tr("plainbody", "contains", "TEXT"),
-                tr("plainbody", "contains", "different"));
+	@Test
+	public void errorsAreReported() throws Exception {
+		Parse table = parseTable(
+				tr("body", "contains", "some text"),
+				tr("SUBJECT", "is similar to", "Simple"),
+				tr("to", "contains", "empty?!"),
+				tr("date", "regex", "^\\d{3}$"),
+				tr("custom", "regex", "x"),
+				tr("X-MyHeader", "regex", "7"),
+				tr("X-Null", "regex", "7"));
 
 
-        when(mail.getPlainContent()).thenReturn("Something different");
-
-        fixture.doTable(table);
-
-        assertThat(fixture.counts().right, is(equalTo((Object) 1)));
-        assertThat(fixture.counts().wrong, is(equalTo((Object) 1)));
-        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-
-        assertThat(table.parts.more.parts.more.more.text(), is(equalTo("TEXT expectedSomething different actual")));
-        assertThat(table.parts.more.more.parts.more.more.body, is(equalTo("different<hr />Something different")));
-
-        verifyCalls(mail, true);
-    }
-
-    @Test
-    public void testHTMLBody() throws Exception {
-        final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail);
-
-        Parse table = parseTable(
-                tr("htmlbody", "contains", "TEXT"),
-                tr("htmlbody", "contains", "different"));
+		final String mailText = "A mail! This is a simple TEXT!"
+				+ "This text is longer than 128 characters**************"
+				+ "*****************************************************";
+		final int PREVIEW_SIZE = 128;
 
 
-        when(mail.getHTMLContent()).thenReturn("Something different");
+		when(mail.getHTMLContent()).thenReturn("Another view");
+		when(mail.getPlainContent()).thenReturn(mailText);
+		when(mail.getHeader("subject")).thenReturn(new String[]{"A Simple test mail"});
+		when(mail.getHeader("to")).thenReturn(new String[]{});
+		when(mail.getHeader("date")).thenReturn(new String[]{"4235", "1234", "xzy?"});
+		when(mail.getHeader("custom")).thenReturn(new String[]{null});
+		when(mail.getHeader("x-myheader")).thenReturn(new String[]{null, null, "3", "2", "1", "4"});
+		when(mail.getHeader("x-null")).thenReturn(null);
 
-        fixture.doTable(table);
+		expectValidationWithFailure(table, 1, "contains");
+		expectValidationWithFailure(table, 2, "is similar to");
+		expectValidationWithFailure(table, 3, "contains");
+		expectValidationWithFailure(table, 4, "regex");
+		expectValidationWithFailure(table, 5, "regex");
+		expectValidationWithFailure(table, 6, "regex");
 
-        assertThat(fixture.counts().right, is(equalTo((Object) 1)));
-        assertThat(fixture.counts().wrong, is(equalTo((Object) 1)));
-        assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+		fixture.doTable(table);
 
-        assertThat(table.parts.more.parts.more.more.text(), is(equalTo("TEXT expectedSomething different actual")));
-        assertThat(table.parts.more.more.parts.more.more.body, is(equalTo("different<hr />Something different")));
+		assertThat(table.at(0, 1, 2).text(), is(equalTo(String.format(
+				"some text expected%s... (+ 1 more) actual", mailText.substring(0, PREVIEW_SIZE)))));
+		assertThat(table.at(0, 3, 2).text(), is(equalTo("empty?! expected(unset) actual")));
+		assertThat(table.at(0, 4, 2).text(), is(equalTo("^\\d{3}$ expected4235 (+ 2 more) actual")));
+		assertThat(table.at(0, 5, 2).text(), is(equalTo("x expected(unset) actual")));
+		assertThat(table.at(0, 6, 2).text(), is(equalTo("7 expected3 (+ 5 more) actual")));
+		assertThat(table.at(0, 7, 2).text(), is(equalTo("7 expected(unset) actual")));
 
-        verifyCalls(mail, true);
-    }
+		verifyCalls(mail, true);
+	}
 
-    @Test
-    @Ignore
-    public void testCRF() throws Exception {
-        final Mail mail = mock(Mail.class);
-        MailFixture fixture = prepareFixture(mail);
+	@Test
+	public void testNoMail() throws Exception {
+		Parse table = parseTable(tr("body", "contains", "some text"));
 
-        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        helper.parseBody("${tests.put(body)}", "this goes to the body");
-        Parse table = parseTable(
-                tr("plainbody", "contains", "${tests.get(body)}"));
+		reset(provider);
+		fixture.doTable(table);
+		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
 
-        when(mail.getPlainContent()).thenReturn("this goes to the body");
+		verifyCalls(null, false);
+	}
 
-        fixture.doTable(table);
-        assertThat(fixture.counts().right, is(equalTo((Object) 1)));
+	@Test
+	public void testNoDelete() throws Exception {
+		Parse table = parseTable();
 
-        verifyCalls(mail, true);
-    }
+		expectParameterApply("delete", "no", false);
+
+		fixture.setParams(new String[]{"delete=no"});
+		fixture.doTable(table);
+
+		verifyCalls(mail, false);
+	}
+
+	@Test
+	public void testPlainBody() throws Exception {
+		final Parse table = parseTable(
+				tr("plainbody", "contains", "TEXT"),
+				tr("plainbody", "contains", "different"));
+
+
+		when(mail.getPlainContent()).thenReturn("Something different");
+
+		expectValidationWithFailure(table, 1, "contains");
+		expectValidationWithFailure(table, 2, "contains");
+
+		fixture.doTable(table);
+
+		assertThat(table.at(0, 1, 2).text(), is(equalTo("TEXT expectedSomething different actual")));
+		assertThat(table.at(0, 2, 2).body, containsAll("different", "<hr />", "Something different"));
+
+		verifyCalls(mail, true);
+	}
+
+	@Test
+	public void testHTMLBody() throws Exception {
+		Parse table = parseTable(
+				tr("htmlbody", "contains", "TEXT"),
+				tr("htmlbody", "contains", "different"));
+
+
+		when(mail.getHTMLContent()).thenReturn("Something different");
+
+		expectValidationWithFailure(table, 1, "contains");
+		expectValidationWithFailure(table, 2, "contains");
+
+		fixture.doTable(table);
+
+		assertThat(table.at(0, 1, 2).text(), is(equalTo("TEXT expectedSomething different actual")));
+		assertThat(table.at(0, 2, 2).body, containsAll("different", "<hr />",
+				"Something different"));
+
+		verifyCalls(mail, true);
+	}
+
+	protected void expectValidationWithFailure(final Parse table, final int row, final String expected) {
+		final int col = 2;
+		doAnswer(new Answer() {
+			@Override
+			public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+				FitUtils.wrong(table.at(0, row, col), "mocked Answer");
+				return null;
+			}
+		}).when(validator).process(
+				argThatSame(table.at(0, row, col)),
+				argThatSame(fixture.counts()),
+				any(ConstantReceiver.class),
+				argThat(is(equalTo(expected))),
+				argThatSame(typeHandlerFactory));
+
+		expectValidationWithSuccess(table, row, expected);
+	}
+
+	protected void expectValidationWithSuccess(final Parse table, final int row, final String expected) {
+		expectations.add(new Task() {
+			@Override
+			public void run() throws Exception {
+				verify(validator).process(
+						argThatSame(table.at(0, row, 2)),
+						argThatSame(fixture.counts()),
+						any(ConstantReceiver.class),
+						argThat(is(equalTo(expected))),
+						argThatSame(typeHandlerFactory));
+			}
+		});
+	}
+
+	private Matcher<String> containsAll(String ... values) {
+		List<Matcher<? super String>> matchers = new ArrayList<>(values.length);
+		for (String string : values) {
+			matchers.add(containsString(string));
+		}
+
+		return allOf(matchers);
+	}
 }

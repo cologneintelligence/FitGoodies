@@ -150,7 +150,6 @@ public final class FitDateHelper {
 		}
 	}
 
-	// FIXME: add test
 	public String toString(Date s) {
 		return getDateFormat(format, locale).format(s);
 	}

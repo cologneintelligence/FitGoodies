@@ -66,14 +66,26 @@ public abstract class TypeHandler<T> {
 	 * @param input input from table
 	 * @return the parsed Object
 	 */
-	public abstract T parse(final String input) throws ParseException;
+	public abstract T unsafeParse(String input) throws ParseException;
 
-	public boolean equals(T lhs, T rhs) {
+	public T parse(String input) throws ParseException {
+		if (input == null) {
+			return null;
+		} else {
+			return unsafeParse(input);
+		}
+	}
+
+	public boolean equals(T lhs, Object rhs) {
 		if (lhs == null) {
 			return rhs == null;
 		} else {
-			return lhs.equals(rhs);
+			return rhs != null && unsafeEquals(lhs, rhs);
 		}
+	}
+
+	public boolean unsafeEquals(T lhs, Object rhs) {
+		return lhs.equals(rhs);
 	}
 
 	public String toString(T s) {

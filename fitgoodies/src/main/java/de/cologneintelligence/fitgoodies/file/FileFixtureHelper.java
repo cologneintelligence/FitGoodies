@@ -26,7 +26,7 @@ import java.io.File;
  *
  * @see FileFixture FileFixture
  */
-public final class FileFixtureHelper {
+public class FileFixtureHelper {
     private String encoding;
     private String pattern;
     private File directory;

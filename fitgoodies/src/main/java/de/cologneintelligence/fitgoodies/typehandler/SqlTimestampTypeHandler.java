@@ -66,7 +66,7 @@ public class SqlTimestampTypeHandler extends TypeHandler<Timestamp> {
      * @throws ParseException if the date could not be parsed
      */
     @Override
-    public final Timestamp parse(final String s) throws ParseException {
+    public final Timestamp unsafeParse(final String s) throws ParseException {
         try {
             return Timestamp.valueOf(s);
         } catch (final IllegalArgumentException e) {

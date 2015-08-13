@@ -19,7 +19,7 @@
 
 package de.cologneintelligence.fitgoodies.dynamic;
 
-import de.cologneintelligence.fitgoodies.ScientificDouble;
+import de.cologneintelligence.fitgoodies.types.ScientificDouble;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -123,7 +123,7 @@ public class ResultSetWrapper {
 	 * Generates an array which represents the whole {@code ResultSet}.
 	 * Each element equates to one row in the {@code ResultSet}.
 	 * The elements have public fields with the same name as the {@code ResultSet} columns.
-	 * The {@link de.cologneintelligence.fitgoodies.ScientificDouble} class is automatically used.
+	 * The {@link ScientificDouble} class is automatically used.
 	 * They can be read them using reflections.
 	 * @return array of dynamic objects
 	 * @throws SQLException thrown, if the {@code ResultSet} throws an Exception

@@ -22,15 +22,25 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class FitUtils {
+
 	private FitUtils() {}
+
+	private static Pattern PARAMETER_PATTERN = Pattern.compile("^(.*)\\s*\\[\\s*(.*?)\\s*\\]\\s*$");
+	private static Pattern MULTI_PARAMETER_PATTERN = Pattern.compile("^\\s*([^=]+?)\\s*=\\s*(.*?)\\s*$");
 
 	public static String HTML_GREEN = "#cfffcf";
 	public static String HTML_RED = "#ffcfcf";
 	public static String HTML_GREY = "#efefef";
 	public static String HTML_YELLOW = "#ffffcf";
+	public static String HTML_INFO = "#808080";
 
 	public static String label(String string) {
 		return " <font size=-1 color=\"#c08080\"><i>" + string + "</i></font>";
@@ -80,7 +90,7 @@ public final class FitUtils {
 	}
 
 	public static String info(String message) {
-		return " <font color=\"#808080\">" + escape(message) + "</font>";
+		return " <font color=\"" + HTML_INFO + "\">" + escape(message) + "</font>";
 	}
 
 	public static void ignore(Parse cell) {
@@ -108,5 +118,51 @@ public final class FitUtils {
 
 	public static String htmlSafeFile(String file) {
 	    return file.replace(File.separatorChar, '/');
+	}
+
+	public static <T> T saveGet(int col, T[] array) {
+		if (col < array.length) {
+			return array[col];
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * extracts and removes parameters from a cell.
+	 *
+	 * @param cell cell to process
+	 * @return the extracted parameter or {@code null}
+	 */
+	public static String extractCellParameter(final Parse cell) {
+		final Matcher matcher = PARAMETER_PATTERN.matcher(cell.text());
+		if (matcher.matches()) {
+			cell.body = matcher.group(1);
+			return matcher.group(2);
+		} else {
+			return null;
+		}
+	}
+
+	public static Map<String, String> extractCellParameterMap(Parse cell) {
+		String parameters = extractCellParameter(cell);
+		if (parameters == null) {
+			return Collections.emptyMap();
+		}
+
+		Map<String, String> result = new HashMap<>();
+		for (String keyValue : parameters.split(",")) {
+			Matcher matcher = MULTI_PARAMETER_PATTERN.matcher(keyValue);
+
+			if (matcher.find()) {
+				result.put(matcher.group(1), matcher.group(2));
+			}
+		}
+
+		return result;
+	}
+
+	public static boolean isWrong(Parse cell) {
+		return cell.tag.contains("bgcolor=\""+HTML_RED+"\"");
 	}
 }

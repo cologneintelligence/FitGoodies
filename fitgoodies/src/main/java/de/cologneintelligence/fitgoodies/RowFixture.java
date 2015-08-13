@@ -3,35 +3,44 @@
 
 package de.cologneintelligence.fitgoodies;
 
-import de.cologneintelligence.fitgoodies.typehandler.TypeHandlerFactory;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
+import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
+import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiverFactory;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 
 abstract public class RowFixture extends Fixture {
 
-	protected Object results[];
-
-	// FIXME: should be protected
-	public List<Object> missing = new LinkedList<>();
-	public List<Object> surplus = new LinkedList<>();
-
+	protected List<Object> missing = new LinkedList<>();
+	protected List<Object> surplus = new LinkedList<>();
 	private String[] columnParameters;
 	private String[] columnNames;
+
+	/**
+	 * get rows to be compared
+	 */
+	abstract protected Object[] query() throws Exception;
+
+	/**
+	 * get expected type of row
+	 */
+	abstract protected Class getTargetClass();
 
 	protected void doRows(Parse rows) {
 		try {
 			columnParameters = extractColumnParameters(rows);
-			results = query();
 			columnNames = findColumnNames(rows.parts);
-			match(list(rows.more), list(results), 0);
-			Parse last = rows.last();
-			last.more = buildRows(surplus.toArray());
-			mark(last.more, "surplus");
-			mark(missing.iterator(), "missing");
+
+			List<Parse> expected = rowsToRowList(rows.more);
+			List<Object> computed = new LinkedList<>(Arrays.asList(query()));
+			multiLevelMatch(expected, computed, 0);
+
+			appendSurplusRows(rows);
+			markMissingRows();
 		} catch (Exception e) {
 			exception(rows.leaf(), e);
 		}
@@ -40,54 +49,12 @@ abstract public class RowFixture extends Fixture {
 	protected String[] findColumnNames(Parse heads) {
 		String[] names = new String[heads.size()];
 		for (int i = 0; heads != null; i++, heads = heads.more) {
-			names[i] = heads.text();
+			names[i] = validator.preProcess(heads);
 		}
 		return names;
 	}
 
-	abstract protected Object[] query() throws Exception;  // get rows to be compared
-
-	abstract protected Class getTargetClass();             // get expected type of row
-
-	private void match(List<Parse> expected, List<Object> computed, int col) {
-		if (col < columnNames.length) {
-			for (Parse row : expected) {
-				Parse cell = row.parts.at(col);
-				try {
-					// FIXME: throws an exception on an empty computed list
-					ValueReceiver valueReceiver = createReceiver(computed.get(0), columnNames[col]);
-					processCell(cell, valueReceiver);
-				} catch (NoSuchMethodException | NoSuchFieldException e) {
-					exception(cell, e);
-				}
-			}
-		}
-
-		if (col >= columnNames.length) {
-			check(expected, computed);
-		} else if (columnNames[col] == null) {
-			match(expected, computed, col + 1);
-		} else {
-			Map<Object, List<Parse>> eMap = eSort(expected, col);
-			Map<Object, List<Object>> cMap = cSort(computed, col);
-			Set keys = union(eMap.keySet(), cMap.keySet());
-			for (Object key : keys) {
-				List<Parse> eList = eMap.get(key);
-				List<Object> cList = cMap.get(key);
-				if (eList == null) {
-					surplus.addAll(cList);
-				} else if (cList == null) {
-					missing.addAll(eList);
-				} else if (eList.size() == 1 && cList.size() == 1) {
-					check(eList, cList);
-				} else {
-					match(eList, cList, col + 1);
-				}
-			}
-		}
-	}
-
-	private List<Parse> list(Parse rows) {
+	private List<Parse> rowsToRowList(Parse rows) {
 		List<Parse> result = new LinkedList<>();
 		while (rows != null) {
 			result.add(rows);
@@ -96,26 +63,67 @@ abstract public class RowFixture extends Fixture {
 		return result;
 	}
 
-	private List<Object> list(Object[] rows) {
-		List<Object> result = new LinkedList<>();
-		Collections.addAll(result, rows);
-		return result;
+	/**
+	 * Sorts and compare two lists.
+	 * It is assumed that all items in {@code expected} and {@code computed}
+	 * are equal on the {@code col - 1} columns.
+	 */
+	private void multiLevelMatch(List<Parse> expected, List<Object> computed, int col) {
+		boolean cantGoDeeper = col >= columnNames.length;
+		if (cantGoDeeper) {
+			check(expected, computed);
+		} else {
+			boolean isComment = isComment(col);
+			if (isComment) {
+				multiLevelMatch(expected, computed, col + 1);
+			} else {
+				groupAndMatch(expected, computed, col);
+			}
+		}
 	}
 
-	private Map<Object, List<Parse>> eSort(List<Parse> list, int col) {
-		setCurrentCellParameter(columnParameters[col]);
+	private boolean isComment(int col) {
+		return columnNames[col] == null || columnNames[col].isEmpty();
+	}
 
+	/**
+	 * Groups both lists by column {@code col}. For every resulting group check if
+	 * there is a 1:1 or a 1:0 match. Otherwise, group further.
+	 */
+	private void groupAndMatch(List<Parse> expected, List<Object> computed, int col) {
+		Map<Object, List<Parse>> expectedMap = groupExpectedByColumn(expected, col);
+		Map<Object, List<Object>> computedMap = groupComputedByColumn(computed, col);
+		Set keys = union(expectedMap.keySet(), computedMap.keySet());
+
+		for (Object key : keys) {
+			List<Parse> expectedList = expectedMap.get(key);
+			List<Object> computedList = computedMap.get(key);
+
+			boolean isAmbiguous = hasMultipleEntries(expectedList) && hasMultipleEntries(computedList);
+
+			if (isAmbiguous) {
+				multiLevelMatch(expectedList, computedList, col + 1);
+			} else {
+				check(expectedList, computedList);
+			}
+		}
+	}
+
+	private boolean hasMultipleEntries(List<?> expectedList) {
+		return expectedList != null && expectedList.size() > 1;
+	}
+
+	private Map<Object, List<Parse>> groupExpectedByColumn(List<Parse> list, int col) {
 		Map<Object, List<Parse>> result = new HashMap<>(list.size());
+
 		for (Parse row : list) {
-			Parse cell = row.parts.at(col);
+			Parse keyCell = row.parts.at(col);
 			try {
-				Class<?> columnType = getColumnType(columnNames[col]);
-				Object key = DependencyManager.getOrCreate(TypeHandlerFactory.class)
-						.getHandler(columnType, columnParameters[col]).parse(cell.text());
-				bin(result, key, row);
+				Object key = parseCell(col, keyCell);
+				addToMap(result, key, row);
 			} catch (Exception e) {
-				exception(cell, e);
-				for (Parse rest = cell.more; rest != null; rest = rest.more) {
+				exception(keyCell, e);
+				for (Parse rest = keyCell.more; rest != null; rest = rest.more) {
 					ignore(rest);
 				}
 			}
@@ -123,14 +131,21 @@ abstract public class RowFixture extends Fixture {
 		return result;
 	}
 
-	private Map<Object, List<Object>> cSort(List<Object> list, int col) {
-		setCurrentCellParameter(columnParameters[col]);
+	private Object parseCell(int col, Parse cell) throws NoSuchMethodException, NoSuchFieldException, ParseException {
+		String preprocessedText = validator.preProcess(cell);
+		String parameter = FitUtils.saveGet(col, columnParameters);
+		Class<?> columnType = getColumnType(columnNames[col]);
+		TypeHandler typeHandler = typeHandlerFactory.getHandler(columnType, parameter);
+		return typeHandler.parse(preprocessedText);
+	}
 
+	private Map<Object, List<Object>> groupComputedByColumn(List<Object> list, int col) {
 		Map<Object, List<Object>> result = new HashMap<>(list.size());
+
 		for (Object row : list) {
 			try {
 				Object key = createReceiver(row, columnNames[col]).get();
-				bin(result, key, row);
+				addToMap(result, key, row);
 			} catch (Exception e) {
 				// surplus anything with bad keys, including null
 				surplus.add(row);
@@ -139,10 +154,11 @@ abstract public class RowFixture extends Fixture {
 		return result;
 	}
 
-	private <T> void bin(Map<Object, List<T>> map, Object key, T row) {
+	private <T> void addToMap(Map<Object, List<T>> map, Object key, T row) {
 		if (key.getClass().isArray()) {
 			key = Arrays.asList((Object[]) key);
 		}
+
 		if (map.containsKey(key)) {
 			map.get(key).add(row);
 		} else {
@@ -153,91 +169,64 @@ abstract public class RowFixture extends Fixture {
 	}
 
 	private <T> Set<T> union(Set<T> a, Set<T> b) {
-		Set<T> result = new HashSet<>();
-		result.addAll(a);
+		Set<T> result = new HashSet<>(a);
 		result.addAll(b);
 		return result;
 	}
 
-	protected void check(List<Parse> eList, List<Object> cList) {
-		if (eList.size() == 0) {
-			surplus.addAll(cList);
-			return;
-		}
+	/**
+	 * Compares two lists.
+	 * <ul>
+	 *     <li>if {@code expectedList} is empty, all {@code computedList} items are surplus</li>
+	 *     <li>if {@code computedList} is empty, all {@code expectedList} items are missing</li>
+	 *     <li>otherwise, match the first rows and compare the rest recursively</li>
+	 * </ul>
+	 */
+	protected void check(List<Parse> expectedList, List<Object> computedList) {
+		if (expectedList == null || expectedList.size() == 0) {
+			surplus.addAll(computedList);
+		} else if (computedList == null || computedList.size() == 0) {
+			missing.addAll(expectedList);
+		} else {
+			Object computedRow = computedList.remove(0);
+			Parse expectedRow = expectedList.remove(0).parts;
+			compareRow(computedRow, expectedRow);
 
-		if (cList.size() == 0) {
-			missing.addAll(eList);
-			return;
+			check(expectedList, computedList);
 		}
+	}
 
-		Parse row = eList.remove(0);
-		Parse cell = row.parts;
-		Object obj = cList.remove(0);
-		for (int i = 0; i < columnNames.length && cell != null; i++) {
+	/**
+	 * Compares two rows item by item using {@link Fixture#check(Parse, ValueReceiver, String)}.
+	 * Each cell will be marked as right, wrong, ignored or exception
+	 */
+	private void compareRow(Object computedRow, Parse expectedRow) {
+		for (int i = 0; i < columnNames.length && expectedRow != null; i++) {
 			try {
-				ValueReceiver a = createReceiver(obj, columnNames[i]);
-				check(cell, a);
-				cell = cell.more;
-			} catch (NoSuchMethodException | NoSuchFieldException e) {
-				exception(cell, e);
-			}
-		}
-		check(eList, cList);
-	}
-
-	private void mark(Parse rows, String message) {
-		String annotation = FitUtils.label(message);
-		while (rows != null) {
-			wrong(rows.parts);
-			rows.parts.addToBody(annotation);
-			rows = rows.more;
-		}
-	}
-
-	private void mark(Iterator rows, String message) {
-		String annotation = FitUtils.label(message);
-		while (rows.hasNext()) {
-			Parse row = (Parse) rows.next();
-			wrong(row.parts);
-			row.parts.addToBody(annotation);
-		}
-	}
-
-	private Parse buildRows(Object[] rows) {
-		Parse root = new Parse(null, null, null, null);
-		Parse next = root;
-		for (Object row : rows) {
-			next = next.more = new Parse("tr", null, buildCells(row), null);
-		}
-		return root.more;
-	}
-
-	private Parse buildCells(Object row) {
-		if (row == null) {
-			Parse nil = new Parse("td", "null", null, null);
-			nil.addToTag(" colspan=" + columnNames.length);
-			return nil;
-		}
-		Parse root = new Parse(null, null, null, null);
-		Parse next = root;
-		for (String name : columnNames) {
-			next = next.more = new Parse("td", "&nbsp;", null, null);
-			if (name == null) {
-				ignore(next);
-			} else {
-				try {
-					ValueReceiver receiver = createReceiver(row, name);
-					info(next, createTypeHandler(receiver).toString(receiver.get()));
-				} catch (Exception e) {
-					exception(next, e);
+				ValueReceiver valueReceiver;
+				if (isComment(i)) {
+					valueReceiver = null;
+				} else {
+					valueReceiver = createReceiver(computedRow, columnNames[i]);
 				}
+
+				String columnParameter = FitUtils.saveGet(i, columnParameters);
+				check(expectedRow, valueReceiver, columnParameter);
+
+				expectedRow = expectedRow.more;
+			} catch (NoSuchMethodException | NoSuchFieldException e) {
+				exception(expectedRow, e);
 			}
 		}
-		return root.more;
+	}
+
+	private void markWrongWithAnnotation(Parse cell, String annotation) {
+		wrong(cell);
+		cell.addToBody(annotation);
 	}
 
 	private Class<?> getColumnType(String name) throws NoSuchMethodException, NoSuchFieldException {
-		Matcher matcher = METHOD_PATTERN.matcher(name);
+		Matcher matcher = ValueReceiverFactory.METHOD_PATTERN.matcher(name);
 
 		if (matcher.find()) {
 			final String methodName = FitUtils.camel(matcher.group(1));
@@ -246,5 +235,104 @@ abstract public class RowFixture extends Fixture {
 			final Field field = getTargetClass().getField(FitUtils.camel(name));
 			return field.getType();
 		}
+	}
+
+	private void appendSurplusRows(Parse rows) {
+		Parse lastRow = rows.last();
+		lastRow.more = buildRows(surplus.toArray());
+		markRowsAs(lastRow.more, "surplus");
+	}
+
+	private Parse buildRows(Object[] rows) {
+		Parse root = new Parse(null, null, null, null);
+		Parse next = root;
+
+		for (Object row : rows) {
+			next.more = new Parse("tr", null, buildRow(row), null);
+			next = next.more;
+		}
+
+		return root.more;
+	}
+
+	private Parse buildRow(Object row) {
+		if (row == null) {
+			Parse nil = new Parse("td", "null", null, null);
+			nil.addToTag(" colspan=" + columnNames.length);
+			return nil;
+		} else {
+			Parse root = new Parse(null, null, null, null);
+			Parse next = root;
+
+			for (int i = 0; i < columnNames.length; i++) {
+				next.more = buildCell(row, i);
+				next = next.more;
+			}
+
+			return root.more;
+		}
+	}
+
+	private Parse buildCell(Object row, int i) {
+		Parse td = new Parse("td", "&nbsp;", null, null);
+
+		if (columnNames[i] == null) {
+			ignore(td);
+		} else {
+			try {
+				ValueReceiver receiver = createReceiver(row, columnNames[i]);
+				String parameter = FitUtils.saveGet(i, columnParameters);
+				TypeHandler typeHandler = createTypeHandler(receiver, parameter);
+				info(td, typeHandler.toString(receiver.get()));
+			} catch (Exception e) {
+				exception(td, e);
+			}
+		}
+
+		return td;
+	}
+
+	private void markRowsAs(Iterator rows, String message) {
+		String annotation = FitUtils.label(message);
+		while (rows.hasNext()) {
+			Parse row = (Parse) rows.next();
+			preprocessMissingCells(row);
+
+			markWrongWithAnnotation(row.parts, annotation);
+		}
+	}
+
+	private void markRowsAs(Parse rows, String message) {
+		String annotation = FitUtils.label(message);
+		while (rows != null) {
+			markWrongWithAnnotation(rows.parts, annotation);
+			rows = rows.more;
+		}
+	}
+
+	private void preprocessMissingCells(Parse rows) {
+		int i;
+		Parse cell = rows.parts;
+
+		for (i = 0; cell != null; ++i, cell = cell.more){
+			Object preprocessed = validator.preProcess(cell);
+
+			if (isComment(i)) {
+				cell.body = Objects.toString(preprocessed);
+			} else {
+				String parameter = FitUtils.saveGet(i, columnParameters);
+				try {
+					Class<?> columnType = getColumnType(columnNames[i]);
+					TypeHandler handler = typeHandlerFactory.getHandler(columnType, parameter);
+					cell.body = handler.toString(preprocessed);
+				} catch (NoSuchMethodException | NoSuchFieldException e) {
+					cell.body = Objects.toString(preprocessed);
+				}
+			}
+		}
+	}
+
+	private void markMissingRows() {
+		markRowsAs(missing.iterator(), "missing");
 	}
 }

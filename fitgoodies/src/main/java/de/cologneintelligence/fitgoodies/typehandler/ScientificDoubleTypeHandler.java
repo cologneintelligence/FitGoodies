@@ -18,7 +18,7 @@
 
 package de.cologneintelligence.fitgoodies.typehandler;
 
-import de.cologneintelligence.fitgoodies.ScientificDouble;
+import de.cologneintelligence.fitgoodies.types.ScientificDouble;
 
 public class ScientificDoubleTypeHandler extends TypeHandler<ScientificDouble> {
 
@@ -32,7 +32,7 @@ public class ScientificDoubleTypeHandler extends TypeHandler<ScientificDouble> {
 	}
 
 	@Override
-	public ScientificDouble parse(String input) {
+	public ScientificDouble unsafeParse(String input) {
 		return ScientificDouble.valueOf(input);
 	}
 }

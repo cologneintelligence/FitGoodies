@@ -47,7 +47,7 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
     }
 
     @Test
-    public void testError() {
+    public void testError() throws Exception {
         Parse table = parseTable(tr("x"));
 
         SetupFixture fixture = new SetupFixture();

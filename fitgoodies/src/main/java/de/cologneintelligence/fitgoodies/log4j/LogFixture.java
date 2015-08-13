@@ -20,6 +20,7 @@ package de.cologneintelligence.fitgoodies.log4j;
 
 import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.spi.AppenderAttachable;
 
@@ -32,44 +33,39 @@ import java.util.Map;
  * a command which can have parameters, and a expression to search. The parameter
  * column supports Cross References.
  * Only captured loggers can be analyzed. To capture loggers, see {@link SetupFixture}.
- * <p>
+ * <p/>
  * The root logger is named &quot;rootLogger&quot;.
  * Valid parameters are &quot;Thread&quot; and &quot;MinLevel&quot;.
- * <p>
- *
+ * <p/>
+ * <p/>
  * Example:
- * <p>
- *
+ * <p/>
+ * <p/>
  * <table border="1" summary=""><tr><td>fitgoodies.log4j.LogFixture</td></tr>
  * <tr><td>rootLogger</td><td>R</td><td>contains</td><td>successfully initialized</td></tr>
  * <tr><td>rootLogger</td><td>R</td><td>notContains</td><td>critical error</td></tr>
  * <tr>
- * 	<td>org.example.MyClass</td>
- * 	<td>stdout</td>
- * 	<td>containsException</td>
- * 	<td>IllegalArgumentException</td>
+ * <td>org.example.MyClass</td>
+ * <td>stdout</td>
+ * <td>containsException</td>
+ * <td>IllegalArgumentException</td>
  * </tr>
  * <tr>
- * 	<td>org.example.MyClass</td>
- * 	<td>stdout</td>
- * 	<td>notContainsException</td>
- * 	<td>not found</td>
+ * <td>org.example.MyClass</td>
+ * <td>stdout</td>
+ * <td>notContainsException</td>
+ * <td>not found</td>
  * </tr>
  * <tr>
- * 	<td>org.example.MyClass</td>
- * 	<td>stdout</td>
- * 	<td>contains[Thread = main, MinLevel = Error]</td>
- * 	<td>timeout</td>
+ * <td>org.example.MyClass</td>
+ * <td>stdout</td>
+ * <td>contains[Thread = main, MinLevel = Error]</td>
+ * <td>timeout</td>
  * </tr>
  * </table>
- *
  */
 public class LogFixture extends Fixture {
 	private final LoggerProvider loggerProvider;
-	private CaptureAppender appender;
-	private Parse cells;
-
-	private final CellArgumentParserFactory cellArgumentParserFactory;
 	private final LogEventAnalyzerFactory logEventAnalyzerFactory;
 
 	private static final int LOGGER_COLUMN = 0;
@@ -77,36 +73,36 @@ public class LogFixture extends Fixture {
 	private static final int COMMAND_COLUMN = 2;
 	private static final int CHECK_EXPRESSION_COLUMN = 3;
 
+	private CaptureAppender appender;
+	private Parse cells;
+
 	/**
-	 * Initializes a new {@code LogFixture} using a {@link LoggerProviderImpl},
-	 * a {@link CellArgumentParserFactoryImpl} and a {@link LogEventAnalyzerFactoryImpl}.
-	 * @see #LogFixture(LoggerProvider, CellArgumentParserFactory, LogEventAnalyzerFactory)
-	 * 		LogFixture(LoggerProvider, CellArgumentParserFactory, LogEventAnalyzerFactory)
+	 * Initializes a new {@code LogFixture} using a {@link LoggerProvider}
+	 * and a {@link LogEventAnalyzerFactory}.
+	 *
+	 * @see #LogFixture(LoggerProvider, LogEventAnalyzerFactory)
+	 * LogFixture(LoggerProvider, CellArgumentParserFactory, LogEventAnalyzerFactory)
 	 */
 	public LogFixture() {
-		this(new LoggerProviderImpl(),
-				new CellArgumentParserFactoryImpl(),
-				new LogEventAnalyzerFactoryImpl());
+		this(new LoggerProvider(), new LogEventAnalyzerFactory());
 	}
 
 	/**
 	 * Initializes a new LogFixture.
-	 * @param logs {@code LoggerProvider} to receive loggers.
-	 * @param cellArgumentParserFactory {@code CellArgumentParserFactory}
-	 * 		to extract arguments from cells
-	 * @param logEventAnalyzerFactory {@code LogEventAnalyzerFactory}
-	 * 		to analyze log entries
+	 *
+	 * @param logs                      {@code LoggerProvider} to receive loggers.
+	 * @param logEventAnalyzerFactory   {@code LogEventAnalyzerFactory}
+	 *                                  to analyze log entries
 	 */
 	public LogFixture(final LoggerProvider logs,
-			final CellArgumentParserFactory cellArgumentParserFactory,
-			final LogEventAnalyzerFactory logEventAnalyzerFactory) {
-		loggerProvider = logs;
-		this.cellArgumentParserFactory = cellArgumentParserFactory;
+	                  final LogEventAnalyzerFactory logEventAnalyzerFactory) {
+		this.loggerProvider = logs;
 		this.logEventAnalyzerFactory = logEventAnalyzerFactory;
 	}
 
 	/**
 	 * Processes the table row {@code cells}.
+	 *
 	 * @param cells row to parse and process
 	 */
 	@Override
@@ -124,33 +120,30 @@ public class LogFixture extends Fixture {
 	}
 
 	private void executeCommand() {
-		final CellArgumentParser parser = cellArgumentParserFactory.getParserFor(
-				cells.at(COMMAND_COLUMN));
-
-		final Map<String, String> parameters = parser.getExtractedCommandParameters();
-		final String command = cells.at(COMMAND_COLUMN).text();
+		Map<String, String> parameters =
+				FitUtils.extractCellParameterMap(cells.at(COMMAND_COLUMN));
+		String command = cells.at(COMMAND_COLUMN).text();
 		getExpressionCellContent();
 
 		dispatchCommand(command, parameters);
 	}
 
 	private String getExpressionCellContent() {
-		final Parse cell = cells.at(CHECK_EXPRESSION_COLUMN);
-		// FIXME: parse cell content
-		return cell.text();
+		Parse cell = cells.at(CHECK_EXPRESSION_COLUMN);
+		return validator.preProcess(cell);
 	}
 
 	private CaptureAppender getAppender() {
-		final String loggerName = cells.at(LOGGER_COLUMN).text();
-		final AppenderAttachable logger = getLogger(loggerName);
+		String loggerName = cells.at(LOGGER_COLUMN).text();
+		AppenderAttachable logger = getLogger(loggerName);
 
 		if (logger == null) {
 			error(cells.at(LOGGER_COLUMN), "Invalid logger");
 			return null;
 		}
 
-		final String appenderName = cells.at(APPENDER_COLUMN).text();
-		final String captureAppenderName = CaptureAppender.getAppenderNameFor(appenderName);
+		String appenderName = cells.at(APPENDER_COLUMN).text();
+		String captureAppenderName = CaptureAppender.getAppenderNameFor(appenderName);
 
 		final Appender appender = logger.getAppender(captureAppenderName);
 		if (appender == null) {
@@ -160,7 +153,7 @@ public class LogFixture extends Fixture {
 		return (CaptureAppender) appender;
 	}
 
-	private AppenderAttachable getLogger(final String loggerName) {
+	private AppenderAttachable getLogger(String loggerName) {
 		if ("rootLogger".equalsIgnoreCase(loggerName)) {
 			return loggerProvider.getRootLogger();
 		} else {
@@ -168,11 +161,10 @@ public class LogFixture extends Fixture {
 		}
 	}
 
-	private void dispatchCommand(final String command,
-			final Map<String, String> parameters) {
+	private void dispatchCommand(String command, Map<String, String> parameters) {
 
-		final LogEventAnalyzer analyzer = logEventAnalyzerFactory.getLogEventAnalyzerFor(
-				this, cells.at(CHECK_EXPRESSION_COLUMN), appender.getAllEvents());
+		LogEventAnalyzer analyzer = logEventAnalyzerFactory.getLogEventAnalyzerFor(
+				counts(), validator, cells.at(CHECK_EXPRESSION_COLUMN), appender.getAllEvents());
 
 		if ("contains".equalsIgnoreCase(command)) {
 			analyzer.processContains(parameters);

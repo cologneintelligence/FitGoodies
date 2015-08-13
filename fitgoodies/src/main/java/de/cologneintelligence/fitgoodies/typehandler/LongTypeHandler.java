@@ -31,7 +31,7 @@ public class LongTypeHandler extends TypeHandler<Long> {
 	}
 
 	@Override
-	public Long parse(String input) throws ParseException {
+	public Long unsafeParse(String input) throws ParseException {
 		return Long.parseLong(input);
 	}
 }

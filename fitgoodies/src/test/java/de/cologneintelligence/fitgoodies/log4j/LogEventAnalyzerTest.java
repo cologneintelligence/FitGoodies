@@ -18,15 +18,16 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Fixture;
 import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.Validator;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,16 +37,21 @@ import java.util.Map;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
 public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 	private LoggingEvent[] list;
 
+	@Mock
+	private Validator validator;
+
+	private Counts counts;
+
 	@Before
 	public void setUp() throws Exception {
 		list = prepareCheckForGreenTest();
+		counts = new Counts();
 	}
 
 	private LoggingEvent[] prepareCheckForGreenTest() {
@@ -67,56 +73,63 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testParseContains() {
-		final Fixture fixture = aFixture();
-		final Parse cell1 = parseTd("a message");
-		final Parse cell2 = parseTd("rOOt");
-		final Parse cell3 = parseTd("non existing message");
+		Parse cell1 = parseTd("a message");
+		Parse cell2 = parseTd("rOOt");
+		Parse cell3 = parseTd("non existing message");
 
-		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(
-				fixture, cell1, list);
+		when(validator.preProcess(cell1)).thenReturn("a message");
+		when(validator.preProcess(cell2)).thenReturn("rOOt");
+		when(validator.preProcess(cell3)).thenReturn("non existing message");
+
+		LogEventAnalyzer analyzer = new LogEventAnalyzer(
+				counts, validator, cell1, list);
 		analyzer.processContains(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzerImpl(fixture, cell2, list);
+		analyzer = new LogEventAnalyzer(counts, validator, cell2, list);
 		analyzer.processContains(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzerImpl(fixture, cell3, list);
+		analyzer = new LogEventAnalyzer(counts, validator, cell3, list);
 		analyzer.processContains(new HashMap<String, String>());
 
 		assertThat(cell1.text(), is(equalTo("a message (expected)a message (actual)")));
 		assertThat(cell2.text(), is(equalTo("rOOt (expected)a root message (actual)")));
 		assertThat(cell3.text(), is(equalTo("non existing message")));
 
-		assertThat(fixture.counts().right, is(2));
-		assertThat(fixture.counts().wrong, is(1));
+		assertThat(counts.right, is(2));
+		assertThat(counts.wrong, is(1));
 	}
 
 	@Test
 	public void testParseWithParameters() {
-		final Fixture fixture = aFixture();
-		final Parse cell1 = parseTd("no error");
-		final Parse cell2 = parseTd("root");
-		final Parse cell3 = parseTd("no error");
-		final Parse cell4 = parseTd("no error");
+		Parse cell1 = parseTd("no error");
+		Parse cell2 = parseTd("root");
+		Parse cell3 = parseTd("no error 23");
+		Parse cell4 = parseTd("42 no error");
+
+		when(validator.preProcess(cell1)).thenReturn("no error");
+		when(validator.preProcess(cell2)).thenReturn("root");
+		when(validator.preProcess(cell3)).thenReturn("no error");
+		when(validator.preProcess(cell4)).thenReturn("no error");
 
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("minlevel", "Info");
 		parameters.put("thread", "thread2");
-		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(fixture, cell1, list);
+		LogEventAnalyzer analyzer = new LogEventAnalyzer(counts, validator, cell1, list);
 		analyzer.processContains(parameters);
 
 		parameters.clear();
 		parameters.put("minlevel", "error");
-		analyzer = new LogEventAnalyzerImpl(fixture, cell2, list);
+		analyzer = new LogEventAnalyzer(counts, validator, cell2, list);
 		analyzer.processNotContains(parameters);
 
 		parameters.clear();
 		parameters.put("thread", "main");
-		analyzer = new LogEventAnalyzerImpl(fixture, cell3, list);
+		analyzer = new LogEventAnalyzer(counts, validator, cell3, list);
 		analyzer.processNotContains(parameters);
 
 		parameters.clear();
 		parameters.put("thread", "thread5");
-		analyzer = new LogEventAnalyzerImpl(fixture, cell4, list);
+		analyzer = new LogEventAnalyzer(counts, validator, cell4, list);
 		analyzer.processContains(parameters);
 
 		assertThat(cell1.text(), is(equalTo("no error (expected)no error (actual)")));
@@ -124,88 +137,90 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		assertThat(cell3.text(), is(equalTo("no error")));
 		assertThat(cell4.text(), is(equalTo("no error")));
 
-		assertThat(fixture.counts().right, is(3));
-		assertThat(fixture.counts().wrong, is(1));
+		assertThat(counts.right, is(3));
+		assertThat(counts.wrong, is(1));
 	}
 
 	@Test
 	public void testNotContains() {
-		final Fixture fixture = aFixture();
-		final Parse cell1 = parseTd("an error");
-		final Parse cell2 = parseTd("toor");
-		final Parse cell3 = parseTd("root");
+		Parse cell1 = parseTd("an error X");
+		Parse cell2 = parseTd("toor X");
+		Parse cell3 = parseTd("root Y");
 
-		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(
-				fixture, cell1, list);
+		when(validator.preProcess(cell1)).thenReturn("an error");
+		when(validator.preProcess(cell2)).thenReturn("toor");
+		when(validator.preProcess(cell3)).thenReturn("root");
+
+		LogEventAnalyzer analyzer = new LogEventAnalyzer(counts, validator, cell1, list);
 		analyzer.processNotContains(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzerImpl(fixture, cell2, list);
+		analyzer = new LogEventAnalyzer(counts, validator, cell2, list);
 		analyzer.processNotContains(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzerImpl(fixture, cell3, list);
+		analyzer = new LogEventAnalyzer(counts, validator, cell3, list);
 		analyzer.processNotContains(new HashMap<String, String>());
 
 		assertThat(cell1.text(), is(equalTo("an error")));
 		assertThat(cell2.text(), is(equalTo("toor")));
 		assertThat(cell3.text(), is(equalTo("root expecteda root message actual")));
 
-		assertThat(fixture.counts().right, is(2));
-		assertThat(fixture.counts().wrong, is(1));
-	}
-
-	public Fixture aFixture() {
-		Counts counts = new Counts();
-		final Fixture fixture = mock(Fixture.class);
-		when(fixture.counts()).thenReturn(counts);
-		return fixture;
+		assertThat(counts.right, is(2));
+		assertThat(counts.wrong, is(1));
 	}
 
 	@Test
 	public void testContainsException() {
-		final Fixture fixture = aFixture();
-		final Parse cell1 = parseTd("xXx");
-		final Parse cell2 = parseTd("RuntiMEException");
-		final Parse cell3 = parseTd("IllegalStateException");
+		Parse cell1 = parseTd("xXx");
+		Parse cell2 = parseTd("RuntiMEException");
+		Parse cell3 = parseTd("IllegalStateException");
 
-		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(
-				fixture, cell1, list);
+		when(validator.preProcess(cell1)).thenReturn("xXx");
+		when(validator.preProcess(cell2)).thenReturn("RuntiMEException");
+		when(validator.preProcess(cell3)).thenReturn("IllegalStateException");
+
+
+		LogEventAnalyzer analyzer = new LogEventAnalyzer(
+				counts, validator, cell1, list);
 		analyzer.processContainsException(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzerImpl(fixture, cell2, list);
+		analyzer = new LogEventAnalyzer(counts, validator, cell2, list);
 		analyzer.processContainsException(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzerImpl(fixture, cell3, list);
+		analyzer = new LogEventAnalyzer(counts, validator, cell3, list);
 		analyzer.processContainsException(new HashMap<String, String>());
 
 		assertThat(cell1.text(), is(equalTo("xXx (expected)java.lang.RuntimeException: xxx (actual)")));
 		assertThat(cell2.text(), is(equalTo("RuntiMEException (expected)java.lang.RuntimeException: xxx (actual)")));
 		assertThat(cell3.text(), is(equalTo("IllegalStateException")));
 
-		assertThat(fixture.counts().right, is(2));
-		assertThat(fixture.counts().wrong, is(1));
+		assertThat(counts.right, is(2));
+		assertThat(counts.wrong, is(1));
 	}
 
 	@Test
 	public void testNotContainsException() {
-		final Fixture fixture = aFixture();
-		final Parse cell1 = parseTd("Error message");
-		final Parse cell2 = parseTd("IllegalStateException");
-		final Parse cell3 = parseTd("Exception");
+		Parse cell1 = parseTd("Error message");
+		Parse cell2 = parseTd("IllegalStateException");
+		Parse cell3 = parseTd("Exception");
 
-		LogEventAnalyzer analyzer = new LogEventAnalyzerImpl(fixture, cell1, list);
+		when(validator.preProcess(cell1)).thenReturn("Error message");
+		when(validator.preProcess(cell2)).thenReturn("IllegalStateException");
+		when(validator.preProcess(cell3)).thenReturn("Exception");
+
+		LogEventAnalyzer analyzer = new LogEventAnalyzer(counts, validator, cell1, list);
 		analyzer.processNotContainsException(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzerImpl(fixture, cell2, list);
+		analyzer = new LogEventAnalyzer(counts, validator, cell2, list);
 		analyzer.processNotContainsException(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzerImpl(fixture, cell3, list);
+		analyzer = new LogEventAnalyzer(counts, validator, cell3, list);
 		analyzer.processNotContainsException(new HashMap<String, String>());
 
 		assertThat(cell1.text(), is(equalTo("Error message")));
 		assertThat(cell2.text(), is(equalTo("IllegalStateException")));
 		assertThat(cell3.text(), is(equalTo("Exception expectedjava.lang.RuntimeException: xxx actual")));
 
-		assertThat(fixture.counts().right, is(2));
-		assertThat(fixture.counts().wrong, is(1));
+		assertThat(counts.right, is(2));
+		assertThat(counts.wrong, is(1));
 	}
 }

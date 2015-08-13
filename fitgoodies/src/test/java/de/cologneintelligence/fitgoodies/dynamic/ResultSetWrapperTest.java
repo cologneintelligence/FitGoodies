@@ -19,7 +19,7 @@
 
 package de.cologneintelligence.fitgoodies.dynamic;
 
-import de.cologneintelligence.fitgoodies.ScientificDouble;
+import de.cologneintelligence.fitgoodies.types.ScientificDouble;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.hamcrest.Matcher;
 import org.junit.Test;

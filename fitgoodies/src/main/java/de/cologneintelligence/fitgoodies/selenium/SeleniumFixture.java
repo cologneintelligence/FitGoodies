@@ -19,14 +19,11 @@
 package de.cologneintelligence.fitgoodies.selenium;
 
 import com.thoughtworks.selenium.SeleniumException;
-
 import de.cologneintelligence.fitgoodies.ActionFixture;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
+import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
 import de.cologneintelligence.fitgoodies.selenium.command.CommandFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.Parse;
 
 /**
  * Run the selenium-IDE and record your test-case. Save the result as html and
@@ -118,7 +115,7 @@ public class SeleniumFixture extends ActionFixture {
         return helper.getResultFile() + ".screenshot" + index + ".png";
     }
 
-    private String getColumnOrEmptyString(final Parse cells, final int column) throws CrossReferenceProcessorShortcutException {
+    private String getColumnOrEmptyString(final Parse cells, final int column) {
         Parse parse = cells;
         for (int i = 0; i < column; ++i) {
             if (parse.more == null) {
@@ -127,8 +124,7 @@ public class SeleniumFixture extends ActionFixture {
             parse = parse.more;
         }
 
-        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        return helper.parseBody(parse.text(), null);
+        return validator.preProcess(parse);
     }
 
     private void checkResult(final Parse cells, final String result) {

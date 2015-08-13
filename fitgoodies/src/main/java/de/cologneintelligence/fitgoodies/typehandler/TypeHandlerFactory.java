@@ -22,7 +22,7 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class TypeHandlerFactory {
+public class TypeHandlerFactory {
     private final Map<Class<?>, Class<? extends TypeHandler<?>>> adapters = new HashMap<>();
 
     public TypeHandlerFactory() {
@@ -44,8 +44,8 @@ public final class TypeHandlerFactory {
         register(StringBufferTypeHandler.class);
         register(StringBuilderTypeHandler.class);
         register(StringTypeHandler.class);
+        register(TestableStringTypeHandler.class);
 
-        // FIXME
         adapters.put(Boolean.TYPE, BooleanTypeHandler.class);
         adapters.put(Character.TYPE, CharTypeHandler.class);
         adapters.put(Byte.TYPE, ByteTypeHandler.class);

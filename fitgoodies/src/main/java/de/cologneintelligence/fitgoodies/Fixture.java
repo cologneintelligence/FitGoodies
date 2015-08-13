@@ -3,28 +3,25 @@ package de.cologneintelligence.fitgoodies;
 // Copyright (c) 2002-2005 Cunningham & Cunningham, Inc.
 // Released under the terms of the GNU General Public License version 2 or later.
 
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandlerFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
+import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
+import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiverFactory;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Fixture {
 
-	protected static Pattern METHOD_PATTERN = Pattern.compile("(.*)(?:\\(\\)|\\?)");
-	private static Pattern PAREMETER_PATTERN = Pattern.compile("^(.*)\\s*\\[\\s*(.*?)\\s*\\]\\s*$");
-
 	private Counts counts = new Counts();
 	protected String[] args;
-	private String cellParameter;
+
+	protected TypeHandlerFactory typeHandlerFactory = DependencyManager.getOrCreate(TypeHandlerFactory.class);
+	protected ValueReceiverFactory valueReceiverFactory = DependencyManager.getOrCreate(ValueReceiverFactory.class);
+	protected Validator validator = DependencyManager.getOrCreate(Validator.class);
 
 	/**
 	 * Sets the fixture parameters.
@@ -71,26 +68,17 @@ public class Fixture {
 	 * @param defaultValue the result value if the argument does not exist
 	 * @return the argument's value without namespaces, or defaultValue
 	 * @see #getArgNames() getArgs
-	 * @see #copyParamsToFixture(TypeHandlerFactory) copyParamsToFixture
+	 * @see #copyParamsToFixture() copyParamsToFixture
 	 */
 	public String getArg(final String argName, final String defaultValue) {
-		CrossReferenceHelper crossReferenceHelper =
-				DependencyManager.getOrCreate(CrossReferenceHelper.class);
-
 		if (args == null) {
 			return defaultValue;
 		}
 
 		for (final String argument : args) {
-			final String[] pair = argument.split("=", 2);
-			if (pair.length == 2) {
-				if (pair[0].trim().equalsIgnoreCase(argName)) {
-					try {
-						return crossReferenceHelper.parseBody(pair[1].trim(), "");
-					} catch (final CrossReferenceProcessorShortcutException e) {
-						return "";
-					}
-				}
+			final String[] pair = argument.trim().split("\\s*=\\s*", 2);
+			if (pair.length == 2 && pair[0].equalsIgnoreCase(argName)) {
+				return validator.preProcess(pair[1]);
 			}
 		}
 
@@ -107,14 +95,14 @@ public class Fixture {
 	 * @param table the table to be processed
 	 */
 	public void doTable(final Parse table) {
-		copyParamsToFixture(DependencyManager.getOrCreate(TypeHandlerFactory.class));
+		copyParamsToFixture();
 
 		try {
 			setUp();
 
 			try {
 				doRows(table.parts.more);
-			} catch (final Exception e) {
+			} catch (Exception e) {
 				exception(table.parts.parts, e);
 			}
 
@@ -126,6 +114,7 @@ public class Fixture {
 
 	/**
 	 * extracts and removes parameters from a row.
+	 *
 	 * @param row row to process
 	 * @return extracted parameters
 	 */
@@ -134,7 +123,7 @@ public class Fixture {
 		final List<String> result = new ArrayList<>();
 
 		while (cell != null) {
-			result.add(extractCellParameter(cell));
+			result.add(FitUtils.extractCellParameter(cell));
 			cell = cell.more;
 		}
 
@@ -195,36 +184,24 @@ public class Fixture {
 	 * If these members do not exist, the argument is skipped. You can still
 	 * read the values using {@link #getArg(String, String)}.
 	 *
-	 * @param thFactory TypeAdapterHelper to resolve types
 	 * @see #getArg(String, String) getArg
 	 */
-	public void copyParamsToFixture(final TypeHandlerFactory thFactory) {
+	public void copyParamsToFixture() {
 		for (final String fieldName : getArgNames()) {
+			ValueReceiver valueReceiver;
 			try {
-				final Field field = getClass().getField(fieldName);
-				ValueReceiver ta = ValueReceiver.on(this, field);
-				TypeHandler handler = thFactory.getHandler(ta.getType(), null);
-
-				final String fieldValueString = getArg(fieldName, null);
-				final Object fieldValue = handler.parse(fieldValueString);
-				ta.set(this, fieldValue);
-			} catch (final Exception ignored) {
+				valueReceiver = valueReceiverFactory.createReceiver(this, fieldName);
+			} catch (NoSuchMethodException | NoSuchFieldException e) {
+				continue;
 			}
-		}
-	}
 
-	/**
-	 * extracts and removes parameters from a cell.
-	 * @param cell cell to process
-	 * @return the extracted parameter or {@code null}
-	 */
-	public static String extractCellParameter(final Parse cell) {
-		final Matcher matcher = PAREMETER_PATTERN.matcher(cell.text());
-		if (matcher.matches()) {
-			cell.body = matcher.group(1);
-			return matcher.group(2);
-		} else {
-			return null;
+			TypeHandler handler = createTypeHandler(valueReceiver, null);
+
+			String fieldValueString = getArg(fieldName, null);
+			try {
+				Object fieldValue = handler.parse(fieldValueString);
+				valueReceiver.set(this, fieldValue);
+			} catch (Exception ignored) { }
 		}
 	}
 
@@ -233,7 +210,7 @@ public class Fixture {
 	 *
 	 * @return a list of all given argument names.
 	 * @see #getArg(String, String) getArg
-	 * @see #copyParamsToFixture(TypeHandlerFactory)  copyParamsToFixture
+	 * @see #copyParamsToFixture()  copyParamsToFixture
 	 */
 	protected String[] getArgNames() {
 		final List<String> result = new ArrayList<>();
@@ -295,174 +272,27 @@ public class Fixture {
 	 * Replacement of {@code check} which resolves cross-references
 	 * before calling the original check method of fit.
 	 *
-	 * @param cell the cell to check
-	 * @param valueReceiver    - TypeAdapter to use
+	 * @param cell          the cell to check
+	 * @param valueReceiver - TypeAdapter to use
+	 * @param currentCellParameter
 	 */
-	public void check(final Parse cell, ValueReceiver valueReceiver) {
-		TypeHandler typeHandler = createTypeHandler(valueReceiver);
-
-		valueReceiver = processCell(cell, valueReceiver);
-		if (valueReceiver != null) {
-			check2(cell, valueReceiver, typeHandler);
-		}
-	}
-
-	public void check2(Parse cell, ValueReceiver valueReceiver, TypeHandler typeHandler) {
-		String text = cell.text();
-		if (text.equals("")) {
-			try {
-				info(cell, typeHandler.toString(valueReceiver.get()));
-			} catch (Exception e) {
-				info(cell, "error");
-			}
-		} else if (valueReceiver == null) {
-			ignore(cell);
-		} else if (text.equals("error")) {
-			try {
-				Object result = valueReceiver.get();
-				wrong(cell, typeHandler.toString(result));
-			} catch (IllegalAccessException e) {
-				exception(cell, e);
-			} catch (Exception e) {
-				right(cell);
-			}
-		} else {
-			try {
-				Object result = valueReceiver.get();
-				if (typeHandler.equals(typeHandler.parse(text), result)) {
-					right(cell);
-				} else {
-					wrong(cell, typeHandler.toString(result));
-				}
-			} catch (Exception e) {
-				exception(cell, e);
-			}
-		}
-	}
-
-	/* Added by Rick, from FitNesse */
-	protected String[] getArgs() {
-		return args;
+	public void check(final Parse cell, ValueReceiver valueReceiver, String currentCellParameter) {
+		validator.process(cell, counts, valueReceiver, currentCellParameter, typeHandlerFactory);
 	}
 
 	public Counts counts() {
 		return counts;
 	}
 
-	/**
-	 * Sets the parameter of the selected cell.
-	 *
-	 * @param parameter the cell parameter to set
-	 * @see #getCellParameter() getCellParameter()
-	 */
-	protected void setCurrentCellParameter(final String parameter) {
-		this.cellParameter = parameter;
-	}
-
-	/**
-	 * Returns the parameter of the selected cell.
-	 *
-	 * @return the cell parameter
-	 * @see #setCurrentCellParameter(String) setCellParameter(String)
-	 */
-	protected String getCellParameter() {
-		return cellParameter;
-	}
-
-
-	/**
-	 * Resolves cross references and decides, whether more processing
-	 * (a call to {@code check}) is necessary.
-	 * @param cell the cell to parse
-	 * @param valueReceiver the type bound adapter which is used to compare the cell content
-	 * @return a cached {@code TypeAdapter}, whether the cell should be
-	 * 		{@code check}'ed, {@code null} if no more processing is
-	 * 		required (the cell is then marked as right or wrong from
-	 * 		{@code processCell})
-	 */
-	protected ValueReceiver processCell(final Parse cell, final ValueReceiver valueReceiver) {
-		CrossReferenceHelper crossReferenceHelper =
-				DependencyManager.getOrCreate(CrossReferenceHelper.class);
-
-		TypeHandler typeHandler = createTypeHandler(valueReceiver);
-
-		String actualStringValue = "";
-		boolean callParentCheck = true;
-
-		Object obj;
-		try {
-			obj = valueReceiver.get();
-			if (obj != null) {
-				actualStringValue = typeHandler.toString(obj);
-			}
-		} catch (final Exception e) {
-			return valueReceiver;
-			// throw new RuntimeException(e);
-		}
-
-		try {
-			cell.body = crossReferenceHelper.parseBody(cell.body, actualStringValue);
-		} catch (final CrossReferenceProcessorShortcutException e) {
-			setShortCutMessage(cell, actualStringValue, obj, e);
-			callParentCheck = false;
-		}
-		if (callParentCheck) {
-			return valueReceiver;
-		} else {
-			return null;
-		}
-	}
-
-	protected TypeHandler createTypeHandler(ValueReceiver valueReceiver) {
-		TypeHandlerFactory typeHandlerFactory =
-				DependencyManager.getOrCreate(TypeHandlerFactory.class);
-
+	protected TypeHandler createTypeHandler(ValueReceiver valueReceiver, String cellParameter) {
 		return typeHandlerFactory.getHandler(valueReceiver.getType(), cellParameter);
 	}
 
-	protected void setShortCutMessage(final Parse cell,
-	                                       final String actualStringValue, final Object obj,
-	                                       final CrossReferenceProcessorShortcutException e) {
-		if (e.isOk()) {
-			if (obj == null) {
-				cell.body = "(null)";
-			} else {
-				cell.body = actualStringValue;
-			}
-
-			cell.body += " <font color=\"#808080\">"
-					+ FitUtils.escape(e.getMessage()) + "</font>";
-			FitUtils.right(cell);
-			counts.right++;
-		} else {
-			cell.body = e.getMessage();
-
-			if (obj == null) {
-				FitUtils.wrong(cell, "(null)");
-				counts.wrong++;
-			} else {
-				FitUtils.wrong(cell, actualStringValue);
-				counts.wrong++;
-			}
-		}
+	protected ValueReceiver createReceiver(Object target, String name) throws NoSuchMethodException, NoSuchFieldException {
+		return valueReceiverFactory.createReceiver(target, name);
 	}
 
-	protected ValueReceiver createReceiver(Object target, String name) throws NoSuchMethodException, NoSuchFieldException {
-		ValueReceiver receiver;
-		if (name.equals("")) {
-			receiver = null;
-		} else {
-			Matcher matcher = METHOD_PATTERN.matcher(name);
-
-			if (matcher.find()) {
-				final String methodName = FitUtils.camel(matcher.group(1));
-				final Method method = target.getClass().getMethod(methodName);
-				receiver = ValueReceiver.on(target, method);
-			} else {
-				final Field field = target.getClass().getField(FitUtils.camel(name));
-				receiver = ValueReceiver.on(target, field);
-			}
-		}
-		return receiver;
+	protected ValueReceiver createReceiver(Object target, Method method) throws NoSuchMethodException, NoSuchFieldException {
+		return valueReceiverFactory.createReceiver(target, method);
 	}
 }

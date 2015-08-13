@@ -48,21 +48,21 @@ public class DateTypeHandlerTest extends FitGoodiesTestCase {
 	public void testParser() throws Exception {
 		TypeHandler<Date> p = new DateTypeHandler(null);
 		final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
-		assertThat(p.parse("01/18/1987"), (Matcher) is(equalTo(dateFormat.parse("01/18/1987"))));
+		assertThat(p.unsafeParse("01/18/1987"), (Matcher) is(equalTo(dateFormat.parse("01/18/1987"))));
 
 		p = new DateTypeHandler("de_DE, dd.MM.yyyy");
-		assertThat(p.parse("18.01.1987"), (Matcher) is(equalTo(dateFormat.parse("01/18/1987"))));
+		assertThat(p.unsafeParse("18.01.1987"), (Matcher) is(equalTo(dateFormat.parse("01/18/1987"))));
 
 		p = new DateTypeHandler("de_DE, dd.MM.yyyy");
-		assertThat(p.parse("08.03.1989"), (Matcher) is(equalTo(dateFormat.parse("03/08/1989"))));
+		assertThat(p.unsafeParse("08.03.1989"), (Matcher) is(equalTo(dateFormat.parse("03/08/1989"))));
 
 		p = new DateTypeHandler(null);
-		assertThat(p.parse("03/08/1989"), (Matcher) is(equalTo(dateFormat.parse("03/08/1989"))));
+		assertThat(p.unsafeParse("03/08/1989"), (Matcher) is(equalTo(dateFormat.parse("03/08/1989"))));
 	}
 
 	@Test(expected = ParseException.class)
 	public void testException() throws ParseException {
-		new DateTypeHandler("invalid").parse("01/01/1970");
+		new DateTypeHandler("invalid").unsafeParse("01/01/1970");
 	}
 
 	@Test

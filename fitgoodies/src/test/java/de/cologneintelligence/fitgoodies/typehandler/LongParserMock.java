@@ -25,7 +25,7 @@ public class LongParserMock extends TypeHandler<Long> {
 	}
 
 	@Override
-	public final Long parse(final String s) {
+	public final Long unsafeParse(final String s) {
 		if (parameter != null) {
 			return (long) 7;
 		} else {

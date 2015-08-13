@@ -19,10 +19,10 @@
 
 package de.cologneintelligence.fitgoodies.test;
 
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,12 +32,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.io.File;
 import java.text.ParseException;
 
-import static de.cologneintelligence.fitgoodies.test.FieldMatcher.hasField;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public abstract class FitGoodiesTestCase {
+
 	protected static Counts mkCounts(final int r, final int w, final int i,
 	                                 final int e) {
 		final Counts c = new Counts();
@@ -67,30 +67,28 @@ public abstract class FitGoodiesTestCase {
 		return helper.finishMock(pattern);
 	}
 
-	protected static void assertCounts(final Counts counts, final Parse table, final int right, final int wrong, final int ignores, final int exceptions) {
-		assertThat("Wrong counts! First exception: " + findException(table), counts, allOf(
-				hasField("right", is(equalTo(right))),
-				hasField("wrong", is(equalTo(wrong))),
-				hasField("ignores", is(equalTo(ignores))),
-				hasField("exceptions", is(equalTo(exceptions)))
-		));
+	protected void assertCounts(final Counts counts, final Parse table, final int right, final int wrong, final int ignores, final int exceptions) {
+		assertThat("Wrong counts! First exception: " + findException(table), counts,
+				equalTo(new Counts(right, wrong, ignores, exceptions)));
 	}
 
 	private static String findException(Parse table) {
-		Parse row = table.parts;
-		while (row != null) {
-			Parse cell = row.parts;
-			while (cell != null) {
+		if (table != null) {
+			Parse row = table.parts;
+			while (row != null) {
+				Parse cell = row.parts;
+				while (cell != null) {
 
-				if (cell.tag.contains("bgcolor=\"" + FitUtils.HTML_YELLOW + "\"")) {
-					final String body = cell.body;
-					final String trace = body.replaceFirst("^.*<pre>", "").replaceFirst("</pre>.*$", "");
-					return Parse.unescape(trace);
+					if (cell.tag.contains("bgcolor=\"" + FitUtils.HTML_YELLOW + "\"")) {
+						final String body = cell.body;
+						final String trace = body.replaceFirst("^.*<pre>", "").replaceFirst("</pre>.*$", "");
+						return Parse.unescape(trace);
+					}
+
+					cell = cell.more;
 				}
-
-				cell = cell.more;
+				row = row.more;
 			}
-			row = row.more;
 		}
 		return "none";
 	}
@@ -177,4 +175,5 @@ public abstract class FitGoodiesTestCase {
 	protected Parse parseTr(String... tds) {
 		return parse(tr(tds), "tr", "td");
 	}
+
 }

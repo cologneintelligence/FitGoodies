@@ -31,7 +31,7 @@ public class CharTypeHandler extends TypeHandler<Character> {
 	}
 
 	@Override
-	public Character parse(String input) throws ParseException {
+	public Character unsafeParse(String input) throws ParseException {
 		if (input.length() != 1) {
 			throw new ParseException("Expected String of length 1", 0);
 		}

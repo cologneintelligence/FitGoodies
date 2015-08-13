@@ -46,36 +46,36 @@ public class ArrayValueTypeHandlerTest extends FitGoodiesTestCase {
     public void testEqualsTrue() throws Exception {
         String[] arr1 = new String[] {"a", "b", "c"};
         String[] arr2 = new String[] {"a", "b", "c"};
-        when(innerHandler.equals("a", "a")).thenReturn(true);
-        when(innerHandler.equals("b", "b")).thenReturn(true);
-        when(innerHandler.equals("c", "c")).thenReturn(true);
+        when(innerHandler.unsafeEquals("a", "a")).thenReturn(true);
+        when(innerHandler.unsafeEquals("b", "b")).thenReturn(true);
+        when(innerHandler.unsafeEquals("c", "c")).thenReturn(true);
 
-        assertThat(handler.equals(arr1, arr2), is(true));
+        assertThat(handler.unsafeEquals(arr1, arr2), is(true));
 
-        verify(innerHandler).equals("a", "a");
-        verify(innerHandler).equals("b", "b");
-        verify(innerHandler).equals("c", "c");
+        verify(innerHandler).unsafeEquals("a", "a");
+        verify(innerHandler).unsafeEquals("b", "b");
+        verify(innerHandler).unsafeEquals("c", "c");
     }
 
     @Test
     public void testEqualsFalse() throws Exception {
         String[] arr1 = new String[] {"a", "b", "c"};
         String[] arr2 = new String[] {"1", "2", "3"};
-        when(innerHandler.equals("a", "1")).thenReturn(true);
-        when(innerHandler.equals("b", "2")).thenReturn(false);
+        when(innerHandler.unsafeEquals("a", "1")).thenReturn(true);
+        when(innerHandler.unsafeEquals("b", "2")).thenReturn(false);
 
-        assertThat(handler.equals(arr1, arr2), is(false));
+        assertThat(handler.unsafeEquals(arr1, arr2), is(false));
 
-        verify(innerHandler).equals("a", "1");
-        verify(innerHandler).equals("b", "2");
-        verify(innerHandler, never()).equals("c", "3");
+        verify(innerHandler).unsafeEquals("a", "1");
+        verify(innerHandler).unsafeEquals("b", "2");
+        verify(innerHandler, never()).unsafeEquals("c", "3");
     }
 
     @Test
     public void testEqualsWithLength() throws Exception {
         String[] arr1 = new String[9];
         String[] arr2 = new String[8];
-        assertThat(handler.equals(arr1, arr2), is(false));
+        assertThat(handler.unsafeEquals(arr1, arr2), is(false));
     }
 
     @SuppressWarnings("unchecked")
@@ -128,7 +128,7 @@ public class ArrayValueTypeHandlerTest extends FitGoodiesTestCase {
         when(innerHandler.getType()).thenReturn(Integer.TYPE);
         when(innerHandler.parse("2")).thenReturn(4);
 
-        int[] array = (int[]) handler.parse(toParse);
+        int[] array = (int[]) handler.unsafeParse(toParse);
 
         assertThat(array.length, is(equalTo((Object) 1)));
         assertThat(array[0], is(4));

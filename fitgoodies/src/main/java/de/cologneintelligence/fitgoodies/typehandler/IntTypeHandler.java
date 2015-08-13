@@ -31,7 +31,7 @@ public class IntTypeHandler extends TypeHandler<Integer> {
 	}
 
 	@Override
-	public Integer parse(String input) throws ParseException {
+	public Integer unsafeParse(String input) throws ParseException {
 		return Integer.parseInt(input);
 	}
 }

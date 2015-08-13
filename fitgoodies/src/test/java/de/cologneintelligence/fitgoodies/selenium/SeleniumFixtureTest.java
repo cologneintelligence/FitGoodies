@@ -21,11 +21,8 @@ package de.cologneintelligence.fitgoodies.selenium;
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.SeleniumException;
 import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.references.processors.DateProviderCrossReferenceProcessor;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.util.DateProvider;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -148,24 +145,6 @@ public class SeleniumFixtureTest extends FitGoodiesTestCase {
         doCommandThrowsRuntimeException();
         fixture.doTable(table);
         assertExceptionCell("java.lang.RuntimeException: Error");
-    }
-
-    @Test
-    public void testInvokeSeleniumWithCrossReference() throws Exception {
-        final Parse table = parseTable(
-                        tr("command", "arg1", "${dateProvider.getCurrentDate()}"));
-        final DateProvider dateProvider = mock(DateProvider.class);
-        final String date = "21.01.2009";
-        final DateProviderCrossReferenceProcessor processor = new DateProviderCrossReferenceProcessor(dateProvider);
-        final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        helper.getProcessors().remove(processor);
-        helper.getProcessors().add(processor);
-        when(dateProvider.getCurrentDate()).thenReturn(date);
-
-        when(commandProcessor.doCommand("command", new String[]{"arg1", date})).thenReturn("OK");
-
-        fixture.doTable(table);
-        assertRightCell();
     }
 
     @Test

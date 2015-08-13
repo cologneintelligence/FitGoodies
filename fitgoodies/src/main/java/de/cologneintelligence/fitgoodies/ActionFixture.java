@@ -4,23 +4,32 @@ package de.cologneintelligence.fitgoodies;
 // Released under the terms of the GNU General Public License version 2 or later.
 
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
-import de.cologneintelligence.fitgoodies.typehandler.TypeHandlerFactory;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.util.WaitForResult;
+import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 
 import java.lang.reflect.Method;
+import java.text.ParseException;
 
 public class ActionFixture extends Fixture {
 
-	private static final int DEFAULT_SLEEP_TIME = 100;
+	public static final long DEFAULT_SLEEP_TIME = 100;
+
+	protected final WaitForResult waitForResult;
 
 	protected Parse cells;
 	protected Object actor;
 	protected static Class empty[] = {};
 
-	public ActionFixture() {
+	private String currentCellParameter;
+
+	public ActionFixture(WaitForResult waitForResult) {
+		this.waitForResult = waitForResult;
 		this.actor = this;
+	}
+
+	public ActionFixture() {
+		this(new WaitForResult());
 	}
 
 	// Traversal ////////////////////////////////
@@ -42,14 +51,19 @@ public class ActionFixture extends Fixture {
 	}
 
 	public void enter() throws Exception {
-		final Method method = method(1);
-		final Class<?> type = method.getParameterTypes()[0];
-		final TypeHandler th = getTypeHandler(type);
-		if (th != null) {
-			// FIXME: resolve references
-			final Object[] args = {th.parse(cells.more.more.text())};
-			method.invoke(actor, args);
-		}
+		Method method = method(1);
+		String cellText = cells.more.more.text();
+		method.invoke(actor, parse(method.getParameterTypes()[0], cellText));
+	}
+
+	private <T> T parse(Class<?> type, String cellText) throws java.text.ParseException {
+		String preprocessedText = validator.preProcess(cellText);
+		TypeHandler th = getTypeHandler(type, currentCellParameter);
+
+		@SuppressWarnings("unchecked")
+		T result = (T) th.parse(preprocessedText);
+
+		return result;
 	}
 
 
@@ -58,8 +72,8 @@ public class ActionFixture extends Fixture {
 	}
 
 	public void check() throws Exception {
-		ValueReceiver adapter = ValueReceiver.on(actor, method(0));
-		check(cells.more.more, adapter);
+		ValueReceiver receiver = createReceiver(actor, method(0));
+		check(cells.more.more, receiver, null);
 	}
 
 	// Utility //////////////////////////////////
@@ -68,12 +82,12 @@ public class ActionFixture extends Fixture {
 		return method(FitUtils.camel(cells.more.text()), args);
 	}
 
-	protected Method method(String test, int args) throws NoSuchMethodException {
+	protected Method method(String name, int args) throws NoSuchMethodException {
 		Method methods[] = actor.getClass().getMethods();
 		Method result = null;
 
 		for (Method m : methods) {
-			if (m.getName().equals(test) && m.getParameterTypes().length == args) {
+			if (m.getName().equals(name) && m.getParameterTypes().length == args) {
 				if (result == null) {
 					result = m;
 				} else {
@@ -82,7 +96,7 @@ public class ActionFixture extends Fixture {
 			}
 		}
 		if (result == null) {
-			throw new NoSuchMethodException();
+			throw new NoSuchMethodException(name);
 		}
 		return result;
 	}
@@ -94,23 +108,22 @@ public class ActionFixture extends Fixture {
 	 * parameter and a timeout in ms as the second parameter.<br>
 	 * The method is called every {@code sleepTime}ms, until it returns true or the timeout is
 	 * exceeded.
-	 * @throws Exception propagated to fit
 	 */
-	public void waitFor() throws Exception {
-		final Method method = method(0);
-		TypeHandler handler = getTypeHandler(Long.class);
-		final long maxTime = (Long) handler.parse(cells.more.more.text());
-		final long sleepTime = getSleepTime(handler);
-		final WaitForResult waitForResult = new WaitForResult(method, actor, maxTime);
-		waitForResult.setSleepTime(sleepTime);
-		waitForResult.repeatInvokeWithTimeout();
+	public void waitFor() throws ParseException, NoSuchMethodException {
+		Method method = method(0);
+
+		long maxTime = parse(Long.class, cells.more.more.text());
+		long sleepTime = getSleepTime();
+
+		waitForResult.wait(actor, method, maxTime, sleepTime);
+
 		writeResultIntoCell(waitForResult);
 	}
 
-	private long getSleepTime(final TypeHandler handler) throws Exception {
+	private long getSleepTime() throws ParseException {
 		long sleepTime = DEFAULT_SLEEP_TIME;
-		if (cells.more.more.more != null) {
-			sleepTime = (Long) handler.parse(cells.more.more.more.text());
+		if (cells.size() > 3) {
+			sleepTime = parse(Long.class, cells.at(3).text());
 		}
 		return sleepTime;
 	}
@@ -125,9 +138,8 @@ public class ActionFixture extends Fixture {
 		}
 	}
 
-	private TypeHandler getTypeHandler(final Class<?> type) {
-		final TypeHandlerFactory thFactory = DependencyManager.getOrCreate(TypeHandlerFactory.class);
-		return thFactory.getHandler(type, getCellParameter());
+	private TypeHandler getTypeHandler(final Class<?> type, String currentCellParameter) {
+		return typeHandlerFactory.getHandler(type, currentCellParameter);
 	}
 
 	/**
@@ -150,13 +162,13 @@ public class ActionFixture extends Fixture {
 	 * @throws Exception should be propagated to fit.
 	 */
 	protected final void transformAndEnter() throws Exception {
-		final Parse oldmore = cells.more;
+		Parse oldMore = cells.more;
 		cells.more = new Parse("<td></td>", new String[] { "td" });
 		cells.more.body = cells.body;
-		cells.more.more = oldmore;
+		cells.more.more = oldMore;
 		cells.body = "enter";
 
-		final Object oldActor = actor;
+		Object oldActor = actor;
 		actor = this;
 		enter();
 		actor = oldActor;
@@ -167,7 +179,7 @@ public class ActionFixture extends Fixture {
 
 	@Override
 	protected void doRow(final Parse row) {
-		setCurrentCellParameter(extractCellParameter(row.parts));
+		currentCellParameter = FitUtils.extractCellParameter(row.parts);
 		super.doRow(row);
 	}
 }

@@ -1,21 +1,24 @@
 package de.cologneintelligence.fitgoodies;
 
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
-import de.cologneintelligence.fitgoodies.typehandler.TypeHandlerFactory;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
+import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class FixtureTest extends FitGoodiesTestCase {
+public class FixtureTest extends FitGoodiesFixtureTestCase<FixtureTest.TestFixture> {
 
 	@Mock
 	private TypeHandler typeHandler;
@@ -23,177 +26,78 @@ public class FixtureTest extends FitGoodiesTestCase {
 	@Mock
 	private ValueReceiver valueReceiver;
 
-	public static class TestFixture extends Fixture {
-		public int x;
-		public String y;
-
-		public int a;
-		public String b;
+	@Override
+	protected Class<TestFixture> getFixtureClass() {
+		return TestFixture.class;
 	}
 
-	private static class UpDownSpy extends Fixture {
+	public static class TestFixture extends Fixture {
 		public boolean upCalled;
 		public boolean downCalled;
-		public boolean doRowsCalled;
+		public boolean doCellCalled;
+
+		public boolean throwOnTearDown = false;
+		public boolean throwOnSetUp = false;
+		public boolean throwOnCell = false;
+		public boolean throwOnRows = false;
 
 		@Override
-		public void setUp() {
+		public void setUp() throws Exception {
 			upCalled = true;
+			super.setUp();
+
+			if (throwOnSetUp) {
+				throw new RuntimeException("expected");
+			}
 		}
 
 		@Override
-		public void tearDown() {
+		public void tearDown() throws Exception {
 			downCalled = true;
+			super.tearDown();
+
+			if (throwOnTearDown) {
+				throw new RuntimeException("expected");
+			}
+		}
+
+		@Override
+		protected void doCell(Parse cell, int column) {
+			doCellCalled = true;
+			if (throwOnCell) {
+				throw new RuntimeException("expected");
+			}
+			super.doCell(cell, column);
 		}
 
 		@Override
 		protected void doRows(Parse rows) {
-			doRowsCalled = true;
-			throw new RuntimeException("");
+			if (throwOnRows) {
+				throw new RuntimeException("expected");
+			}
+			super.doRows(rows);
 		}
 	}
 
 	@Test
-	public void testEscape() {
-		assertThat(FitUtils.escape("     "), is(equalTo(" &nbsp; &nbsp; ")));
-
-		String junk = "!@#$%^*()_-+={}|[]\\:\";',./?`";
-		assertThat(FitUtils.escape(junk), is(equalTo(junk)));
-		assertThat(FitUtils.escape(""), is(equalTo("")));
-		assertThat(FitUtils.escape("<"), is(equalTo("&lt;")));
-		assertThat(FitUtils.escape("<<"), is(equalTo("&lt;&lt;")));
-		assertThat(FitUtils.escape("x<"), is(equalTo("x&lt;")));
-		assertThat(FitUtils.escape("&"), is(equalTo("&amp;")));
-		assertThat(FitUtils.escape("<&<"), is(equalTo("&lt;&amp;&lt;")));
-		assertThat(FitUtils.escape("&<&"), is(equalTo("&amp;&lt;&amp;")));
-		assertThat(FitUtils.escape("a < b && c < d"), is(equalTo("a &lt; b &amp;&amp; c &lt; d")));
-		assertThat(FitUtils.escape("a\nb"), is(equalTo("a<br />b")));
-	}
-
-	@Test
-	public void testCheckFieldRight() throws Exception {
-		final String value = "value";
-		Parse aCell = parseTd(value);
-
-		when(valueReceiver.get()).thenReturn("another value");
-		when(typeHandler.parse("value")).thenReturn("parsed value");
-		when(typeHandler.equals("parsed value", "another value")).thenReturn(true);
-		Counts counts = checkFieldWithContent(aCell);
-		assertCounts(counts, 1, 0, 0, 0);
-	}
-
-	private void assertCounts(Counts counts, int right, int wrong, int exceptions, int ignores) {
-		assertThat(counts.right, is(right));
-		assertThat(counts.wrong, is(wrong));
-		assertThat(counts.exceptions, is(exceptions));
-		assertThat(counts.ignores, is(ignores));
-	}
-
-	@Test
-	public void testCheckFieldWrong() throws Exception {
+	public void checkForwardsToValidator() throws Exception {
 		Parse aCell = parseTd("another value");
-
-		when(valueReceiver.get()).thenReturn("value");
-		when(typeHandler.toString("value")).thenReturn("a value");
-		Counts counts = checkFieldWithContent(aCell);
-
-		assertCounts(counts, 0, 1, 0, 0);
+		fixture.check(aCell, valueReceiver, "arg");
+		fixture.check(aCell, valueReceiver, "arg2");
+		verify(validator).process(aCell, fixture.counts(), valueReceiver, "arg", typeHandlerFactory);
+		verify(validator).process(aCell, fixture.counts(), valueReceiver, "arg2", typeHandlerFactory);
 	}
 
 	@Test
-	public void testCheckFieldException() throws Exception {
-		Parse aCell = parseTd("another value");
-
-		final Fixture fixture = new Fixture();
-		when(valueReceiver.get()).thenThrow(new RuntimeException("an exception"));
-		fixture.check(aCell, valueReceiver);
-
-		assertCounts(fixture.counts(), 0, 0, 1, 0);
-	}
-
-	@Test
-	public void testCheckFieldEmpty() throws Exception {
-		Parse aCell = parseTd("");
-
-		when(valueReceiver.get()).thenReturn("print me!");
-		when(typeHandler.toString("print me!")).thenReturn("result!");
-		Counts counts = checkFieldWithContent(aCell);
-
-		assertCounts(counts, 0, 0, 0, 0);
-		assertThat(aCell.text(), is(equalTo("result!")));
-	}
-
-	@Test
-	public void testCheckFieldEmptyWithError() throws Exception {
-		Parse aCell = parseTd("");
-
-		final Fixture fixture = checkWithoutTypeAdapter(aCell);
-
-		assertCounts(fixture.counts(), 0, 0, 0, 0);
-		assertThat(aCell.text(), containsString("error"));
-	}
-
-	@Test
-	public void testCheckFieldWithoutTypeAdapter() throws Exception {
-		Parse aCell = parseTd("try me");
-
-		final Fixture fixture = checkWithoutTypeAdapter(aCell);
-
-		assertCounts(fixture.counts(), 0, 0, 0, 1);
-		assertThat(aCell.text(), is(equalTo("try me")));
-	}
-
-	@Test
-	public void testCheckForException() throws Exception {
-		Parse aCell = parseTd("error");
-
-		when(valueReceiver.get()).thenThrow(new RuntimeException("expected this"));
-		Counts counts = checkInvocation(aCell);
-
-		assertCounts(counts, 1, 0, 0, 0);
-		assertThat(aCell.text(), is(equalTo("error")));
-	}
-
-	@Test
-	public void testCheckForExceptionFail() throws Exception {
-		Parse aCell = parseTd("error");
-
-		when(valueReceiver.get()).thenReturn("a result!");
-		when(typeHandler.toString("a result!")).thenReturn("a result!");
-		Counts counts = checkInvocation(aCell);
-
-		assertCounts(counts, 0, 1, 0, 0);
-		assertThat(aCell.text(), is(equalTo("error expecteda result! actual")));
-	}
-
-	public Counts checkInvocation(Parse aCell) throws NoSuchMethodException {
-		final Fixture fixture = new Fixture();
-		fixture.check2(aCell, valueReceiver, typeHandler);
-		return fixture.counts();
-	}
-
-	public Counts checkFieldWithContent(Parse aCell) throws NoSuchFieldException {
-		final Fixture fixture = new Fixture();
-		fixture.check2(aCell, valueReceiver, typeHandler);
-		return fixture.counts();
-	}
-
-	public Fixture checkWithoutTypeAdapter(Parse aCell) {
-		final Fixture fixture = new Fixture();
-		fixture.check2(aCell, null, typeHandler);
-		return fixture;
-	}
-
-	@Test
-	public void upAndDownIsCalledEvenOnErrors() {
+	public void upAndDownIsCalledEvenOnErrors() throws Exception {
 		Parse table = parseTable(
 				tr("number", "n()"),
 				tr("1", "1"));
 
-		UpDownSpy fixture = new UpDownSpy();
+		fixture.throwOnCell = true;
 		fixture.doTable(table);
 
-		assertTableException(fixture);
+		assertCounts(fixture.counts(), table, 0, 0, 0, 4);
 		assertThat(fixture.upCalled, is(true));
 		assertThat(fixture.downCalled, is(true));
 	}
@@ -202,118 +106,220 @@ public class FixtureTest extends FitGoodiesTestCase {
 	public void downIsNotCalledOnUpErrors() throws Exception {
 		final Parse table = parseTable(tr("x"));
 
-		UpDownSpy fixture = new UpDownSpy() {
-			@Override
-			public void setUp() {
-				super.setUp();
-				throw new RuntimeException("expected");
-			}
-		};
+		fixture.throwOnSetUp = true;
 		fixture.doTable(table);
 
-		assertTableException(fixture);
+		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
 		assertThat(fixture.upCalled, is(true));
-		assertThat(fixture.doRowsCalled, is(false));
+		assertThat(fixture.doCellCalled, is(false));
 		assertThat(fixture.downCalled, is(false));
 	}
 
-	public void assertTableException(Fixture fixture) {
-		assertThat(fixture.counts().right, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
+	@Test
+	public void initAppliesParameters() throws Exception {
+		Parse table = parseTable();
+
+		fixture.setParams(new String[]{"testNr = 9", "id=test", "  other = 5 ", " value "});
+
+		expectParameterApply("testNr", "9", 7);
+		expectParameterApply("id", "test", "good");
+		expectParameterFail("other");
+		fixture.doTable(table);
 	}
 
+	@Test
+	public void testArgWithParams() throws Exception {
+		fixture.setParams(new String[]{"testNr = 10", "id=test2", "  other = 5 ", " value "});
+
+		preparePreprocess("10", "20");
+		preparePreprocess("test2", "test2-result");
+
+		assertThat(fixture.getArg("testNr"), is(equalTo("20")));
+		assertThat(fixture.getArg("id"), is(equalTo("test2-result")));
+		assertThat(fixture.getArg("testNr", "12"), is(equalTo("20")));
+		assertThat(fixture.getArg("testNr2", "11"), is(equalTo("11")));
+		assertThat(fixture.getArg("testNr2"), is(nullValue()));
+	}
 
 	@Test
-	public void testGetParameter() throws Exception {
-		CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-
-		Fixture fixture = new Fixture();
-		fixture.setParams(new String[]{
-				"x = y", " param = value "
-		});
-
-		assertThat(fixture.getArg("x", null), is(equalTo("y")));
-		assertThat(fixture.getArg("param", null), is(equalTo("value")));
-		assertThat(fixture.getArg("not-good", "good"), is(equalTo("good")));
-
-		fixture = new Fixture();
-		fixture.setParams(new String[]{
-				"x =z", " a b=test "
-		});
-
-		assertThat(fixture.getArg("param", "bad"), is(equalTo("bad")));
-		assertThat(fixture.getArg("X", null), is(equalTo("z")));
-		assertThat(fixture.getArg("A B", null), is(equalTo("test")));
-
-		fixture = new Fixture();
+	public void testArgWithNullParams() throws Exception {
 		fixture.setParams(null);
-		assertThat(fixture.getArg("x", "null"), is(equalTo("null")));
-		assertThat(fixture.getArg("y", "error"), is(equalTo("error")));
 
-		fixture = new Fixture();
-		fixture.setParams(new String[]{
-				"y = a${tests.get(x)}b", " a b=test "
-		});
-
-		helper.parseBody("${tests.put(x)}", "x");
-		assertThat(fixture.getArg("y", null), is(equalTo("axb")));
+		assertThat(fixture.getArg("testNr"), is(nullValue()));
+		assertThat(fixture.getArg("testNr", "12"), is(equalTo("12")));
 	}
 
 	@Test
-	public void testGetParameters() {
-		String[] actual = getArgNamesFromFixture(new String[]{
-				"x = y", " param = value "
-		});
-		assertThat(actual.length, is(equalTo((Object) 2)));
-		assertThat(actual[0], is(equalTo("x")));
-		assertThat(actual[1], is(equalTo("param")));
+	public void exceptionInDoRowIsReported() {
+		fixture.throwOnRows = true;
+		Parse table = parseTable(tr(""));
 
-		actual = getArgNamesFromFixture(new String[]{
-				"x =z", " a b=test "
-		});
-		assertThat(actual.length, is(equalTo((Object) 2)));
-		assertThat(actual[0], is(equalTo("x")));
-		assertThat(actual[1], is(equalTo("a b")));
-
-		actual = getArgNamesFromFixture(null);
-		assertThat(actual.length, is(equalTo(0)));
-
-		actual = getArgNamesFromFixture(new String[0]);
-		assertThat(actual.length, is(equalTo(0)));
+		fixture.doTable(table);
+		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
 	}
-
-	public String[] getArgNamesFromFixture(String[] values) {
-		String[] actual;Fixture fixture2 = new Fixture();
-		fixture2.setParams(values);
-		actual = fixture2.getArgNames();
-		return actual;
-	}
-
 
 	@Test
-	public void testCopyParamsToFixture() {
-		final TypeHandlerFactory taHelper = new TypeHandlerFactory();
+	public void testColumnParameters() throws Exception {
+		Parse table = parseTableWithoutAnnotation(
+				tr("x[1 2]", "y[3 4]", "z"),
+				tr("a[7]", "b", "c"));
 
-		TestFixture fixture = new TestFixture();
-		fixture.setParams(new String[]{" x = 8 ", "y=string", "z=error"});
+		String[] actual = fixture.extractColumnParameters(table.parts);
 
-		fixture.a = 9;
-		fixture.copyParamsToFixture(taHelper);
-		assertThat(fixture.a, is(equalTo(9)));
-		assertThat(fixture.x, is(equalTo(8)));
-		assertThat(fixture.y, is(equalTo("string")));
+		assertThat(Arrays.asList("1 2", "3 4", null), is(equalTo(Arrays.asList(actual))));
+		assertThat(table.parts.parts.text(), is(equalTo("x")));
+		assertThat(table.parts.parts.more.text(), is(equalTo("y")));
+		assertThat(table.parts.more.parts.text(), is(equalTo("a[7]")));
 
-		fixture = new TestFixture();
-		fixture.setParams(new String[]{" a = 42 ", "b=c"});
-		fixture.copyParamsToFixture(taHelper);
+		table = parseTableWithoutAnnotation(tr("name", "date [ de_DE, dd.MM.yyyy ] "));
 
-		assertThat(fixture.a, is(equalTo(42)));
-		assertThat(fixture.b, is(equalTo("c")));
-
-		fixture = new TestFixture();
-		fixture.setParams(null);
-		fixture.copyParamsToFixture(taHelper);
+		actual = fixture.extractColumnParameters(table.parts);
+		assertThat(Arrays.asList(null, "de_DE, dd.MM.yyyy"), is(equalTo(Arrays.asList(actual))));
+		assertThat(table.parts.parts.text(), is(equalTo("name")));
+		assertThat(table.parts.parts.more.text(), is(equalTo("date")));
 	}
 
+	@Test
+	public void allCellsAreIgnoredByDefault() {
+		Parse table = parseTable(tr("hello", "world"), tr("a", "test"));
+
+		fixture.doTable(table);
+
+		assertCounts(fixture.counts(), table, 0, 0, 4, 0);
+	}
+
+	@Test
+	public void rightMarksCell() {
+		Parse table = parseTableWithoutAnnotation(tr("a value"));
+		fixture.right(table.at(0, 0, 0));
+
+		assertCounts(fixture.counts(), table, 1, 0, 0, 0);
+		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_GREEN));
+	}
+
+	@Test
+	public void wrongMarksCell() {
+		Parse table = parseTableWithoutAnnotation(tr("a value"));
+		fixture.wrong(table.at(0, 0, 0));
+
+		assertCounts(fixture.counts(), table, 0, 1, 0, 0);
+		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_RED));
+	}
+
+	@Test
+	public void wrongMarksCellWithMessage() {
+		Parse table = parseTableWithoutAnnotation(tr("initial value"));
+		fixture.wrong(table.at(0, 0, 0), "my message");
+
+		assertCounts(fixture.counts(), table, 0, 1, 0, 0);
+		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_RED));
+		assertThat(table.at(0, 0, 0).body, allOf(containsString("my message"), containsString("initial value")));
+	}
+
+	@Test
+	public void errorMarksCellWithMessage() {
+		Parse table = parseTableWithoutAnnotation(tr("original value"));
+		fixture.error(table.at(0, 0, 0), "my message");
+
+		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
+		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_YELLOW));
+		assertThat(table.at(0, 0, 0).body, allOf(containsString("my message"), containsString("original value")));
+	}
+
+	@Test
+	public void ignoreMarksCell() {
+		Parse table = parseTableWithoutAnnotation(tr("a value"));
+		fixture.ignore(table.at(0, 0, 0));
+
+		assertCounts(fixture.counts(), table, 0, 0, 1, 0);
+		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_GREY));
+	}
+
+	@Test
+	public void exceptionMarksCell() {
+		Parse table = parseTableWithoutAnnotation(tr("a value"));
+		fixture.exception(table.at(0, 0, 0), new RuntimeException("expected"));
+
+		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
+		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_YELLOW));
+		assertThat(table.at(0, 0, 0).body, allOf(containsString("a value"),
+				containsString("RuntimeException"), containsString("expected")));
+	}
+
+	@Test
+	public void infoAddsInfoToCell() {
+		Parse table = parseTableWithoutAnnotation(tr("a value"));
+		fixture.info(table.at(0, 0, 0), "additional");
+
+		assertThat(table.at(0, 0, 0).body, allOf(containsString("a value"), containsString("additional"),
+				containsString(FitUtils.HTML_INFO)));
+	}
+
+	@Test
+	public void objectValueReceiverCanBeCreated() throws Exception {
+		Object o = new Object();
+		Object p = new Object();
+
+		String methodName1 = "name";
+		String methodName2 = "name2";
+
+		ValueReceiver mock1 = mock(ValueReceiver.class);
+		ValueReceiver mock2 = mock(ValueReceiver.class);
+
+		when(valueReceiverFactory.createReceiver(o, methodName1)).thenReturn(mock1);
+		when(valueReceiverFactory.createReceiver(p, methodName2)).thenReturn(mock2);
+		assertThat(fixture.createReceiver(o, methodName1), is(sameInstance(mock1)));
+		assertThat(fixture.createReceiver(p, methodName2), is(sameInstance(mock2)));
+
+		verify(valueReceiverFactory).createReceiver(o, methodName1);
+		verify(valueReceiverFactory).createReceiver(p, methodName2);
+	}
+
+	@Test
+	public void methodValueReceiverCanBeCreated() throws Exception {
+		Object o = new Object();
+		String methodName = "hashCode";
+		Method method = o.getClass().getMethod(methodName);
+
+		ValueReceiver mock1 = mock(ValueReceiver.class);
+
+		when(valueReceiverFactory.createReceiver(o, method)).thenReturn(mock1);
+		assertThat(fixture.createReceiver(o, method), is(sameInstance(mock1)));
+
+		verify(valueReceiverFactory).createReceiver(o, method);
+	}
+
+	@Test
+	public void typeHandlersCanBeCreated() throws Exception {
+		ValueReceiver receiver = mock(ValueReceiver.class);
+		when(receiver.getType()).thenReturn(String.class, Long.class);
+
+		TypeHandler handler1 = mock(TypeHandler.class);
+		TypeHandler handler2 = mock(TypeHandler.class);
+
+		when(typeHandlerFactory.getHandler(String.class, null)).thenReturn(handler1);
+		when(typeHandlerFactory.getHandler(Long.class, "arg")).thenReturn(handler2);
+
+		TypeHandler actualHandler1 = fixture.createTypeHandler(receiver, null);
+		TypeHandler actualHandler2 = fixture.createTypeHandler(receiver, "arg");
+
+		assertThat(actualHandler1, is(sameInstance(handler1)));
+		assertThat(actualHandler2, is(sameInstance(handler2)));
+
+		verify(typeHandlerFactory).getHandler(String.class, null);
+		verify(typeHandlerFactory).getHandler(Long.class, "arg");
+	}
+
+	private void expectParameterFail(final String fieldName) throws Exception {
+		when(valueReceiverFactory.createReceiver(any(Object.class), argThat(is(equalTo(fieldName)))))
+				.thenThrow(new NoSuchFieldException(fieldName));
+
+		expectations.add(new Task() {
+			@Override
+			public void run() throws Exception {
+				verify(valueReceiverFactory).createReceiver(any(Object.class),
+						argThat(is(equalTo(fieldName))));
+			}
+		});
+	}
 }

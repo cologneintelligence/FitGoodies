@@ -19,12 +19,11 @@
 
 package de.cologneintelligence.fitgoodies.external;
 
+import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.SystemPropertyProvider;
-import de.cologneintelligence.fitgoodies.Parse;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -32,22 +31,18 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class SetupFixtureTest extends FitGoodiesTestCase {
-    private SystemPropertyProvider propertyProvider;
 
     @Before
     public void setUp() {
-        DependencyManager.clear();
-        propertyProvider = new SystemPropertyProvider() {
-            @Override
-            public String getProperty(String key) {
-                return "testValue";
-            }
-        };
-        DependencyManager.inject(SystemPropertyProvider.class, propertyProvider);
+        System.setProperty("testSetupFixtureKey", "testValue");
+    }
+
+    @After
+    public void tearDown() {
+        System.clearProperty("testSetupFixtureKey");
     }
 
     @Test
-    @Ignore
     public void testParsing() {
         Parse table = parseTable(tr("addProperty", "-DtestKey=${System.getProperty(testSetupFixtureKey)}"));
 

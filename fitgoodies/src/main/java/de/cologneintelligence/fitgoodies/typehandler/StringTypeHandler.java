@@ -47,7 +47,7 @@ public class StringTypeHandler extends TypeHandler<String> {
 	}
 
 	@Override
-	public String parse(String input) {
+	public String unsafeParse(String input) {
 		return input;
 	}
 

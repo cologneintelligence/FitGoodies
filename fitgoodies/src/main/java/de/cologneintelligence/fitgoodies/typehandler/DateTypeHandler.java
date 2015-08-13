@@ -64,7 +64,7 @@ public class DateTypeHandler extends TypeHandler<Date> {
      * @return {@code java.util.Date} object which is represented by {@code s}.
      */
     @Override
-    public final Date parse(final String s) throws ParseException {
+    public final Date unsafeParse(final String s) throws ParseException {
         return dateFitDateHelper.parse(s, parameter);
     }
 

@@ -41,8 +41,8 @@ public class BigDecimalTypeHandlerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testParse() throws Exception {
-		assertThat(handler.parse("42"), is(equalTo(new BigDecimal("42"))));
-		assertThat(handler.parse("21"), is(equalTo(new BigDecimal("21"))));
+		assertThat(handler.unsafeParse("42"), is(equalTo(new BigDecimal("42"))));
+		assertThat(handler.unsafeParse("21"), is(equalTo(new BigDecimal("21"))));
 	}
 
 	@Test

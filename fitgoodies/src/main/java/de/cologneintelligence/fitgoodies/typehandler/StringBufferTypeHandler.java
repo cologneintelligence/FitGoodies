@@ -82,7 +82,7 @@ public class StringBufferTypeHandler extends TypeHandler<StringBuffer> {
 	 * @return a {@code StringBuffer} which contains {@code s}
 	 */
 	@Override
-	public StringBuffer parse(final String s) {
+	public StringBuffer unsafeParse(final String s) {
 		return new StringBuffer(s);
 	}
 }

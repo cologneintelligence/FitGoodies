@@ -19,9 +19,9 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
 import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.ValueReceiver;
+import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
+import de.cologneintelligence.fitgoodies.valuereceivers.ConstantReceiver;
 
 import java.io.IOException;
 
@@ -30,25 +30,9 @@ import java.io.IOException;
  * the value of this reader with the content of the HTML table.
  *
  */
-public abstract class AbstractFileRecordReaderFixture extends
-		AbstractFileReaderFixture {
-
-	/** for internal usage only - used to resolve cross references. */
-	public String actualValue;
+public abstract class AbstractFileRecordReaderFixture extends AbstractFileReaderFixture {
 
 	private FileRecordReader reader;
-	private final ValueReceiver valueReceiver;
-
-	/**
-	 * Initializes a new {@code AbstractFileRecordReaderFixture}.
-	 */
-	public AbstractFileRecordReaderFixture() {
-		try {
-			valueReceiver = ValueReceiver.on(this, this.getClass().getField("actualValue"));
-		} catch (SecurityException | NoSuchFieldException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	/**
 	 * Sets the underlying {@code FileRecordReader}.
@@ -64,8 +48,10 @@ public abstract class AbstractFileRecordReaderFixture extends
 
 		while (cell != null) {
 			if (reader.canRead()) {
-				actualValue = reader.nextField();
-				check(cell, valueReceiver);
+				String actualValue = reader.nextField();
+				ConstantReceiver receiver =
+						new ConstantReceiver(actualValue, String.class);
+				check(cell, receiver, null);
 			} else {
 				wrong(cell);
 				info(cell, "(missing)");

@@ -18,26 +18,30 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.AppenderAttachable;
 
 /**
- * Interface for a LoggerProvider which returns corresponding
- * <code>org.apache.log4j.logger</code> objects.
- *
+ * LoggerProvider which returns corresponding {@code org.apache.log4j.logger}
+ * objects.
  */
-public interface LoggerProvider {
+public class LoggerProvider {
 	/**
-	 * Returns the logger that has the name <code>name</code>.
+	 * Returns the logger that has the name {@code name}.
 	 *
 	 * @param name name of the logger
 	 * @return instance of the logger
 	 */
-	AppenderAttachable getLogger(String name);
+	public AppenderAttachable getLogger(final String name) {
+		return Logger.getLogger(name);
+	}
 
 	/**
 	 * Returns the root logger.
 	 *
 	 * @return instance of the root logger
 	 */
-	AppenderAttachable getRootLogger();
+	public AppenderAttachable getRootLogger() {
+		return Logger.getRootLogger();
+	}
 }

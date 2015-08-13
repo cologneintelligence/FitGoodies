@@ -31,7 +31,7 @@ public class DoubleTypeHandler extends TypeHandler<Double> {
 	}
 
 	@Override
-	public Double parse(String input) throws ParseException {
+	public Double unsafeParse(String input) throws ParseException {
 		return Double.parseDouble(input);
 	}
 }

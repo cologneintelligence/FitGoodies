@@ -31,7 +31,7 @@ public class ByteTypeHandler extends TypeHandler<Byte> {
 	}
 
 	@Override
-	public Byte parse(String input) throws ParseException {
+	public Byte unsafeParse(String input) throws ParseException {
 		return Byte.parseByte(input);
 	}
 }

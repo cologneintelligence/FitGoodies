@@ -37,7 +37,7 @@ public class BigDecimalTypeHandler extends TypeHandler<BigDecimal> {
 	}
 
 	@Override
-	public BigDecimal parse(String input) throws ParseException {
+	public BigDecimal unsafeParse(String input) throws ParseException {
 		return new BigDecimal(input);
 	}
 }

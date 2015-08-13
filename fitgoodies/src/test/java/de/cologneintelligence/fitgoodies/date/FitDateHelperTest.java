@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.Locale;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -97,5 +98,18 @@ public class FitDateHelperTest extends FitGoodiesTestCase {
 
         assertThat(helper.getLocale().toString(), is(equalTo("de_DE")));
         assertThat(helper.getFormat(), is(equalTo("dd.MM.yy")));
+    }
+
+    @Test
+    public void testToString() {
+        helper.setLocale("de_DE");
+        helper.setFormat("HH:mm");
+        assertThat(helper.toString(new Date(1000 * 60 * 5 + 1000 * 60 * 60 * 3)),
+                is(equalTo("04:05")));
+
+        helper.setLocale("en_GB");
+        helper.setFormat("ss/mm");
+        assertThat(helper.toString(new Date(1000 * 60 * 17 + 1000 * 15)),
+                is(equalTo("15/17")));
     }
 }

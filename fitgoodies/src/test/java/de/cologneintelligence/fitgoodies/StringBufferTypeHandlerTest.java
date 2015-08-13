@@ -67,7 +67,7 @@ public class StringBufferTypeHandlerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testParse() throws Exception {
-		assertThat(ta.parse("test").toString(), is(equalTo("test")));
-		assertThat(ta.parse("another test").toString(), is(equalTo("another test")));
+		assertThat(ta.unsafeParse("test").toString(), is(equalTo("test")));
+		assertThat(ta.unsafeParse("another test").toString(), is(equalTo("another test")));
 	}
 }

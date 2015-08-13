@@ -60,7 +60,7 @@ public class SetupFixture extends Fixture {
      * Create a new SetupFixutre which captures log4j loggers.
      */
     public SetupFixture() {
-        this(new LoggerProviderImpl());
+        this(new LoggerProvider());
     }
 
     /**

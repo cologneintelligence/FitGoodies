@@ -32,7 +32,7 @@ public class ObjectTypeHandler extends TypeHandler<Object> {
 	}
 
 	@Override
-	public Object parse(String input) throws ParseException {
+	public Object unsafeParse(String input) throws ParseException {
 		return input;
 	}
 }

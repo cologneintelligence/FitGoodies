@@ -31,7 +31,7 @@ public class FloatTypeHandler extends TypeHandler<Float> {
 	}
 
 	@Override
-	public Float parse(String input) throws ParseException {
+	public Float unsafeParse(String input) throws ParseException {
 		return Float.parseFloat(input);
 	}
 }

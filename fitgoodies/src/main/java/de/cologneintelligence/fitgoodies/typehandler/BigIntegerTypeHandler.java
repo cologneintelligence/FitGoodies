@@ -37,7 +37,7 @@ public class BigIntegerTypeHandler extends TypeHandler<BigInteger> {
 	}
 
 	@Override
-	public BigInteger parse(String input) throws ParseException {
+	public BigInteger unsafeParse(String input) throws ParseException {
 		return new BigInteger(input);
 	}
 }

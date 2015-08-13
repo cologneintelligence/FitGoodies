@@ -19,102 +19,74 @@
 package de.cologneintelligence.fitgoodies.util;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import org.hamcrest.CoreMatchers;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.lang.reflect.Method;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-
+import static org.mockito.Mockito.*;
 
 public final class WaitForResultTest extends FitGoodiesTestCase {
-    public static final class Actor {
-        private int counter = 0;
-        public Boolean myTestMethod() {
-            counter++;
-            return counter > 11;
-        }
 
-		public int getCalls() {
-			return counter;
-		}
+	public interface WaitForResultActor {
+		@SuppressWarnings("unused")
+		boolean method();
+	}
 
-		public Boolean myTestMethodReturnsTrue() { return true; }
-        public Boolean myTestMethodReturnsFalse() { return false; }
-    }
+	@Mock
+	private SystemTime systemTime;
 
-    public static final class SystemTimeMock implements SystemTime {
-    	private long curentSystemTime = 1000000L;
-    	@Override
-    	public long currentSystemTimeInMS() {
-    		return curentSystemTime;
-    	}
-    	@Override
-    	public void sleep(final long sleepTimeInMillis) {
-    		curentSystemTime += sleepTimeInMillis;
-    	}
-    }
+	@Mock
+	private WaitForResultActor actor;
 
-    @Test
-    public void testWaitForConstructor() throws Exception {
-        Method method = Actor.class.getMethod("myTestMethodReturnsTrue");
-        WaitForResult waitForResult = new WaitForResult(method, new Actor(), 0L);
-        assertThat(waitForResult, not(CoreMatchers.is(nullValue())));
-    }
+	private Method waitMethod;
+	private WaitForResult waitForResult;
 
-    @Test
-    public void testInvokeMethodReturnsTrue() throws Exception {
-        Method method = Actor.class.getMethod("myTestMethodReturnsTrue");
-        WaitForResult waitForResult = new WaitForResult(method, new Actor(), 0L);
-        waitForResult.invokeMethod();
-        assertThat(waitForResult.lastCallWasSuccessful(), is(true));
-    }
+	@Before
+	public void setUp() throws NoSuchMethodException {
+		waitForResult = new WaitForResult(systemTime);
+		waitMethod = WaitForResultActor.class.getMethod("method");
+	}
 
-    @Test
-    public void testInvokeMethodReturnsFalse() throws Exception {
-        Method method = Actor.class.getMethod("myTestMethodReturnsFalse");
-        WaitForResult waitForResult = new WaitForResult(method, new WaitForResultTest.Actor(), 0L);
-        waitForResult.invokeMethod();
-        assertThat(waitForResult.lastCallWasSuccessful(), is(false));
+	@Test
+	public void trueIsForwarded() throws Exception {
+		when(actor.method()).thenReturn(true);
 
-    }
+		waitForResult.wait(actor, waitMethod, 1000, 100);
 
-    @Test
-    public void testInvokeWithoutTimeout() throws Exception {
-    	Actor actor = new Actor();
-        Method method = actor.getClass().getMethod("myTestMethod");
-        final long timeout = 2000L;
+		assertThat(waitForResult.lastCallWasSuccessful(), is(true));
+		assertThat(waitForResult.getLastElapsedTime(), is(0L));
+	}
 
-        WaitForResult waitForResult =
-        	new WaitForResult(method, actor,
-        			timeout, new SystemTimeMock());
+	@Test
+	public void falseIsForwarded() throws Exception {
+		when(actor.method()).thenReturn(false);
 
-        waitForResult.setSleepTime(20L);
-        waitForResult.repeatInvokeWithTimeout();
-        assertThat(actor.getCalls(), is(equalTo((Object) 12)));
-        assertThat(waitForResult.getLastElapsedTime(), is(equalTo((Object) 220L)));
-        assertThat(waitForResult.lastCallWasSuccessful(), is(true));
-    }
+		int sleepTime = 100;
+		long maxTime = 500L;
 
-    @Test
-    public void testInvokeWithTimeout() throws Exception {
-    	Actor actor = new Actor();
-        Method method = actor.getClass().getMethod("myTestMethod");
-        final long timeout = 51L;
+		waitForResult.wait(actor, waitMethod, maxTime, sleepTime);
 
-        WaitForResult waitForResult =
-        	new WaitForResult(method, actor,
-        			timeout, new SystemTimeMock());
+		assertThat(waitForResult.lastCallWasSuccessful(), is(false));
+		assertThat(waitForResult.getLastElapsedTime(), is(maxTime));
 
-        waitForResult.setSleepTime(10L);
-        waitForResult.repeatInvokeWithTimeout();
-        assertThat(actor.getCalls(), is(equalTo((Object) 7)));
-        assertThat(waitForResult.getLastElapsedTime(), is(equalTo((Object) 60L)));
-        assertThat(waitForResult.lastCallWasSuccessful(), is(false));
+		verify(actor, times(6)).method();
+		verify(systemTime, times(5)).sleep(sleepTime);
+		verifyNoMoreInteractions(actor, systemTime);
+	}
 
-    }
+	@Test
+	public void trueInTimeoutIsForwarded() throws Exception {
+		when(actor.method()).thenReturn(false, false, false, false, true);
+
+		waitForResult.wait(actor, waitMethod, 300, 50);
+
+		assertThat(waitForResult.lastCallWasSuccessful(), is(true));
+		assertThat(waitForResult.getLastElapsedTime(), is(200L));
+
+		verify(actor, times(5)).method();
+	}
 }

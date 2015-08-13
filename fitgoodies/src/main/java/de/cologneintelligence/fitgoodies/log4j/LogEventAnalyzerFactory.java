@@ -18,24 +18,27 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import de.cologneintelligence.fitgoodies.Fixture;
+import de.cologneintelligence.fitgoodies.Counts;
 import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.Validator;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
  * Factory interface to provide {@link LogEventAnalyzer}s.
- *
  */
-public interface LogEventAnalyzerFactory {
+public class LogEventAnalyzerFactory {
 	/**
-	 * Creates a LogEventAnalyzer which is capable to analyze the events <code>
-	 * events</code> using the condition defined in <code>conditionCell</code>.
+	 * Creates a LogEventAnalyzer which is capable to analyze the events {@code
+	 * events} using the condition defined in {@code conditionCell}.
 	 *
-	 * @param parent calling fixture
+	 * @param counts Counts
+	 * @param validator the validator for the cell
 	 * @param conditionCell cell which contains the condition
-	 * @param events list of events to process
-	 * @return instance of LogEventAnalyzer
+	 * @param events list of events to process   @return instance of LogEventAnalyzer
 	 */
-	LogEventAnalyzer getLogEventAnalyzerFor(Fixture parent, Parse conditionCell,
-			LoggingEvent[] events);
+	public LogEventAnalyzer getLogEventAnalyzerFor(Counts counts,
+                       Validator validator, Parse conditionCell, LoggingEvent[] events) {
+		return new LogEventAnalyzer(counts, validator, conditionCell, events);
+	}
+
 }

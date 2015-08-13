@@ -3,15 +3,14 @@ package de.cologneintelligence.fitgoodies;
 // Copyright (c) 2002 Cunningham & Cunningham, Inc.
 // Released under the terms of the GNU General Public License version 2 or later.
 
-import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
-import de.cologneintelligence.fitgoodies.typehandler.TypeHandlerFactory;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
+
+import static de.cologneintelligence.fitgoodies.util.FitUtils.saveGet;
 
 public class ColumnFixture extends Fixture {
 
-	// FIXME: make this private again
-	protected String[] columnParameters;
-	public ValueReceiver[] columnBindings;
+	private String[] columnParameters;
+	private ValueReceiver[] columnBindings;
 
 	private boolean hasExecuted = false;
 
@@ -59,42 +58,27 @@ public class ColumnFixture extends Fixture {
 	 */
 	@Override
 	protected void doCell(final Parse cell, final int column) {
-		ValueReceiver a = columnBindings[column];
+		ValueReceiver receiver = columnBindings[column];
 
-		setCurrentCellParameter(null);
-		if (column < columnParameters.length) {
-			setCurrentCellParameter(columnParameters[column]);
-		}
-
-		if (a == null) {
-			ignore(cell);
+		String currentCellParameter = saveGet(column, columnParameters);
+		if (receiver != null && !cell.text().trim().isEmpty() && receiver.canSet()) {
+			setValue(cell, receiver, currentCellParameter);
 		} else {
-			a = processCell(cell, a);
-
-			try {
-				String text = cell.text();
-				if (text.equals("")) {
-					check(cell, a);
-				} else if (a == null) {
-					ignore(cell);
-				} else {
-					TypeHandlerFactory factory = DependencyManager.getOrCreate(TypeHandlerFactory.class);
-					TypeHandler handler = factory.getHandler(a.getType(), getCellParameter());
-
-					if (a.canSet()) {
-						a.set(this, handler.parse(text));
-					} else {
-						check(cell, a);
-					}
-				}
-			} catch (Exception e) {
-				exception(cell, e);
-			}
+			check(cell, receiver, currentCellParameter);
 		}
 	}
 
+	private void setValue(Parse cell, ValueReceiver receiver, String currentCellParameter) {
+		try {
+			String text = validator.preProcess(cell);
+			Object object = typeHandlerFactory.getHandler(receiver.getType(), currentCellParameter).parse(text);
+			receiver.set(this, object);
+		} catch (Exception e) {
+			exception(cell, e);
+		}
+	}
 
-	public void check(Parse cell, ValueReceiver valueReceiver) {
+	public void check(Parse cell, ValueReceiver valueReceiver, String currentCellParameter) {
 		if (!hasExecuted) {
 			try {
 				execute();
@@ -103,7 +87,7 @@ public class ColumnFixture extends Fixture {
 			}
 			hasExecuted = true;
 		}
-		super.check(cell, valueReceiver);
+		super.check(cell, valueReceiver, currentCellParameter);
 	}
 
 	public void reset() throws Exception {

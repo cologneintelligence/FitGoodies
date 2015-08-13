@@ -41,8 +41,8 @@ public class ObjectTypeHandlerTestTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testGetType() throws ParseException {
-		assertThat(handler.parse("a test"), (Matcher) is(equalTo("a test")));
-		assertThat(handler.parse("a test 2"), (Matcher) is(equalTo("a test 2")));
+		assertThat(handler.unsafeParse("a test"), (Matcher) is(equalTo("a test")));
+		assertThat(handler.unsafeParse("a test 2"), (Matcher) is(equalTo("a test 2")));
 	}
 
 	@Test

@@ -36,7 +36,7 @@ public class BooleanTypeHandler extends TypeHandler<Boolean> {
 	}
 
 	@Override
-	public Boolean parse(String input) throws ParseException {
+	public Boolean unsafeParse(String input) throws ParseException {
 		return parseBool(input);
 	}
 

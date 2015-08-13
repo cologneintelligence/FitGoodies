@@ -19,7 +19,7 @@
 
 package de.cologneintelligence.fitgoodies.typehandler;
 
-import de.cologneintelligence.fitgoodies.ScientificDouble;
+import de.cologneintelligence.fitgoodies.types.ScientificDouble;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +40,7 @@ public final class ScientificDoubleTypeHelperTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testParser() throws Exception {
-		assertThat(handler.parse("1.3"), is(equalTo(new ScientificDouble(1.326))));
+		assertThat(handler.unsafeParse("1.3"), is(equalTo(new ScientificDouble(1.326))));
 	}
 
 }

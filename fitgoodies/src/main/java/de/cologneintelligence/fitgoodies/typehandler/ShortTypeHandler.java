@@ -31,7 +31,7 @@ public class ShortTypeHandler extends TypeHandler<Short> {
 	}
 
 	@Override
-	public Short parse(String input) throws ParseException {
+	public Short unsafeParse(String input) throws ParseException {
 		return Short.parseShort(input);
 	}
 }

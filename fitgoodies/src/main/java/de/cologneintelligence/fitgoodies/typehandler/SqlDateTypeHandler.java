@@ -64,7 +64,7 @@ public class SqlDateTypeHandler extends TypeHandler<Date> {
 	 * @return {@code java.sql.Date} object which is represented by {@code s}
 	 */
 	@Override
-	public final Date parse(final String s) throws ParseException {
+	public final Date unsafeParse(final String s) throws ParseException {
 		try {
 			return Date.valueOf(s);
 		} catch (final IllegalArgumentException e) {

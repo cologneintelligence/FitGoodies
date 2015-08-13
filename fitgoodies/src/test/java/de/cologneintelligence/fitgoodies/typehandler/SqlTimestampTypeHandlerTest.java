@@ -66,7 +66,7 @@ public class SqlTimestampTypeHandlerTest extends FitGoodiesTestCase {
     @Test
     public void testParse() throws Exception {
         final Timestamp t = Timestamp.valueOf("1987-12-01 00:00:00");
-        assertThat(handler.parse("1987-12-01 00:00:00"), is(equalTo(t)));
+        assertThat(handler.unsafeParse("1987-12-01 00:00:00"), is(equalTo(t)));
     }
 
     @Test
@@ -76,10 +76,10 @@ public class SqlTimestampTypeHandlerTest extends FitGoodiesTestCase {
         helper.setFormat("dd.MM.yyyy");
 
         Timestamp d = Timestamp.valueOf("1987-12-01 00:11:22");
-        assertThat(handler.parse("1987-12-01 00:11:22"), is(equalTo(d)));
+        assertThat(handler.unsafeParse("1987-12-01 00:11:22"), is(equalTo(d)));
 
         d = Timestamp.valueOf("1989-03-08 00:00:00");
-        assertThat(handler.parse("08.03.1989"), is(equalTo(d)));
+        assertThat(handler.unsafeParse("08.03.1989"), is(equalTo(d)));
     }
 
     // TODO: test equals, parse with parameter, toString

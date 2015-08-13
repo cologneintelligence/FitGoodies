@@ -22,8 +22,6 @@ package de.cologneintelligence.fitgoodies.database;
 import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.RowFixture;
 import de.cologneintelligence.fitgoodies.dynamic.ResultSetWrapper;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import java.sql.Connection;
@@ -137,12 +135,11 @@ public class TableFixture extends RowFixture {
         }
 
         try {
-            final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-            table = helper.parseBody(tableName, "");
+            table = validator.preProcess(tableName);
 
             statement = connection.createStatement();
             return statement.executeQuery("SELECT * FROM " + table + whereClause);
-        } catch (final CrossReferenceProcessorShortcutException | SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }

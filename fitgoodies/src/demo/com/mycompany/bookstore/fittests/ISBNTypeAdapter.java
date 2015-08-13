@@ -22,7 +22,7 @@ package com.mycompany.bookstore.fittests;
 
 import com.mycompany.bookstore.ISBN;
 
-import de.cologneintelligence.fitgoodies.ValueReceiver;
+import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 import fitgoodies.adapters.AbstractTypeAdapter;
 
 public final class ISBNTypeAdapter extends AbstractTypeAdapter<ISBN> {

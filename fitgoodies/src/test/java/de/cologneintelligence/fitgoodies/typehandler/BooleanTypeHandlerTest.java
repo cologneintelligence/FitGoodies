@@ -37,26 +37,26 @@ public class BooleanTypeHandlerTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testParseError1() throws Exception {
-		parser.parse("oui");
+		parser.unsafeParse("oui");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testParseError2() throws Exception {
-		parser.parse("non");
+		parser.unsafeParse("non");
 	}
 
 	@Test
 	public void testParse() throws Exception {
-		assertThat(parser.parse("yes"), (Matcher) is(true));
-		assertThat(parser.parse("yEs"), (Matcher) is(true));
-		assertThat(parser.parse("true"), (Matcher) is(true));
-		assertThat(parser.parse("1"), (Matcher) is(true));
-		assertThat(parser.parse("on"), (Matcher) is(true));
+		assertThat(parser.unsafeParse("yes"), (Matcher) is(true));
+		assertThat(parser.unsafeParse("yEs"), (Matcher) is(true));
+		assertThat(parser.unsafeParse("true"), (Matcher) is(true));
+		assertThat(parser.unsafeParse("1"), (Matcher) is(true));
+		assertThat(parser.unsafeParse("on"), (Matcher) is(true));
 
-		assertThat(parser.parse("NO"), (Matcher) is(false));
-		assertThat(parser.parse("FALSE"), (Matcher) is(false));
-		assertThat(parser.parse("0"), (Matcher) is(false));
-		assertThat(parser.parse("off"), (Matcher) is(false));
+		assertThat(parser.unsafeParse("NO"), (Matcher) is(false));
+		assertThat(parser.unsafeParse("FALSE"), (Matcher) is(false));
+		assertThat(parser.unsafeParse("0"), (Matcher) is(false));
+		assertThat(parser.unsafeParse("off"), (Matcher) is(false));
 	}
 
 	@Test

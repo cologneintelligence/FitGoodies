@@ -21,6 +21,7 @@ package de.cologneintelligence.fitgoodies.file;
 
 import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.file.readers.FixedLengthRecordReader;
+import de.cologneintelligence.fitgoodies.typehandler.BooleanTypeHandler;
 
 import java.io.IOException;
 
@@ -46,22 +47,17 @@ import java.io.IOException;
  *
  */
 public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixture {
-	private boolean noeol;
+	private boolean noEol;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-
-		final String skipEOL = getArg("skipEOL", "0");
-
-		noeol = skipEOL.equalsIgnoreCase("true")
-				|| skipEOL.equalsIgnoreCase("yes")
-				|| skipEOL.equalsIgnoreCase("0");
+		noEol = BooleanTypeHandler.parseBool(getArg("skipEOL", "0"));
 	}
 
 	@Override
-	protected void doRows(final Parse rows) {
-		final int[] width = extractWidth(rows);
+	protected void doRows(Parse rows) {
+		int[] width = extractWidth(rows);
 
 		if (width == null) {
 			return;
@@ -69,13 +65,12 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 
 		try {
 			setRecordReader(new FixedLengthRecordReader(
-					getFile().openBufferedReader(super.getEncoding()),
-					width, noeol));
+					getFile().openBufferedReader(getEncoding()),
+					width, noEol));
+			super.doRows(rows.more);
 		} catch (final IOException e) {
 			exception(rows.more, e);
 		}
-
-		super.doRows(rows.more);
 	}
 
 	/**
@@ -85,18 +80,11 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 	 * @param row row to process
 	 * @return length of each field
 	 */
-	public final int[] extractWidth(final Parse row) {
+	public final int[] extractWidth(Parse row) {
 		Parse cell = row.parts;
+		int[] width = new int[cell.size()];
 
-		int cellCount = 0;
-		while (cell != null) {
-			++cellCount;
-			cell = cell.more;
-		}
-
-		cell = row.parts;
-		final int[] width = new int[cellCount];
-		for (int i = 0; i < cellCount; ++i) {
+		for (int i = 0; i < width.length; ++i) {
 			try {
 				width[i] = Integer.parseInt(cell.text());
 			} catch (final Exception e) {

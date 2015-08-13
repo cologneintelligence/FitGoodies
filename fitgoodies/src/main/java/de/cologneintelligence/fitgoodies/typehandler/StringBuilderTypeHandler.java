@@ -82,7 +82,7 @@ public class StringBuilderTypeHandler extends TypeHandler<StringBuilder> {
 	 * @return a {@code StringBuilder} which contains {@code s}
 	 */
 	@Override
-	public StringBuilder parse(final String s) {
+	public StringBuilder unsafeParse(final String s) {
 		return new StringBuilder(s);
 	}
 }

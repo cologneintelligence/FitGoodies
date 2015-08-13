@@ -22,15 +22,13 @@ import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -39,7 +37,10 @@ import static org.mockito.Mockito.when;
 
 public final class CaptureAppenderTest extends FitGoodiesTestCase {
 	private static class TestFilter extends Filter {
-		@Override public int decide(final LoggingEvent arg0) { return 0; }
+		@Override
+		public int decide(final LoggingEvent arg0) {
+			return 0;
+		}
 	}
 
 	private Appender appenderMock;
@@ -57,16 +58,11 @@ public final class CaptureAppenderTest extends FitGoodiesTestCase {
 
 		CaptureAppender appender = CaptureAppender.newAppenderFrom(appenderMock);
 
-		Logger logger = null;
+		LoggingEvent ev1 = event("fqdn", 42, Level.DEBUG, "message",
+				"thread", throwableInfo("x"), "ndc");
 
-		Map<String, String> props = new HashMap<>();
-		LoggingEvent ev1 = new LoggingEvent("fqdn", logger, 42, Level.DEBUG, "message",
-				"thread", new ThrowableInformation(new RuntimeException("x")),
-				"ndc", null, props);
-
-		LoggingEvent ev2 = new LoggingEvent("fqdn2", logger, 42, Level.ERROR, "warning",
-				"thread2", new ThrowableInformation(new RuntimeException("y")),
-				"ndc2", null, props);
+		LoggingEvent ev2 = event("fqdn2", 42, Level.ERROR, "warning",
+				"thread2", throwableInfo("y"), "ndc2");
 
 		appender.doAppend(ev1);
 		appender.doAppend(ev2);
@@ -82,16 +78,11 @@ public final class CaptureAppenderTest extends FitGoodiesTestCase {
 
 		CaptureAppender appender = CaptureAppender.newAppenderFrom(appenderMock);
 
-		Logger logger = null;
+		LoggingEvent ev1 = event("fqdn", 42, Level.DEBUG, "message",
+				"thread", throwableInfo("x"), "ndc");
 
-		Map<String, String> props = new HashMap<>();
-		LoggingEvent ev1 = new LoggingEvent("fqdn", logger, 42, Level.DEBUG, "message",
-				"thread", new ThrowableInformation(new RuntimeException("x")),
-				"ndc", null, props);
-
-		LoggingEvent ev2 = new LoggingEvent("fqdn2", logger, 42, Level.ERROR, "warning",
-				"thread2", new ThrowableInformation(new RuntimeException("y")),
-				"ndc2", null, props);
+		LoggingEvent ev2 = event("fqdn2", 42, Level.ERROR, "warning",
+				"thread2", throwableInfo("y"), "ndc2");
 
 		appender.doAppend(ev1);
 		appender.doAppend(ev2);
@@ -103,8 +94,8 @@ public final class CaptureAppenderTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testParentValues() {
-			when(appenderMock.getName()).thenReturn("BaseAppender");
-			when(appenderMock.getFilter()).thenReturn(filterMock);
+		when(appenderMock.getName()).thenReturn("BaseAppender");
+		when(appenderMock.getFilter()).thenReturn(filterMock);
 
 		CaptureAppender appender = CaptureAppender.newAppenderFrom(appenderMock);
 
@@ -114,21 +105,34 @@ public final class CaptureAppenderTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testDefaultValues() {
-			when(appenderMock.getName()).thenReturn("BaseAppender");
+		when(appenderMock.getName()).thenReturn("BaseAppender");
 
 		CaptureAppender appender = CaptureAppender.newAppenderFrom(appenderMock);
 
 		appender.clearFilters();
 		appender.addFilter(new Filter() {
-			@Override public int decide(final LoggingEvent event) { return Filter.ACCEPT; }
+			@Override
+			public int decide(final LoggingEvent event) {
+				return Filter.ACCEPT;
+			}
 		});
 
 		appender.close();
 		appender.setName("x");
 		appender.setLayout(new Layout() {
-			@Override public String format(final LoggingEvent event) { return null; }
-			@Override public boolean ignoresThrowable() { return false; }
-			@Override public void activateOptions() { }
+			@Override
+			public String format(final LoggingEvent event) {
+				return null;
+			}
+
+			@Override
+			public boolean ignoresThrowable() {
+				return false;
+			}
+
+			@Override
+			public void activateOptions() {
+			}
 		});
 
 		assertThat(appender.getName(), is(equalTo(CaptureAppender.getAppenderNameFor("BaseAppender"))));
@@ -140,5 +144,15 @@ public final class CaptureAppenderTest extends FitGoodiesTestCase {
 	public void testAppenderName() {
 		assertThat(CaptureAppender.getAppenderNameFor("test"), is(equalTo("test-fitgoodiescapture")));
 		assertThat(CaptureAppender.getAppenderNameFor("test2"), is(equalTo("test2-fitgoodiescapture")));
+	}
+
+	private LoggingEvent event(String fqnOfCategoryClass, long timeStamp, Level level, Object message,
+	                           String threadName, ThrowableInformation throwable, String ndc) {
+		return new LoggingEvent(fqnOfCategoryClass, null, timeStamp, level, message,
+				threadName, throwable, ndc, null, Collections.emptyMap());
+	}
+
+	protected ThrowableInformation throwableInfo(String text) {
+		return new ThrowableInformation(new RuntimeException(text));
 	}
 }

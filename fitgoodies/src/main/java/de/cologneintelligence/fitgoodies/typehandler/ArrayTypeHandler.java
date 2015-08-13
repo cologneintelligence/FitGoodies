@@ -58,7 +58,7 @@ public class ArrayTypeHandler extends TypeHandler {
      * @return an {@code Array} which contains {@code s}
      */
     @Override
-    public Object parse(final String s) throws ParseException {
+    public Object unsafeParse(final String s) throws ParseException {
         final StringTokenizer t = new StringTokenizer(s, ",");
         final Object array = Array.newInstance(componentAdapter.getType(), t.countTokens());
         for (int i = 0; t.hasMoreTokens(); i++) {
@@ -105,13 +105,13 @@ public class ArrayTypeHandler extends TypeHandler {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public boolean equals(final Object a, final Object b) {
+    public boolean unsafeEquals(final Object a, final Object b) {
         final int length = Array.getLength(a);
         if (length != Array.getLength(b)) {
             return false;
         }
         for (int i = 0; i < length; i++) {
-            if (!componentAdapter.equals(Array.get(a, i), Array.get(b, i))) {
+            if (!componentAdapter.unsafeEquals(Array.get(a, i), Array.get(b, i))) {
                 return false;
             }
         }
