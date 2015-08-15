@@ -44,13 +44,13 @@ public class FixtureRunner {
 		while (tables != null) {
 			Parse fixtureName = fixtureName(tables);
 			if (fixtureName != null) {
-				Fixture fixture = getLinkedFixtureWithArgs(tables);
 				try {
+				    Fixture fixture = getLinkedFixtureWithArgs(tables);
 					fixture.doTable(tables);
 					counts.tally(fixture.counts());
 				} catch (Throwable e) {
 					FitUtils.exception(fixtureName, e);
-					fixture.counts().exceptions++;
+                    counts.exceptions++;
 				}
 			}
 			//listener.tableFinished(tables);

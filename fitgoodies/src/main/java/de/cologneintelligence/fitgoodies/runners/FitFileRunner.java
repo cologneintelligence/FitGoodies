@@ -26,6 +26,7 @@ import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.alias.AliasEnabledFixtureRunner;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 
 import java.io.*;
 import java.util.Date;
@@ -114,7 +115,8 @@ public class FitFileRunner implements Runner {
 				tables = new Parse(input, new String[]{"table", "tr", "td"});
 				fixtureRunner.doTables(tables);
 			} catch (Exception e) {
-				tables = new Parse("body", "Unable to parse input. Input ignored.", null, null);
+				tables = new Parse("body", "Unable to parse input. Input ignored", null, null);
+                FitUtils.exception(tables, e);
 				Counts counts = new Counts();
 				counts.exceptions = 1;
 			}

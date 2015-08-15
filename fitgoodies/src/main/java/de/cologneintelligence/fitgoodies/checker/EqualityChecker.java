@@ -27,7 +27,8 @@ import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 
 public class EqualityChecker implements Checker {
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public Object check(Parse cell, Counts counts, String input, ValueReceiver valueReceiver, TypeHandler typeHandler) {
 		Object result = null;
 

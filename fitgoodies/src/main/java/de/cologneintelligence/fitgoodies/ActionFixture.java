@@ -36,7 +36,6 @@ public class ActionFixture extends Fixture {
 
 	protected Parse cells;
 	protected Object actor;
-	protected static Class empty[] = {};
 
 	private String currentCellParameter;
 
@@ -54,8 +53,8 @@ public class ActionFixture extends Fixture {
 	protected void doCells(Parse cells) {
 		this.cells = cells;
 		try {
-			Method action = getClass().getMethod(cells.text(), empty);
-			action.invoke(this, empty);
+			Method action = getClass().getMethod(cells.text());
+			action.invoke(this);
 		} catch (Exception e) {
 			exception(cells, e);
 		}
@@ -85,7 +84,7 @@ public class ActionFixture extends Fixture {
 
 
 	public void press() throws Exception {
-		method(0).invoke(actor, empty);
+		method(0).invoke(actor);
 	}
 
 	public void check() throws Exception {

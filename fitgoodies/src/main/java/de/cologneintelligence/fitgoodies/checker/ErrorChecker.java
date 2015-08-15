@@ -27,13 +27,14 @@ import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 
 public class ErrorChecker implements Checker {
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public Object check(Parse cell, Counts counts, String input, ValueReceiver valueReceiver, TypeHandler typeHandler) {
 		Object result = null;
 
 		try {
 			result = valueReceiver.get();
-			FitUtils.wrong(cell, typeHandler.toString(result));
+            FitUtils.wrong(cell, typeHandler.toString(result));
 			counts.wrong++;
 		} catch (IllegalAccessException e) {
 			FitUtils.exception(cell, e);
