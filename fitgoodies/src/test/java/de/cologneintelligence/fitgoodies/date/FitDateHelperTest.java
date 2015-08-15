@@ -28,8 +28,10 @@ import org.junit.Test;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -103,15 +105,20 @@ public class FitDateHelperTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testToString() {
+	public void testToString() throws ParseException {
+        helper.setTimezone("GMT");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        Date date1 = sdf.parse("04:05:00");
+        Date date2 = sdf.parse("00:17:15");
+
 		helper.setLocale("de_DE");
 		helper.setFormat("HH:mm");
-		assertThat(helper.toString(new Date(1000 * 60 * 5 + 1000 * 60 * 60 * 3)),
-				is(equalTo("04:05")));
+        assertThat(helper.toString(date1), is(equalTo("04:05")));
 
 		helper.setLocale("en_GB");
 		helper.setFormat("ss/mm");
-		assertThat(helper.toString(new Date(1000 * 60 * 17 + 1000 * 15)),
-				is(equalTo("15/17")));
-	}
+        assertThat(helper.toString(date2), is(equalTo("15/17")));
+    }
 }

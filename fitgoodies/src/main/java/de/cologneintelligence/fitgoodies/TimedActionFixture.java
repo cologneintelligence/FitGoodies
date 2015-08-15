@@ -28,7 +28,7 @@ import java.util.Date;
 
 public class TimedActionFixture extends ActionFixture {
 
-	public DateFormat format = new SimpleDateFormat("hh:mm:ss");
+	public DateFormat format = new SimpleDateFormat("HH:mm:ss");
 
 	// Traversal ////////////////////////////////
 

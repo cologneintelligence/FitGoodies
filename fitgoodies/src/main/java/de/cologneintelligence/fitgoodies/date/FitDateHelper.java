@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Helper class which holds information about date formats and
@@ -39,11 +40,13 @@ import java.util.Locale;
  */
 public final class FitDateHelper {
 	private Locale locale;
+    private TimeZone timezone;
 	private String format;
 
 	public FitDateHelper() {
 		locale = Locale.getDefault();
 		format = "MM/dd/yyyy";
+        timezone = TimeZone.getDefault();
 	}
 
 	/**
@@ -110,7 +113,15 @@ public final class FitDateHelper {
 		return format;
 	}
 
-	/**
+    public void setTimezone(String timezone) {
+        this.timezone = TimeZone.getTimeZone(timezone);
+    }
+
+    public TimeZone getTimezone() {
+        return timezone;
+    }
+
+    /**
 	 * Parses {@code string} and returns a valid Date object.
 	 * For parsing, a {@link SimpleDateFormat} object is used.
 	 *
@@ -123,7 +134,9 @@ public final class FitDateHelper {
 	}
 
 	private SimpleDateFormat getDateFormat(String dateFormat, Locale dateLocale) {
-		return new SimpleDateFormat(dateFormat, dateLocale);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, dateLocale);
+        simpleDateFormat.setTimeZone(timezone);
+        return simpleDateFormat;
 	}
 
 	/**
