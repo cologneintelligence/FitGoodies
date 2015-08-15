@@ -67,9 +67,9 @@ public class TimedActionFixtureTest extends FitGoodiesTestCase {
 
 		assertThat(table.at(0, 0, 1).text(), is(equalTo("time")));
 		assertThat(table.at(0, 0, 2).text(), is(equalTo("split")));
-		assertThat(table.at(0, 1, 2).text(), is(equalTo("01:00:05")));
+		assertThat(table.at(0, 1, 2).text(), is(equalTo("00:00:05")));
 		assertThat(table.at(0, 1, 3).text(), is(equalTo("&nbsp;")));
-		assertThat(table.at(0, 2, 2).text(), is(equalTo("01:00:05")));
+		assertThat(table.at(0, 2, 2).text(), is(equalTo("00:00:05")));
 		assertThat(table.at(0, 2, 3).text(), is(equalTo("&nbsp;")));
 	}
 
@@ -87,9 +87,9 @@ public class TimedActionFixtureTest extends FitGoodiesTestCase {
 		assertThat(((ActionTestFixture) fixture.actor).called, is(true));
 		assertThat(table.at(0, 0, 1).text(), is(equalTo("time")));
 		assertThat(table.at(0, 0, 2).text(), is(equalTo("split")));
-		assertThat(table.at(0, 1, 2).text(), is(equalTo("01:00:01")));
+		assertThat(table.at(0, 1, 2).text(), is(equalTo("00:00:01")));
 		assertThat(table.at(0, 1, 3).text(), is(equalTo("7.501")));
-		assertThat(table.at(0, 2, 2).text(), is(equalTo("01:00:08")));
+		assertThat(table.at(0, 2, 2).text(), is(equalTo("00:00:08")));
 		assertThat(table.at(0, 2, 3).text(), is(equalTo("&nbsp;")));
 	}
 

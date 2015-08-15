@@ -25,10 +25,14 @@ import de.cologneintelligence.fitgoodies.util.FitUtils;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class TimedActionFixture extends ActionFixture {
 
-	public DateFormat format = new SimpleDateFormat("HH:mm:ss");
+	public static final DateFormat format = new SimpleDateFormat("HH:mm:ss");
+    static {
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
 	// Traversal ////////////////////////////////
 

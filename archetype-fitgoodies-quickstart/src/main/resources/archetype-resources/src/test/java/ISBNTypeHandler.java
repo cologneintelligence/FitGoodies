@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,25 +21,25 @@
 package ${groupId};
 
 import fit.TypeAdapter;
-import de.cologneintelligence.fitgoodies.adapters.AbstractTypeAdapter;
+import dde.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 
-public final class ISBNTypeAdapter extends AbstractTypeAdapter<ISBN> {
-	public ISBNTypeAdapter(final TypeAdapter ta, final String parameter) {
-		super(ta, parameter);
-	}
+public final class ISBNTypeHandler extends TypeHandler<ISBN> {
+    public ISBNTypeAdapter(final TypeAdapter ta, final String parameter) {
+        super(ta, parameter);
+    }
 
-	@Override
-	public Object parse(final String s) throws Exception {
-		return new ISBN(s);
-	}
+    @Override
+    public Object parse(final String s) throws Exception {
+        return new ISBN(s);
+    }
 
-	@Override
-	public Class<ISBN> getType() {
-		return ISBN.class;
-	}
+    @Override
+    public Class<ISBN> getType() {
+        return ISBN.class;
+    }
 
-	@Override
-	public String toString(final Object o) {
-		return ((ISBN) o).stripped();
-	}
+    @Override
+    public String toString(final Object o) {
+        return ((ISBN) o).stripped();
+    }
 }
