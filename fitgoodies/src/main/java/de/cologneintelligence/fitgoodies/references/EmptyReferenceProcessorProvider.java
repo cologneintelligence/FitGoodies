@@ -52,7 +52,7 @@ public class EmptyReferenceProcessorProvider implements CellProcessorProvider {
 		return new CellProcessor() {
 			@Override
 			public String preprocess() {
-				return null;
+				return strippedText.replaceAll(PATTERN.pattern(), "");
 			}
 
 			@Override

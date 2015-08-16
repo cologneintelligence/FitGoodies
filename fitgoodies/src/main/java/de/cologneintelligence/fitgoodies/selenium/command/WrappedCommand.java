@@ -22,6 +22,9 @@ package de.cologneintelligence.fitgoodies.selenium.command;
 
 import com.thoughtworks.selenium.CommandProcessor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class WrappedCommand {
 	protected final String command;
 	protected final String[] args;
@@ -30,11 +33,21 @@ public abstract class WrappedCommand {
 	public WrappedCommand(final String command, final String[] args,
 	                      final CommandProcessor commandProcessor) {
 		this.command = command;
-		this.args = args;
+		this.args = removeNulls(args);
 		this.commandProcessor = commandProcessor;
 	}
 
-	public abstract String execute();
+    private String[] removeNulls(String[] args) {
+        List<String> list = new ArrayList<>();
+        for (String arg : args) {
+            if (arg != null) {
+                list.add(arg);
+            }
+        }
+        return list.toArray(new String[list.size()]);
+    }
+
+    public abstract String execute();
 
 
 }

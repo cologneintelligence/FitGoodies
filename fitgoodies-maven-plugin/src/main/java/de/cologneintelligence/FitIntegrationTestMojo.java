@@ -30,7 +30,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.apache.tools.ant.util.JavaEnvUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,7 +64,7 @@ public class FitIntegrationTestMojo extends AbstractMojo {
 	@Parameter(property = "additionalClasspathElements", required = false)
 	private File[] additionalClasspathElements = new File[0];
 
-	@Parameter(property = "forkJvmArgs", required = false)
+	@Parameter(property = "jvmArgs", required = false)
 	private String[] jvmArgs = new String[0];
 
 	@Parameter(defaultValue = "UTF-8", property = "project.build.sourceEncoding", required = false)
@@ -169,7 +168,7 @@ public class FitIntegrationTestMojo extends AbstractMojo {
 			boolean success = result == 0;
 			saveResult(success);
 
-			if (success) {
+			if (!success) {
 				getLog().info("One or more fit test(s) failed with return code " + result + ". Will fail in verify phase!");
 			}
 
@@ -180,7 +179,7 @@ public class FitIntegrationTestMojo extends AbstractMojo {
 
 	private ProcessBuilder prepareProcess(File bootJar) throws MojoExecutionException {
 		try {
-			String executable = JavaEnvUtils.getJreExecutable("java");
+            String executable = System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + "java";
 			List<String> args = createJavaArgs(executable, bootJar);
 			getLog().debug("Running process: " + args.toString());
 			return new ProcessBuilder(args)
@@ -192,7 +191,7 @@ public class FitIntegrationTestMojo extends AbstractMojo {
 
 	private List<String> createJavaArgs(String executable, File bootJar) throws URISyntaxException {
 
-		List<String> args = new LinkedList<String>();
+		List<String> args = new LinkedList<>();
 		args.add(executable);
 		args.add("-cp");
 		args.add(bootJar.getAbsolutePath());

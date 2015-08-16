@@ -48,11 +48,12 @@ public abstract class AbstractFileRecordReaderFixture extends AbstractFileReader
 	protected void doRow(final Parse row) {
 		Parse cell = row.parts;
 
+        // FIXME: introduce row parameters here...
 		while (cell != null) {
 			if (reader.canRead()) {
 				String actualValue = reader.nextField();
 				ConstantReceiver receiver =
-						new ConstantReceiver(actualValue, String.class);
+						new ConstantReceiver(actualValue.trim(), String.class);
 				check(cell, receiver, null);
 			} else {
 				wrong(cell);

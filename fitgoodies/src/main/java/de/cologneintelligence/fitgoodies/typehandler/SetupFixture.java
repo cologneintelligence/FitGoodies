@@ -31,7 +31,7 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
  */
 public class SetupFixture extends ActionFixture {
 	/**
-	 * Calls {@link #load} using the 2. column as argument.
+	 * Calls {@link #load(String)} using the 2. column as argument.
 	 *
 	 * @throws Exception propagated to fit
 	 */
@@ -41,7 +41,7 @@ public class SetupFixture extends ActionFixture {
 
 	/**
 	 * Registers the {@link TypeHandler} which is provided by
-	 * <code>className</code>. After processing this row, the TypeAdapter
+	 * {@code className}. After processing this row, the TypeAdapter
 	 * will be automatically used when the destination type matches
 	 * {@link TypeHandler#getType()}.
 	 *

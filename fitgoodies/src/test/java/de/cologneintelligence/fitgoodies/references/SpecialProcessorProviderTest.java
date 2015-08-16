@@ -26,6 +26,7 @@ import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -58,4 +59,15 @@ public class SpecialProcessorProviderTest extends FitGoodiesTestCase {
 		processor = provider.create("");
 		assertThat(processor.getChecker(), is(instanceOf(DiagnosticChecker.class)));
 	}
+
+    @Test
+    public void preprocessorChangesNothing() {
+        String text = "error";
+        CellProcessor processor = provider.create(text);
+        assertThat(processor.preprocess(), is(equalTo(text)));
+
+        text = "";
+        processor = provider.create(text);
+        assertThat(processor.preprocess(), is(equalTo(text)));
+    }
 }

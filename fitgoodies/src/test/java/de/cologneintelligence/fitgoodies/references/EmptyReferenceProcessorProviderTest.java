@@ -77,8 +77,8 @@ public class EmptyReferenceProcessorProviderTest extends FitGoodiesTestCase {
 
 	@Test
 	public void processorsPreprocessNull() {
-		assertThat(provider.create("${null}").preprocess(), is(nullValue()));
-	}
+        assertThat(provider.create("a ${null} b").preprocess(), is(equalTo("a  b")));
+    }
 
 	@Test
 	public void willReturnAChecker() {

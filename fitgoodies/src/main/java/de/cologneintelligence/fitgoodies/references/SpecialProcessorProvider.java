@@ -36,7 +36,7 @@ public class SpecialProcessorProvider implements CellProcessorProvider {
 		return new CellProcessor() {
 			@Override
 			public String preprocess() {
-				return null;
+				return strippedText;
 			}
 
 			@Override

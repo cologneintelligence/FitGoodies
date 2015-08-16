@@ -36,12 +36,12 @@ public final class SetupHelper {
 	private String connectionString;
 
 	/**
-	 * Sets the database driver. <code>driverName</code> must be a fully
+	 * Sets the database driver. {@code driverName} must be a fully
 	 * qualified class name and the class must be in java's class path.
-	 * Unless the driver is already registered, <code>setProvider</code>
-	 * registers it at the <code>java.sql.DriverManager</code>.
+	 * Unless the driver is already registered, {@code setProvider}
+	 * registers it at the {@code java.sql.DriverManager}.
 	 *
-	 * @param driverName fully qualified class name of a <code>java.sql.Driver</code>.
+	 * @param driverName fully qualified class name of a {@code java.sql.Driver}.
 	 * @throws Exception thrown if the class could not be found, casted or
 	 *                   registered.
 	 */
@@ -58,7 +58,7 @@ public final class SetupHelper {
 	}
 
 	/**
-	 * Sets the username to <code>userName</code>.
+	 * Sets the username to {@code userName}.
 	 *
 	 * @param userName username to set
 	 * @see #getUser() getUser()
@@ -88,7 +88,7 @@ public final class SetupHelper {
 	}
 
 	/**
-	 * Sets the password to <code>pw</code>.
+	 * Sets the password to {@code pw}.
 	 *
 	 * @param pw the password to set
 	 * @see #getPassword() getPassword()
@@ -109,7 +109,7 @@ public final class SetupHelper {
 	}
 
 	/**
-	 * Set the connection string to <code>connectString</code>.
+	 * Set the connection string to {@code connectString}.
 	 * The connection string format depends on the selected provider.
 	 *
 	 * @param connectString the connection string to use
@@ -120,11 +120,11 @@ public final class SetupHelper {
 	}
 
 	/**
-	 * Returns a <code>java.sql.Connection</code> using the saved connection
+	 * Returns a {@code java.sql.Connection} using the saved connection
 	 * string, authenticating with the saved username and password.
 	 *
 	 * @return an instance of java.sql.Connection
-	 * @throws SQLException thrown by the <code>DriverManager</code> indicating
+	 * @throws SQLException thrown by the {@code DriverManager} indicating
 	 *                      some kind of problem.
 	 */
 	public Connection getConnection() throws SQLException {

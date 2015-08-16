@@ -62,14 +62,9 @@ public class StringTypeHandler extends TypeHandler<String> {
 	 * @param b second String
 	 * @return true if they are equal or both are null, false otherwise
 	 */
-	public boolean equals(final String a, final String b) {
-		if (a == null) {
-			return b == null;
-		} else if (b == null) {
-			return false;
-		} else {
-			return a.trim().equals(b.trim());
-		}
+    @Override
+	public boolean unsafeEquals(String a, Object b) {
+        return a.trim().equals(b.toString().trim());
 	}
 
 	/**

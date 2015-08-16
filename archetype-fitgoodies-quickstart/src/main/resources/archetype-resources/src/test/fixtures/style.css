@@ -3,13 +3,13 @@
 /* $Id$ */
 
 table {
-	border: 1px solid black;
+    border: 1px solid black;
 }
 
 td {
-	border: 1px solid black;
+    border: 1px solid black;
 }
 
 tr:first-child {
-	background-color: yellow;
+    background-color: yellow;
 }

@@ -50,7 +50,7 @@ public class StringBufferTypeHandler extends TypeHandler<StringBuffer> {
 	 * @param o StringBuffer to convert
 	 * @return {@code o} as a String
 	 */
-	public final String toString(final StringBuffer o) {
+	public final String toString(StringBuffer o) {
 		if (o == null) {
 			return "null";
 		}
@@ -67,13 +67,8 @@ public class StringBufferTypeHandler extends TypeHandler<StringBuffer> {
 	 * @param b second StringBuffer
 	 * @return true if they are equal or both are null, false otherwise
 	 */
-	public final boolean equals(final StringBuffer a, final StringBuffer b) {
-		if (a == null) {
-			return b == null;
-		}
-		if (b == null) {
-			return false;
-		}
+    @Override
+	public boolean unsafeEquals(StringBuffer a, Object b) {
 		return a.toString().trim().equals(b.toString().trim());
 	}
 
@@ -84,7 +79,7 @@ public class StringBufferTypeHandler extends TypeHandler<StringBuffer> {
 	 * @return a {@code StringBuffer} which contains {@code s}
 	 */
 	@Override
-	public StringBuffer unsafeParse(final String s) {
+	public StringBuffer unsafeParse(String s) {
 		return new StringBuffer(s);
 	}
 }

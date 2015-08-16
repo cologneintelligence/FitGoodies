@@ -40,8 +40,8 @@ public class FixedLengthRecordReader implements FileRecordReader {
 	 * @param bufferedReader underlying stream to process
 	 * @param fieldWidth     array which describes the length of each column
 	 * @param newLineAtEOR   if a record is terminated with a newline, set
-	 *                       this to <code>true</code>
-	 * @throws IOException thrown if <code>bufferedReader</code> reports a problem
+	 *                       this to {@code true}
+	 * @throws IOException thrown if {@code bufferedReader} reports a problem
 	 */
 	public FixedLengthRecordReader(
 			final BufferedReader bufferedReader,
@@ -62,7 +62,7 @@ public class FixedLengthRecordReader implements FileRecordReader {
 	}
 
 	@Override
-	public final String nextField() {
+	public String nextField() {
 		if (parts == null || partIndex >= parts.length) {
 			return null;
 		}
@@ -73,15 +73,23 @@ public class FixedLengthRecordReader implements FileRecordReader {
 	}
 
 	@Override
-	public final boolean nextRecord() throws IOException {
+	public boolean nextRecord() throws IOException {
 		for (int field = 0; field < width.length; ++field) {
-			char[] buf = new char[width[field]];
-			if (reader.read(buf) == -1) {
-				parts = null;
-				return false;
-			}
-			parts[field] = new String(buf);
-		}
+            int toRead = width[field];
+            char[] buf = new char[toRead];
+
+            while (toRead > 0) {
+                int read = reader.read(buf, width[field] - toRead, toRead);
+
+                if (read == -1) {
+                    parts = null;
+                    return false;
+                }
+
+                toRead -= read;
+            }
+            parts[field] = new String(buf);
+        }
 
 		if (newLineAtEndOfRecord) {
 			reader.readLine();
@@ -93,7 +101,7 @@ public class FixedLengthRecordReader implements FileRecordReader {
 
 
 	@Override
-	public final boolean canRead() {
+	public boolean canRead() {
 		return parts != null;
 	}
 }

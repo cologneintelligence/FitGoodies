@@ -55,13 +55,8 @@ public class StringBuilderTypeHandler extends TypeHandler<StringBuilder> {
 	 * @param b second StringBuilder
 	 * @return true if they are equal or both are null, false otherwise
 	 */
-	public final boolean equals(final StringBuilder a, final StringBuilder b) {
-		if (a == null) {
-			return b == null;
-		}
-		if (b == null) {
-			return false;
-		}
+    @Override
+	public final boolean unsafeEquals(final StringBuilder a, Object b) {
 		return a.toString().trim().equals(b.toString().trim());
 	}
 

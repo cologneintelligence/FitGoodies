@@ -42,7 +42,7 @@ import java.io.File;
  */
 public class FileFixture extends ActionFixture {
 	/**
-	 * Sets the filename pattern to <code>pattern</code>.
+	 * Sets the filename pattern to {@code pattern}.
 	 *
 	 * @param pattern pattern to use
 	 */
@@ -79,7 +79,7 @@ public class FileFixture extends ActionFixture {
 	}
 
 	/**
-	 * Sets the directory to <code>directory</code>.
+	 * Sets the directory to {@code directory}.
 	 *
 	 * @param directory directory to use
 	 */
@@ -89,7 +89,7 @@ public class FileFixture extends ActionFixture {
 	}
 
 	/**
-	 * Sets the encoding to <code>encoding</code>.
+	 * Sets the encoding to {@code encoding}.
 	 *
 	 * @param encoding encoding to use
 	 */

@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <title>Testing websites</title>
+</head>
+<body>
+
+<h1>Selenium Tests</h1>
+
+<p>Selenium SetupFixture</p>
+<table>
+  <tr>
+    <td>fitgoodies.selenium.SetupFixture</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>serverHost</td>
+    <td>localhost</td>
+  </tr>
+  <tr>
+    <td>serverPort</td>
+    <td>4444</td>
+  </tr>
+  <tr>
+    <td>browserStartCommand</td>
+    <td>*firefox</td>
+  </tr>
+  <tr>
+    <td>browserURL</td>
+    <td>http://www.google.com</td>
+  </tr>
+  <tr>
+    <td>speed</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td>takeScreenshots</td>
+    <td>true</td>
+  </tr>
+  <tr>
+    <td>retryTimeout</td>
+    <td>3000</td>
+  </tr>
+  <tr>
+    <td>timeout</td>
+    <td>25000</td>
+  </tr>
+  <tr>
+    <td>start</td>
+    <td></td>
+  </tr>
+</table>
+
+<table>
+  <tr style="background-color: yellow;">
+    <td>de.cologneintelligence.fitgoodies.selenium.SeleniumFixture</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>open</td>
+    <td>/</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>windowMaximize</td>
+    <td>y</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>name=q</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>typeAndRetry</td>
+    <td>name=q</td>
+    <td>selenium</td>
+  </tr>
+  <tr>
+    <td>clickAndRetry</td>
+    <td>link=Selenium - Web Browser Automation</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>open</td>
+    <td>/</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>typeAndRetry</td>
+    <td>name=q</td>
+    <td>screenshot</td>
+  </tr>
+  <tr>
+    <td>click</td>
+    <td>//button[@name='btnG']</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>clickAndRetry</td>
+    <td>//a[contains(text(),'Wikipedia')]</td>
+    <td></td>
+  </tr>
+</table>
+
+</body>
+</html>

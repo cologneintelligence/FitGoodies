@@ -106,7 +106,7 @@ public class ArrayTypeHandler extends TypeHandler {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean unsafeEquals(final Object a, final Object b) {
+	public boolean unsafeEquals(Object a, Object b) {
 		final int length = Array.getLength(a);
 		if (length != Array.getLength(b)) {
 			return false;
