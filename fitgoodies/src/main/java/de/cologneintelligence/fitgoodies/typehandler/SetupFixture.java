@@ -51,11 +51,8 @@ public class SetupFixture extends ActionFixture {
 	 */
 	@SuppressWarnings("unchecked")
 	public void load(final String className) throws Exception {
-		Class<? extends TypeHandler<?>> clazz =
-				(Class<? extends TypeHandler<?>>) Class.forName(className);
-
-		TypeHandlerFactory helper = DependencyManager.getOrCreate(
-				TypeHandlerFactory.class);
+		Class<? extends TypeHandler<?>> clazz = (Class<? extends TypeHandler<?>>) Class.forName(className);
+		TypeHandlerFactory helper = DependencyManager.getOrCreate(TypeHandlerFactory.class);
 		helper.register(clazz);
 	}
 }

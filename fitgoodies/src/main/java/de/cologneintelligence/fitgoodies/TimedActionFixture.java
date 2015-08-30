@@ -20,7 +20,8 @@
 
 package de.cologneintelligence.fitgoodies;
 
-import de.cologneintelligence.fitgoodies.util.FitUtils;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -36,28 +37,26 @@ public class TimedActionFixture extends ActionFixture {
 
 	// Traversal ////////////////////////////////
 
-	public void doTable(Parse table) {
-		super.doTable(table);
-		table.parts.parts.last().more = td("time");
-		table.parts.parts.last().more = td("split");
-	}
 
-	protected void doCells(Parse cells) {
+    @Override
+    protected void doRow(FitRow row) throws Exception {
 		Date start = time();
-		super.doCells(cells);
+		super.doRow(row);
 		long split = time().getTime() - start.getTime();
-		cells.last().more = td(format.format(start));
-		cells.last().more = td(split < 1000 ? "&nbsp;" : Double.toString((split) / 1000.0));
+
+        FitCell cell = row.append();
+        cell.setDisplayValue(format.format(start));
+        cell.info("time");
+
+        cell = row.append();
+        cell.setDisplayValueRaw(split < 1000 ? "&nbsp;" : Double.toString((split) / 1000.0));
+        cell.info("split");
 	}
 
 	// Utility //////////////////////////////////
 
 	public Date time() {
 		return new Date();
-	}
-
-	public Parse td(String body) {
-		return new Parse("td", FitUtils.info(body), null, null);
 	}
 
 }

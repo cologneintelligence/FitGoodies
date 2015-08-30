@@ -1,35 +1,28 @@
 package de.cologneintelligence.fitgoodies.htmlparser;
 
-import de.cologneintelligence.fitgoodies.Counts;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Tag;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 public class FitRow {
+    private static final String TAG = "td";
+
 	private final FitTable table;
-	private final int index;
+	private int index;
 	private final Element row;
-	private final Counts counts;
 
-	private List<FitCell> cells;
+    private List<FitCell> cells = new LinkedList<>();
 
-	public FitRow(FitTable fitTable, int index, Element row, Counts counts) {
+    public FitRow(FitTable fitTable, Element row) {
 		this.table = fitTable;
 		this.row = row;
-		this.index = index;
-		this.counts = counts;
 
-		parseRow();
-	}
-
-	private void parseRow() {
-		List<FitCell> cells = new LinkedList<>();
-		for (Element td : row.select("td")) {
-			cells.add(new FitCell(this, td, counts));
-		}
-		this.cells = Collections.unmodifiableList(cells);
+        for (Element td : row.select(TAG)) {
+            cells.add(new FitCell(this, td));
+        }
 	}
 
 	public Element getRow() {
@@ -41,14 +34,48 @@ public class FitRow {
 	}
 
 	public List<FitCell> cells() {
-		return cells;
+		return Collections.unmodifiableList(cells);
 	}
+
+    public int size() {
+        return cells.size();
+    }
 
 	public void exception(String text) {
 		table.exceptionRow(index, text);
 	}
 
-	public void fail(String text) {
+    public void exception(Throwable t) {
+        exception(ParserUtils.getHtmlStackTrace(t));
+    }
+
+	public void wrong(String text) {
 		table.wrongRow(index, text);
 	}
+
+    public FitCell insert(int index) {
+        Element td = new Element(Tag.valueOf(TAG), row.baseUri());
+        row.insertChildren(index, Collections.singleton(td));
+
+        FitCell fitCell = new FitCell(this, td);
+        cells.add(index, fitCell);
+        return fitCell;
+    }
+
+    public void remove(int index) {
+        row.select(TAG).get(index).remove();
+        cells.remove(index);
+    }
+
+    public FitCell append() {
+        return insert(cells.size());
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    void updateIndex(int index) {
+        this.index = index;
+    }
 }

@@ -20,25 +20,33 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 
-public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
+public class AbstractFilereaderFixtureTest extends FitGoodiesFixtureTestCase<AbstractFilereaderFixtureTest.TestFixture> {
 	public static class TestFixture extends AbstractFileReaderFixture {
 		public String x;
 	}
 
 	private FileFixtureHelper helper;
 
-	@Before
+    @Override
+    protected Class<TestFixture> getFixtureClass() {
+        return TestFixture.class;
+    }
+
+    @Before
 	public void setUp() throws Exception {
 		helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
 	}
@@ -50,10 +58,9 @@ public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
 		helper.setDirectory(mockDirectory(pattern, "f.txt.bat"));
 		helper.setPattern(pattern);
 
-		TestFixture fixture = new TestFixture();
-		Parse table = parseTable(tr("x"));
+		useTable(tr("x"));
 
-		fixture.doTable(table);
+		run();
 
 		assertThat(fixture.getFile().toString(), is(equalTo("f.txt.bat")));
 		assertThat(fixture.getEncoding(), is(equalTo("latin-1")));
@@ -61,15 +68,14 @@ public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testDefaultParameters2() throws Exception {
-		TestFixture fixture = new TestFixture();
-		Parse table = parseTable(tr("x"));
+		useTable(tr("x"));
 
 		helper.setEncoding("utf-16");
 		String pattern = ".*";
 		helper.setDirectory(mockDirectory(pattern, "file1.txt"));
 		helper.setPattern(pattern);
 
-		fixture.doTable(table);
+		run();
 
 		assertThat(fixture.getFile().toString(), is(equalTo("file1.txt")));
 		assertThat(fixture.getEncoding(), is(equalTo("utf-16")));
@@ -77,27 +83,34 @@ public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testErrors() throws Exception {
-		TestFixture fixture = new TestFixture();
-		Parse table = parseTable(tr("x"));
+		useTable(tr("x"));
 
-		fixture.doTable(table);
+		run();
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
+        assertCounts(0, 0, 0, 1);
 	}
 
 	@Test
 	public final void testCustomParameters() throws Exception {
-		TestFixture fixture = new TestFixture();
-		Parse table = parseTable(tr("x"));
+		useTable(tr("x"));
 
 		final String pattern = ".*\\.bat";
 		helper.setDirectory(mockDirectory(pattern, "f.txt.bat"));
-		fixture.setParams(new String[]{"pattern=" + pattern, "encoding=cp1252"});
-		fixture.doTable(table);
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+        Map<String, String> params = new HashMap<>();
+        params.put("pattern", "p1");
+        params.put("encoding", "p2");
+        fixture.setParams(params);
+
+        preparePreprocess("p1", pattern);
+        prepareNonExistingArg("pattern");
+        prepareParameterApply("encoding", "p2", "cp1252");
+
+		run();
+
+        assertCounts(0, 0, 1, 0);
 
 		assertThat(fixture.getFile().toString(), is(equalTo("f.txt.bat")));
-		assertThat(fixture.getEncoding(), is(equalTo("cp1252")));
+		assertThat(fixture.getEncoding(), is(nullValue()));
 	}
 }

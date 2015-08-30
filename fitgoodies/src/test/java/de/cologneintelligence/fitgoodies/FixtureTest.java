@@ -20,15 +20,19 @@
 
 package de.cologneintelligence.fitgoodies;
 
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
-import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -80,7 +84,7 @@ public class FixtureTest extends FitGoodiesFixtureTestCase<FixtureTest.TestFixtu
 		}
 
 		@Override
-		protected void doCell(Parse cell, int column) {
+		protected void doCell(FitCell cell, int column) throws Exception {
 			doCellCalled = true;
 			if (throwOnCell) {
 				throw new RuntimeException("expected");
@@ -89,7 +93,7 @@ public class FixtureTest extends FitGoodiesFixtureTestCase<FixtureTest.TestFixtu
 		}
 
 		@Override
-		protected void doRows(Parse rows) {
+		protected void doRows(List<FitRow> rows) throws Exception {
 			if (throwOnRows) {
 				throw new RuntimeException("expected");
 			}
@@ -99,35 +103,35 @@ public class FixtureTest extends FitGoodiesFixtureTestCase<FixtureTest.TestFixtu
 
 	@Test
 	public void checkForwardsToValidator() throws Exception {
-		Parse aCell = parseTd("another value");
+        FitCell aCell = parseTd("another value");
 		fixture.check(aCell, valueReceiver, "arg");
 		fixture.check(aCell, valueReceiver, "arg2");
-		verify(validator).process(aCell, fixture.counts(), valueReceiver, "arg", typeHandlerFactory);
-		verify(validator).process(aCell, fixture.counts(), valueReceiver, "arg2", typeHandlerFactory);
+		verify(validator).process(aCell, valueReceiver, "arg", typeHandlerFactory);
+		verify(validator).process(aCell, valueReceiver, "arg2", typeHandlerFactory);
 	}
 
 	@Test
 	public void upAndDownIsCalledEvenOnErrors() throws Exception {
-		Parse table = parseTable(
+		useTable(
 				tr("number", "n()"),
 				tr("1", "1"));
 
 		fixture.throwOnCell = true;
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 0, 0, 4);
+		assertCounts(0, 0, 0, 4);
 		assertThat(fixture.upCalled, is(true));
 		assertThat(fixture.downCalled, is(true));
 	}
 
 	@Test
 	public void downIsNotCalledOnUpErrors() throws Exception {
-		final Parse table = parseTable(tr("x"));
+		useTable(tr("x"));
 
 		fixture.throwOnSetUp = true;
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
+		assertCounts(0, 0, 0, 1);
 		assertThat(fixture.upCalled, is(true));
 		assertThat(fixture.doCellCalled, is(false));
 		assertThat(fixture.downCalled, is(false));
@@ -135,19 +139,29 @@ public class FixtureTest extends FitGoodiesFixtureTestCase<FixtureTest.TestFixtu
 
 	@Test
 	public void initAppliesParameters() throws Exception {
-		Parse table = parseTable();
+		useTable();
 
-		fixture.setParams(new String[]{"testNr = 9", "id=test", "  other = 5 ", " value "});
+        Map<String, String> args = new HashMap<>();
+        args.put("testNr", "9");
+        args.put("id", "test");
+        args.put("other", "5");
 
-		expectParameterApply("testNr", "9", 7);
+        fixture.setParams(args);
+
+        expectParameterApply("testNr", "9", 7);
 		expectParameterApply("id", "test", "good");
 		expectParameterFail("other");
-		fixture.doTable(table);
+		run();
 	}
 
 	@Test
 	public void testArgWithParams() throws Exception {
-		fixture.setParams(new String[]{"testNr = 10", "id=test2", "  other = 5 ", " value "});
+
+        Map<String, String> args = new HashMap<>();
+        args.put("testNr", "10");
+        args.put("id", "test2");
+        args.put("other", "5");
+        fixture.setParams(args);
 
 		preparePreprocess("10", "20");
 		preparePreprocess("test2", "test2-result");
@@ -170,107 +184,44 @@ public class FixtureTest extends FitGoodiesFixtureTestCase<FixtureTest.TestFixtu
 	@Test
 	public void exceptionInDoRowIsReported() {
 		fixture.throwOnRows = true;
-		Parse table = parseTable(tr(""));
+		useTable(tr(""));
 
-		fixture.doTable(table);
-		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
+		run();
+		assertCounts(0, 0, 0, 1);
 	}
 
 	@Test
-	public void testColumnParameters() throws Exception {
-		Parse table = parseTableWithoutAnnotation(
-				tr("x[1 2]", "y[3 4]", "z"),
-				tr("a[7]", "b", "c"));
+	public void testColumnParameters1() throws Exception {
+        useTable(
+            tr("x[1 2]", "y[3 4]", "z"),
+            tr("a[7]", "b", "c"));
 
-		String[] actual = fixture.extractColumnParameters(table.parts);
+        String[] actual = fixture.extractColumnParameters(lastFitTable.rows().get(0));
 
-		assertThat(Arrays.asList("1 2", "3 4", null), is(equalTo(Arrays.asList(actual))));
-		assertThat(table.parts.parts.text(), is(equalTo("x")));
-		assertThat(table.parts.parts.more.text(), is(equalTo("y")));
-		assertThat(table.parts.more.parts.text(), is(equalTo("a[7]")));
+        assertThat(Arrays.asList("1 2", "3 4", null), is(equalTo(Arrays.asList(actual))));
+        assertThat(htmlAt(0, 0), is(equalTo("x")));
+        assertThat(htmlAt(0, 1), is(equalTo("y")));
+        assertThat(htmlAt(1, 0), is(equalTo("a[7]")));
+    }
 
-		table = parseTableWithoutAnnotation(tr("name", "date [ de_DE, dd.MM.yyyy ] "));
+    @Test
+    public void testColumnParameters2() throws Exception {
+        useTable(tr("name", "date [ de_DE, dd.MM.yyyy ] "));
 
-		actual = fixture.extractColumnParameters(table.parts);
+		String[] actual = fixture.extractColumnParameters(lastFitTable.rows().get(0));
+
 		assertThat(Arrays.asList(null, "de_DE, dd.MM.yyyy"), is(equalTo(Arrays.asList(actual))));
-		assertThat(table.parts.parts.text(), is(equalTo("name")));
-		assertThat(table.parts.parts.more.text(), is(equalTo("date")));
+		assertThat(htmlAt(0, 0), is(equalTo("name")));
+		assertThat(htmlAt(0, 1), is(equalTo("date")));
 	}
 
 	@Test
 	public void allCellsAreIgnoredByDefault() {
-		Parse table = parseTable(tr("hello", "world"), tr("a", "test"));
+		useTable(tr("hello", "world"), tr("a", "test"));
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 0, 4, 0);
-	}
-
-	@Test
-	public void rightMarksCell() {
-		Parse table = parseTableWithoutAnnotation(tr("a value"));
-		fixture.right(table.at(0, 0, 0));
-
-		assertCounts(fixture.counts(), table, 1, 0, 0, 0);
-		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_GREEN));
-	}
-
-	@Test
-	public void wrongMarksCell() {
-		Parse table = parseTableWithoutAnnotation(tr("a value"));
-		fixture.wrong(table.at(0, 0, 0));
-
-		assertCounts(fixture.counts(), table, 0, 1, 0, 0);
-		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_RED));
-	}
-
-	@Test
-	public void wrongMarksCellWithMessage() {
-		Parse table = parseTableWithoutAnnotation(tr("initial value"));
-		fixture.wrong(table.at(0, 0, 0), "my message");
-
-		assertCounts(fixture.counts(), table, 0, 1, 0, 0);
-		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_RED));
-		assertThat(table.at(0, 0, 0).body, allOf(containsString("my message"), containsString("initial value")));
-	}
-
-	@Test
-	public void errorMarksCellWithMessage() {
-		Parse table = parseTableWithoutAnnotation(tr("original value"));
-		fixture.error(table.at(0, 0, 0), "my message");
-
-		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
-		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_YELLOW));
-		assertThat(table.at(0, 0, 0).body, allOf(containsString("my message"), containsString("original value")));
-	}
-
-	@Test
-	public void ignoreMarksCell() {
-		Parse table = parseTableWithoutAnnotation(tr("a value"));
-		fixture.ignore(table.at(0, 0, 0));
-
-		assertCounts(fixture.counts(), table, 0, 0, 1, 0);
-		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_GREY));
-	}
-
-	@Test
-	public void exceptionMarksCell() {
-		Parse table = parseTableWithoutAnnotation(tr("a value"));
-		fixture.exception(table.at(0, 0, 0), new RuntimeException("expected"));
-
-		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
-		assertThat(table.at(0, 0, 0).tag, containsString(FitUtils.HTML_YELLOW));
-		assertThat(table.at(0, 0, 0).body, allOf(containsString("a value"),
-				containsString("RuntimeException"), containsString("expected")));
-	}
-
-	@Test
-	public void infoAddsInfoToCell() {
-		Parse table = parseTableWithoutAnnotation(tr("a value"));
-		fixture.info(table.at(0, 0, 0), "additional");
-
-		assertThat(table.at(0, 0, 0).body, allOf(containsString("a value"), containsString("additional"),
-				containsString(FitUtils.HTML_INFO)));
+		assertCounts(0, 0, 4, 0);
 	}
 
 	@Test

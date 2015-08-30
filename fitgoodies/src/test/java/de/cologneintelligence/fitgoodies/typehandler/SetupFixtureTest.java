@@ -21,36 +21,35 @@
 
 package de.cologneintelligence.fitgoodies.typehandler;
 
-import de.cologneintelligence.fitgoodies.Fixture;
-import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import org.junit.Before;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
+import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.verify;
 
 
-public class SetupFixtureTest extends FitGoodiesTestCase {
-	private Fixture fixture;
-
-	@Before
-	public void setUp() throws Exception {
-		fixture = new SetupFixture();
-	}
+public class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
+    }
 
 	@Test
 	public void testParse() throws Exception {
-		TypeHandlerFactory helper = DependencyManager.getOrCreate(TypeHandlerFactory.class);
-		Parse table = parseTable(tr("load", "de.cologneintelligence.fitgoodies.typehandler.LongParserMock"));
+		useTable(tr("load", "class"));
 
-		assertThat(helper.getHandler(Long.class, null), is(not(instanceOf(LongParserMock.class))));
+        preparePreprocessWithConversion(String.class, "class",
+            "de.cologneintelligence.fitgoodies.typehandler.LongParserMock");
 
-		fixture.doTable(table);
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
+		run();
 
-		assertThat(helper.getHandler(Long.class, null), is(instanceOf(LongParserMock.class)));
-	}
+        assertCounts(0, 0, 0, 0);
+
+        @SuppressWarnings("unchecked")
+        Matcher<Class<TypeHandler<?>>> matcher = (Matcher) equalTo(LongParserMock.class);
+        verify(typeHandlerFactory).register(argThat(matcher));
+    }
+
 }

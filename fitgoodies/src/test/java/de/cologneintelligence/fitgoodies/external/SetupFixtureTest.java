@@ -20,37 +20,30 @@
 
 package de.cologneintelligence.fitgoodies.external;
 
-import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class SetupFixtureTest extends FitGoodiesTestCase {
+public class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
 
-	@Before
-	public void setUp() {
-		System.setProperty("testSetupFixtureKey", "testValue");
-	}
-
-	@After
-	public void tearDown() {
-		System.clearProperty("testSetupFixtureKey");
-	}
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
+    }
 
 	@Test
 	public void testParsing() {
-		Parse table = parseTable(tr("addProperty", "-DtestKey=${System.getProperty(testSetupFixtureKey)}"));
+		useTable(tr("addProperty", "-DtestKey=$value"));
 
-		SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table);
+        preparePreprocessWithConversion(String.class, "-DtestKey=$value", "-DtestKey=testValue");
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+		run();
+
+		assertCounts(0, 0, 0, 0);
 		SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
 		assertThat(helper.getProperties().get(0), is(equalTo("-DtestKey=testValue")));
 	}

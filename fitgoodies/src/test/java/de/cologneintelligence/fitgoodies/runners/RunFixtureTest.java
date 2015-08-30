@@ -20,9 +20,8 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,11 +35,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-public final class RunFixtureTest extends FitGoodiesTestCase {
+public final class RunFixtureTest extends FitGoodiesFixtureTestCase<RunFixture> {
 
-	private Parse table;
+    @Override
+    protected Class<RunFixture> getFixtureClass() {
+        return RunFixture.class;
+    }
 
-	@Before
+    @Before
 	public void setup() {
 		RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
 		final Runner runner = mock(Runner.class);
@@ -75,33 +77,29 @@ public final class RunFixtureTest extends FitGoodiesTestCase {
 		when(dirHelper.rel2abs("abspath", "../tests2/file2.html")).thenReturn(f3);
 		when(dirHelper.subdir(outputDir, "file2.html")).thenReturn(f4);
 
-		table = parseTable(
-				tr("file", "file1.html"),
-				tr("file", "../tests2/file2.html</td></tr></table>"));
+		useTable(
+            tr("file", "file1.html"),
+            tr("file", "$file2"));
+
+        preparePreprocessWithConversion(String.class, "file1.html", "file1.html");
+        preparePreprocessWithConversion(String.class, "$file2", "../tests2/file2.html");
 	}
 
 	@Test
 	public void testFile() {
-		RunFixture fixture = new RunFixture();
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 6, 2, 10, 0);
-
-		assertThat(table.parts.more.parts.more.tag.contains("ffcfcf"), is(true));
-		assertThat(table.parts.more.more.parts.more.tag.contains("cfffcf"), is(true));
+		assertCounts(6, 2, 10, 0);
 	}
 
 	@Test
 	public void testFileTableProcessing() {
-		RunFixture fixture = new RunFixture();
-		fixture.doTable(table);
+		run();
 
-		assertThat(table.parts.more.parts.body, is(equalTo("<a href=\"file1.html\">file1.html</a>")));
-		assertThat(table.parts.more.parts.more.body, is(equalTo("1 right, 2 wrong, 3 ignored, 0 exceptions")));
-		assertThat(table.parts.more.more.parts.body, is(equalTo("<a href=\"file2.html\">file2.html</a>")));
-		assertThat(table.parts.more.more.parts.more.body, is(equalTo("5 right, 0 wrong, 7 ignored, 0 exceptions")));
-
-		assertThat(table.parts.more.parts.more.tag.contains("ffcfcf"), is(true));
-		assertThat(table.parts.more.more.parts.more.tag.contains("cfffcf"), is(true));
+        System.out.println(lastFitTable.pretty());
+        assertThat(htmlAt(0, 1), is(equalTo("<a href=\"file1.html\">file1.html</a>")));
+		assertThat(htmlAt(0, 2), is(equalTo("1 right, 2 wrong, 3 ignored, 0 exceptions")));
+		assertThat(htmlAt(1, 1), is(equalTo("<a href=\"file2.html\">file2.html</a>")));
+		assertThat(htmlAt(1, 2), is(equalTo("5 right, 0 wrong, 7 ignored, 0 exceptions")));
 	}
 }

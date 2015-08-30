@@ -21,7 +21,7 @@
 package de.cologneintelligence.fitgoodies.external;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import java.io.IOException;
@@ -52,6 +52,7 @@ import java.util.List;
  * </tr>
  * </table>
  */
+// TODO: better extend Fixture
 public class StartFixture extends ActionFixture {
 
 	private ProcessWrapper processWrapper;
@@ -83,25 +84,26 @@ public class StartFixture extends ActionFixture {
 
 	public void executeAndWait(String command) throws Exception {
 		int result = processWrapper.startAndWait(command, getParameters());
-		if (result == 0) {
-			right(cells);
+        FitCell resultCell = row.cells().get(1);
+
+        if (result == 0) {
+			resultCell.right();
 		} else {
-			wrong(cells, "Return code: " + result);
+            resultCell.wrong("Return code: " + result);
 		}
 	}
 
 	private String[] getParameters() {
 		List<String> parameterList = new LinkedList<>();
-		Parse cell = cells.more.more.more;
-		while (cell != null) {
-			parameterList.add(cell.text());
-			cell = cell.more;
-		}
+
+        for (int i = 3; i < row.cells().size(); i++) {
+            String fitValue = row.cells().get(i).getFitValue();
+            parameterList.add(validator.preProcess(fitValue));
+        }
 
 		SetupHelper setupHelper = DependencyManager.getOrCreate(SetupHelper.class);
 		parameterList.addAll(setupHelper.getProperties());
-		final String[] parameters = parameterList.toArray(new String[parameterList.size()]);
-		return parameters;
+        return parameterList.toArray(new String[parameterList.size()]);
 	}
 
 	public void changeDir(String dir) {

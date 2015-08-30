@@ -22,14 +22,15 @@ package de.cologneintelligence.fitgoodies.runners;
 
 import de.cologneintelligence.fitgoodies.ActionFixture;
 import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.file.FileInformation;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FitUtils;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,120 +49,108 @@ import java.util.List;
  * </table>
  */
 public class RunFixture extends ActionFixture {
-	private Runner runner;
-	private FileSystemDirectoryHelper dirHelper;
-	private File thisDir;
-	private File outDir;
-	private Parse thisRow;
+    private Runner runner;
+    private FileSystemDirectoryHelper dirHelper;
+    private File thisDir;
+    private File outDir;
 
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
-		RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
-		dirHelper = helper.getHelper();
-		thisDir = helper.getFile().getParentFile();
-		outDir = helper.getResultFile().getParentFile();
-		runner = helper.getRunner();
-	}
+        RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
+        dirHelper = helper.getHelper();
+        thisDir = helper.getFile().getParentFile();
+        outDir = helper.getResultFile().getParentFile();
+        runner = helper.getRunner();
+    }
 
-	@Override
-	protected void doRows(final Parse rows) {
-		Parse nextRow = rows;
+    @Override
+    protected void doRows(final List<FitRow> rows) throws Exception {
+        // since rows are inserted, we need a constant copy of the "real" content
+        for (FitRow row : new ArrayList<>(rows)) {
+            super.doRow(row);
+        }
+    }
 
-		while (nextRow != null) {
-			thisRow = nextRow;
-			nextRow = nextRow.more;
-			super.doRow(thisRow);
-		}
-	}
+    /**
+     * Calls {@link #file(String)}, using the next cell as its parameter.
+     *
+     * @throws Exception propagated to fit
+     */
+    public void file() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Calls {@link #file(String)}, using the next cell as its parameter.
-	 *
-	 * @throws Exception propagated to fit
-	 */
-	public void file() throws Exception {
-		transformAndEnter();
-	}
+    /**
+     * Calls {@link #directory(String)}, using the next cell as its parameter.
+     *
+     * @throws Exception propagated to fit
+     */
+    public void directory() throws Exception {
+        transformAndEnter();
+    }
 
-	/**
-	 * Calls {@link #directory(String)}, using the next cell as its parameter.
-	 *
-	 * @throws Exception propagated to fit
-	 */
-	public void directory() throws Exception {
-		transformAndEnter();
-	}
+    private void appendResults(
+        final FitRow row,
+        final String name,
+        final Counts results)
+        throws ParseException {
 
-	private String color(final Counts c) {
-		if (c.wrong > 0 || c.exceptions > 0) {
-			return FitUtils.HTML_RED;
-		} else {
-			return FitUtils.HTML_GREEN;
-		}
-	}
+        FitCell cell = row.cells().get(2);
+        cell.setDisplayValueRaw("<a href=\"" + name + "\">" + name + "</a>");
 
-	private void generateResultRow(
-			final Parse firstCell,
-			final String name,
-			final Counts results)
-			throws ParseException {
+        cell = row.append();
+        cell.setDisplayValue(results.toString());
+    }
 
-		firstCell.more = new Parse("<td></td><td></td>", new String[]{"td"});
-		firstCell.more.body = "<a href=\"" + name + "\">" + name + "</a>";
+    /**
+     * Runs the file {@code fileName} using the current runner and replaces
+     * the current row with the results.
+     *
+     * @param fileName file to process
+     * @throws Exception propagated to fit
+     */
+    public void file(final String fileName) throws Exception {
+        String in = thisDir.getAbsolutePath();
+        File out = outDir.getAbsoluteFile();
 
-		firstCell.more.more.body = results.toString();
-		firstCell.more.more.addToTag(" bgcolor=\"" + color(results) + "\"");
-	}
+        //noinspection ResultOfMethodCallIgnored
+        out.mkdirs();
 
-	/**
-	 * Runs the file <code>fileName</code> using the current runner and replaces
-	 * the current row with the results.
-	 *
-	 * @param fileName file to process
-	 * @throws Exception propagated to fit
-	 */
-	public void file(final String fileName) throws Exception {
-		String in = thisDir.getAbsolutePath();
-		File out = outDir.getAbsoluteFile();
+        File inputFile = dirHelper.rel2abs(in, fileName);
+        File outputFile = dirHelper.subdir(out, inputFile.getName());
+        Counts result = runner.run(inputFile, outputFile);
 
-		//noinspection ResultOfMethodCallIgnored
-		out.mkdirs();
+        appendResults(row, inputFile.getName(), result);
+        row.getTable().getCounts().tally(result);
+    }
 
-		File inputFile = dirHelper.rel2abs(in, fileName);
-		File outputFile = dirHelper.subdir(out, inputFile.getName());
-		Counts result = runner.run(inputFile, outputFile);
+    /**
+     * Runs all HTML files in {@code dir} using the current runner and replaces
+     * the current row with the results.
+     *
+     * @param dir file to process
+     * @throws Exception propagated to fit
+     */
+    // TODO: not tested?
+    public void directory(final String dir) throws Exception {
+        File srcDir = dirHelper.rel2abs(thisDir.getAbsolutePath(), dir);
 
-		generateResultRow(cells, inputFile.getName(), result);
-		counts().tally(result);
-	}
+        List<FileInformation> files = new DirectoryFilter(srcDir, dirHelper).getSelectedFiles();
 
-	/**
-	 * Runs all HTML files in <code>dir</code> using the current runner and replaces
-	 * the current row with the results.
-	 *
-	 * @param dir file to process
-	 * @throws Exception propagated to fit
-	 */
-	// TODO: not tested?
-	public void directory(final String dir) throws Exception {
-		File srcDir = dirHelper.rel2abs(thisDir.getAbsolutePath(), dir);
+        RunConfiguration runConfiguration = new RunConfiguration();
+        runConfiguration.setEncoding(runner.getEncoding());
+        runConfiguration.setBaseDir(srcDir);
+        runConfiguration.setDestination(outDir.getPath());
+        runConfiguration.setSource(files.toArray(new FileInformation[files.size()]));
+        System.out.println("Run: " + files + " in " + srcDir + " to " + outDir);
 
-		List<FileInformation> files = new DirectoryFilter(srcDir, dirHelper).getSelectedFiles();
+        final FitRunner fitRunner = new FitRunner(dirHelper, runConfiguration);
 
-		RunConfiguration runConfiguration = new RunConfiguration();
-		runConfiguration.setEncoding(runner.getEncoding());
-		runConfiguration.setBaseDir(srcDir);
-		runConfiguration.setDestination(outDir.getPath());
-		runConfiguration.setSource(files.toArray(new FileInformation[files.size()]));
-		System.out.println("Run: " + files + " in " + srcDir + " to " + outDir);
-
-		final FitRunner fitRunner = new FitRunner(dirHelper, runConfiguration);
-
-		FitParseResult results = new FitParseResult();
-		fitRunner.run(results);
-		results.replaceLastIn(thisRow);
-		counts().tally(results.getCounts());
-	}
+        FitParseResult results = new FitParseResult();
+        fitRunner.run(results);
+        results.insertAndReplace(row);
+        row.getTable().getCounts().tally(results.getCounts());
+    }
 }

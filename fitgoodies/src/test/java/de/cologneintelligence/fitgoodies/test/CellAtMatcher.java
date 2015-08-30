@@ -20,33 +20,34 @@
 
 package de.cologneintelligence.fitgoodies.test;
 
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitTable;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-class CellAtMatcher extends BaseMatcher<Parse> {
+class CellAtMatcher extends BaseMatcher<FitCell> {
 	private final int x;
 	private final int y;
-	private final Parse parse;
+    private final FitCell cell;
 
-	public CellAtMatcher(Parse parse, int x, int y) {
-		this.parse = parse;
-		this.x = x;
-		this.y = y;
+    public CellAtMatcher(FitTable parse, int row, int col) {
+        this.cell = parse.rows().get(row).cells().get(col);
+		this.x = row;
+		this.y = col;
 	}
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText(String.format("the cell at position %d/%d (%s)", x, y, parse.at(0, x, y)));
+		description.appendText(String.format("the cell at position %d/%d (%s)", x, y, cell));
 	}
 
 	@Override
 	public boolean matches(Object item) {
-		return item == parse.at(0, x, y);
+		return item == cell;
 	}
 
-	public static Matcher<Parse> cellAt(Parse parse, int x, int y) {
-		return new CellAtMatcher(parse, x, y);
+	public static Matcher<FitCell> cellAt(FitTable table, int row, int col) {
+		return new CellAtMatcher(table, row, col);
 	}
 }

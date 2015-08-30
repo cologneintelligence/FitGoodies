@@ -20,6 +20,9 @@
 
 package de.cologneintelligence.fitgoodies;
 
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
+import de.cologneintelligence.fitgoodies.htmlparser.FitTable;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandlerFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
@@ -30,11 +33,10 @@ import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiverFactory;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Fixture {
-
-	private Counts counts = new Counts();
-	protected String[] args;
+	protected Map<String, String> args;
 
 	protected TypeHandlerFactory typeHandlerFactory = DependencyManager.getOrCreate(TypeHandlerFactory.class);
 	protected ValueReceiverFactory valueReceiverFactory = DependencyManager.getOrCreate(ValueReceiverFactory.class);
@@ -47,9 +49,9 @@ public class Fixture {
 	 * table. This method is primary useful for debugging. You won't need it
 	 * otherwise.
 	 *
-	 * @param args parameters to store in {@code args}
-	 */
-	public final void setParams(final String[] args) {
+     * @param args parameters to store in {@code args}
+     */
+	public final void setParams(final Map<String, String> args) {
 		this.args = args;
 	}
 
@@ -88,18 +90,11 @@ public class Fixture {
 	 * @see #copyParamsToFixture() copyParamsToFixture
 	 */
 	public String getArg(final String argName, final String defaultValue) {
-		if (args == null) {
+		if (args == null || !args.containsKey(argName)) {
 			return defaultValue;
-		}
-
-		for (final String argument : args) {
-			final String[] pair = argument.trim().split("\\s*=\\s*", 2);
-			if (pair.length == 2 && pair[0].equalsIgnoreCase(argName)) {
-				return validator.preProcess(pair[1]);
-			}
-		}
-
-		return defaultValue;
+		} else {
+            return validator.preProcess(args.get(argName));
+        }
 	}
 
 
@@ -111,22 +106,23 @@ public class Fixture {
 	 *
 	 * @param table the table to be processed
 	 */
-	public void doTable(final Parse table) {
+	public void doTable(FitTable table) {
 		copyParamsToFixture();
 
 		try {
 			setUp();
 
 			try {
-				doRows(table.parts.more);
+                doRows(table.rows());
 			} catch (Exception e) {
-				exception(table.parts.parts, e);
+                table.exception(e);
 			}
 
 			tearDown();
 		} catch (final Exception e) {
-			exception(table.parts.parts, e);
+            table.exception(e);
 		}
+        table.finishExecution();
 	}
 
 	/**
@@ -135,43 +131,40 @@ public class Fixture {
 	 * @param row row to process
 	 * @return extracted parameters
 	 */
-	protected String[] extractColumnParameters(final Parse row) {
-		Parse cell = row.parts;
-		final List<String> result = new ArrayList<>();
+	protected String[] extractColumnParameters(FitRow row) {
+        final List<String> result = new ArrayList<>();
 
-		while (cell != null) {
+        for (FitCell cell : row.cells()) {
 			result.add(FitUtils.extractCellParameter(cell));
-			cell = cell.more;
 		}
 
 		return result.toArray(new String[result.size()]);
 	}
 
-	protected void doRows(Parse rows) {
-		while (rows != null) {
-			Parse more = rows.more;
-			doRow(rows);
-			rows = more;
+	protected void doRows(List<FitRow> rows) throws Exception {
+        for (FitRow row : rows) {
+			doRow(row);
 		}
 	}
 
-	protected void doRow(Parse row) {
-		doCells(row.parts);
+	protected void doRow(FitRow row) throws Exception {
+		doCells(row.cells());
 	}
 
-	protected void doCells(Parse cells) {
-		for (int i = 0; cells != null; i++) {
-			try {
-				doCell(cells, i);
+	protected void doCells(List<FitCell> cells) {
+        for (int i = 0; i < cells.size(); i++) {
+            FitCell cell = cells.get(i);
+
+            try {
+				doCell(cell, i);
 			} catch (Exception e) {
-				exception(cells, e);
+                cell.exception(e);
 			}
-			cells = cells.more;
 		}
 	}
 
-	protected void doCell(Parse cell, int columnNumber) {
-		ignore(cell);
+	protected void doCell(FitCell cell, int columnNumber) throws Exception {
+		cell.ignore();
 	}
 
 	/**
@@ -231,58 +224,13 @@ public class Fixture {
 	 * @see #copyParamsToFixture()  copyParamsToFixture
 	 */
 	protected String[] getArgNames() {
-		final List<String> result = new ArrayList<>();
-
 		if (args == null) {
 			return new String[]{};
 		}
 
-		for (final String argument : args) {
-			final String[] pair = argument.split("=", 2);
-			if (pair.length == 2) {
-				result.add(pair[0].trim());
-			}
-		}
-
-		return result.toArray(new String[result.size()]);
+        return args.keySet().toArray(new String[args.keySet().size()]);
 	}
 
-
-	// Annotation ///////////////////////////////
-
-	public void right(Parse cell) {
-		FitUtils.right(cell);
-		counts.right++;
-	}
-
-	public void wrong(Parse cell) {
-		FitUtils.wrong(cell);
-		counts.wrong++;
-	}
-
-	protected void wrong(Parse cell, String actual) {
-		wrong(cell);
-		FitUtils.wrong(cell, actual);
-	}
-
-	public void info(Parse cell, String message) {
-		FitUtils.info(cell, message);
-	}
-
-	protected void ignore(Parse cell) {
-		FitUtils.ignore(cell);
-		counts.ignores++;
-	}
-
-	protected void error(Parse cell, String message) {
-		FitUtils.error(cell, message);
-		counts.exceptions++;
-	}
-
-	protected void exception(Parse cell, Throwable exception) {
-		FitUtils.exception(cell, exception);
-		counts.exceptions++;
-	}
 
 	// Utility //////////////////////////////////
 
@@ -292,14 +240,9 @@ public class Fixture {
 	 *
 	 * @param cell                 the cell to check
 	 * @param valueReceiver        - TypeAdapter to use
-	 * @param currentCellParameter
 	 */
-	public void check(final Parse cell, ValueReceiver valueReceiver, String currentCellParameter) {
-		validator.process(cell, counts, valueReceiver, currentCellParameter, typeHandlerFactory);
-	}
-
-	public Counts counts() {
-		return counts;
+	public void check(final FitCell cell, ValueReceiver valueReceiver, String currentCellParameter) {
+		validator.process(cell, valueReceiver, currentCellParameter, typeHandlerFactory);
 	}
 
 	protected TypeHandler createTypeHandler(ValueReceiver valueReceiver, String cellParameter) {

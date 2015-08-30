@@ -20,9 +20,9 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -30,67 +30,84 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 
-public class FileFixtureTest extends FitGoodiesTestCase {
+public class FileFixtureTest extends FitGoodiesFixtureTestCase<FileFixture> {
+    private FileFixtureHelper helper;
+
+    @Override
+    protected Class<FileFixture> getFixtureClass() {
+        return FileFixture.class;
+    }
+
+    @Before
+    public void setUp() {
+        this.helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+    }
+
 	@Test
 	public void testErrors() {
-		Parse table = parseTable(
-				tr("too short"),
-				tr("wrong", "value"));
+		useTable(
+            tr("too short"),
+            tr("wrong", "value"));
 
-		FileFixture fixture = new FileFixture();
-		fixture.doTable(table);
+        run();
 
-		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 2)));
+        assertCounts(0, 0, 0, 2);
 	}
 
 	@Test
-	public void testPattern() {
-		Parse table = parseTable(tr("pattern", ".*\\.txt"));
+	public void testPattern1() {
+        useTable(tr("pattern", "$pattern"));
 
-		FileFixture fixture = new FileFixture();
-		fixture.doTable(table);
+        preparePreprocessWithConversion(String.class, "$pattern", ".*\\.txt");
 
-		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-		FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+        run();
+
+        assertCounts(0, 0, 0, 0);
+
 		assertThat(helper.getPattern(), is(equalTo(".*\\.txt")));
+    }
 
-		table = parseTable(tr("pattern", "testfile"));
+    @Test
+    public void testPattern2() {
+		useTable(tr("pattern", "testfile"));
 
-		fixture.doTable(table);
+        preparePreprocessWithConversion(String.class, "testfile", "testfile");
 
-		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().right, is(equalTo((Object) 0)));
+        run();
+
+        assertCounts(0, 0, 0, 0);
+
 		assertThat(helper.getPattern(), is(equalTo("testfile")));
 	}
 
 	@Test
-	public void testEncoding() {
-		Parse table = parseTable(
-				tr("directory", "dir"),
-				tr("encoding", "utf-8"));
+	public void testEncoding1() {
+        useTable(
+            tr("directory", "$dir"),
+            tr("encoding", "utf-8"));
 
-		FileFixture fixture = new FileFixture();
-		fixture.doTable(table);
+        preparePreprocessWithConversion(String.class, "$dir", "dir");
+        preparePreprocessWithConversion(String.class, "utf-8", "utf-8");
 
-		FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+        run();
 
-		assertThat(fixture.counts().right, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-		assertThat(helper.getEncoding(), is(equalTo("utf-8")));
+        assertCounts(0, 0, 0, 0);
+        assertThat(helper.getEncoding(), is(equalTo("utf-8")));
+    }
 
-		table = parseTable(
+    @Test
+    public void testEncoding2() {
+		useTable(
 				tr("directory", "c:\\"),
 				tr("encoding", "latin-1"));
 
-		fixture.doTable(table);
+        preparePreprocessWithConversion(String.class, "c:\\", "c:\\");
+        preparePreprocessWithConversion(String.class, "latin-1", "latin-1");
 
-		assertThat(fixture.counts().right, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+        run();
+
+        assertCounts(0, 0, 0, 0);
 		assertThat(helper.getEncoding(), is(equalTo("latin-1")));
 	}
+
 }

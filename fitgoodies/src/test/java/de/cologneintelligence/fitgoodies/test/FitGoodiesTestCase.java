@@ -21,160 +21,132 @@
 package de.cologneintelligence.fitgoodies.test;
 
 import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitTable;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FitUtils;
+import org.hamcrest.Matcher;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
-import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public abstract class FitGoodiesTestCase {
 
-	protected static Counts mkCounts(final int r, final int w, final int i,
-	                                 final int e) {
-		final Counts c = new Counts();
-		c.right = r;
-		c.wrong = w;
-		c.ignores = i;
-		c.exceptions = e;
-		return c;
-	}
+    protected FitTable lastFitTable;
+    protected Element lastElement;
 
-	@Before
-	public void cleanupDependencyManager() throws Exception {
-		DependencyManager.clear();
-	}
+    protected static Counts mkCounts(final int r, final int w, final int i,
+                                     final int e) {
+        final Counts c = new Counts();
+        c.right = r;
+        c.wrong = w;
+        c.ignores = i;
+        c.exceptions = e;
+        return c;
+    }
 
-	@After
-	public void cleanupDBDriverMock() throws Exception {
-		de.cologneintelligence.fitgoodies.database.DriverMock.cleanup();
-	}
+    @Before
+    public void cleanupDependencyManager() throws Exception {
+        DependencyManager.clear();
+    }
 
-	public File mockDirectory(String pattern, String... files) {
-		DirectoryMockHelper helper = new DirectoryMockHelper();
-		for (String file : files) {
-			helper.addFile(file);
-		}
+    @After
+    public void cleanupDBDriverMock() throws Exception {
+        de.cologneintelligence.fitgoodies.database.DriverMock.cleanup();
+    }
 
-		return helper.finishMock(pattern);
-	}
+    public File mockDirectory(String pattern, String... files) {
+        DirectoryMockHelper helper = new DirectoryMockHelper();
+        for (String file : files) {
+            helper.addFile(file);
+        }
 
-	protected void assertCounts(final Counts counts, final Parse table, final int right, final int wrong, final int ignores, final int exceptions) {
-		assertThat("Wrong counts! First exception: " + findException(table), counts,
-				equalTo(new Counts(right, wrong, ignores, exceptions)));
-	}
+        return helper.finishMock(pattern);
+    }
 
-	private static String findException(Parse table) {
-		if (table != null) {
-			Parse row = table.parts;
-			while (row != null) {
-				Parse cell = row.parts;
-				while (cell != null) {
+    protected void assertCounts(int right, int wrong, int ignores, int exceptions) {
+        assertThat("Wrong counts! " + lastFitTable.pretty(), lastFitTable.getCounts(),
+            equalTo(new Counts(right, wrong, ignores, exceptions)));
+    }
 
-					if (cell.tag.contains("bgcolor=\"" + FitUtils.HTML_YELLOW + "\"")) {
-						final String body = cell.body;
-						final String trace = body.replaceFirst("^.*<pre>", "").replaceFirst("</pre>.*$", "");
-						return Parse.unescape(trace);
-					}
+    protected File getMockedFile(File dir, String... name) {
+        File tmp = dir;
+        for (String aName : name) {
+            tmp = find(tmp, aName);
+        }
+        return tmp;
+    }
 
-					cell = cell.more;
-				}
-				row = row.more;
-			}
-		}
-		return "none";
-	}
+    private File find(File dir, String s) {
+        final File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.getName().equals(s)) {
+                    return file;
+                }
+            }
+        }
+        throw new IllegalArgumentException("not found: " + s);
+    }
 
-	protected File getMockedFile(File dir, String... name) {
-		File tmp = dir;
-		for (String aName : name) {
-			tmp = find(tmp, aName);
-		}
-		return tmp;
-	}
+    protected String tr(String... tds) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<tr>");
+        for (String td : tds) {
+            td(builder, td);
+        }
+        builder.append("</tr>");
+        return builder.toString();
+    }
 
-	private File find(File dir, String s) {
-		final File[] files = dir.listFiles();
-		if (files != null) {
-			for (File file : files) {
-				if (file.getName().equals(s)) {
-					return file;
-				}
-			}
-		}
-		throw new IllegalArgumentException("not found: " + s);
-	}
+    private void td(StringBuilder builder, String value) {
+        builder.append("<td>").append(value).append("</td>");
+    }
 
-	protected Parse parseTableWithoutAnnotation(String... trs) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("<table>");
-		for (String c : trs) {
-			builder.append(c);
-		}
-		builder.append("</table>");
+    protected FitCell parseTd(String value) {
+        useTable(tr(value));
+        return lastFitTable.rows().get(0).cells().get(0);
+    }
 
-		return parse(builder.toString());
-	}
+    protected void useTable(String... trs) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<table>");
+        builder.append(tr("ignoredClass"));
+        for (String c : trs) {
+            builder.append(c);
+        }
+        builder.append("</table>");
 
-	protected Parse parseTable(String... trs) {
-		String[] trs2 = new String[trs.length + 1];
-		System.arraycopy(trs, 0, trs2, 1, trs.length);
-		trs2[0] = tr("ignoredClass");
-		return parseTableWithoutAnnotation(trs2);
-	}
+        lastElement = Jsoup.parse(builder.toString()).select("table").first();
+        lastFitTable = new FitTable(lastElement);
+    }
 
-	public Parse parse(String input) {
-		return parse(input, "table", "tr", "td");
-	}
+    public String htmlAt(int row, int col) {
+        return lastElement.select("tr").get(row + 1).select("td").get(col).html();
+    }
 
-	public Parse parse(String input, String... tags) {
-		try {
-			return new Parse(input, tags);
-		} catch (ParseException e) {
-			Assert.fail("Could not parse prepared table: " + e.getMessage());
-			throw new AssertionError("");
-		}
-	}
+    public FitCell cellAt(int row, int col) {
+        return lastFitTable.rows().get(row).cells().get(col);
+    }
 
-	protected String tr(String... tds) {
-		StringBuilder builder = new StringBuilder();
-		tr(builder, tds);
-		return builder.toString();
-	}
+    protected Matcher<String> containsAll(String... values) {
+        List<Matcher<? super String>> matchers = new ArrayList<>(values.length);
+        for (String string : values) {
+            matchers.add(containsString(string));
+        }
 
-	protected void tr(StringBuilder builder, String... tds) {
-		builder.append("<tr>");
-		for (String td : tds) {
-			td(builder, td);
-		}
-		builder.append("</tr>");
-	}
-
-	protected String td(String value) {
-		StringBuilder builder = new StringBuilder();
-		td(builder, value);
-		return builder.toString();
-	}
-
-	protected void td(StringBuilder builder, String value) {
-		builder.append("<td>").append(value).append("</td>");
-	}
-
-	protected Parse parseTd(String value) {
-		return parse(td(value), "td");
-	}
-
-	protected Parse parseTr(String... tds) {
-		return parse(tr(tds), "tr", "td");
-	}
-
+        return allOf(matchers);
+    }
 }

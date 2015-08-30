@@ -20,8 +20,7 @@
 
 package de.cologneintelligence.fitgoodies.database;
 
-import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -34,8 +33,13 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 
-public class SetupFixtureTest extends FitGoodiesTestCase {
+public class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
 	private SetupHelper helper;
+
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
+    }
 
 	@Before
 	public void setUp() throws Exception {
@@ -44,16 +48,20 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testHelperInteraction1() throws Exception {
-		final Parse table = parseTable(
-				tr("provider", "de.cologneintelligence.fitgoodies.database.DriverMock"),
-				tr("user", "username"),
+		useTable(
+				tr("provider", "$class"),
+				tr("user", "$username"),
 				tr("password", "pass"),
 				tr("connectionString", "db"));
 
-		final SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table);
+        preparePreprocessWithConversion(String.class, "$class", "de.cologneintelligence.fitgoodies.database.DriverMock");
+        preparePreprocessWithConversion(String.class, "$username", "username");
+        preparePreprocessWithConversion(String.class, "pass", "pass");
+        preparePreprocessWithConversion(String.class, "db", "db");
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+		run();
+
+        assertCounts(0, 0, 0, 0);
 		assertThat(helper.getUser(), is(equalTo("username")));
 		assertThat(helper.getPassword(), is(equalTo("pass")));
 		assertThat(helper.getConnectionString(), is(equalTo("db")));
@@ -62,19 +70,25 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testHelperInteraction2() throws Exception {
-		final Parse table = parseTable(
-				tr("provider", "de.cologneintelligence.fitgoodies.database.DriverMock"),
-				tr("user", "user2"),
-				tr("password", "pw2"),
-				tr("connectionString", "jdbc://test/db"));
+		useTable(
+				tr("provider", "a"),
+				tr("user", "b"),
+				tr("password", "c"),
+				tr("connectionString", "d"));
 
-		final SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table);
+        preparePreprocessWithConversion(String.class, "a", "de.cologneintelligence.fitgoodies.database.DriverMock");
+        preparePreprocessWithConversion(String.class, "b", "user2");
+        preparePreprocessWithConversion(String.class, "c", "pw2");
+        preparePreprocessWithConversion(String.class, "d", "jdbc://test/db");
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+
+        run();
+
+		assertCounts(0, 0, 0, 0);
 		assertThat(helper.getUser(), is(equalTo("user2")));
 		assertThat(helper.getPassword(), is(equalTo("pw2")));
 		assertThat(helper.getConnectionString(), is(equalTo("jdbc://test/db")));
 		assertThat(DriverManager.getDriver("jdbc://test"), not(CoreMatchers.is(nullValue())));
 	}
+
 }

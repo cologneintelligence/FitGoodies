@@ -1,6 +1,6 @@
 package de.cologneintelligence.fitgoodies.htmlparser;
 
-enum State {
+public enum State {
 	RIGHT(Constants.CSS_RIGHT),
 	WRONG(Constants.CSS_WRONG),
 	EXCEPTION(Constants.CSS_EXCEPTION),

@@ -20,6 +20,8 @@
 
 package de.cologneintelligence.fitgoodies;
 
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.util.WaitForResult;
@@ -27,6 +29,7 @@ import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 
 import java.lang.reflect.Method;
 import java.text.ParseException;
+import java.util.List;
 
 public class ActionFixture extends Fixture {
 
@@ -34,7 +37,7 @@ public class ActionFixture extends Fixture {
 
 	protected final WaitForResult waitForResult;
 
-	protected Parse cells;
+	protected FitRow row;
 	protected Object actor;
 
 	private String currentCellParameter;
@@ -50,25 +53,31 @@ public class ActionFixture extends Fixture {
 
 	// Traversal ////////////////////////////////
 
-	protected void doCells(Parse cells) {
-		this.cells = cells;
+    @Override
+    protected void doRow(FitRow row) throws Exception {
+        currentCellParameter = FitUtils.extractCellParameter(row.cells().get(0));
+        this.row = row;
+        super.doRow(row);
+    }
+
+    protected void doCells(List<FitCell> cells) {
 		try {
-			Method action = getClass().getMethod(cells.text());
+			Method action = getClass().getMethod(cells.get(0).getFitValue());
 			action.invoke(this);
 		} catch (Exception e) {
-			exception(cells, e);
+			cells.get(0).exception(e);
 		}
 	}
 
 	// Actions //////////////////////////////////
 
 	public void start() throws Exception {
-		actor = Class.forName(cells.more.text()).newInstance();
+		actor = Class.forName(row.cells().get(1).getFitValue()).newInstance();
 	}
 
 	public void enter() throws Exception {
 		Method method = method(1);
-		String cellText = cells.more.more.text();
+		String cellText = row.cells().get(2).getFitValue();
 		method.invoke(actor, parse(method.getParameterTypes()[0], cellText));
 	}
 
@@ -89,13 +98,13 @@ public class ActionFixture extends Fixture {
 
 	public void check() throws Exception {
 		ValueReceiver receiver = createReceiver(actor, method(0));
-		check(cells.more.more, receiver, null);
+		check(row.cells().get(2), receiver, null);
 	}
 
 	// Utility //////////////////////////////////
 
 	protected Method method(int args) throws NoSuchMethodException {
-		return method(FitUtils.camel(cells.more.text()), args);
+		return method(FitUtils.camel(row.cells().get(1).getFitValue()), args);
 	}
 
 	protected Method method(String name, int args) throws NoSuchMethodException {
@@ -128,7 +137,7 @@ public class ActionFixture extends Fixture {
 	public void waitFor() throws ParseException, NoSuchMethodException {
 		Method method = method(0);
 
-		long maxTime = parse(Long.class, cells.more.more.text());
+		long maxTime = parse(Long.class, row.cells().get(2).getFitValue());
 		long sleepTime = getSleepTime();
 
 		waitForResult.wait(actor, method, maxTime, sleepTime);
@@ -138,19 +147,21 @@ public class ActionFixture extends Fixture {
 
 	private long getSleepTime() throws ParseException {
 		long sleepTime = DEFAULT_SLEEP_TIME;
-		if (cells.size() > 3) {
-			sleepTime = parse(Long.class, cells.at(3).text());
+		if (row.size() > 3) {
+			sleepTime = parse(Long.class, row.cells().get(3).getFitValue());
 		}
 		return sleepTime;
 	}
 
 	private void writeResultIntoCell(final WaitForResult waitForResult) {
-		cells.more.more.body = Long.toString(waitForResult.getLastElapsedTime());
+        FitCell cell = row.cells().get(2);
+
+        cell.setDisplayValue(Long.toString(waitForResult.getLastElapsedTime()));
 		if (waitForResult.lastCallWasSuccessful()) {
-			right(cells.more.more);
+            cell.right();
 		} else {
-			wrong(cells.more.more);
-			info(cells.more.more, "(Timeout)");
+            cell.wrong();
+            cell.info("(Timeout)");
 		}
 	}
 
@@ -178,24 +189,15 @@ public class ActionFixture extends Fixture {
 	 * @throws Exception should be propagated to fit.
 	 */
 	protected final void transformAndEnter() throws Exception {
-		Parse oldMore = cells.more;
-		cells.more = new Parse("<td></td>", new String[]{"td"});
-		cells.more.body = cells.body;
-		cells.more.more = oldMore;
-		cells.body = "enter";
+        FitCell cell = row.insert(0);
+        cell.setFitValue("enter");
 
 		Object oldActor = actor;
 		actor = this;
 		enter();
 		actor = oldActor;
 
-		cells.body = cells.more.body;
-		cells.more = cells.more.more;
+        row.remove(0);
 	}
 
-	@Override
-	protected void doRow(final Parse row) {
-		currentCellParameter = FitUtils.extractCellParameter(row.parts);
-		super.doRow(row);
-	}
 }

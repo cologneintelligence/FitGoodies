@@ -22,11 +22,10 @@ package de.cologneintelligence.fitgoodies.runners;
 
 import de.cologneintelligence.fitgoodies.Counts;
 import de.cologneintelligence.fitgoodies.FixtureRunner;
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.alias.AliasEnabledFixtureRunner;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
+import de.cologneintelligence.fitgoodies.htmlparser.FitDocument;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FitUtils;
 
 import java.io.*;
 import java.util.Date;
@@ -43,7 +42,7 @@ public class FitFileRunner implements Runner {
 	}
 
 	/**
-	 * Processes <code>inputFile</code>, write output to <code>outputFile</code>
+	 * Processes {@code inputFile}, write output to {@code outputFile}
 	 * and return the resulting counts using most of fit's default components.
 	 *
 	 * @param inputFile  file to process
@@ -80,48 +79,38 @@ public class FitFileRunner implements Runner {
 		return result;
 	}
 
-	/**
-	 * Returns the content of the file <code>input</code> using the saved encoding.
-	 *
-	 * @param input input filename
-	 * @return the file's content
-	 * @throws IOException if the file could not be read
-	 * @see #setEncoding(String) setEncoding(String)
-	 */
-	// TODO: use apache commons?
-	private String read(final File input) throws IOException {
-		char[] chars = new char[(int) (input.length())];
-
-		try (InputStream is = new FileInputStream(input); InputStreamReader ir = new InputStreamReader(is, encoding)) {
-			ir.read(chars);
-		}
-
-		return new String(chars);
-	}
-
 	@Override
 	public final String getEncoding() {
 		return encoding;
 	}
 
-	private Counts process(final File inputFile, final File outputFile)
-			throws IOException {
+	private Counts process(final File inputFile, final File outputFile) throws IOException {
 		FixtureRunner fixtureRunner;
-		try (PrintWriter output = new PrintWriter(outputFile, encoding)) {
-			fixtureRunner = prepareFixture(inputFile, outputFile);
-			String input = read(inputFile);
-			Parse tables;
-			try {
-				tables = new Parse(input, new String[]{"table", "tr", "td"});
-				fixtureRunner.doTables(tables);
-			} catch (Exception e) {
-				tables = new Parse("body", "Unable to parse input. Input ignored", null, null);
-                FitUtils.exception(tables, e);
-				Counts counts = new Counts();
-				counts.exceptions = 1;
-			}
-			tables.print(output);
-		}
+        fixtureRunner = prepareFixture(inputFile, outputFile);
+
+        FitDocument document;
+        try(InputStream is = new FileInputStream(inputFile)) {
+            document = FitDocument.parse(is, encoding);
+        }
+
+        String result;
+        try {
+            fixtureRunner.doDocument(document);
+            result = document.getHtml();
+        } catch (Exception e) {
+            result = "<html><head><title>Error</title></head><body>" +
+                    "<p>Unable to parse input. Input ignored</p></body></html>";
+
+            fixtureRunner.counts.right = 0;
+            fixtureRunner.counts.wrong = 0;
+            fixtureRunner.counts.ignores = 0;
+            fixtureRunner.counts.exceptions = 1;
+        }
+
+        try (PrintWriter output = new PrintWriter(outputFile, encoding)) {
+            output.print(result);
+        }
+
 		return fixtureRunner.counts;
 	}
 

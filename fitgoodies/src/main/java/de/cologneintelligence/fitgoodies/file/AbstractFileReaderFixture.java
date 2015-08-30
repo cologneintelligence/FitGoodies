@@ -54,7 +54,7 @@ import java.io.File;
  * {@link FileFixtureHelper} if they are missing.
  */
 public abstract class AbstractFileReaderFixture extends Fixture {
-	private final FileInformationWrapper wrapper;
+	private FileInformationWrapper wrapper;
 	private FileInformation file;
 	private String encoding;
 
@@ -76,15 +76,16 @@ public abstract class AbstractFileReaderFixture extends Fixture {
 	public void setUp() throws Exception {
 		super.setUp();
 
-		final FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-		encoding = helper.getEncoding();
-		encoding = getArg("encoding", encoding);
+        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+        if (encoding == null) {
+            encoding = helper.getEncoding();
+        }
 
 		String fileName = getArg("file");
 		if (fileName == null) {
 			File provider = helper.getDirectory();
 
-			final String dir = getArg("dir");
+			String dir = getArg("dir");
 			if (dir != null) {
 				provider = new File(dir);
 			}
@@ -96,7 +97,7 @@ public abstract class AbstractFileReaderFixture extends Fixture {
 			String pattern = helper.getPattern();
 			pattern = getArg("pattern", pattern);
 
-			final FileSelector fs = new FileSelector(provider, pattern);
+			FileSelector fs = new FileSelector(provider, pattern);
 			file = wrapper.wrap(fs.getFirstFile());
 		} else {
 			file = wrapper.wrap(new File(fileName).getAbsoluteFile());
@@ -108,7 +109,7 @@ public abstract class AbstractFileReaderFixture extends Fixture {
 	 *
 	 * @return the matching file
 	 */
-	public final FileInformation getFile() {
+	public FileInformation getFile() {
 		return file;
 	}
 
@@ -117,7 +118,7 @@ public abstract class AbstractFileReaderFixture extends Fixture {
 	 *
 	 * @return the encoding name
 	 */
-	public final String getEncoding() {
+	public String getEncoding() {
 		return encoding;
 	}
 }

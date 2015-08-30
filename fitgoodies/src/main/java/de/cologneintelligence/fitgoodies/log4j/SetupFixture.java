@@ -21,8 +21,10 @@
 package de.cologneintelligence.fitgoodies.log4j;
 
 import de.cologneintelligence.fitgoodies.Fixture;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+
+import java.util.List;
 
 
 /**
@@ -30,18 +32,21 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
  * To capture the output, the logger <em>and</em> the specific appender must be
  * provided. This means, that the appender must have a name.
  * <p/>
- * <p/>
  * Example to monitor the output of the appender &quot;R&quot; of the root logger,
  * to monitor the output the output of the appender &quot;stdout&quot; of the
  * org.example.myclass and do clear the cached log entries of &quot;stderr&quot;:
- * <p/>
- * <p/>
- * <!-- and to stop monitoring the appender &quot;stderr&quot; of the root logger-->
  * <p/>
  * <table border="1" summary="">
  * <tr><td>fitgoodies.log4j.SetupFixture</td></tr>
  * <tr><td>monitorRoot</td><td>R</td></tr>
  * <tr><td>monitor</td><td>org.example.myclass</td><td>stdout</td></tr>
+ * <tr><td>clear</td><td>org.example.myclass</td><td>stderr</td></tr>
+ * </table>
+ * <p/>
+ * And to stop monitoring the appender &quot;stderr&quot; of the root logger
+ * <p/>
+ * <table border="1" summary="">
+ * <tr><td>fitgoodies.log4j.SetupFixture</td></tr>
  * <tr><td>clear</td><td>org.example.myclass</td><td>stderr</td></tr>
  * </table>
  */
@@ -54,7 +59,7 @@ public class SetupFixture extends Fixture {
 	 *
 	 * @param provider provider to get logger instances
 	 */
-	public SetupFixture(final LoggerProvider provider) {
+	public SetupFixture(LoggerProvider provider) {
 		loggerProvider = provider;
 	}
 
@@ -71,49 +76,49 @@ public class SetupFixture extends Fixture {
 	 * @param cells cells to process
 	 */
 	@Override
-	protected void doCells(final Parse cells) {
-		String name = cells.text();
+	protected void doCells(List<FitCell> cells) {
+		String name = cells.get(0).getFitValue();
 
 		processRowWithCommand(cells, name);
 	}
 
-	private void processRowWithCommand(final Parse row, final String name) {
+	private void processRowWithCommand(List<FitCell> cells, String name) {
 		if ("monitorRoot".equalsIgnoreCase(name)) {
-			processRowWithMonitorRoot(row);
+			processRowWithMonitorRoot(cells);
 		} else if ("monitor".equalsIgnoreCase(name)) {
-			processRowWithMonitor(row);
+			processRowWithMonitor(cells);
 		} else if ("clear".equalsIgnoreCase(name)) {
-			processRowWithClear(row);
+			processRowWithClear(cells);
 		}
 	}
 
-	private void processRowWithClear(final Parse row) {
-		String className = row.more.text();
-		String appenderName = row.more.more.text();
+	private void processRowWithClear(List<FitCell> cells) {
+		String className = cells.get(1).getFitValue();
+		String appenderName = cells.get(2).getFitValue();
 
 		LogHelper helper = DependencyManager.getOrCreate(LogHelper.class);
 		helper.clear(loggerProvider.getLogger(className), appenderName);
 	}
 
-	private void processRowWithMonitor(final Parse row) {
-		String className = row.more.text();
-		String appenderName = row.more.more.text();
+	private void processRowWithMonitor(List<FitCell> cells) {
+		String className = cells.get(1).getFitValue();
+		String appenderName = cells.get(2).getFitValue();
 
 		addMonitor(className, appenderName);
 	}
 
-	private void processRowWithMonitorRoot(final Parse row) {
-		String appenderName = row.more.text();
+	private void processRowWithMonitorRoot(List<FitCell> cells) {
+		String appenderName = cells.get(1).getFitValue();
 		addRootMonitor(appenderName);
 	}
 
-	private void addRootMonitor(final String appenderName) {
+	private void addRootMonitor(String appenderName) {
 		LogHelper helper = DependencyManager.getOrCreate(LogHelper.class);
 		helper.addCaptureToLogger(loggerProvider.getRootLogger(),
 				appenderName);
 	}
 
-	private void addMonitor(final String className, final String appenderName) {
+	private void addMonitor(String className, String appenderName) {
 		LogHelper helper = DependencyManager.getOrCreate(LogHelper.class);
 		helper.addCaptureToLogger(
 				loggerProvider.getLogger(className), appenderName);

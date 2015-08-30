@@ -20,10 +20,8 @@
 
 package de.cologneintelligence.fitgoodies.checker;
 
-import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
-import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 
 public class EmptyChecker implements Checker {
@@ -34,7 +32,7 @@ public class EmptyChecker implements Checker {
 	}
 
 	@Override
-	public Object check(Parse cell, Counts counts, String input, ValueReceiver valueReceiver, TypeHandler typeHandler) {
+	public Object check(FitCell cell, String input, ValueReceiver valueReceiver, TypeHandler typeHandler) {
 		Object result = null;
 
 		try {
@@ -43,25 +41,19 @@ public class EmptyChecker implements Checker {
 
 			if (expectEmpty) {
 				if (isEmpty) {
-					FitUtils.right(cell);
-					counts.right++;
+                    cell.right();
 				} else {
-					FitUtils.wrong(cell, typeHandler.toString(result));
-					counts.wrong++;
+                    cell.wrong(typeHandler.toString(result));
 				}
 			} else {
 				if (!isEmpty) {
-					FitUtils.right(cell);
-					FitUtils.info(typeHandler.toString(result));
-					counts.right++;
+                    cell.right(typeHandler.toString(result));
 				} else {
-					FitUtils.wrong(cell, "(empty)");
-					counts.wrong++;
+                    cell.wrong("(empty)");
 				}
 			}
 		} catch (Exception e) {
-			FitUtils.exception(cell, e);
-			counts.exceptions++;
+            cell.exception(e);
 		}
 
 		return result;

@@ -20,10 +20,13 @@
 
 package de.cologneintelligence.fitgoodies;
 
-import de.cologneintelligence.fitgoodies.util.FitUtils;
+import de.cologneintelligence.fitgoodies.htmlparser.FitDocument;
+import de.cologneintelligence.fitgoodies.htmlparser.FitTable;
 import de.cologneintelligence.fitgoodies.util.RunTime;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FixtureRunner {
 
@@ -31,43 +34,33 @@ public class FixtureRunner {
 	public Counts counts = new Counts();
 
 	/* Altered by Rick Mugridge to dispatch on the first Fixture */
-	public void doTables(Parse tables) {
+	public void doDocument(FitDocument document) {
 		summary.put("run date", new Date());
 		summary.put("run elapsed time", new RunTime());
-		if (tables != null) {
-			interpretFollowingTables(tables);
+		if (document != null) {
+			interpretTables(document);
 		}
 	}
 
 	/* Added by Rick Mugridge */
-	private void interpretFollowingTables(Parse tables) {
-		while (tables != null) {
-			Parse fixtureName = fixtureName(tables);
-			if (fixtureName != null) {
-				try {
-				    Fixture fixture = getLinkedFixtureWithArgs(tables);
-					fixture.doTable(tables);
-					counts.tally(fixture.counts());
-				} catch (Throwable e) {
-					FitUtils.exception(fixtureName, e);
-                    counts.exceptions++;
-				}
-			}
-			//listener.tableFinished(tables);
-			tables = tables.more;
+	private void interpretTables(FitDocument documents) {
+        for (FitTable table : documents.tables()) {
+            try {
+                Fixture fixture = getLinkedFixtureWithArgs(table);
+                fixture.doTable(table);
+                counts.tally(table.getCounts());
+            } catch (Throwable e) {
+                table.exception(e);
+                counts.exceptions++;
+            }
 		}
 	}
 
 	/* Added from FitNesse*/
-	protected Fixture getLinkedFixtureWithArgs(Parse tables) {
-		Parse header = tables.at(0, 0, 0);
-		Fixture fixture = loadFixture(header.text());
-		fixture.setParams(getArgsForTable(tables));
+	protected Fixture getLinkedFixtureWithArgs(FitTable table) {
+		Fixture fixture = loadFixture(table.getFixtureClass());
+		fixture.setParams(getArgsForTable(table));
 		return fixture;
-	}
-
-	public Parse fixtureName(Parse tables) {
-		return tables.at(0, 0, 0);
 	}
 
 	public Fixture loadFixture(String fixtureName) {
@@ -83,11 +76,7 @@ public class FixtureRunner {
 	}
 
 	/* Added by Rick Mugridge, from FitNesse */
-	protected String[] getArgsForTable(Parse table) {
-		List<String> argumentList = new ArrayList<>();
-		Parse parameters = table.parts.parts.more;
-		for (; parameters != null; parameters = parameters.more)
-			argumentList.add(parameters.text());
-		return argumentList.toArray(new String[argumentList.size()]);
+	protected Map<String, String> getArgsForTable(FitTable table) {
+        return table.getArguments();
 	}
 }

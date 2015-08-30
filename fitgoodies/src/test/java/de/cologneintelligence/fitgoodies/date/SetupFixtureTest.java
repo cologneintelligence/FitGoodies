@@ -21,8 +21,7 @@
 
 package de.cologneintelligence.fitgoodies.date;
 
-import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,34 +33,49 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 
-public class SetupFixtureTest extends FitGoodiesTestCase {
+public class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
 	private SetupFixture fixture;
+    private FitDateHelper helper;
 
-	@Before
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
+    }
+
+    @Before
 	public void setUp() throws Exception {
 		fixture = new SetupFixture();
-	}
+        helper = DependencyManager.getOrCreate(FitDateHelper.class);
+    }
 
 	@Test
-	public void testSetup() {
-		FitDateHelper helper = DependencyManager.getOrCreate(FitDateHelper.class);
+	public void testSetup1() {
+        useTable(
+            tr("locale", "de_DE"),
+            tr("format", "hh:mm:ss"));
 
-		Parse table = parseTable(
-				tr("locale", "de_DE"),
-				tr("format", "hh:mm:ss"));
+        preparePreprocessWithConversion(String.class, "de_DE", "de_DE");
+        preparePreprocessWithConversion(String.class, "hh:mm:ss", "hh:mm:ss");
 
-		fixture.doTable(table);
+        run();
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-		assertThat(helper.getFormat(), is(equalTo("hh:mm:ss")));
-		assertThat(helper.getLocale(), is(equalTo(Locale.GERMANY)));
+        assertCounts(0, 0, 0, 0);
+        assertThat(helper.getFormat(), is(equalTo("hh:mm:ss")));
+        assertThat(helper.getLocale(), is(equalTo(Locale.GERMANY)));
+    }
 
-		table = parseTable(tr("locale", "en_US"),
-				tr("format", "MM/dd/yyyy"));
+    @Test
+    public void testSetup2() {
+		useTable(tr("locale", "$1"),
+            tr("format", "$2"));
 
-		fixture.doTable(table);
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+        preparePreprocessWithConversion(String.class, "$1", "en_US");
+        preparePreprocessWithConversion(String.class, "$2", "MM/dd/yyyy");
+
+		run();
+
+        assertCounts(0, 0, 0, 0);
 		assertThat(helper.getFormat(), is(equalTo("MM/dd/yyyy")));
 		assertThat(helper.getLocale(), is(equalTo(Locale.US)));
 	}

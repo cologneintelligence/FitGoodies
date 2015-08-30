@@ -24,7 +24,6 @@ import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 import org.junit.Test;
 
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ColumnFixtureTest extends FitGoodiesFixtureTestCase<ColumnFixtureTest.TestFixture> {
@@ -65,35 +64,35 @@ public class ColumnFixtureTest extends FitGoodiesFixtureTestCase<ColumnFixtureTe
 
 	@Test
 	public void testProcess2() throws Exception {
-		final Parse table = parseTable(tr("a field", "a method?"), tr("1", "2"));
+		useTable(tr("a field", "a method?"), tr("1", "2"));
 
-		expectFieldSet(table, 2, 0, fixture, "a field", 5);
-		expectMethodValidation(table, 2, 1, fixture, "a method");
+		expectFieldSet(1, 0, fixture, "a field", 5);
+		expectMethodValidation(1, 1, "a method");
 
-		fixture.doTable(table);
+		run();
 	}
 
 	@Test
 	public void testProcess1() throws Exception {
-		Parse table = parseTable(tr("x", "y()", "field", "method?"),
+		useTable(tr("x", "y()", "field", "method?"),
 				tr("-1", "2", "3", "4"),
 				tr("a", "b", "val1", "val2"));
 
-		expectFieldSet(table, 2, 0, fixture, "x", 1);
-		expectMethodValidation(table, 2, 1, fixture, "y");
-		expectFieldSet(table, 2, 2, fixture, "field", 2);
-		expectMethodValidation(table, 2, 3, fixture, "method");
-		expectFieldSet(table, 3, 0, fixture, "x", 3);
-		expectMethodValidation(table, 3, 1, fixture, "y");
-		expectFieldSet(table, 3, 2, fixture, "field", 4);
-		expectMethodValidation(table, 3, 3, fixture, "method");
+		expectFieldSet(1, 0, fixture, "x", 1);
+		expectMethodValidation(1, 1, "y");
+		expectFieldSet(1, 2, fixture, "field", 2);
+		expectMethodValidation(1, 3, "method");
+		expectFieldSet(2, 0, fixture, "x", 3);
+		expectMethodValidation(2, 1, "y");
+		expectFieldSet(2, 2, fixture, "field", 4);
+		expectMethodValidation(2, 3, "method");
 
-		fixture.doTable(table);
+		run();
 	}
 
 	@Test
 	public void missingColumnFieldThrowsException() throws Exception {
-		final Parse table = parseTable(
+		useTable(
 				tr("x", "bla"),
 				tr("5", "test"),
 				tr("3", "bla"));
@@ -101,76 +100,61 @@ public class ColumnFixtureTest extends FitGoodiesFixtureTestCase<ColumnFixtureTe
 		when(valueReceiverFactory.createReceiver(fixture, "x")).thenThrow(new NoSuchFieldException("x"));
 		when(valueReceiverFactory.createReceiver(fixture, "bla")).thenThrow(new NoSuchFieldException("bla"));
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 0, 0, 2);
-
-		verify(valueReceiverFactory).createReceiver(fixture, "x");
-		verify(valueReceiverFactory).createReceiver(fixture, "bla");
-		verify(validator).process(table.at(0, 2, 0), fixture.counts(), null, null, typeHandlerFactory);
-		verify(validator).process(table.at(0, 2, 1), fixture.counts(), null, null, typeHandlerFactory);
-		verify(validator).process(table.at(0, 3, 0), fixture.counts(), null, null, typeHandlerFactory);
-		verify(validator).process(table.at(0, 3, 1), fixture.counts(), null, null, typeHandlerFactory);
+		assertCounts(0, 0, 0, 2);
 	}
 
 	@Test
 	public void executeExceptionWithoutMethodCallDoesNotStopExecution() throws Exception {
 		fixture.throwExceptionInExecute = true;
 
-		Parse table = parseTable(tr("col"), tr("1"));
-		expectFieldSet(table, 2, 0, fixture, "col", 5);
+		useTable(tr("col"), tr("1"));
+		expectFieldSet(1, 0, fixture, "col", 5);
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
+		assertCounts(0, 0, 0, 1);
 	}
 
 	@Test
 	public void executeExceptionDoesNotStopExecution() throws Exception {
 		fixture.throwExceptionInExecute = true;
 
-		Parse table = parseTable(tr("col()"), tr("1"));
-		expectMethodValidation(table, 2, 0, fixture, "col");
+		useTable(tr("col()"), tr("1"));
+		expectMethodValidation(1, 0, "col");
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
+		assertCounts(0, 0, 0, 1);
 	}
 
 	@Test
 	public void exceptionInResetSkipsRow() throws Exception {
 		fixture.throwExceptionInReset = true;
 
-		Parse table = parseTable(tr("col"), tr("1"), tr("2"));
-		expectFieldSet(table, 3, 0, fixture, "col", 6);
+		useTable(tr("col"), tr("1"), tr("2"));
+		expectFieldSet(2, 0, fixture, "col", 6);
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
+		assertCounts(0, 0, 0, 1);
 	}
 
 	@Test
 	public void exceptionInSetValueIsReported() throws Exception {
-		Parse table = parseTable(tr("col"), tr("1"));
-		expectValidationForFieldWithError(table, 3, 0, "col", Long.class);
+		useTable(tr("col"), tr("1"));
+		expectValidationForFieldWithError(1, 0, "col", Long.class);
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
+		assertCounts(0, 0, 0, 1);
 	}
 
 
-	protected void expectValidationForFieldWithError(final Parse parse, final int x, final int y, String field, Class type) throws Exception {
+	protected void expectValidationForFieldWithError(final int x, final int y, String field, Class type) throws Exception {
 		final ValueReceiver valueReceiver = expectFieldValueReceiverCreation(field, type);
 		prepareGetTypeHandler(valueReceiver.getType(), null);
-
-		expectations.add(new Task() {
-			@Override
-			public void run() throws IllegalAccessException {
-				verify(validator).preProcess(cellThat(parse, x, y));
-			}
-		});
-
-		when(validator.preProcess(cellThat(parse, x, y))).thenThrow(new RuntimeException("expected"));
+		when(validator.preProcess(cellThat(x, y))).thenThrow(new RuntimeException("expected"));
 	}
 }

@@ -20,15 +20,16 @@
 
 package de.cologneintelligence.fitgoodies.database;
 
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.RowFixture;
 import de.cologneintelligence.fitgoodies.dynamic.ResultSetWrapper;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 /**
  * This fixture takes a table name as an argument, fetches its content and
@@ -58,17 +59,13 @@ import java.sql.Statement;
  * </table>
  */
 public class TableFixture extends RowFixture {
-	private String table;
 	private Connection connection;
 	private ResultSetWrapper resultSetWrapper;
 	private Statement statement;
+	public String table;
+    public String where;
 
-	/**
-	 * Creates a new fixture. This constructor fetches a connection via
-	 * {@link de.cologneintelligence.fitgoodies.database.SetupHelper#getConnection()}, so it is
-	 * important to setup the connection details first.
-	 */
-	public TableFixture() {
+	private void connect() {
 		try {
 			final SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
 			connection = helper.getConnection();
@@ -91,31 +88,11 @@ public class TableFixture extends RowFixture {
 		super.tearDown();
 	}
 
-	/**
-	 * Creates a new fixture ignoring the values set in {@link SetupHelper} but
-	 * using {@code conn} as the connection object.
-	 * This constructor is primary used for testing.
-	 *
-	 * @param conn the connection object
-	 */
-	public TableFixture(final Connection conn) {
-		connection = conn;
-	}
-
-	/**
-	 * Processes a HTML table. This method is called by fit.
-	 *
-	 * @param parsedTable the table to process
-	 */
 	@Override
-	public void doTable(final Parse parsedTable) {
-		try {
-			resultSetWrapper = new ResultSetWrapper(getResultSet(getArg("table"), getArg("where")));
-		} catch (final RuntimeException | SQLException e) {
-			exception(parsedTable.parts.parts, e);
-			return;
-		}
-		super.doTable(parsedTable);
+	protected void doRows(List<FitRow> rows) throws Exception {
+        connect();
+        resultSetWrapper = new ResultSetWrapper(getResultSet());
+		super.doRows(rows);
 	}
 
 	/**
@@ -123,23 +100,19 @@ public class TableFixture extends RowFixture {
 	 * This method queries the table {@code tableName} and appends
 	 * {@code where} as an optional where clause.
 	 *
-	 * @param tableName the table name to query
-	 * @param where     a where clause or {@code null}
 	 * @return the {@code ResultSet} which the query returned
 	 */
-	public final ResultSet getResultSet(final String tableName, final String where) {
-		if (tableName == null) {
+	protected ResultSet getResultSet() {
+		if (table == null) {
 			throw new IllegalArgumentException("missing parameter: table");
 		}
 
 		String whereClause = "";
 		if (where != null) {
-			whereClause = " WHERE " + where;
-		}
+            whereClause = " WHERE " + where;
+        }
 
-		try {
-			table = validator.preProcess(tableName);
-
+        try {
 			statement = connection.createStatement();
 			return statement.executeQuery("SELECT * FROM " + table + whereClause);
 		} catch (SQLException e) {
@@ -177,24 +150,4 @@ public class TableFixture extends RowFixture {
 		return table;
 	}
 
-	/**
-	 * Sets the database connection to {@code conn}.
-	 * This method is primary used for testing.
-	 *
-	 * @param conn connection to use.
-	 * @see #getConnection() getConnection()
-	 */
-	final void setConnection(final Connection conn) {
-		connection = conn;
-	}
-
-	/**
-	 * Gets the connection object which is used to generate the {@code ResultSet}.
-	 *
-	 * @return the connection object
-	 * @see #setConnection(Connection) setConnection(Connection)
-	 */
-	public final Connection getConnection() {
-		return connection;
-	}
 }

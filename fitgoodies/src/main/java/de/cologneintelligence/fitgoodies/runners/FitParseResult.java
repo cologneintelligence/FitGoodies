@@ -21,11 +21,12 @@
 package de.cologneintelligence.fitgoodies.runners;
 
 import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
+import de.cologneintelligence.fitgoodies.htmlparser.FitTable;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
 
 import java.io.*;
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,12 +35,12 @@ import java.util.List;
  * or more results. The fixture is used with {@link RunFixture}, which uses
  * a dummy cell. This dummy cell is preserved.
  */
+
 public final class FitParseResult implements FitResult {
 	private final List<FileCount> results = new LinkedList<>();
 
 	@Override
-	public void print(final File directory, final OutputStream stream)
-			throws IOException {
+	public void print(final File directory, final OutputStream stream) throws IOException {
 		try (Writer writer = new OutputStreamWriter(stream); BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
 
 			bufferedWriter.write("<table><tr><th colspan=\"2\">");
@@ -81,54 +82,40 @@ public final class FitParseResult implements FitResult {
 		}
 	}
 
-	private Parse makeTable() {
-		Parse result = makeTd();
+	private void addRows(FitTable table, int index) {
+        for (int i = 0; i < results.size(); i++) {
+            FileCount fileCount = results.get(i);
+            FitRow row = table.insert(index + i);
 
-		for (FileCount fileCount : results) {
-			Parse row = makeTrTd();
+            FitCell cell = row.append();
+            cell.setDisplayValueRaw("<a href=\"" + FitUtils.htmlSafeFile(fileCount.getFile()) + "\">"
+                + FitUtils.htmlSafeFile(fileCount.getFile()) + "</a>");
 
-			row.parts.body = "<a href=\"" + FitUtils.htmlSafeFile(fileCount.getFile()) + "\">"
-					+ FitUtils.htmlSafeFile(fileCount.getFile()) + "</a>";
-			row.parts.more.addToBody(fileCount.getCounts().toString());
-			row.parts.more.addToTag(" bgcolor=\"" + color(fileCount.getCounts()) + "\"");
+            cell = row.append();
+            cell.setDisplayValue(fileCount.getCounts().toString());
 
-			result.last().more = row;
-		}
-
-		return result.more;
+            if (fileCount.getCounts().wrong > 0 || fileCount.getCounts().exceptions > 0) {
+                cell.wrong();
+            } else {
+                cell.right();
+            }
+        }
 	}
 
-	private Parse makeTrTd() {
-		return parse("<tr><td></td><td></td></tr>", new String[]{"tr", "td"});
-	}
-
-	private Parse makeTd() {
-		return parse("<td></td>", new String[]{"td"});
-	}
-
-	private Parse parse(String s, String[] strings) {
-		Parse row;
-		try {
-			row = new Parse(s, strings);
-		} catch (ParseException e) {
-			throw new AssertionError("Unable to parse table");
-		}
-		return row;
-	}
-
-	/**
-	 * Replaces a row which one or more results.
+    /**
+	 * Replaces a row with one or more results.
 	 *
-	 * @param row the row to replace
-	 */
-	public void replaceLastIn(final Parse row) {
-		Parse table = makeTable();
+     * @param row the row to replace
+     */
+	public void insertAndReplace(final FitRow row) {
+        if (results.isEmpty()) {
+            return;
+        }
 
-		if (table != null) {
-			table.last().more = row.more;
-			row.more = table.more;
-			row.parts.more = table.parts;
-		}
+        int index = row.getIndex();
+        FitTable table = row.getTable();
+        table.remove(index);
+        addRows(table, index);
 	}
 
 	/**

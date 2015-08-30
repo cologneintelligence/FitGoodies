@@ -21,41 +21,60 @@
 
 package de.cologneintelligence.fitgoodies.alias;
 
-import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class SetupFixtureTest extends FitGoodiesTestCase {
-	@Test
-	public void testParsing() {
-		Parse table = parseTable(tr("asdf", "java.lang.String"));
+public class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
 
-		SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table);
+    private AliasHelper helper;
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-		AliasHelper helper = DependencyManager.getOrCreate(AliasHelper.class);
-		assertThat(helper.getClazz("asdf"), is(equalTo("java.lang.String")));
+    @Before
+    public void setUp() {
+        helper = DependencyManager.getOrCreate(AliasHelper.class);
+    }
 
-		table = parseTable(tr("i", "java.lang.Integer"));
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
+    }
 
-		fixture.doTable(table);
+    @Test
+	public void testParsing1() {
+        useTable(tr("asdf", "java.lang.String"));
+
+        preparePreprocess(cellAt(0, 0), "asdf2");
+        preparePreprocess(cellAt(0, 1), "java.lang.Long");
+
+        run();
+
+        assertCounts(0, 0, 0, 0);
+        assertThat(helper.getClazz("asdf2"), is(equalTo("java.lang.Long")));
+    }
+
+    @Test
+    public void testParsing2() {
+		useTable(tr("i", "java.lang.Integer"));
+
+        preparePreprocess(cellAt(0, 0), "i");
+        preparePreprocess(cellAt(0, 1), "java.lang.Integer");
+
+		run();
 		assertThat(helper.getClazz("i"), is(equalTo("java.lang.Integer")));
 	}
 
 	@Test
-	public void testError() throws Exception {
-		Parse table = parseTable(tr("x"));
+    public void testError() throws Exception {
+		useTable(tr("x"));
 
-		SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table);
+		run();
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-		assertThat(fixture.counts().ignores, is(equalTo((Object) 1)));
+        assertCounts(0, 0, 1, 0);
 	}
+
 }

@@ -21,29 +21,35 @@
 package de.cologneintelligence.fitgoodies.selenium;
 
 import com.thoughtworks.selenium.CommandProcessor;
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.selenium.command.SeleniumFactory;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
-public class SetupFixtureTest extends FitGoodiesTestCase {
+public class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
 	private SetupHelper helper;
-	private SeleniumFactory factory;
-	private CommandProcessor commandProcessor;
 
-	@Before
+    @Mock
+    private CommandProcessor commandProcessor;
+
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
+    }
+
+    @Before
 	public void setUp() throws Exception {
 		helper = DependencyManager.getOrCreate(SetupHelper.class);
-		factory = mock(SeleniumFactory.class);
-		commandProcessor = mock(CommandProcessor.class);
+
+        SeleniumFactory factory = mock(SeleniumFactory.class);
 		DependencyManager.inject(SeleniumFactory.class, factory);
 
 		when(factory.createCommandProcessor("localhost", 4444, "*firefox", "http://localhost"))
@@ -52,25 +58,37 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testHelperInteraction() throws Exception {
-		final Parse table = parseTable(
+		useTable(
 				tr("serverHost", "server-host"),
 				tr("serverPort", "4444"),
 				tr("browserStartCommand", "browser-Start-Command"),
 				tr("browserURL", "browser-URL"),
 				tr("speed", "400"),
 				tr("timeout", "3000"),
-				tr("retryTimeout", "40"),
+				tr("retryTimeout", "$timeout"),
 				tr("retryInterval", "10"),
-				tr("takeScreenshots", "true"),
+				tr("takeScreenshots", "$screenshot"),
 				tr("sleepBeforeScreenshot", "500"),
 				tr("start", "start config"));
 
+
+        preparePreprocessWithConversion(String.class, "server-host", "server-host");
+        preparePreprocessWithConversion(String.class, "4444", "4444");
+        preparePreprocessWithConversion(String.class, "browser-Start-Command", "browser-Start-Command");
+        preparePreprocessWithConversion(String.class, "browser-URL", "browser-URL");
+        preparePreprocessWithConversion(String.class, "400", "400");
+        preparePreprocessWithConversion(String.class, "3000", "3000");
+        preparePreprocessWithConversion(String.class, "$timeout", "40");
+        preparePreprocessWithConversion(String.class, "10", "10");
+        preparePreprocessWithConversion(String.class, "$screenshot", "true");
+        preparePreprocessWithConversion(String.class, "500", "500");
+        preparePreprocessWithConversion(String.class, "start config", "start config");
+
 		helper.setCommandProcessor(commandProcessor);
 
-		final SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table);
+		run();
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+        assertCounts(0, 0, 0, 0);
 		assertThat(helper.getServerHost(), is(equalTo("server-host")));
 		assertThat(helper.getServerPort(), is(equalTo((Object) 4444)));
 		assertThat(helper.getBrowserStartCommand(), is(equalTo("browser-Start-Command")));
@@ -89,14 +107,14 @@ public class SetupFixtureTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testHelperInteractionStopProcessor() throws Exception {
-		final Parse table = parseTable(tr("stop", ""));
+		useTable(tr("stop", ""));
 
 		helper.setCommandProcessor(commandProcessor);
 
 		final SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table);
+		run();
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+        assertCounts(0, 0, 0, 0);
 
 		verify(commandProcessor).stop();
 	}

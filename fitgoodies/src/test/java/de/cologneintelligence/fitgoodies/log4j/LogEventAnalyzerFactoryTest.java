@@ -33,7 +33,7 @@ public final class LogEventAnalyzerFactoryTest extends FitGoodiesTestCase {
 	@Test
 	public void testReturnType() {
 		LogEventAnalyzerFactory factory = new LogEventAnalyzerFactory();
-		LogEventAnalyzer analyzer = factory.getLogEventAnalyzerFor(null, null, null, null);
+		LogEventAnalyzer analyzer = factory.getLogEventAnalyzerFor(null, null, null);
 		assertThat(analyzer.getClass(), (Matcher) is(equalTo(LogEventAnalyzer.class)));
 	}
 }

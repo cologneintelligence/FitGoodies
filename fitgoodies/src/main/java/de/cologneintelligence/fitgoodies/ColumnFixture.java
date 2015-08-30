@@ -20,7 +20,11 @@
 
 package de.cologneintelligence.fitgoodies;
 
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
+
+import java.util.List;
 
 import static de.cologneintelligence.fitgoodies.util.FitUtils.saveGet;
 
@@ -41,18 +45,19 @@ public class ColumnFixture extends Fixture {
 	 * Question marks represent method calls,
 	 * so getValue() and getValue? are equivalent.
 	 *
-	 * @param rows rows to be processed
-	 */
+     * @param rows rows to be processed
+     */
 
 	@Override
-	protected void doRows(final Parse rows) {
-		columnParameters = extractColumnParameters(rows);
-		bind(rows.parts);
-		super.doRows(rows.more);
+	protected void doRows(final List<FitRow> rows) throws Exception {
+        FitRow headerRow = rows.get(0);
+        columnParameters = extractColumnParameters(headerRow);
+		bind(headerRow);
+		super.doRows(rows.subList(1, rows.size()));
 	}
 
 	@Override
-	protected void doRow(Parse row) {
+	protected void doRow(FitRow row) {
 		hasExecuted = false;
 		try {
 			reset();
@@ -61,7 +66,7 @@ public class ColumnFixture extends Fixture {
 				execute();
 			}
 		} catch (Exception e) {
-			exception(row.leaf(), e);
+            row.exception(e);
 		}
 	}
 
@@ -71,36 +76,36 @@ public class ColumnFixture extends Fixture {
 	 *
 	 * @param cell   the cell to check
 	 * @param column the selected column
-	 * @see Fixture#doCell(Parse, int) fit.Fixture.doCell(Parse, int)
+	 * @see Fixture#doCell(FitCell, int) fit.Fixture.doCell(Parse, int)
 	 */
 	@Override
-	protected void doCell(final Parse cell, final int column) {
+	protected void doCell(final FitCell cell, final int column) {
 		ValueReceiver receiver = columnBindings[column];
 
 		String currentCellParameter = saveGet(column, columnParameters);
-		if (receiver != null && !cell.text().trim().isEmpty() && receiver.canSet()) {
+		if (receiver != null && !cell.getFitValue().trim().isEmpty() && receiver.canSet()) {
 			setValue(cell, receiver, currentCellParameter);
 		} else {
 			check(cell, receiver, currentCellParameter);
 		}
 	}
 
-	private void setValue(Parse cell, ValueReceiver receiver, String currentCellParameter) {
+	private void setValue(FitCell cell, ValueReceiver receiver, String currentCellParameter) {
 		try {
 			String text = validator.preProcess(cell);
 			Object object = typeHandlerFactory.getHandler(receiver.getType(), currentCellParameter).parse(text);
 			receiver.set(this, object);
 		} catch (Exception e) {
-			exception(cell, e);
+            cell.exception(e);
 		}
 	}
 
-	public void check(Parse cell, ValueReceiver valueReceiver, String currentCellParameter) {
+	public void check(FitCell cell, ValueReceiver valueReceiver, String currentCellParameter) {
 		if (!hasExecuted) {
 			try {
 				execute();
 			} catch (Exception e) {
-				exception(cell, e);
+                cell.exception(e);
 			}
 			hasExecuted = true;
 		}
@@ -117,15 +122,16 @@ public class ColumnFixture extends Fixture {
 
 	// Utility //////////////////////////////////
 
-	protected void bind(Parse heads) {
+	protected void bind(FitRow heads) {
 		columnBindings = new ValueReceiver[heads.size()];
-		for (int i = 0; heads != null; i++, heads = heads.more) {
-			String name = heads.text();
+        for (int i = 0; i < columnBindings.length; i++) {
+            FitCell cell = heads.cells().get(i);
+            String name = cell.getFitValue();
 
 			try {
 				columnBindings[i] = createReceiver(this, name);
 			} catch (Exception e) {
-				exception(heads, e);
+				cell.exception(e);
 			}
 		}
 	}

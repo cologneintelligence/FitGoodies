@@ -3,6 +3,7 @@ package de.cologneintelligence.fitgoodies.htmlparser;
 import de.cologneintelligence.fitgoodies.Counts;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
 import java.util.*;
@@ -14,7 +15,8 @@ public class FitTable {
 	public static final Pattern ARGUMENT_PATTERN = Pattern.compile("^\\s*([^=]+?)\\s*=\\s*(.*?)\\s*$");
 
 	private final Element table;
-	private boolean newStyleTable;
+    private final String TAG = "tr";
+    private boolean newStyleTable;
 	private final Counts counts = new Counts();
 
 	private boolean hasFeedbackColumn;
@@ -24,8 +26,9 @@ public class FitTable {
 	private String fixtureClass;
 	private Map<String, String> arguments;
 	private List<FitRow> rows = new LinkedList<>();
+    private int contentStartPosition;
 
-	public FitTable(Element table) {
+    public FitTable(Element table) {
 		this.table = table;
 
 		if (!checkTable()) {
@@ -37,32 +40,33 @@ public class FitTable {
 	}
 
 	private void parseTable() {
-		int skip;
 		Map<String, String> args = new HashMap<>();
 
 		Elements trs = table.select("tr");
 		newStyleTable = table.hasAttr(Constants.ATTR_FIXTURE);
-		if (newStyleTable) {
+
+        if (newStyleTable) {
 			parseNewStyleHeader(args);
-			skip = 0;
+            contentStartPosition = 0;
 		} else {
 			parseOldStyleHeader(trs.first(), args);
-			skip = 1;
+            contentStartPosition = 1;
 		}
 
 		arguments = Collections.unmodifiableMap(args);
 
-		for (Element tr : trs.subList(skip, trs.size())) {
-			if (!ParserUtils.isIgnored(tr)) {
-				rows.add(new FitRow(this, rows.size(), tr, counts));
-			}
-		}
-	}
+        for (Element tr : trs.subList(contentStartPosition, trs.size())) {
+	        if (!ParserUtils.isIgnored(tr)) {
+		        rows.add(new FitRow(this, tr));
+	        }
+        }
+        updateIndices();
+    }
 
-	private boolean checkTable() {
+    private boolean checkTable() {
 		Elements trs = table.select("tr");
 		if (trs.size() == 0 || trs.select("td").size() == 0) {
-			exceptionTable("Incomplete table definition");
+			exception("Incomplete table definition");
 			return false;
 		}
 
@@ -124,7 +128,7 @@ public class FitTable {
 
 		for (FitRow row : rows) {
 			for (FitCell cell : row.cells()) {
-				cell.finishExecution();
+				cell.finishExecution(counts);
 			}
 		}
 
@@ -156,11 +160,11 @@ public class FitTable {
 		}
 	}
 
-	public void exceptionTable(Throwable t) {
-		exceptionTable(ParserUtils.getHtmlStackTrace(t));
+	public void exception(Throwable t) {
+		exception(ParserUtils.getHtmlStackTrace(t));
 	}
 
-	private void exceptionTable(String html) {
+	private void exception(String html) {
 		addFeedbackColumn(true);
 		counts.exceptions++;
 
@@ -198,4 +202,48 @@ public class FitTable {
 			errorColumnStates.put(row, State.WRONG);
 		}
 	}
+
+    // FIXME: test!
+    public FitRow appendRow() {
+        return insert(rows.size());
+    }
+
+    // FIXME: test!
+    public void remove(int index) {
+        table.select(TAG).get(index + contentStartPosition).remove();
+        rows.remove(index);
+        updateIndices();
+    }
+
+    // FIXME: test!
+    public FitRow insert(int index) {
+        Element tr = new Element(Tag.valueOf(TAG), table.baseUri());
+        FitRow row = new FitRow(this, tr);
+
+        Element tbody = table.select("tbody").first();
+        tbody.insertChildren(index + contentStartPosition, Collections.singleton(tr));
+        rows.add(index, row);
+        updateIndices();
+
+        return row;
+    }
+
+    private void updateIndices() {
+        for (int i = 0; i < rows.size(); i++) {
+            rows.get(i).updateIndex(i);
+        }
+    }
+
+    public String pretty() {
+        StringBuilder b = new StringBuilder();
+
+        for (Element tr : table.select("tr")) {
+            for (Element td : tr.select("td")) {
+                b.append(td.text()).append(" | ");
+            }
+            b.append("\n");
+        }
+
+        return b.toString();
+    }
 }

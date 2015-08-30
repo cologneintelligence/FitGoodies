@@ -21,11 +21,14 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
+import de.cologneintelligence.fitgoodies.htmlparser.FitTable;
 import de.cologneintelligence.fitgoodies.valuereceivers.ConstantReceiver;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * This class takes a {@link de.cologneintelligence.fitgoodies.file.readers.FileRecordReader} and compares
@@ -34,8 +37,9 @@ import java.io.IOException;
 public abstract class AbstractFileRecordReaderFixture extends AbstractFileReaderFixture {
 
 	private FileRecordReader reader;
+    private FitTable table;
 
-	/**
+    /**
 	 * Sets the underlying {@code FileRecordReader}.
 	 *
 	 * @param recordReader the reader to use
@@ -44,22 +48,24 @@ public abstract class AbstractFileRecordReaderFixture extends AbstractFileReader
 		reader = recordReader;
 	}
 
-	@Override
-	protected void doRow(final Parse row) {
-		Parse cell = row.parts;
+    @Override
+    public void doTable(FitTable table) {
+        this.table = table;
+        super.doTable(table);
+    }
 
+    @Override
+	protected void doRow(final FitRow row) {
         // FIXME: introduce row parameters here...
-		while (cell != null) {
+        for (FitCell cell : row.cells()) {
 			if (reader.canRead()) {
 				String actualValue = reader.nextField();
 				ConstantReceiver receiver =
 						new ConstantReceiver(actualValue.trim(), String.class);
 				check(cell, receiver, null);
 			} else {
-				wrong(cell);
-				info(cell, "(missing)");
+                row.wrong("missing");
 			}
-			cell = cell.more;
 		}
 
 		try {
@@ -70,29 +76,23 @@ public abstract class AbstractFileRecordReaderFixture extends AbstractFileReader
 	}
 
 	@Override
-	protected void doRows(final Parse rows) {
-		if (rows == null) {
-			throw new RuntimeException("Table must contain at least one row");
-		}
+	protected void doRows(final List<FitRow> rows) throws Exception {
 		super.doRows(rows);
 
-		Parse row = rows.last();
 		while (reader.canRead()) {
-			final Parse firstCell = new Parse("ignored", "", null, null);
-			Parse cell = firstCell;
+            FitRow row = table.appendRow();
+            row.wrong("surplus");
 
 			String field = reader.nextField();
 			while (field != null) {
-				cell = addCell(cell, field);
+				addCell(row, field);
 				field = reader.nextField();
 			}
-			row.more = new Parse("tr", "", firstCell.more, null);
-			row = row.more;
 
 			try {
 				reader.nextRecord();
 			} catch (IOException e) {
-				exception(row.more, e);
+				row.exception(e);
 				break;
 			}
 		}
@@ -100,15 +100,11 @@ public abstract class AbstractFileRecordReaderFixture extends AbstractFileReader
 		try {
 			reader.close();
 		} catch (IOException e) {
-			exception(rows.parts.more, e);
+            table.exception(e);
 		}
 	}
 
-	private Parse addCell(final Parse cell, final String field) {
-		final Parse newCell = new Parse("td", field, null, null);
-		cell.more = newCell;
-		wrong(newCell);
-		info(newCell, "(surplus)");
-		return newCell;
+	private void addCell(final FitRow row, final String field) {
+        row.append().setDisplayValue(field);
 	}
 }

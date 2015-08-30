@@ -20,32 +20,27 @@
 
 package de.cologneintelligence.fitgoodies.checker;
 
-import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
-import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 
 public class ErrorChecker implements Checker {
 	@SuppressWarnings("unchecked")
     @Override
-	public Object check(Parse cell, Counts counts, String input, ValueReceiver valueReceiver, TypeHandler typeHandler) {
+	public Object check(FitCell cell, String input, ValueReceiver valueReceiver, TypeHandler typeHandler) {
 		Object result = null;
 
 		try {
 			result = valueReceiver.get();
-            FitUtils.wrong(cell, typeHandler.toString(result));
-			counts.wrong++;
+            cell.wrong(typeHandler.toString(result));
 		} catch (IllegalAccessException e) {
-			FitUtils.exception(cell, e);
-			counts.exceptions++;
+            cell.exception(e);
 		} catch (Exception e) {
-			FitUtils.right(cell);
-			counts.right++;
-
 			if (e.getMessage() != null) {
-				FitUtils.info(cell, e.getMessage());
-			}
+                cell.right(e.getMessage());
+			} else {
+                cell.right();
+            }
 		}
 
 		return result;

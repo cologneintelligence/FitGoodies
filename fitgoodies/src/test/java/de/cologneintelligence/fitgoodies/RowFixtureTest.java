@@ -20,6 +20,7 @@
 
 package de.cologneintelligence.fitgoodies;
 
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
@@ -27,8 +28,10 @@ import org.junit.Test;
 
 import java.text.ParseException;
 
-import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isNull;
@@ -96,8 +99,7 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 
 	@Test
 	public void allEqualsSimple() throws Exception {
-		Parse table = parseTable(
-				tr("col1", "col2", "col3"),
+		useTable(tr("col1", "col2", "col3"),
 				tr("v1", "v2", "v3"),
 				tr("v4", "v5", "v6"));
 
@@ -106,33 +108,33 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 				new BusinessObject(8, "matched", 6)};
 
 		String columns[] = {"x", "y", "z"};
-		expectHeaders(table, columns);
+		expectHeaders(columns);
 
-		expectParseExpected(table, 2, 0, 1);
-		expectParseExpected(table, 3, 0, 8);
+		expectParseExpected(1, 0, 1);
+		expectParseExpected(2, 0, 8);
 
 		prepareGetComputed(0, columns[0], 1);
 		prepareGetComputed(1, columns[0], 8);
 
-		expectValidatorProcess(table, columns, 2, 0, 0);
-		expectValidatorProcess(table, columns, 2, 1, 0);
-		expectValidatorProcess(table, columns, 2, 2, 0);
-		expectValidatorProcess(table, columns, 3, 0, 1);
-		expectValidatorProcess(table, columns, 3, 1, 1);
-		expectValidatorProcess(table, columns, 3, 2, 1);
+		expectValidatorProcess(columns, 1, 0, 0);
+		expectValidatorProcess(columns, 1, 1, 0);
+		expectValidatorProcess(columns, 1, 2, 0);
+		expectValidatorProcess(columns, 2, 0, 1);
+		expectValidatorProcess(columns, 2, 1, 1);
+		expectValidatorProcess(columns, 2, 2, 1);
 
-		fixture.doTable(table);
+		run();
 	}
 
 	@Test
 	public void exceptionInQueryIsReported() {
-		Parse table = parseTable(tr("col1"));
+		useTable(tr("col1"));
 
-		expectHeaders(table, "header");
+		expectHeaders("header");
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
+		assertCounts(0, 0, 0, 1);
 	}
 
 	@Test
@@ -144,7 +146,7 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 				new BusinessObject(1, "x", 6, 1, 2, 3),
 				new BusinessObject(1, "x", 3, 1, 2, 3)};
 
-		Parse table = parseTable(
+		useTable(
 				tr("col1", "col2", "col3", "col4", "col5", "col6"),
 				tr("v1", "v2", "v3", "v4", "v5", "v6"),
 				tr("w1", "w2", "w3", "w4", "w5", "w6"),
@@ -154,21 +156,21 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 
 
 		String columns[] = {"x", "y", "z", "a", "b", "c"};
-		expectHeaders(table, columns);
+		expectHeaders(columns);
 
-		expectParseExpected(table, 2, 0, 1);
-		expectParseExpected(table, 2, 1, "parsed a");
-		expectParseExpected(table, 2, 2, 100);
-		expectParseExpected(table, 3, 0, 1);
-		expectParseExpected(table, 3, 1, "parsed a");
-		expectParseExpected(table, 3, 2, 101);
-		expectParseExpected(table, 4, 0, 2);
-		expectParseExpected(table, 4, 1, "parsed b");
-		expectParseExpected(table, 4, 2, 200);
-		expectParseExpected(table, 5, 0, 2);
-		expectParseExpected(table, 5, 1, "parsed b");
-		expectParseExpected(table, 5, 2, 201);
-		expectParseExpected(table, 6, 0, 3);
+		expectParseExpected(1, 0, 1);
+		expectParseExpected(1, 1, "parsed a");
+		expectParseExpected(1, 2, 100);
+		expectParseExpected(2, 0, 1);
+		expectParseExpected(2, 1, "parsed a");
+		expectParseExpected(2, 2, 101);
+		expectParseExpected(3, 0, 2);
+		expectParseExpected(3, 1, "parsed b");
+		expectParseExpected(3, 2, 200);
+		expectParseExpected(4, 0, 2);
+		expectParseExpected(4, 1, "parsed b");
+		expectParseExpected(4, 2, 201);
+		expectParseExpected(5, 0, 3);
 
 		prepareGetComputed(4, columns[0], 1);
 		prepareGetComputed(4, columns[1], "parsed a");
@@ -186,11 +188,11 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 
 		for (int i = 0; i < 5; ++i) {
 			for (int j = 0; j < 6; ++j) {
-				expectValidatorProcess(table, columns, 2 + i, j, 4 - i);
+				expectValidatorProcess(columns, 1 + i, j, 4 - i);
 			}
 		}
 
-		fixture.doTable(table);
+		run();
 	}
 
 	@Test
@@ -199,33 +201,33 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 				new BusinessObject(0, "v1", 0),
 				new BusinessObject(0, "v2", 0)};
 
-		Parse table = parseTable(
+		useTable(
 				tr("col1", "col2", "col3"),
 				tr("v1", "v2", "v3"),
 				tr("w1", "w2", "w3"));
 
 
 		String columns[] = {"x", "", "z"};
-		expectHeaders(table, columns);
+		expectHeaders(columns);
 
-		expectParseExpected(table, 2, 0, 2);
-		expectParseExpected(table, 2, 2, 4);
-		expectParseExpected(table, 3, 0, 2);
-		expectParseExpected(table, 3, 2, 3);
+		expectParseExpected(1, 0, 2);
+		expectParseExpected(1, 2, 4);
+		expectParseExpected(2, 0, 2);
+		expectParseExpected(2, 2, 3);
 
 		prepareGetComputed(0, columns[0], 2);
 		prepareGetComputed(0, columns[2], 4);
 		prepareGetComputed(1, columns[0], 2);
 		prepareGetComputed(1, columns[2], 3);
 
-		expectValidatorProcess(table, columns, 2, 0, 0);
-		expectValidatorProcessNull(table, 2, 1);
-		expectValidatorProcess(table, columns, 2, 2, 0);
-		expectValidatorProcess(table, columns, 3, 0, 1);
-		expectValidatorProcessNull(table, 3, 1);
-		expectValidatorProcess(table, columns, 3, 2, 1);
+		expectValidatorProcess(columns, 1, 0, 0);
+		expectValidatorProcessNull(1, 1);
+		expectValidatorProcess(columns, 1, 2, 0);
+		expectValidatorProcess(columns, 2, 0, 1);
+		expectValidatorProcessNull(2, 1);
+		expectValidatorProcess(columns, 2, 2, 1);
 
-		fixture.doTable(table);
+		run();
 	}
 
 	@Test
@@ -234,21 +236,21 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 				new BusinessObject(0, "v1", 0),
 				new BusinessObject(0, "v2", 0)};
 
-		Parse table = parseTable(
+		useTable(
 				tr("col1", "col2", "col3"),
 				tr("v1", "v2", "v3"),
 				tr("w1", "w2", "w3"));
 
 
 		String columns[] = {"x", "y", "z"};
-		expectHeaders(table, columns);
+		expectHeaders(columns);
 
-		expectParseExpected(table, 2, 0, 2);
-		expectParseExpected(table, 2, 1, "a");
-		expectParseExpected(table, 2, 2, 4);
-		expectParseExpected(table, 3, 0, 2);
-		expectParseExpected(table, 3, 1, "a");
-		expectParseExpected(table, 3, 2, 4);
+		expectParseExpected(1, 0, 2);
+		expectParseExpected(1, 1, "a");
+		expectParseExpected(1, 2, 4);
+		expectParseExpected(2, 0, 2);
+		expectParseExpected(2, 1, "a");
+		expectParseExpected(2, 2, 4);
 
 		prepareGetComputed(0, columns[0], 2);
 		prepareGetComputed(0, columns[1], "a");
@@ -257,14 +259,14 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 		prepareGetComputed(1, columns[1], "a");
 		prepareGetComputed(1, columns[2], 4);
 
-		expectValidatorProcess(table, columns, 2, 0, 0);
-		expectValidatorProcess(table, columns, 2, 1, 0);
-		expectValidatorProcess(table, columns, 2, 2, 0);
-		expectValidatorProcess(table, columns, 3, 0, 1);
-		expectValidatorProcess(table, columns, 3, 1, 1);
-		expectValidatorProcess(table, columns, 3, 2, 1);
+		expectValidatorProcess(columns, 1, 0, 0);
+		expectValidatorProcess(columns, 1, 1, 0);
+		expectValidatorProcess(columns, 1, 2, 0);
+		expectValidatorProcess(columns, 2, 0, 1);
+		expectValidatorProcess(columns, 2, 1, 1);
+		expectValidatorProcess(columns, 2, 2, 1);
 
-		fixture.doTable(table);
+		run();
 	}
 
 	@Test
@@ -273,19 +275,19 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 				new BusinessObject(0, "v1", 0),
 				new BusinessObject(0, "v2", 0)};
 
-		Parse table = parseTable(
+		useTable(
 				tr("col1", "col2", "col3"),
 				tr("v1", "v2", "v3"),
 				tr("w1", "w2", "w3"));
 
 
 		String columns[] = {"x", "y", "z"};
-		expectHeaders(table, columns);
+		expectHeaders(columns);
 
-		expectParseExpected(table, 2, 0, 2);
-		expectParseExpectedWithException(table, 2, 1);
-		expectParseExpected(table, 3, 0, 2);
-		expectParseExpected(table, 3, 1, "a");
+		expectParseExpected(1, 0, 2);
+		expectParseExpectedWithException(1, 1);
+		expectParseExpected(2, 0, 2);
+		expectParseExpected(2, 1, "a");
 
 		prepareGetComputed(0, columns[0], 2);
 		prepareGetComputed(0, columns[1], "a");
@@ -297,15 +299,16 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 		prepareAppendSurplus(String.class, "a", "two");
 		prepareAppendSurplus(Integer.class, 42, "three");
 
-		expectValidatorProcess(table, columns, 3, 0, 0);
-		expectValidatorProcess(table, columns, 3, 1, 0);
-		expectValidatorProcess(table, columns, 3, 2, 0);
+		expectValidatorProcess(columns, 2, 0, 0);
+		expectValidatorProcess(columns, 2, 1, 0);
+		expectValidatorProcess(columns, 2, 2, 0);
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 1, 1, 1);
-		assertThat(table.at(0, 4, 0).body, allOf(containsString("surplus"), containsString("one")));
-		assertThat(table.at(0, 4, 2).body, containsString("three"));
+		assertCounts(0, 1, 1, 1);
+        assertThat(htmlAt(3, 0), containsString("surplus"));
+		assertThat(htmlAt(3, 1), containsString("one"));
+		assertThat(htmlAt(3, 3), containsString("three"));
 	}
 
 	@Test
@@ -315,11 +318,10 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 				new BusinessObject(0, "v2", 0),
 				null};
 
-		Parse table = parseTable(
-				tr("col1", "col2", "col3"));
+		useTable(tr("col1", "col2", "col3"));
 
 		String columns[] = {"x", "y"};
-		expectHeaders(table, columns);
+		expectHeaders(columns);
 
 		prepareGetComputed(0, columns[0], 2);
 		prepareGetComputed(0, columns[1], "a");
@@ -330,14 +332,17 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 		prepareAppendSurplus(Integer.class, 4, "four");
 		prepareAppendSurplus(String.class, "b", "five");
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 3, 2, 0);
-		assertThat(table.at(0, 2, 0).body, allOf(containsString("surplus"), containsString("null")));
-		assertThat(table.at(0, 3, 0).body, allOf(containsString("surplus"), containsString("one")));
-		assertThat(table.at(0, 3, 1).body, containsString("two"));
-		assertThat(table.at(0, 4, 0).body, allOf(containsString("surplus"), containsString("four")));
-		assertThat(table.at(0, 4, 1).body, containsString("five"));
+		assertCounts(0, 3, 2, 0);
+        assertThat(htmlAt(1, 0), containsString("surplus"));
+		assertThat(htmlAt(1, 1), containsString("null"));
+        assertThat(htmlAt(2, 0), containsString("surplus"));
+        assertThat(htmlAt(2, 1), containsString("one"));
+		assertThat(htmlAt(2, 2), containsString("two"));
+		assertThat(htmlAt(3, 0), containsString("surplus"));
+		assertThat(htmlAt(3, 1), containsString("four"));
+		assertThat(htmlAt(3, 2), containsString("five"));
 
 		verify(valueReceiverFactory, atLeast(0)).createReceiver(isNull(), any(String.class));
 	}
@@ -348,20 +353,20 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 				new BusinessObject(new Integer[]{1, 2, 3}, 4)
 		};
 
-		Parse table = parseTable(
+		useTable(
 				tr("col1", "col2"),
 				tr("1, 2, 3", "4"));
 
 		String columns[] = {"arr", "x"};
-		expectHeaders(table, columns);
+		expectHeaders(columns);
 
-		expectParseExpected(table, 2, 0, new Integer[]{1, 2, 3});
+		expectParseExpected(1, 0, new Integer[]{1, 2, 3});
 		prepareGetComputed(0, columns[0], new Integer[]{1, 2, 3});
 
-		expectValidatorProcess(table, columns, 2, 0, 0);
-		expectValidatorProcess(table, columns, 2, 1, 0);
+		expectValidatorProcess(columns, 1, 0, 0);
+		expectValidatorProcess(columns, 1, 1, 0);
 
-		fixture.doTable(table);
+		run();
 	}
 
 	@Test
@@ -370,19 +375,19 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 				new BusinessObject(new Integer[]{1, 2, 3}, 4)
 		};
 
-		Parse table = parseTable(
+		useTable(
 				tr("col1()"),
 				tr("7"));
 
 		String columns[] = {"value()"};
-		expectHeaders(table, columns);
+		expectHeaders(columns);
 
-		expectParseExpected(table, 2, 0, 7);
+		expectParseExpected(1, 0, 7);
 		prepareGetComputed(0, columns[0], 7);
 
-		expectValidatorProcess(table, columns, 2, 0, 0);
+		expectValidatorProcess(columns, 1, 0, 0);
 
-		fixture.doTable(table);
+		run();
 	}
 
 	@Test
@@ -390,49 +395,53 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 		fixture.query = new BusinessObject[]{
 				new BusinessObject(0, "v1", 0)};
 
-		Parse table = parseTable(
-				tr("col1", "col2", "col3", "col4"),
-				tr("42", "v1", "0", "."),
-				tr("43", "v2", "0", "."),
-				tr("44", "v2", "0", "."));
+		useTable(
+            tr("col1", "col2", "col3", "col4"),
+            tr("42", "v1", "0", "."),
+            tr("43", "v2", "0", "."),
+            tr("44", "v2", "0", "."));
 
 
 		String columns[] = {"x", "y", "z", null};
-		expectHeaders(table, columns);
+		expectHeaders(columns);
 
 		prepareGetComputed(0, columns[0], 2);
 		prepareGetComputed(0, columns[1], "a");
 		prepareGetComputed(0, columns[2], 4);
 
-		expectMissing(table, 2, 0, 2, "2");
-		expectMissing(table, 2, 1, "a", "a");
-		expectMissing(table, 2, 2, 4, "4");
-		expectMissingComment(table, 2, 3, null);
-		expectMissing(table, 3, 0, 2, "2");
-		expectMissing(table, 3, 1, "b", "b");
-		expectMissing(table, 3, 2, 8, "8");
-		expectMissingComment(table, 3, 3, null);
-		expectMissing(table, 4, 0, 8, "8");
-		expectMissing(table, 4, 1, "x", "x");
-		expectMissing(table, 4, 2, 8, "8");
-		expectMissingComment(table, 4, 3, "y");
+		expectMissing(1, 0, 2, "2");
+		expectMissing(1, 1, "a", "a");
+		expectMissing(1, 2, 4, "4");
+		expectMissingComment(1, 3, null);
+		expectMissing(2, 0, 2, "2");
+		expectMissing(2, 1, "b", "b");
+		expectMissing(2, 2, 8, "8");
+		expectMissingComment(2, 3, null);
+		expectMissing(3, 0, 8, "8");
+		expectMissing(3, 1, "x", "x");
+		expectMissing(3, 2, 8, "8");
+		expectMissingComment(3, 3, "y");
 
-		expectValidatorProcess(table, columns, 2, 0, 0);
-		expectValidatorProcess(table, columns, 2, 1, 0);
-		expectValidatorProcess(table, columns, 2, 2, 0);
-		expectValidatorProcessNull(table, 2, 3);
+		expectValidatorProcess(columns, 1, 0, 0);
+		expectValidatorProcess(columns, 1, 1, 0);
+		expectValidatorProcess(columns, 1, 2, 0);
+		expectValidatorProcessNull(1, 3);
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 2, 0, 0);
-		assertThat(table.at(0, 3, 0).body, allOf(containsString("missing"), containsString("2")));
-		assertThat(table.at(0, 3, 1).body, containsString("b"));
-		assertThat(table.at(0, 3, 2).body, containsString("8"));
-		assertThat(table.at(0, 3, 3).body, containsString("null"));
-		assertThat(table.at(0, 4, 0).body, allOf(containsString("missing"), containsString("8")));
-		assertThat(table.at(0, 4, 1).body, containsString("x"));
-		assertThat(table.at(0, 4, 2).body, containsString("8"));
-		assertThat(table.at(0, 4, 3).body, containsString("y"));
+		assertCounts(0, 2, 0, 0);
+		assertThat(htmlAt(1, 0), isEmptyString());
+		assertThat(htmlAt(1, 1), is(equalTo("42")));
+		assertThat(htmlAt(2, 0), containsString("missing"));
+		assertThat(htmlAt(2, 1), containsString("2"));
+		assertThat(htmlAt(2, 2), containsString("b"));
+		assertThat(htmlAt(2, 3), containsString("8"));
+		assertThat(htmlAt(2, 4), containsString("null"));
+		assertThat(htmlAt(3, 0), containsString("missing"));
+		assertThat(htmlAt(3, 1), containsString("8"));
+		assertThat(htmlAt(3, 2), containsString("x"));
+		assertThat(htmlAt(3, 3), containsString("8"));
+		assertThat(htmlAt(3, 4), containsString("y"));
 	}
 
 	private void prepareAppendSurplus(Class<?> clazz, Object input, String result) {
@@ -440,22 +449,23 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 		when(handler.toString(input)).thenReturn(result);
 	}
 
-	private void expectValidatorProcess(Parse table, String[] columns, int expectedRow,
+	private void expectValidatorProcess(String[] columns, int expectedRow,
 	                                    int expectedColumn, int computedRow) throws Exception {
 		final ValueReceiver valueReceiver = expectValueReceiverCreation(fixture.query[computedRow], columns[expectedColumn]);
-		addValidationToExpectations(table, expectedRow, expectedColumn, valueReceiver);
+		addValidationToExpectations(expectedRow, expectedColumn, valueReceiver);
 	}
 
-	private void expectValidatorProcessNull(Parse table, int expectedRow, int expectedColumn) throws Exception {
-		addValidationToExpectations(table, expectedRow, expectedColumn, null);
+	private void expectValidatorProcessNull(int expectedRow, int expectedColumn) throws Exception {
+		addValidationToExpectations(expectedRow, expectedColumn, null);
 	}
 
-	private void addValidationToExpectations(final Parse table, final int expectedRow, final int expectedColumn, final ValueReceiver valueReceiver) {
+	private void addValidationToExpectations(final int expectedRow, final int expectedColumn,
+                                             final ValueReceiver valueReceiver) {
 		expectations.add(new Task() {
 			@Override
 			public void run() throws Exception {
-				verify(validator).process(table.at(0, expectedRow, expectedColumn), fixture.counts(),
-						valueReceiver, null, typeHandlerFactory);
+				verify(validator).process(cellAt(expectedRow, expectedColumn),
+                    valueReceiver, null, typeHandlerFactory);
 			}
 		});
 	}
@@ -466,40 +476,40 @@ public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTe
 		when(receiver.getType()).thenReturn(result.getClass());
 	}
 
-	private void expectHeaders(Parse table, String... header) {
+	private void expectHeaders(String... header) {
 		for (int i = 0; i < header.length; i++) {
-			preparePreprocess(table.at(0, 1, i), header[i]);
+			preparePreprocess(cellAt(0, i), header[i]);
 		}
 	}
 
-	private void expectParseExpected(Parse table, int row, int col, Object result) throws ParseException {
+	private void expectParseExpected(int row, int col, Object result) throws ParseException {
 		@SuppressWarnings("RedundantStringConstructorCall")
 		String s = new String();
 
-		Parse cell = table.at(0, row, col);
+        FitCell cell = cellAt(row, col);
 		when(validator.preProcess(cell)).thenReturn(s);
 		TypeHandler colHandler = prepareGetTypeHandler(result.getClass(), null);
 		when(colHandler.parse(argThatSame(s))).thenReturn(result);
 	}
 
-	private void expectMissing(Parse table, int row, int col, Object result, String toStringResult) throws ParseException {
+	private void expectMissing(int row, int col, Object result, String toStringResult) throws ParseException {
 		@SuppressWarnings("RedundantStringConstructorCall")
 		String s = new String();
 
-		Parse cell = table.at(0, row, col);
-		when(validator.preProcess(cell)).thenReturn(s);
+        FitCell cell = cellAt(row, col);
+        when(validator.preProcess(cell)).thenReturn(s);
 		TypeHandler colHandler = prepareGetTypeHandler(result.getClass(), null);
 		when(colHandler.parse(argThatSame(s))).thenReturn(result);
 		when(colHandler.toString(argThatSame(s))).thenReturn(toStringResult);
 	}
 
-	private void expectMissingComment(Parse table, int row, int col, String toStringResult) throws ParseException {
-		Parse cell = table.at(0, row, col);
-		when(validator.preProcess(cell)).thenReturn(toStringResult);
+	private void expectMissingComment(int row, int col, String toStringResult) throws ParseException {
+        FitCell cell = cellAt(row, col);
+        when(validator.preProcess(cell)).thenReturn(toStringResult);
 	}
 
-	private void expectParseExpectedWithException(Parse table, int row, int col) {
-		Parse cell = table.at(0, row, col);
-		when(validator.preProcess(cell)).thenThrow(new RuntimeException("This was expected!"));
+	private void expectParseExpectedWithException(int row, int col) {
+        FitCell cell = cellAt(row, col);
+        when(validator.preProcess(cell)).thenThrow(new RuntimeException("This was expected!"));
 	}
 }

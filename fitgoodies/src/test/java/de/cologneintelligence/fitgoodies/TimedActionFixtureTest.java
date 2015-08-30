@@ -20,18 +20,17 @@
 
 package de.cologneintelligence.fitgoodies;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import org.junit.Test;
 
 import java.util.Date;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class TimedActionFixtureTest extends FitGoodiesTestCase {
+public class TimedActionFixtureTest extends FitGoodiesFixtureTestCase<TimedActionFixtureTest.TimedFixture> {
 
-	public static class ActionTestFixture {
+    public static class ActionTestFixture {
 		public boolean called;
 
 		public void call() {
@@ -39,7 +38,7 @@ public class TimedActionFixtureTest extends FitGoodiesTestCase {
 		}
 	}
 
-	private static class TimedFixture extends TimedActionFixture {
+	public static class TimedFixture extends TimedActionFixture {
 		private boolean first = true;
 		public Date date1;
 		public Date date2;
@@ -52,45 +51,46 @@ public class TimedActionFixtureTest extends FitGoodiesTestCase {
 		}
 	}
 
+    @Override
+    protected Class<TimedFixture> getFixtureClass() {
+        return TimedFixture.class;
+    }
+
 	@Test
 	public void testFixtureFast() {
-		Parse table = parseTable(tr("start", ActionTestFixture.class.getName()),
-				tr("press", "call"));
+        useTable(tr("start", ActionTestFixture.class.getName()),
+            tr("press", "call"));
 
-		final TimedFixture fixture = new TimedFixture();
-		final int startTime = 5 * 1000;
+		int startTime = 5 * 1000;
 		fixture.date1 = new Date(startTime);
 		fixture.date2 = new Date(startTime + 300);
-		fixture.doTable(table);
+
+        run();
 
 		assertThat(((ActionTestFixture) fixture.actor).called, is(true));
 
-		assertThat(table.at(0, 0, 1).text(), is(equalTo("time")));
-		assertThat(table.at(0, 0, 2).text(), is(equalTo("split")));
-		assertThat(table.at(0, 1, 2).text(), is(equalTo("00:00:05")));
-		assertThat(table.at(0, 1, 3).text(), is(equalTo("&nbsp;")));
-		assertThat(table.at(0, 2, 2).text(), is(equalTo("00:00:05")));
-		assertThat(table.at(0, 2, 3).text(), is(equalTo("&nbsp;")));
+		assertThat(htmlAt(0, 2), containsAll("00:00:05", "time"));
+		assertThat(htmlAt(0, 3), containsAll("&nbsp;", "split"));
+		assertThat(htmlAt(1, 2), containsAll("00:00:05", "time"));
+		assertThat(htmlAt(1, 3), containsAll("&nbsp;", "split"));
 	}
 
 	@Test
 	public void testFixtureSlow() {
-		Parse table = parseTable(tr("start", ActionTestFixture.class.getName()),
-				tr("press", "call"));
+		useTable(tr("start", ActionTestFixture.class.getName()),
+            tr("press", "call"));
 
-		final TimedFixture fixture = new TimedFixture();
 		final int startTime = 1000;
 		fixture.date1 = new Date(startTime);
 		fixture.date2 = new Date(startTime + 7501);
-		fixture.doTable(table);
+
+        run();
 
 		assertThat(((ActionTestFixture) fixture.actor).called, is(true));
-		assertThat(table.at(0, 0, 1).text(), is(equalTo("time")));
-		assertThat(table.at(0, 0, 2).text(), is(equalTo("split")));
-		assertThat(table.at(0, 1, 2).text(), is(equalTo("00:00:01")));
-		assertThat(table.at(0, 1, 3).text(), is(equalTo("7.501")));
-		assertThat(table.at(0, 2, 2).text(), is(equalTo("00:00:08")));
-		assertThat(table.at(0, 2, 3).text(), is(equalTo("&nbsp;")));
+		assertThat(htmlAt(0, 2), containsAll("00:00:01", "time"));
+		assertThat(htmlAt(0, 3), containsAll("7.501", "split"));
+		assertThat(htmlAt(1, 2), containsAll("00:00:08", "time"));
+		assertThat(htmlAt(1, 3), containsAll("&nbsp;", "split"));
 	}
 
 }

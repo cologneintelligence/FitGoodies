@@ -20,7 +20,7 @@
 
 package de.cologneintelligence.fitgoodies.util;
 
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.junit.Test;
 
@@ -50,9 +50,9 @@ public class FitUtilsTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testExtractCellParameter() throws Exception {
-		Parse cell1 = parseTd("empty");
-		Parse cell2 = parseTd("empty[hello]");
-		Parse cell3 = parseTd("some text [ some information ]");
+        FitCell cell1 = parseTd("empty");
+		FitCell cell2 = parseTd("empty[hello]");
+		FitCell cell3 = parseTd("some text [ some information ]");
 
 		String parameter1 = FitUtils.extractCellParameter(cell1);
 		String parameter2 = FitUtils.extractCellParameter(cell2);
@@ -62,16 +62,16 @@ public class FitUtilsTest extends FitGoodiesTestCase {
 		assertThat(parameter2, is(equalTo("hello")));
 		assertThat(parameter3, is(equalTo("some information")));
 
-		assertThat(cell1.text(), is(equalTo("empty")));
-		assertThat(cell2.text(), is(equalTo("empty")));
-		assertThat(cell3.text(), is(equalTo("some text")));
+		assertThat(cell1.getFitValue(), is(equalTo("empty")));
+		assertThat(cell2.getFitValue(), is(equalTo("empty")));
+		assertThat(cell3.getFitValue(), is(equalTo("some text")));
 	}
 
 	@Test
 	public void testExtractCellParameterMap() throws Exception {
-		Parse cell1 = parseTd("empty");
-		Parse cell2 = parseTd("empty[hello=world]");
-		Parse cell3 = parseTd("some text [some=information, ignore me  , a  =  message ]");
+		FitCell cell1 = parseTd("empty");
+		FitCell cell2 = parseTd("empty[hello=world]");
+		FitCell cell3 = parseTd("some text [some=information, ignore me  , a  =  message ]");
 
 		Map<String, String> parameter1 = FitUtils.extractCellParameterMap(cell1);
 		Map<String, String> parameter2 = FitUtils.extractCellParameterMap(cell2);
@@ -88,8 +88,8 @@ public class FitUtilsTest extends FitGoodiesTestCase {
 		assertThat(parameter2, is(equalTo(expectedParameter2)));
 		assertThat(parameter3, is(equalTo(expectedParameter3)));
 
-		assertThat(cell1.text(), is(equalTo("empty")));
-		assertThat(cell2.text(), is(equalTo("empty")));
-		assertThat(cell3.text(), is(equalTo("some text")));
+		assertThat(cell1.getFitValue(), is(equalTo("empty")));
+		assertThat(cell2.getFitValue(), is(equalTo("empty")));
+		assertThat(cell3.getFitValue(), is(equalTo("some text")));
 	}
 }

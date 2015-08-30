@@ -22,10 +22,12 @@ package de.cologneintelligence.fitgoodies.selenium;
 
 import com.thoughtworks.selenium.SeleniumException;
 import de.cologneintelligence.fitgoodies.ActionFixture;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
 import de.cologneintelligence.fitgoodies.selenium.command.CommandFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+
+import java.util.List;
 
 /**
  * Run the selenium-IDE and record your test-case. Save the result as html and
@@ -72,79 +74,69 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
  * @author kmussawisade
  */
 public class SeleniumFixture extends ActionFixture {
-	private int screenshotIndex = 0;
+    private int screenshotIndex = 0;
 
-	@Override
-	protected void doCells(final Parse cells) {
+    @Override
+    protected void doCells(List<FitCell> cells) {
 
-		final String command = cells.text();
-		try {
-			final String[] args = new String[]{getColumnOrEmptyString(cells, 1),
-					getColumnOrEmptyString(cells, 2)};
-			String result = CommandFactory.createCommand(command, args,
-					DependencyManager.getOrCreate(SetupHelper.class)).execute();
-			checkResult(cells, result);
-		} catch (final SeleniumException e) {
-			wrong(lastCell(cells), e.getMessage());
-		} catch (final Exception e) {
-			exception(lastCell(cells), e);
-		}
-	}
+        String command = cells.get(0).getFitValue();
+        try {
+            String arg1 = getColumnOrEmptyString(cells, 1);
+            String arg2 = getColumnOrEmptyString(cells, 2);
+            String[] args = new String[]{arg1, arg2};
+            String result = CommandFactory.createCommand(command, args,
+                DependencyManager.getOrCreate(SetupHelper.class)).execute();
+            checkResult(last(cells), result);
+        } catch (SeleniumException e) {
+            wrong(last(cells), e.getMessage());
+        } catch (Exception e) {
+            last(cells).exception(e);
+        }
+    }
 
-	@Override
-	public void wrong(final Parse cell, final String message) {
-		super.wrong(cell, message);
-		SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
-		if (helper.getTakeScreenshots()) {
-			takeScreenShot(cell);
-		}
-	}
+    public void wrong(FitCell cell, String message) {
+        cell.wrong(message);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
+        if (helper.getTakeScreenshots()) {
+            takeScreenShot(cell);
+        }
+    }
 
-	private void addScreenshotLinkToReportPage(final Parse cell, final String fileName) {
-		cell.addToBody(" <a href=\"file:///" + fileName + "\">screenshot</a>");
-	}
+    private void addScreenshotLinkToReportPage(FitCell cell, String fileName) {
+        cell.addDisplayValueRaw(" <a href=\"file:///" + fileName + "\">screenshot</a>");
+    }
 
-	private void takeScreenShot(final Parse cell) {
-		String fileName = createSnapshotFilename(screenshotIndex++);
-		SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
-		CommandFactory.createCommand("captureEntirePageScreenshot", new String[]{fileName, ""}, helper).execute();
-		addScreenshotLinkToReportPage(cell, fileName);
-	}
+    private void takeScreenShot(FitCell cell) {
+        String fileName = createSnapshotFilename(screenshotIndex++);
+        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
+        CommandFactory.createCommand("captureEntirePageScreenshot", new String[]{fileName, ""}, helper).execute();
+        addScreenshotLinkToReportPage(cell, fileName);
+    }
 
-	private String createSnapshotFilename(final int index) {
-		RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
-		return helper.getResultFile() + ".screenshot" + index + ".png";
-	}
+    private String createSnapshotFilename(int index) {
+        RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
+        return helper.getResultFile() + ".screenshot" + index + ".png";
+    }
 
-	private String getColumnOrEmptyString(final Parse cells, final int column) {
-		Parse parse = cells;
-		for (int i = 0; i < column; ++i) {
-			if (parse.more == null) {
-				return "";
-			}
-			parse = parse.more;
-		}
+    private String getColumnOrEmptyString(List<FitCell> cells, int column) {
+        if (cells.size() <= column) {
+            return "";
+        } else {
+            return validator.preProcess(cells.get(column).getFitValue());
+        }
+    }
 
-		return validator.preProcess(parse);
-	}
+    private void checkResult(FitCell cell, String result) {
+        if (result.startsWith("OK")) {
+            cell.right();
+            cell.info(result);
+        } else {
+            wrong(cell, result);
+        }
+    }
 
-	private void checkResult(final Parse cells, final String result) {
-		if (result.startsWith("OK")) {
-			right(lastCell(cells));
-			info(lastCell(cells), result);
-		} else {
-			wrong(lastCell(cells), result);
-		}
-	}
-
-	protected Parse lastCell(final Parse cells) {
-		Parse lastCell = cells;
-		int i = 0;
-		while (lastCell.more != null && i < 2) {
-			++i;
-			lastCell = lastCell.more;
-		}
-		return lastCell;
-	}
+    protected <T> T last(List<T> cells) {
+        return cells.get(cells.size() - 1);
+    }
 
 }

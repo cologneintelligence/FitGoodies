@@ -2,115 +2,176 @@ package de.cologneintelligence.fitgoodies.htmlparser;
 
 import de.cologneintelligence.fitgoodies.Counts;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
 
 public class FitCell {
-	private final FitRow row;
-	private final Element td;
-	private final Counts counts;
+    private final FitRow row;
+    private final Element td;
 
-	private State state = State.NONE;
-	private String expected;
-	private String info;
+    private State state = State.NONE;
+    private String actual;
+    private String info;
 
-	public FitCell(FitRow fitRow, Element td, Counts counts) {
-		this.row = fitRow;
-		this.td = td;
-		this.counts = counts;
-	}
+    public FitCell(FitRow fitRow, Element td) {
+        this.row = fitRow;
+        this.td = td;
+    }
 
-	public FitRow getRow() {
-		return row;
-	}
+    public FitRow getRow() {
+        return row;
+    }
 
-	public Element getTd() {
-		return td;
-	}
+    public Element getTd() {
+        return td;
+    }
 
-	public String getFitValue() {
-		if (td.hasAttr("data-fit-value")) {
-			return td.attr(Constants.ATTR_VALUE);
-		} else {
-			return td.html();
-		}
-	}
+    public String getFitValue() {
+        if (td.hasAttr("data-fit-value")) {
+            return td.attr(Constants.ATTR_VALUE);
+        } else {
+            return td.html();
+        }
+    }
 
-	public void finishExecution() {
-		if (state != State.NONE) {
-			td.addClass(state.cssClass);
-			switch (state) {
-				case WRONG:
-					counts.wrong++;
-					break;
-				case RIGHT:
-					counts.right++;
-					break;
-				case EXCEPTION:
-					counts.exceptions++;
-					break;
-				case IGNORED:
-					counts.ignores++;
-					break;
-			}
+    public void finishExecution(Counts counts) {
+        if (state != State.NONE) {
+            td.addClass(state.cssClass);
+            switch (state) {
+                case WRONG:
+                    counts.wrong++;
+                    break;
+                case RIGHT:
+                    counts.right++;
+                    break;
+                case EXCEPTION:
+                    counts.exceptions++;
+                    break;
+                case IGNORED:
+                    counts.ignores++;
+                    break;
+            }
+        }
 
-			if (expected != null || info != null) {
-				String html = "<span class=\"fit-actual\">" + td.html() + "</span>";
+        if (actual != null || info != null) {
+            String html = "<span class=\"fit-expected\">" + td.html() + "</span>";
 
-				if (expected != null) {
-					html += " <span class=\"fit-info\">(actual)</span><br>"
-							+ " <span class=\"fit-expected\">" + expected + "</span>"
-							+ " <span class=\"fit-info\">(expected)</span>";
-				}
+            if (actual != null) {
+                html += " <span class=\"fit-info\">(expected)</span><br>";
 
-				if (info != null) {
-					html += "<br><span class=\"fit-info\">[" + info + "]</span>";
-				}
+                if (state != State.EXCEPTION) {
+                    html += " <span class=\"fit-actual\">" + actual + "</span>";
+                    html += " <span class=\"fit-info\">(actual)</span>";
+                } else {
+                    html += " <span class=\"fit-actual-exception\">" + actual + "</span>";
+                    html += " <span class=\"fit-info\">(exception)</span>";
+                }
+            }
 
-				td.html(html);
-			}
-		}
-	}
+            if (info != null) {
+                html += "<br><span class=\"fit-info\">[" + info + "]</span>";
+            }
 
-	public void right() {
-		right(null, null);
-	}
+            td.html(html);
+        }
+    }
 
-	public void right(String expected) {
-		right(expected, null);
-	}
+    public void right() {
+        right(null, null);
+    }
 
-	public void right(String expected, String info) {
-		this.state = State.RIGHT;
-		this.expected = expected;
-		this.info = info;
-	}
+    public void right(String actual) {
+        right(actual, null);
+    }
 
-	public void exception(Throwable t) {
-		this.state = State.EXCEPTION;
-		this.expected = ParserUtils.getHtmlStackTrace(t);
-		this.info = null;
-	}
+    public void right(String actual, String info) {
+        this.state = State.RIGHT;
+        this.actual = actual;
+        info(info);
+    }
 
-	public void ignored() {
-		ignored(null);
-	}
+    public void exception(Throwable t) {
+        this.state = State.EXCEPTION;
+        this.actual = ParserUtils.getHtmlStackTrace(t);
+    }
 
-	public void ignored(String info) {
-		this.state = State.IGNORED;
-		this.expected = null;
-		this.info = info;
-	}
+    public void exception(String message) {
+        this.state = State.EXCEPTION;
+        this.actual = message;
+    }
 
-	public void wrong() {
-		wrong(null, null);
-	}
+    public void ignore() {
+        ignore(null);
+    }
 
-	public void wrong(String expected) {
-		wrong(expected, null);
-	}
+    public void ignore(String info) {
+        this.state = State.IGNORED;
+        this.actual = null;
+        info(info);
+    }
 
-	public void wrong(String expected, String info) {
-		this.state = State.WRONG;
-		this.expected = expected;
-		this.info = info;
-	}
+    public void info(String message) {
+        if (message == null) {
+            return;
+        }
+
+        rawInfo(new TextNode(message, td.baseUri()).outerHtml());
+    }
+
+    public void wrong() {
+        wrong(null, null);
+    }
+
+    public void wrong(String actual) {
+        wrong(actual, null);
+    }
+
+    public void wrong(String actual, String info) {
+        this.state = State.WRONG;
+        this.actual = actual;
+        info(info);
+    }
+
+    public void setFitValue(String value) {
+        if (td.hasAttr("data-fit-value")) {
+            td.attr(Constants.ATTR_VALUE, value);
+        } else {
+            setDisplayValue(value);
+        }
+    }
+
+    public void setDisplayValue(String s) {
+        td.text(s);
+    }
+
+    public void setDisplayValueRaw(String s) {
+        td.html(s);
+    }
+
+    public void addDisplayValue(String text) {
+        setDisplayValue(td.text() + text);
+    }
+
+    public void addDisplayValueRaw(String s) {
+        td.html(td.html() + s);
+    }
+
+    public void blank(String info, int length) {
+        td.attr("colspan", Integer.toString(length));
+        info(info);
+    }
+
+    public void rawInfo(String html) {
+        if (this.info == null) {
+            this.info = "";
+        } else {
+            this.info += " ";
+        }
+
+        this.info += html;
+    }
+
+    @Override
+    public String toString() {
+        return "[Cell: " + td.outerHtml() + ", at " + row.getIndex() + "/" + td.siblingIndex() + "]";
+    }
 }

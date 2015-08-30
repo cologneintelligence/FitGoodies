@@ -22,7 +22,7 @@
 package de.cologneintelligence.fitgoodies.alias;
 
 import de.cologneintelligence.fitgoodies.Fixture;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
 
 /**
@@ -52,14 +52,14 @@ public class SetupFixture extends Fixture {
 	 * @param row row to parse
 	 */
 	@Override
-	protected void doRow(final Parse row) {
-		if (row.parts.more == null) {
-			ignore(row);
-			return;
-		}
+	protected void doRow(FitRow row) {
+        if (row.size() < 2) {
+            row.cells().get(0).ignore();
+            return;
+        }
 
-		alias = validator.preProcess(row.parts);
-		className = validator.preProcess(row.parts.more);
+		alias = validator.preProcess(row.cells().get(0));
+		className = validator.preProcess(row.cells().get(1));
 
 		AliasHelper aliasHelper = DependencyManager.getOrCreate(AliasHelper.class);
 		aliasHelper.register(alias, className);

@@ -20,8 +20,6 @@
 
 package de.cologneintelligence.fitgoodies.checker;
 
-import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
@@ -43,7 +41,6 @@ public class EmptyCheckerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testCheckNullEqNull() throws Exception {
-
 		int right = 1;
 		int wrong = 0;
 
@@ -52,7 +49,6 @@ public class EmptyCheckerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testCheckEmptyEqNull() throws Exception {
-
 		int right = 1;
 		int wrong = 0;
 		String getValue = "";
@@ -62,7 +58,6 @@ public class EmptyCheckerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testCheckNonNullEqNonNull() throws Exception {
-
 		int right = 1;
 		int wrong = 0;
 		String getValue = "result";
@@ -73,7 +68,6 @@ public class EmptyCheckerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testCheckValueNeqEmpty() throws Exception {
-
 		int right = 0;
 		int wrong = 1;
 		String getValue = "result";
@@ -85,7 +79,6 @@ public class EmptyCheckerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testCheckNullNeqNonEmpty() throws Exception {
-
 		int right = 0;
 		int wrong = 1;
 
@@ -94,17 +87,18 @@ public class EmptyCheckerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testException() throws Exception {
+		useTable(tr("ok"));
 		final String message = "this was expected";
 
 		when(valueReceiver.get()).thenThrow(new RuntimeException(message));
 
-		Parse table = parseTable(tr("ok"));
-		Counts counts = new Counts();
-		new EmptyChecker(true).check(table.at(0, 1, 0), counts, null,
-				valueReceiver, typeHandler);
+        new EmptyChecker(true).check(cellAt(0, 0), null,
+            valueReceiver, typeHandler);
 
-		assertCounts(counts, table, 0, 0, 0, 1);
-		assertThat(table.at(0, 1, 0).body, containsString(message));
+        lastFitTable.finishExecution();
+
+        assertCounts(0, 0, 0, 1);
+		assertThat(htmlAt(0, 0), containsString(message));
 	}
 
 	protected String check(int right, int wrong, String getValue, String cellValue, boolean expectTrue) throws IllegalAccessException, InvocationTargetException {
@@ -112,12 +106,11 @@ public class EmptyCheckerTest extends FitGoodiesTestCase {
 		when(valueReceiver.getType()).thenReturn(String.class);
 		when(typeHandler.toString(getValue)).thenReturn(cellValue);
 
-		Parse table = parseTable(tr("ok"));
-		Counts counts = new Counts();
-		new EmptyChecker(expectTrue).check(table.at(0, 1, 0), counts, null,
-				valueReceiver, typeHandler);
+		useTable(tr("ok"));
+        new EmptyChecker(expectTrue).check(cellAt(0, 0), null, valueReceiver, typeHandler);
+        lastFitTable.finishExecution();
 
-		assertCounts(counts, table, right, wrong, 0, 0);
-		return table.at(0, 1, 0).body;
+		assertCounts(right, wrong, 0, 0);
+		return htmlAt(0, 0);
 	}
 }

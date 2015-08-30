@@ -20,8 +20,6 @@
 
 package de.cologneintelligence.fitgoodies.checker;
 
-import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
@@ -47,11 +45,11 @@ public class EqualityCheckerTest extends FitGoodiesTestCase {
 		when(typeHandler.parse("cellValue")).thenReturn("parsed");
 		when(typeHandler.equals("parsed", "received")).thenReturn(true);
 
-		Parse table = parseTable(tr("cellValue"));
-		Counts counts = new Counts();
-		new EqualityChecker().check(table.at(0, 1, 0), counts, "cellValue", valueReceiver, typeHandler);
+		useTable(tr("cellValue"));
+		new EqualityChecker().check(cellAt(0, 0), "cellValue", valueReceiver, typeHandler);
+        lastFitTable.finishExecution();
 
-		assertCounts(counts, table, 1, 0, 0, 0);
+		assertCounts(1, 0, 0, 0);
 	}
 
 	@Test
@@ -61,11 +59,11 @@ public class EqualityCheckerTest extends FitGoodiesTestCase {
 		when(typeHandler.parse("15")).thenReturn(18L);
 		when(typeHandler.equals(18L, 12L)).thenReturn(true);
 
-		Parse table = parseTable(tr("cellValue"));
-		Counts counts = new Counts();
-		new EqualityChecker().check(table.at(0, 1, 0), counts, "15", valueReceiver, typeHandler);
+		useTable(tr("cellValue"));
+        new EqualityChecker().check(cellAt(0, 0), "15", valueReceiver, typeHandler);
+        lastFitTable.finishExecution();
 
-		assertCounts(counts, table, 1, 0, 0, 0);
+		assertCounts(1, 0, 0, 0);
 	}
 
 	@Test
@@ -73,36 +71,36 @@ public class EqualityCheckerTest extends FitGoodiesTestCase {
 		when(valueReceiver.get()).thenReturn(12L);
 		when(valueReceiver.getType()).thenReturn(Long.class);
 		when(typeHandler.parse("15")).thenReturn(18L);
-		when(typeHandler.unsafeEquals(18L, 12L)).thenReturn(false);
+        when(typeHandler.unsafeEquals(18L, 12L)).thenReturn(false);
 		when(typeHandler.toString(12L)).thenReturn("expected");
 
-		Parse table = parseTable(tr("cellValue"));
-		Counts counts = new Counts();
-		new EqualityChecker().check(table.at(0, 1, 0), counts, "15", valueReceiver, typeHandler);
+		useTable(tr("cellValue"));
+        new EqualityChecker().check(cellAt(0, 0), "15", valueReceiver, typeHandler);
+        lastFitTable.finishExecution();
 
-		assertCounts(counts, table, 0, 1, 0, 0);
-		assertThat(table.at(0, 1, 0).body, containsString("expected"));
+		assertCounts(0, 1, 0, 0);
+		assertThat(htmlAt(0, 0), containsString("expected"));
 	}
 
 	@Test
 	public void testException() throws Exception {
 		when(valueReceiver.get()).thenThrow(new RuntimeException("test"));
 
-		Parse table = parseTable(tr("ok"));
-		Counts counts = new Counts();
-		new EqualityChecker().check(table.at(0, 1, 0), counts, "15", valueReceiver, typeHandler);
+		useTable(tr("ok"));
+		new EqualityChecker().check(cellAt(0, 0), "15", valueReceiver, typeHandler);
+        lastFitTable.finishExecution();
 
-		assertCounts(counts, table, 0, 0, 0, 1);
-		assertThat(table.at(0, 1, 0).body, containsString("test"));
+        assertCounts(0, 0, 0, 1);
+		assertThat(htmlAt(0, 0), containsString("test"));
 	}
 
 	@Test
 	public void nullValueReceiverIsIgnored() throws Exception {
-		Parse table = parseTable(tr("ok"));
-		Counts counts = new Counts();
-		new EqualityChecker().check(table.at(0, 1, 0), counts, "15", null, typeHandler);
+		useTable(tr("ok"));
+        new EqualityChecker().check(cellAt(0, 0), "15", null, typeHandler);
+        lastFitTable.finishExecution();
 
-		assertCounts(counts, table, 0, 0, 1, 0);
+		assertCounts(0, 0, 1, 0);
 	}
 
 }

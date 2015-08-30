@@ -20,37 +20,44 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import org.apache.log4j.Appender;
 import org.apache.log4j.spi.AppenderAttachable;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import static org.hamcrest.CoreMatchers.any;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;
 
 
-public final class SetupFixtureTest extends FitGoodiesTestCase {
-	@Test
+public class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
+    @Mock
+    private LoggerProvider provider;
+
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
+    }
+
+    @Override
+    protected SetupFixture newInstance() throws InstantiationException, IllegalAccessException {
+        return new SetupFixture(provider);
+    }
+
+    @Test
 	public void testParse() throws Exception {
-		final LoggerProvider provider = mock(LoggerProvider.class);
-		final AppenderAttachable attachable1 =
+		AppenderAttachable attachable1 =
 				mock(AppenderAttachable.class, "attachable1");
-		final AppenderAttachable attachable2 =
+		AppenderAttachable attachable2 =
 				mock(AppenderAttachable.class, "attachable2");
-		final AppenderAttachable attachable3 =
+		AppenderAttachable attachable3 =
 				mock(AppenderAttachable.class, "attachable3");
-		final Appender appender1 = mock(Appender.class, "appender1");
-		final Appender appender2 = mock(Appender.class, "appender2");
-		final Appender appender3 = mock(Appender.class, "appender3");
+		Appender appender1 = mock(Appender.class, "appender1");
+		Appender appender2 = mock(Appender.class, "appender2");
+		Appender appender3 = mock(Appender.class, "appender3");
 
-		SetupFixture fixture = new SetupFixture(provider);
-
-		Parse table = parseTable(
+		useTable(
 				tr("monitor", "com.example.class1", "R"),
 				tr("monitor", "com.example.testclass2", "stdout"),
 				tr("monitorRoot", "R</td></tr></table>"));
@@ -67,23 +74,22 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 		when(attachable3.getAppender("R")).thenReturn(appender3);
 		when(appender3.getName()).thenReturn("BaseAppender3");
 
-		fixture.doTable(table);
+		run();
 
+        assertCounts(0, 0, 0, 0);
 		verify(attachable1).addAppender(argThat(any(CaptureAppender.class)));
 		verify(attachable2).addAppender(argThat(any(CaptureAppender.class)));
 		verify(attachable3).addAppender(argThat(any(CaptureAppender.class)));
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
 	}
 
 	@Test
 	public void testParse2() throws Exception {
-		final LoggerProvider provider = mock(LoggerProvider.class);
-		final AppenderAttachable attachable1 =
+		AppenderAttachable attachable1 =
 				mock(AppenderAttachable.class, "attachable1");
-		final AppenderAttachable attachable2 =
+		AppenderAttachable attachable2 =
 				mock(AppenderAttachable.class, "attachable2");
-		final Appender appender1 = mock(Appender.class, "appender1");
-		final Appender appender2 = mock(Appender.class, "appender2");
+		Appender appender1 = mock(Appender.class, "appender1");
+		Appender appender2 = mock(Appender.class, "appender2");
 
 		when(appender1.getName()).thenReturn("BaseAppender1");
 		when(appender2.getName()).thenReturn("BaseAppender2");
@@ -94,37 +100,31 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 		when(provider.getLogger("com.example.testclass1")).thenReturn(attachable2);
 		when(attachable2.getAppender("R")).thenReturn(appender2);
 
-		SetupFixture fixture = new SetupFixture(provider);
-
-		Parse table = parseTable(
+		useTable(
 				tr("monitor", "com.example.class2", "stderr"),
 				tr("monitor", "com.example.testclass1", "R"));
 
-		fixture.doTable(table);
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
+		run();
 
+        assertCounts(0 ,0, 0, 0);
 		verify(attachable1).addAppender(argThat(any(CaptureAppender.class)));
 		verify(attachable2).addAppender(argThat(any(CaptureAppender.class)));
 	}
 
 	@Test
 	public void testClear() {
-		final LoggerProvider provider = mock(LoggerProvider.class, "provider");
-		final AppenderAttachable logger = mock(AppenderAttachable.class, "logger");
-		final CaptureAppender appender = mock(CaptureAppender.class, "appender");
+		AppenderAttachable logger = mock(AppenderAttachable.class, "logger");
+		CaptureAppender appender = mock(CaptureAppender.class, "appender");
 
 		when(provider.getLogger("com.example.class2")).thenReturn(logger);
 		when(logger.getAppender(CaptureAppender.getAppenderNameFor("stderr")))
 				.thenReturn(appender);
 
-		SetupFixture fixture = new SetupFixture(provider);
+		useTable(tr("clear", "com.example.class2", "stderr"));
 
-		Parse table = parseTable(tr("clear", "com.example.class2", "stderr"));
+		run();
 
-		fixture.doTable(table);
-
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-
+        assertCounts(0, 0, 0, 0);
 		verify(appender).clear();
 	}
 }

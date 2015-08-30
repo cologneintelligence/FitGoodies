@@ -21,9 +21,9 @@
 
 package de.cologneintelligence.fitgoodies.mail;
 
-import de.cologneintelligence.fitgoodies.Parse;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -32,22 +32,40 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 
-public final class SetupFixtureTest extends FitGoodiesTestCase {
-	@Test
-	public void testPares1() {
-		Parse table1 = parseTable(
-				tr("host", "127.0.0.1"),
-				tr("protocol", "pop3"),
-				tr("username", "testuser"),
-				tr("password", "testpassword"),
-				tr("ssl", "true"),
-				tr("port", "123"));
+public final class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
 
-		SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table1);
+    private SetupHelper helper;
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-		SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        helper = DependencyManager.getOrCreate(SetupHelper.class);
+    }
+
+    @Test
+	public void testParses1() {
+		useTable(
+            tr("host", "$host"),
+            tr("protocol", "pop3"),
+            tr("username", "$user"),
+            tr("password", "testpassword"),
+            tr("ssl", "true"),
+            tr("port", "123"));
+
+        preparePreprocessWithConversion(String.class, "$host", "127.0.0.1");
+        preparePreprocessWithConversion(String.class, "pop3", "pop3");
+        preparePreprocessWithConversion(String.class, "$user", "testuser");
+        preparePreprocessWithConversion(String.class, "testpassword", "testpassword");
+        preparePreprocessWithConversion(String.class, "true", "true");
+        preparePreprocessWithConversion(String.class, "123", "123");
+
+		run();
+
+        assertCounts(0, 0, 0, 0);
 		Properties prop = helper.generateProperties();
 
 		assertThat(prop.getProperty("mail.store.protocol"), is(equalTo("pop3")));
@@ -59,19 +77,23 @@ public final class SetupFixtureTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testPares2() {
-		Parse table1 = parseTable(
-				tr("host", "localhost"),
-				tr("protocol", "imap"),
-				tr("username", "user"),
-				tr("password", "passwd"),
-				tr("inbox", "INBOX"));
+	public void testParses2() {
+		useTable(
+            tr("host", "localhost"),
+            tr("protocol", "imap"),
+            tr("username", "user"),
+            tr("password", "passwd"),
+            tr("inbox", "INBOX"));
 
-		SetupFixture fixture = new SetupFixture();
-		fixture.doTable(table1);
+        preparePreprocessWithConversion(String.class, "localhost", "localhost");
+        preparePreprocessWithConversion(String.class, "imap", "imap");
+        preparePreprocessWithConversion(String.class, "user", "user");
+        preparePreprocessWithConversion(String.class, "passwd", "passwd");
+        preparePreprocessWithConversion(String.class, "INBOX", "INBOX");
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 0)));
-		SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
+		run();
+
+        assertCounts(0, 0, 0, 0);
 		Properties prop = helper.generateProperties();
 
 		assertThat(prop.getProperty("mail.inbox"), is(equalTo("INBOX")));

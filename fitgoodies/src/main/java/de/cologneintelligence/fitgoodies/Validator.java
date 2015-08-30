@@ -22,6 +22,7 @@ package de.cologneintelligence.fitgoodies;
 
 import de.cologneintelligence.fitgoodies.checker.Checker;
 import de.cologneintelligence.fitgoodies.checker.EqualityChecker;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.references.CellProcessor;
 import de.cologneintelligence.fitgoodies.references.CellProcessorProvider;
 import de.cologneintelligence.fitgoodies.references.CellProcessorProviderHelper;
@@ -42,20 +43,20 @@ public class Validator {
 				.getProviders();
 	}
 
-	public String preProcess(Parse cell) {
-		return preProcess(cell.text().trim());
+	public String preProcess(FitCell cell) {
+		return preProcess(cell.getFitValue().trim());
 	}
 
 	public String preProcess(String cellText) {
 		return new PreProcessorStep().run(cellText).getProcessedText();
 	}
 
-	public void process(Parse cell, Counts counts, ValueReceiver valueReceiver, String cellParameter, TypeHandlerFactory typeHandlerFactory) {
+	public void process(FitCell cell, ValueReceiver valueReceiver, String cellParameter, TypeHandlerFactory typeHandlerFactory) {
 
-		PreProcessorStep preProcessorStep = new PreProcessorStep().run(cell.text().trim());
+		PreProcessorStep preProcessorStep = new PreProcessorStep().run(cell.getFitValue().trim());
 
-		ComparatorStep comparatorStep = new ComparatorStep().run(preProcessorStep, cell, counts,
-				valueReceiver, typeHandlerFactory, cellParameter);
+		ComparatorStep comparatorStep = new ComparatorStep().run(preProcessorStep, cell,
+            valueReceiver, typeHandlerFactory, cellParameter);
 
 		new PostProcessorStep().run(preProcessorStep, comparatorStep);
 	}
@@ -104,7 +105,7 @@ public class Validator {
 		private TypeHandler handler;
 		private Object result;
 
-		public ComparatorStep run(PreProcessorStep preProcessorStep, Parse cell, Counts counts, ValueReceiver valueReceiver, TypeHandlerFactory typeHandlerFactory, String cellParameter) {
+		public ComparatorStep run(PreProcessorStep preProcessorStep, FitCell cell, ValueReceiver valueReceiver, TypeHandlerFactory typeHandlerFactory, String cellParameter) {
 			Checker checkRoutine = preProcessorStep.getCheckRoutine();
 			String cellText = preProcessorStep.getProcessedText();
 
@@ -113,7 +114,7 @@ public class Validator {
 			}
 
 			handler = typeHandlerFactory.getHandler(valueReceiver.getType(), cellParameter);
-			result = checkRoutine.check(cell, counts, cellText, valueReceiver, handler);
+			result = checkRoutine.check(cell, cellText, valueReceiver, handler);
 			return this;
 		}
 

@@ -27,8 +27,8 @@ import javax.mail.MessagingException;
  */
 public interface Mail {
 	/**
-	 * Returns all headers of the type <code>headerName</code>. If such a header
-	 * does not exist, <code>null</code> should be returned.
+	 * Returns all headers of the type {@code headerName}. If such a header
+	 * does not exist, {@code null} should be returned.
 	 *
 	 * @param headerName header to read
 	 * @return list of header values

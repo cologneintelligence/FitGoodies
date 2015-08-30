@@ -20,9 +20,8 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.Validator;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
@@ -32,15 +31,13 @@ public class LogEventAnalyzerFactory {
 	/**
 	 * Creates a LogEventAnalyzer which is capable to analyze the events {@code
 	 * events} using the condition defined in {@code conditionCell}.
-	 *
-	 * @param counts        Counts
-	 * @param validator     the validator for the cell
-	 * @param conditionCell cell which contains the condition
-	 * @param events        list of events to process   @return instance of LogEventAnalyzer
-	 */
-	public LogEventAnalyzer getLogEventAnalyzerFor(Counts counts,
-	                                               Validator validator, Parse conditionCell, LoggingEvent[] events) {
-		return new LogEventAnalyzer(counts, validator, conditionCell, events);
+	 *  @param validator     the validator for the cell
+     * @param conditionCell cell which contains the condition
+     * @param events        list of events to process   @return instance of LogEventAnalyzer
+     */
+	public LogEventAnalyzer getLogEventAnalyzerFor(Validator validator, FitCell conditionCell,
+                                                   LoggingEvent[] events) {
+		return new LogEventAnalyzer(validator, conditionCell, events);
 	}
 
 }

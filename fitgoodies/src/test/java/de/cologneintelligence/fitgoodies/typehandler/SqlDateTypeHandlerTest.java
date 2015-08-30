@@ -44,15 +44,13 @@ public class SqlDateTypeHandlerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testGetType() {
-		final SqlDateTypeHandler p = new SqlDateTypeHandler(null);
-		assertThat(p.getType(), is(equalTo(Date.class)));
+		assertThat(handler.getType(), is(equalTo(Date.class)));
 	}
 
 	@Test
 	public void testParse() throws Exception {
 		final Date d = Date.valueOf("1987-12-01");
-		final SqlDateTypeHandler p = new SqlDateTypeHandler(null);
-		assertThat(p.unsafeParse("1987-12-01"), is(equalTo(d)));
+		assertThat(handler.unsafeParse("1987-12-01"), is(equalTo(d)));
 	}
 
 	@Test
@@ -61,13 +59,11 @@ public class SqlDateTypeHandlerTest extends FitGoodiesTestCase {
 		helper.setLocale("de_DE");
 		helper.setFormat("dd.MM.yyyy");
 
-		final SqlDateTypeHandler p = new SqlDateTypeHandler(null);
-
 		Date d = Date.valueOf("1987-12-01");
-		assertThat(p.unsafeParse("1987-12-01"), is(equalTo(d)));
+		assertThat(handler.unsafeParse("1987-12-01"), is(equalTo(d)));
 
 		d = Date.valueOf("1989-03-08");
-		assertThat(p.unsafeParse("08.03.1989"), is(equalTo(d)));
+		assertThat(handler.unsafeParse("08.03.1989"), is(equalTo(d)));
 	}
 
 	// TODO: test equals, parse with parameter, toString

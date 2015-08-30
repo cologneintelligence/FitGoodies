@@ -21,11 +21,12 @@
 package de.cologneintelligence.fitgoodies.log4j;
 
 import de.cologneintelligence.fitgoodies.Fixture;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.spi.AppenderAttachable;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,9 +77,9 @@ public class LogFixture extends Fixture {
 	private static final int CHECK_EXPRESSION_COLUMN = 3;
 
 	private CaptureAppender appender;
-	private Parse cells;
+    private List<FitCell> cells;
 
-	/**
+    /**
 	 * Initializes a new {@code LogFixture} using a {@link LoggerProvider}
 	 * and a {@link LogEventAnalyzerFactory}.
 	 *
@@ -108,7 +109,7 @@ public class LogFixture extends Fixture {
 	 * @param cells row to parse and process
 	 */
 	@Override
-	protected void doCells(final Parse cells) {
+	protected void doCells(List<FitCell> cells) {
 		this.cells = cells;
 		this.appender = getAppender();
 
@@ -116,40 +117,40 @@ public class LogFixture extends Fixture {
 			try {
 				executeCommand();
 			} catch (final IllegalArgumentException e) {
-				error(this.cells.at(COMMAND_COLUMN), "Illegal format");
+				cells.get(COMMAND_COLUMN).exception("Illegal Format");
 			}
 		}
 	}
 
 	private void executeCommand() {
 		Map<String, String> parameters =
-				FitUtils.extractCellParameterMap(cells.at(COMMAND_COLUMN));
-		String command = cells.at(COMMAND_COLUMN).text();
+				FitUtils.extractCellParameterMap(cells.get(COMMAND_COLUMN));
+		String command = cells.get(COMMAND_COLUMN).getFitValue();
 		getExpressionCellContent();
 
 		dispatchCommand(command, parameters);
 	}
 
 	private String getExpressionCellContent() {
-		Parse cell = cells.at(CHECK_EXPRESSION_COLUMN);
+        FitCell cell = cells.get(CHECK_EXPRESSION_COLUMN);
 		return validator.preProcess(cell);
 	}
 
 	private CaptureAppender getAppender() {
-		String loggerName = cells.at(LOGGER_COLUMN).text();
+		String loggerName = cells.get(LOGGER_COLUMN).getFitValue();
 		AppenderAttachable logger = getLogger(loggerName);
 
 		if (logger == null) {
-			error(cells.at(LOGGER_COLUMN), "Invalid logger");
+			cells.get(LOGGER_COLUMN).exception("Invalid logger");
 			return null;
 		}
 
-		String appenderName = cells.at(APPENDER_COLUMN).text();
+		String appenderName = cells.get(APPENDER_COLUMN).getFitValue();
 		String captureAppenderName = CaptureAppender.getAppenderNameFor(appenderName);
 
 		final Appender appender = logger.getAppender(captureAppenderName);
 		if (appender == null) {
-			error(cells.at(APPENDER_COLUMN), "Invalid appender or appender not captured");
+			cells.get(APPENDER_COLUMN).exception("Invalid appender or appender not captured");
 			return null;
 		}
 		return (CaptureAppender) appender;
@@ -164,9 +165,9 @@ public class LogFixture extends Fixture {
 	}
 
 	private void dispatchCommand(String command, Map<String, String> parameters) {
-
-		LogEventAnalyzer analyzer = logEventAnalyzerFactory.getLogEventAnalyzerFor(
-				counts(), validator, cells.at(CHECK_EXPRESSION_COLUMN), appender.getAllEvents());
+        FitCell cell = cells.get(CHECK_EXPRESSION_COLUMN);
+        LogEventAnalyzer analyzer = logEventAnalyzerFactory.getLogEventAnalyzerFor(
+                validator, cell, appender.getAllEvents());
 
 		if ("contains".equalsIgnoreCase(command)) {
 			analyzer.processContains(parameters);
@@ -177,7 +178,7 @@ public class LogFixture extends Fixture {
 		} else if ("notContainsException".equalsIgnoreCase(command)) {
 			analyzer.processNotContainsException(parameters);
 		} else {
-			error(cells.at(COMMAND_COLUMN), "unknown command");
+			cells.get(COMMAND_COLUMN).exception("unknown command");
 		}
 	}
 }

@@ -25,50 +25,45 @@ import java.sql.*;
 
 import static org.mockito.Mockito.*;
 
-public final class ResultSetMockGenerator {
-	private final Connection connection;
-	private final Statement statement;
+public class ResultSetMockGenerator {
+	private Connection connection;
+	private Statement statement;
 
-	private String sqlClause;
+    private String sqlClause;
 
 	public ResultSetMockGenerator(
-			final String table,
-			final String[] cols,
-			final Object[][] obj) {
+			String table,
+			String[] cols,
+			Object[][] obj) throws SQLException {
 		this(table, null, cols, obj);
 	}
 
 	public ResultSetMockGenerator(
-			final String table,
-			final String where,
-			final String[] cols,
-			final Object[][] obj) {
+			String table,
+			String where,
+			String[] cols,
+			Object[][] obj) throws SQLException {
 
-		try {
-			connection = mock(Connection.class);
-			statement = mock(Statement.class);
-			final ResultSet resultSet;
-			resultSet = mkResultSet(cols, obj);
+        connection = mock(Connection.class);
+        statement = mock(Statement.class);
+        ResultSet resultSet = mkResultSet(cols, obj);
 
-			final String sqlWhere;
-			if (where != null && !where.equals("")) {
-				sqlWhere = " WHERE " + where;
-			} else {
-				sqlWhere = "";
-			}
-			sqlClause = "SELECT * FROM " + table + sqlWhere;
+        String sqlWhere;
+        if (where != null && !where.equals("")) {
+            sqlWhere = " WHERE " + where;
+        } else {
+            sqlWhere = "";
+        }
+        sqlClause = "SELECT * FROM " + table + sqlWhere;
 
-			when(connection.createStatement()).thenReturn(statement);
-			when(statement.executeQuery(sqlClause)).thenReturn(resultSet);
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(sqlClause)).thenReturn(resultSet);
 	}
 
 
-	private ResultSet mkResultSet(final String[] cols, final Object[][] obj) throws SQLException {
-		final ResultSet resultSet = mock(ResultSet.class);
-		final ResultSetMetaData meta = mock(ResultSetMetaData.class);
+	private ResultSet mkResultSet(String[] cols, Object[][] obj) throws SQLException {
+		ResultSet resultSet = mock(ResultSet.class);
+		ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
 		when(resultSet.getMetaData()).thenReturn(meta);
 

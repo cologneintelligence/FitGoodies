@@ -20,53 +20,55 @@
 
 package de.cologneintelligence.fitgoodies;
 
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+
 public class PrimitiveFixture extends Fixture {
 
 	// format converters ////////////////////////
 
-	public static long parseLong(Parse cell) {
-		return Long.parseLong(cell.text());
+	public static long parseLong(FitCell cell) {
+		return Long.parseLong(cell.getFitValue());
 	}
 
-	public static double parseDouble(Parse cell) {
-		return Double.parseDouble(cell.text());
+	public static double parseDouble(FitCell cell) {
+		return Double.parseDouble(cell.getFitValue());
 	}
 
-	public static boolean parseBoolean(Parse cell) {
-		return Boolean.valueOf(cell.text());
+	public static boolean parseBoolean(FitCell cell) {
+		return Boolean.valueOf(cell.getFitValue());
 	}
 
 	// answer comparisons ///////////////////////
 
-	public void check(Parse cell, String value) {
-		if (cell.text().equals(value)) {
-			right(cell);
+	public void check(FitCell cell, String value) {
+		if (cell.getFitValue().equals(value)) {
+			cell.right();
 		} else {
-			wrong(cell, value);
+			cell.wrong(value);
 		}
 	}
 
-	public void check(Parse cell, long value) {
+	public void check(FitCell cell, long value) {
 		if (parseLong(cell) == value) {
-			right(cell);
+			cell.right();
 		} else {
-			wrong(cell, Long.toString(value));
+			cell.wrong(Long.toString(value));
 		}
 	}
 
-	public void check(Parse cell, double value) {
+	public void check(FitCell cell, double value) {
 		if (parseDouble(cell) == value) {
-			right(cell);
+			cell.right();
 		} else {
-			wrong(cell, Double.toString(value));
+			cell.wrong(Double.toString(value));
 		}
 	}
 
-	public void check(Parse cell, boolean value) {
+	public void check(FitCell cell, boolean value) {
 		if (parseBoolean(cell) == value) {
-			right(cell);
+			cell.right();
 		} else {
-			wrong(cell, Boolean.toString(value));
+			cell.wrong(Boolean.toString(value));
 		}
 	}
 

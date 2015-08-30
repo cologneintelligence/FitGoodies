@@ -21,7 +21,7 @@
 package de.cologneintelligence.fitgoodies.mail;
 
 import de.cologneintelligence.fitgoodies.Fixture;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.mail.providers.JavaMailMessageProvider;
 import de.cologneintelligence.fitgoodies.mail.providers.MessageProvider;
 import de.cologneintelligence.fitgoodies.types.TestableString;
@@ -30,6 +30,7 @@ import de.cologneintelligence.fitgoodies.util.FitUtils;
 import de.cologneintelligence.fitgoodies.valuereceivers.ConstantReceiver;
 
 import javax.mail.MessagingException;
+import java.util.List;
 
 /**
  * Fixture which checks the content of a mail. Before calling, a connection must
@@ -107,11 +108,11 @@ public class MailFixture extends Fixture {
 	}
 
 	@Override
-	protected void doRow(final Parse row) {
-		String object = row.at(0, 0).text().toLowerCase();
-		String command = row.at(0, 1).text();
-		Parse content = row.at(0, 2);
-		String originalContent = content.body;
+	protected void doCells(List<FitCell> cells) {
+		String object = cells.get(0).getFitValue().toLowerCase();
+		String command = cells.get(1).getFitValue();
+        FitCell content = cells.get(2);
+		String originalContent = content.getFitValue();
 
 		String[] objects;
 		objects = getMailContent(object);
@@ -119,15 +120,15 @@ public class MailFixture extends Fixture {
 		if (objects != null) {
 			TestableString string = new TestableString(objects);
 			ConstantReceiver receiver = new ConstantReceiver(string, TestableString.class);
-			validator.process(content, counts(), receiver, command, typeHandlerFactory);
+			validator.process(content, receiver, command, typeHandlerFactory);
 		}
 
-		content.body = originalContent;
+		content.setDisplayValue(originalContent);
 		patchCellResult(content, objects);
 	}
 
-	private void patchCellResult(final Parse cell, final String[] objects) {
-		cell.addToBody(FitUtils.label("expected") + "<hr />");
+	private void patchCellResult(final FitCell cell, final String[] objects) {
+		cell.addDisplayValue(FitUtils.label("expected") + "<hr />");
 
 		if (objects == null) {
 			makeMoreString(cell, "(unset)", 0);
@@ -144,13 +145,13 @@ public class MailFixture extends Fixture {
 				makeMoreString(cell, "(unset)", objects.length);
 			}
 		}
-		cell.addToBody(FitUtils.label("actual"));
+		cell.addDisplayValue(FitUtils.label("actual"));
 	}
 
-	private void makeMoreString(final Parse cell, final String message, final int count) {
-		cell.addToBody(preview(message));
+	private void makeMoreString(final FitCell cell, final String message, final int count) {
+		cell.addDisplayValue(preview(message));
 		if (count > 1) {
-			info(cell, " (+ " + (count - 1) + " more)");
+			cell.info(" (+ " + (count - 1) + " more)");
 		}
 	}
 

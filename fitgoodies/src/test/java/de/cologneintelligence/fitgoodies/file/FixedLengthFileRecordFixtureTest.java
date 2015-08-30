@@ -20,7 +20,6 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import org.junit.Test;
 
@@ -37,15 +36,18 @@ public class FixedLengthFileRecordFixtureTest extends FitGoodiesFixtureTestCase<
 
 	@Test
 	public void testExtractWidth1() {
-		Parse row = parseTr("1", "7", "4");
+		useTable(tr("1", "7", "4"));
 
-		preparePreprocess("1", "1");
-		preparePreprocess("7", "7");
-		preparePreprocess("4", "4");
+		preparePreprocessWithConversion(Integer.class, "1", 1);
+		preparePreprocessWithConversion(Integer.class, "7", 7);
+		preparePreprocessWithConversion(Integer.class, "4", 4);
 
-		int[] actual = fixture.extractWidth(row);
+		int[] actual = fixture.extractWidth(lastFitTable.rows().get(0));
 
-		assertThat(actual.length, is(equalTo((Object) 3)));
+        lastFitTable.finishExecution();
+        System.out.println(lastFitTable.pretty());
+
+        assertThat(actual.length, is(equalTo((Object) 3)));
 		assertThat(actual[0], is(equalTo((Object) 1)));
 		assertThat(actual[1], is(equalTo((Object) 7)));
 		assertThat(actual[2], is(equalTo((Object) 4)));
@@ -53,33 +55,38 @@ public class FixedLengthFileRecordFixtureTest extends FitGoodiesFixtureTestCase<
 
 	@Test
 	public void testExtractWidth2() {
-		Parse row = parseTr("3", "1", "9", "0");
+		useTable(tr("3", "1", "9", "0"));
 
-		preparePreprocess("3", "4");
-		preparePreprocess("1", "2");
-		preparePreprocess("9", "10");
-		preparePreprocess("0", "0");
+		preparePreprocessWithConversion(Integer.class, "3", 4);
+		preparePreprocessWithConversion(Integer.class, "1", 2);
+		preparePreprocessWithConversion(Integer.class, "9", 10);
+		preparePreprocessWithConversion(Integer.class, "0", 0);
 
-		int[] actual = fixture.extractWidth(row);
+		int[] actual = fixture.extractWidth(lastFitTable.rows().get(0));
 
 		assertThat(actual.length, is(equalTo((Object) 4)));
-		assertThat(actual[0], is(equalTo((Object) 3)));
-		assertThat(actual[1], is(equalTo((Object) 1)));
-		assertThat(actual[2], is(equalTo((Object) 9)));
+		assertThat(actual[0], is(equalTo((Object) 4)));
+		assertThat(actual[1], is(equalTo((Object) 2)));
+		assertThat(actual[2], is(equalTo((Object) 10)));
 		assertThat(actual[3], is(equalTo((Object) 0)));
 
 	}
 
 	@Test
 	public void testErrors() {
-		Parse table = parseTable(tr("1", "error", "4"));
+		useTable(tr("1", "error", "4"));
 
-		int[] actual = fixture.extractWidth(table.at(0, 1));
+        preparePreprocessWithConversion(Integer.class, "1", 1);
+        preparePreprocessWithConversionError(Integer.class, "error");
+        preparePreprocessWithConversion(Integer.class, "4", 4);
+
+        int[] actual = fixture.extractWidth(lastFitTable.rows().get(0));
+        lastFitTable.finishExecution();
 
 		assertThat(actual, is(nullValue()));
 
-		assertCounts(fixture.counts(), table, 0, 0, 0, 1);
-		assertThat(table.at(0, 1, 1).text(), containsString("NumberFormatException"));
+		assertCounts(0, 0, 0, 1);
+        assertThat(htmlAt(0, 1), containsString("class=\"fit-expected\""));
 	}
 
 }

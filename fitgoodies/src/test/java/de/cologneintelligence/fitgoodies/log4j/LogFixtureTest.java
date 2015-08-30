@@ -20,8 +20,7 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
@@ -33,9 +32,8 @@ import org.mockito.Mock;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 
@@ -87,9 +85,8 @@ public final class LogFixtureTest extends FitGoodiesFixtureTestCase<LogFixture> 
 		when(logger.getAppender(CaptureAppender.getAppenderNameFor("stdout"))).thenReturn(appender);
 
 		when(logEventAnalyzerFactory.getLogEventAnalyzerFor(
-				any(Counts.class),
-				argThatSame(validator),
-				any(Parse.class),
+            argThatSame(validator),
+				any(FitCell.class),
 				any(LoggingEvent[].class)))
 				.thenReturn(logEventAnalyzer);
 	}
@@ -105,13 +102,15 @@ public final class LogFixtureTest extends FitGoodiesFixtureTestCase<LogFixture> 
 				.getAppender(CaptureAppender.getAppenderNameFor("R"));
 
 		verify(logEventAnalyzerFactory, times(numberOfCallsToRootLogger + numberOfCallsToClassLogger))
-				.getLogEventAnalyzerFor(any(Counts.class), argThatSame(validator),
-						any(Parse.class), any(LoggingEvent[].class));
+				.getLogEventAnalyzerFor(argThatSame(validator),
+						any(FitCell.class), any(LoggingEvent[].class));
+
+        verifyNoMoreInteractions(logs, logger, rootLogger, logEventAnalyzer);
 	}
 
 	@Test
 	public void testParseContains() {
-		Parse table = parseTable(
+		useTable(
 				tr("com.myproject.class1", "stdout", "contains", "a message"),
 				tr("com.myproject.class1", "stdout", "notContains", "a message"),
 				tr("rootLogger", "R", "containsException", "rOOt"),
@@ -122,7 +121,7 @@ public final class LogFixtureTest extends FitGoodiesFixtureTestCase<LogFixture> 
 		final int NO_OF_ROOT_CALLS = 3;
 		prepareFactories();
 
-		fixture.doTable(table);
+		run();
 
 		InOrder order = inOrder(logEventAnalyzer);
 		order.verify(logEventAnalyzer).processContains(parameterMap);
@@ -136,15 +135,15 @@ public final class LogFixtureTest extends FitGoodiesFixtureTestCase<LogFixture> 
 
 	@Test
 	public void testIllegalCommand() {
-		Parse table = parseTable(tr("rootLogger", "R", "what is this?", "rOOt"));
+		useTable(tr("rootLogger", "R", "what is this?", "rOOt"));
 
 		final int NO_OF_CLASS_CALLS = 0;
 		final int NO_OF_ROOT_CALLS = 1;
 		prepareFactories();
 
-		fixture.doTable(table);
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 1)));
-		assertThat(table.parts.more.parts.more.more.text(), containsString("unknown command"));
+		run();
+        assertCounts(0, 0, 0, 1);
+		assertThat(htmlAt(0, 2), containsString("unknown command"));
 
 		verifyFactories(NO_OF_ROOT_CALLS, NO_OF_CLASS_CALLS);
 	}
@@ -152,16 +151,16 @@ public final class LogFixtureTest extends FitGoodiesFixtureTestCase<LogFixture> 
 
 	@Test
 	public void testIllegalLogger() {
-		Parse table = parseTable(
+		useTable(
 				tr("nonsense", "stdout", "contains", "error"),
 				tr("rootLogger", "nonsense", "contains", "error"));
 
 		when(logs.getRootLogger()).thenReturn(rootLogger);
 
-		fixture.doTable(table);
+		run();
 
-		assertThat(fixture.counts().exceptions, is(equalTo((Object) 2)));
-		assertThat(table.parts.more.parts.text(), containsString("Invalid logger"));
-		assertThat(table.parts.more.more.parts.more.text(), containsString("Invalid appender"));
+        assertCounts(0, 0, 0, 2);
+		assertThat(htmlAt(0, 0), containsString("Invalid logger"));
+		assertThat(htmlAt(1, 1), containsString("Invalid appender"));
 	}
 }

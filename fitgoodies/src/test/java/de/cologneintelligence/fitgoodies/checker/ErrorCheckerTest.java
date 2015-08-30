@@ -20,8 +20,6 @@
 
 package de.cologneintelligence.fitgoodies.checker;
 
-import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
@@ -46,23 +44,23 @@ public class ErrorCheckerTest extends FitGoodiesTestCase {
 
 		when(valueReceiver.get()).thenThrow(new RuntimeException(message));
 
-		Parse table = parseTable(tr("ok"));
-		Counts counts = new Counts();
-		new ErrorChecker().check(table.at(0, 1, 0), counts, null, valueReceiver, typeHandler);
+		useTable(tr("ok"));
+		new ErrorChecker().check(cellAt(0, 0), null, valueReceiver, typeHandler);
+        lastFitTable.finishExecution();
 
-		assertCounts(counts, table, 1, 0, 0, 0);
-		assertThat(table.at(0, 1, 0).body, containsString(message));
+		assertCounts(1, 0, 0, 0);
+		assertThat(htmlAt(0, 0), containsString(message));
 	}
 
 	@Test
 	public void expectedErrorsAreRightNoMessage() throws Exception {
 		when(valueReceiver.get()).thenThrow(new RuntimeException((String) null));
 
-		Parse table = parseTable(tr("ok"));
-		Counts counts = new Counts();
-		new ErrorChecker().check(table.at(0, 1, 0), counts, null, valueReceiver, typeHandler);
+		useTable(tr("ok"));
+        new ErrorChecker().check(cellAt(0, 0), null, valueReceiver, typeHandler);
+        lastFitTable.finishExecution();
 
-		assertCounts(counts, table, 1, 0, 0, 0);
+		assertCounts(1, 0, 0, 0);
 	}
 
 	@Test
@@ -71,11 +69,11 @@ public class ErrorCheckerTest extends FitGoodiesTestCase {
 		when(valueReceiver.getType()).thenReturn(String.class);
 		when(typeHandler.toString("text")).thenReturn("result!");
 
-		Parse table = parseTable(tr("ok"));
-		Counts counts = new Counts();
-		new ErrorChecker().check(table.at(0, 1, 0), counts, null, valueReceiver, typeHandler);
+		useTable(tr("ok"));
+        new ErrorChecker().check(cellAt(0, 0), null, valueReceiver, typeHandler);
+        lastFitTable.finishExecution();
 
-		assertCounts(counts, table, 0, 1, 0, 0);
-		assertThat(table.at(0, 1, 0).body, containsString("result!"));
+		assertCounts(0, 1, 0, 0);
+		assertThat(htmlAt(0, 0), containsString("result!"));
 	}
 }

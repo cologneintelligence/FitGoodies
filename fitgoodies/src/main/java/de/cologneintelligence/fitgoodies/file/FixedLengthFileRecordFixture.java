@@ -21,11 +21,13 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.file.readers.FixedLengthRecordReader;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
 import de.cologneintelligence.fitgoodies.typehandler.BooleanTypeHandler;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 
-import java.io.IOException;
+import java.util.List;
 
 /**
  * {@link AbstractFileRecordReaderFixture} implementation which processes
@@ -56,22 +58,18 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 	}
 
 	@Override
-	protected void doRows(Parse rows) {
-		int[] width = extractWidth(rows);
+	protected void doRows(List<FitRow> rows) throws Exception {
+		int[] width = extractWidth(rows.get(0));
 
 		if (width == null) {
 			return;
 		}
 
-		try {
-			setRecordReader(new FixedLengthRecordReader(
-					getFile().openBufferedReader(getEncoding()),
-					width, noEol));
-			super.doRows(rows.more);
-		} catch (final IOException e) {
-			exception(rows.more, e);
-		}
-	}
+        setRecordReader(new FixedLengthRecordReader(
+                getFile().openBufferedReader(getEncoding()),
+                width, noEol));
+        super.doRows(rows.subList(1, rows.size()));
+    }
 
 	/**
 	 * Parses the first table row and generates an {@code int} array
@@ -80,18 +78,19 @@ public class FixedLengthFileRecordFixture extends AbstractFileRecordReaderFixtur
 	 * @param row row to process
 	 * @return length of each field
 	 */
-	public final int[] extractWidth(Parse row) {
-		Parse cell = row.parts;
-		int[] width = new int[cell.size()];
+	public final int[] extractWidth(FitRow row) {
+		int[] width = new int[row.size()];
 
-		for (int i = 0; i < width.length; ++i) {
+        int i = 0;
+        for (FitCell cell : row.cells()) {
 			try {
-				width[i] = Integer.parseInt(cell.text());
-			} catch (final Exception e) {
-				exception(cell, e);
+                String value = validator.preProcess(cell.getFitValue());
+                TypeHandler handler = typeHandlerFactory.getHandler(Integer.class, null);
+                width[i++] = (Integer) handler.parse(value);
+			} catch (Exception e) {
+				cell.exception(e);
 				return null;
 			}
-			cell = cell.more;
 		}
 		return width;
 	}

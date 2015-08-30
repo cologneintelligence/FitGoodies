@@ -20,8 +20,6 @@
 
 package de.cologneintelligence.fitgoodies.checker;
 
-import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
@@ -42,28 +40,28 @@ public class DiagnosticCheckerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void valueIsPersisted() throws Exception {
+		useTable(tr("cellValue"));
 		when(valueReceiver.get()).thenReturn(12L);
 		when(valueReceiver.getType()).thenReturn(Long.class);
 		when(typeHandler.toString(12L)).thenReturn("expected");
 
-		Parse table = parseTable(tr("cellValue"));
-		Counts counts = new Counts();
-		new DiagnosticChecker().check(table.at(0, 1, 0), counts, null, valueReceiver, typeHandler);
+        new DiagnosticChecker().check(cellAt(0, 0), null, valueReceiver, typeHandler);
 
-		assertCounts(counts, table, 0, 0, 0, 0);
-		assertThat(table.at(0, 1, 0).body, containsString("expected"));
+        lastFitTable.finishExecution();
+        assertCounts(0, 0, 0, 0);
+		assertThat(htmlAt(0, 0), containsString("expected"));
 	}
 
 	@Test
 	public void testException() throws Exception {
+		useTable(tr("ok"));
 		when(valueReceiver.get()).thenThrow(new RuntimeException("test"));
 
-		Parse table = parseTable(tr("ok"));
-		Counts counts = new Counts();
-		new DiagnosticChecker().check(table.at(0, 1, 0), counts, null, valueReceiver, typeHandler);
+        new DiagnosticChecker().check(cellAt(0, 0), null, valueReceiver, typeHandler);
 
-		assertCounts(counts, table, 0, 0, 0, 1);
-		assertThat(table.at(0, 1, 0).body, containsString("test"));
+        lastFitTable.finishExecution();
+		assertCounts(0, 0, 0, 1);
+		assertThat(htmlAt(0, 0), containsString("test"));
 	}
 
 }

@@ -20,9 +20,8 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.Validator;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.util.FitUtils;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
@@ -33,21 +32,18 @@ import java.util.Map;
  * Analyzes log events using an {@link AbstractLoggingEventMatcher}.
  */
 public class LogEventAnalyzer {
-	private final Counts counts;
 	private final Validator validator;
-	private final Parse cell;
+	private final FitCell cell;
 	private final LoggingEvent[] events;
 
 	/**
 	 * Creates a new analyzer.
 	 *
-	 * @param counts        counts
 	 * @param validator     validator for cell
 	 * @param conditionCell cell which contains the reference value
 	 * @param events        log events to process
 	 */
-	public LogEventAnalyzer(Counts counts, Validator validator, Parse conditionCell, LoggingEvent[] events) {
-		this.counts = counts;
+	public LogEventAnalyzer(Validator validator, FitCell conditionCell, LoggingEvent[] events) {
 		this.validator = validator;
 		this.cell = conditionCell;
 		this.events = events;
@@ -63,11 +59,9 @@ public class LogEventAnalyzer {
 		LoggingEvent match = getMessageWithException(parameters);
 
 		if (match == null) {
-			FitUtils.right(cell);
-			counts.right++;
+			cell.right();
 		} else {
-			FitUtils.wrong(cell, match.getThrowableInformation().getThrowableStrRep()[0]);
-			counts.wrong++;
+			cell.wrong(match.getThrowableInformation().getThrowableStrRep()[0]);
 		}
 	}
 
@@ -81,18 +75,16 @@ public class LogEventAnalyzer {
 		LoggingEvent match = getMessageWithException(parameters);
 
 		if (match == null) {
-			FitUtils.wrong(cell);
-			counts.wrong++;
+			cell.wrong();
 		} else {
-			FitUtils.right(cell);
-			counts.right++;
+			cell.right();
 			appendActualAndExpected(match.getThrowableInformation().getThrowableStrRep()[0]);
 		}
 	}
 
 	private String getLowerCaseCheckExpression() {
 		String resolvedContent = validator.preProcess(cell);
-		cell.body = FitUtils.escape(resolvedContent);
+		cell.setDisplayValue(FitUtils.escape(resolvedContent));
 		return resolvedContent.toLowerCase();
 	}
 
@@ -123,12 +115,10 @@ public class LogEventAnalyzer {
 		LoggingEvent match = getMessageWithString(parameters);
 
 		if (match == null) {
-			FitUtils.wrong(cell);
-			counts.wrong++;
+			cell.wrong();
 		} else {
-			FitUtils.right(cell);
+			cell.right();
 			appendActualAndExpected(match.getMessage().toString());
-			counts.right++;
 		}
 	}
 
@@ -142,11 +132,9 @@ public class LogEventAnalyzer {
 		LoggingEvent match = getMessageWithString(parameters);
 
 		if (match == null) {
-			FitUtils.right(cell);
-			counts.right++;
+            cell.right();
 		} else {
-			FitUtils.wrong(cell, match.getMessage().toString());
-			counts.wrong++;
+			cell.wrong(match.getMessage().toString());
 
 		}
 	}
@@ -167,9 +155,9 @@ public class LogEventAnalyzer {
 	}
 
 	private void appendActualAndExpected(String actual) {
-		FitUtils.info(cell, "(expected)");
-		cell.addToBody("<hr/>");
-		cell.addToBody(actual);
-		FitUtils.info(cell, "(actual)");
+		cell.info("(expected)");
+		cell.rawInfo("<hr/>");
+		cell.info(actual);
+		cell.info("(actual)");
 	}
 }

@@ -30,7 +30,7 @@ import java.util.Enumeration;
  * Helper class to manage database connection information.
  * To set the values with HTML, you can use a {@link SetupFixture}.
  */
-public final class SetupHelper {
+public class SetupHelper {
 	private String user;
 	private String password;
 	private String connectionString;

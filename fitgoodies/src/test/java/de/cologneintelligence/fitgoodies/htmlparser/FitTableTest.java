@@ -105,8 +105,8 @@ public class FitTableTest {
 		exception2.fillInStackTrace();
 
 		FitTable table = aTable(EMPTY_HTML_TABLE);
-		table.exceptionTable(exception1);
-		table.exceptionTable(exception2);
+		table.exception(exception1);
+		table.exception(exception2);
 
 		Elements tds = table.getTable().select("tr").first().select("td");
 		assertThat(tds.size(), is(2));
@@ -122,7 +122,7 @@ public class FitTableTest {
 		exception1.fillInStackTrace();
 
 		FitTable table = aTable("<table class=\"oldclass\" data-fit-fixture=\"test\"><tr><td>content</td></tr></table>");
-		table.exceptionTable(exception1);
+		table.exception(exception1);
 
 		Elements trs = table.getTable().select("tr");
 		assertThat(trs.size(), is(2));

@@ -126,24 +126,25 @@ public class ActionFixtureTest extends FitGoodiesFixtureTestCase<ActionFixtureTe
 
 	@Test
 	public void testStart() throws Exception {
-		Parse parse = parseTable(start());
+		useTable(start());
 
 		assertThat(fixture.actor, (Matcher) is(sameInstance(fixture)));
-		fixture.doTable(parse);
-		assertCounts(fixture.counts(), parse, 0, 0, 0, 0);
+		run();
+
+		assertCounts(0, 0, 0, 0);
 		assertThat(fixture.actor, instanceOf(TargetObject.class));
 	}
 
 	@Test
 	public void testEnter() throws Exception {
-		Parse parse = parseTable(start(), enter("s1", "hello"), tr("enter[" + "arg" + "]", "s2", "42"));
+		useTable(start(), enter("s1", "hello"), tr("enter[" + "arg" + "]", "s2", "42"));
 
 		prepareTransformation("hello", "parsed value", null);
 		prepareTransformation("42", 23, "arg");
 
-		fixture.doTable(parse);
+		run();
 
-		assertCounts(fixture.counts(), parse, 0, 0, 0, 0);
+		assertCounts(0, 0, 0, 0);
 
 		TargetObject actor = (TargetObject) fixture.actor;
 		assertThat(actor.int1, is(23));
@@ -152,57 +153,57 @@ public class ActionFixtureTest extends FitGoodiesFixtureTestCase<ActionFixtureTe
 
 	@Test
 	public void testEnterRequiresSingleMethod() throws Exception {
-		Parse parse = parseTable(start(), enter("method", "hello"));
+		useTable(start(), enter("method", "hello"));
 
-		fixture.doTable(parse);
-		assertCounts(fixture.counts(), parse, 0, 0, 0, 1);
+		run();
+		assertCounts(0, 0, 0, 1);
 	}
 
 	@Test
 	public void testPress() throws Exception {
-		Parse parse = parseTable(start(), press("pressMethod"));
+		useTable(start(), press("pressMethod"));
 
-		fixture.doTable(parse);
+		run();
 
 		TargetObject actor = (TargetObject) fixture.actor;
-		assertCounts(fixture.counts(), parse, 0, 0, 0, 0);
+		assertCounts(0, 0, 0, 0);
 		assertThat(actor.pressed, is(true));
 	}
 
 	@Test
 	public void testPressWrongMethod() throws Exception {
-		Parse parse = parseTable(start(), press("error"));
+		useTable(start(), press("error"));
 
-		fixture.doTable(parse);
+		run();
 		final TargetObject actor = (TargetObject) fixture.actor;
 
-		assertCounts(fixture.counts(), parse, 0, 0, 0, 1);
+		assertCounts(0, 0, 0, 1);
 		assertThat(actor.pressed, is(false));
 	}
 
 	@Test
 	public void testCheck() throws Exception {
-		Parse parse = parseTable(start(), tr("check", "check1", "true"),
+		useTable(start(), tr("check", "check1", "true"),
 				tr("check", "check2", "23"));
 
-		expectMethodValidation(parse, 2, 2, fixture, "check1");
-		expectMethodValidation(parse, 3, 2, fixture, "check2");
+		expectMethodValidation(1, 2, "check1");
+		expectMethodValidation(2, 2, "check2");
 
-		fixture.doTable(parse);
+		run();
 	}
 
 	@Test
 	public void transformAndEnterIsShortCut() throws Exception {
-		Parse parse = parseTable(start(),
+		useTable(start(),
 				tr("func1", "true"),
 				tr("func2", "23"));
 
 		prepareTransformation("true", true, null);
 		prepareTransformation("23", 42, null);
 
-		fixture.doTable(parse);
+		run();
 
-		assertCounts(fixture.counts(), parse, 0, 0, 0, 0);
+		assertCounts(0, 0, 0, 0);
 
 		assertThat(fixture.arg1, is(true));
 		assertThat(fixture.arg2, is(42));
@@ -216,7 +217,7 @@ public class ActionFixtureTest extends FitGoodiesFixtureTestCase<ActionFixtureTe
 		long parsedMaxTime = 200L;
 		long parsedSleepTime = 20L;
 
-		Parse table = parseTable(start(), wait(methodName, maxTime, sleepTime));
+		useTable(start(), wait(methodName, maxTime, sleepTime));
 
 		when(fixture.waitForResult.lastCallWasSuccessful()).thenReturn(true);
 		when(fixture.waitForResult.getLastElapsedTime()).thenReturn(50L);
@@ -224,10 +225,10 @@ public class ActionFixtureTest extends FitGoodiesFixtureTestCase<ActionFixtureTe
 		prepareTransformation(maxTime, parsedMaxTime, null);
 		prepareTransformation(sleepTime, parsedSleepTime, null);
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 1, 0, 0, 0);
-		assertThat(table.at(0, 2, 2).body, containsString("50"));
+		assertCounts(1, 0, 0, 0);
+		assertThat(htmlAt(1, 2), containsString("50"));
 
 		verify(fixture.waitForResult).wait(
 				argThatSame(fixture.actor),
@@ -243,17 +244,17 @@ public class ActionFixtureTest extends FitGoodiesFixtureTestCase<ActionFixtureTe
 		String maxTime = "1000";
 		long parsedMaxTime = 500L;
 
-		Parse table = parseTable(start(), tr("waitFor", methodName, maxTime));
+		useTable(start(), tr("waitFor", methodName, maxTime));
 
 		when(fixture.waitForResult.lastCallWasSuccessful()).thenReturn(true);
 		when(fixture.waitForResult.getLastElapsedTime()).thenReturn(10L);
 
 		prepareTransformation(maxTime, parsedMaxTime, null);
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 1, 0, 0, 0);
-		assertThat(table.at(0, 2, 2).body, containsString("10"));
+		assertCounts(1, 0, 0, 0);
+		assertThat(htmlAt(1, 2), containsString("10"));
 
 		verify(fixture.waitForResult).wait(
 				argThatSame(fixture.actor),
@@ -269,16 +270,16 @@ public class ActionFixtureTest extends FitGoodiesFixtureTestCase<ActionFixtureTe
 		String maxTime = "1000";
 		long parsedMaxTime = 500L;
 
-		Parse table = parseTable(start(), tr("waitFor", methodName, maxTime));
+		useTable(start(), tr("waitFor", methodName, maxTime));
 
 		when(fixture.waitForResult.lastCallWasSuccessful()).thenReturn(false);
 
 		prepareTransformation(maxTime, parsedMaxTime, null);
 
-		fixture.doTable(table);
+		run();
 
-		assertCounts(fixture.counts(), table, 0, 1, 0, 0);
-		assertThat(table.at(0, 2, 2).body, containsString("Timeout"));
+		assertCounts(0, 1, 0, 0);
+		assertThat(htmlAt(1, 2), containsString("Timeout"));
 
 		verify(fixture.waitForResult).wait(
 				argThatSame(fixture.actor),

@@ -21,7 +21,7 @@
 package de.cologneintelligence.fitgoodies.runners;
 
 import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,14 +65,14 @@ public final class FitParseResultTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testEmptyResult() {
-		Parse table = parseTableWithoutAnnotation(tr("x"), tr("y"), tr("z"));
+        useTable(tr("x"), tr("y"), tr("z"));
 
-		Parse line = table.parts.more;
-		new FitParseResult().replaceLastIn(line);
+        FitRow line = lastFitTable.rows().get(2);
+		new FitParseResult().insertAndReplace(line);
 
-		assertThat(table.parts.parts.body, is(equalTo("x")));
-		assertThat(table.parts.more.parts.body, is(equalTo("y")));
-		assertThat(table.parts.more.more.parts.body, is(equalTo("z")));
+		assertThat(htmlAt(0, 0), is(equalTo("x")));
+		assertThat(htmlAt(1, 0), is(equalTo("y")));
+		assertThat(htmlAt(2, 0), is(equalTo("z")));
 	}
 
 	@Test
@@ -91,32 +91,29 @@ public final class FitParseResultTest extends FitGoodiesTestCase {
 	}
 
 	@Test
-	public void testReplaceLine() {
-		Parse table = parseTableWithoutAnnotation(tr("x"), tr("y"), tr("z"));
+	public void testReplaceLine1() {
+        useTable(tr("x"), tr("y"), tr("z"));
 
-		Parse line = table.parts.more;
-		result1.replaceLastIn(line);
+        result1.insertAndReplace(lastFitTable.rows().get(2));
 
-		assertThat(table.parts.parts.text(), is(equalTo("x")));
-		assertThat(table.parts.more.parts.body, is(equalTo("y")));
-		assertThat(table.parts.more.parts.more.body, is(equalTo("<a href=\"file1.html\">file1.html</a>")));
-		assertThat(table.parts.more.more.parts.body, is(equalTo("<a href=\"file2.html\">file2.html</a>")));
-		assertThat(table.parts.more.parts.more.more.body, is(equalTo("2 right, 0 wrong, 2 ignored, 0 exceptions")));
-		assertThat(table.parts.more.more.more.more.more.parts.text(), is(equalTo("z")));
+        assertThat(htmlAt(0, 0), is(equalTo("x")));
+        assertThat(htmlAt(1, 0), is(equalTo("y")));
+        assertThat(htmlAt(2, 0), is(equalTo("<a href=\"file1.html\">file1.html</a>")));
+        assertThat(htmlAt(2, 1), is(equalTo("2 right, 0 wrong, 2 ignored, 0 exceptions")));
+        assertThat(htmlAt(3, 0), is(equalTo("<a href=\"file2.html\">file2.html</a>")));
+        assertThat(htmlAt(3, 1), is(equalTo("1 right, 1 wrong, 0 ignored, 1 exceptions")));
+    }
 
+    @Test
+    public void testReplaceLine2() {
+		useTable(tr("a"), tr("ignore me, replace me, forget me"), tr("c"));
 
-		line = table.parts.more;
-		result2.replaceLastIn(line);
+		result2.insertAndReplace(lastFitTable.rows().get(1));
 
-		table = parseTableWithoutAnnotation(tr("a"), tr("ignore me, replace me, forget me"), tr("c"));
-
-		line = table.parts.more;
-		result2.replaceLastIn(line);
-
-		assertThat(table.parts.parts.text(), is(equalTo("a")));
-		assertThat(table.parts.more.more.more.parts.body, is(equalTo("<a href=\"/tests/suite1/tests2.html\">/tests/suite1/tests2.html</a>")));
-		assertThat(table.parts.more.more.more.parts.more.body, is(equalTo("7 right, 0 wrong, 2 ignored, 0 exceptions")));
-		assertThat(table.parts.more.more.more.more.more.parts.text(), is(equalTo("c")));
+		assertThat(htmlAt(0, 0), is(equalTo("a")));
+		assertThat(htmlAt(3, 0), is(equalTo("<a href=\"/tests/suite1/tests2.html\">/tests/suite1/tests2.html</a>")));
+		assertThat(htmlAt(3, 1), is(equalTo("7 right, 0 wrong, 2 ignored, 0 exceptions")));
+		assertThat(htmlAt(5, 0), is(equalTo("c")));
 	}
 
 	@Test

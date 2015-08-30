@@ -20,12 +20,11 @@
 
 package de.cologneintelligence.fitgoodies.checker;
 
-import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
 import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 
 public interface Checker {
 
-	Object check(Parse cell, Counts counts, String input, ValueReceiver valueReceiver, TypeHandler typeHandler);
+	Object check(FitCell cell, String input, ValueReceiver valueReceiver, TypeHandler typeHandler);
 }

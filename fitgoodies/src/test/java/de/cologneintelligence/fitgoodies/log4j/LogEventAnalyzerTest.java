@@ -20,9 +20,8 @@
 
 package de.cologneintelligence.fitgoodies.log4j;
 
-import de.cologneintelligence.fitgoodies.Counts;
-import de.cologneintelligence.fitgoodies.Parse;
 import de.cologneintelligence.fitgoodies.Validator;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
@@ -48,12 +47,9 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 	@Mock
 	private Validator validator;
 
-	private Counts counts;
-
 	@Before
 	public void setUp() throws Exception {
 		list = prepareCheckForGreenTest();
-		counts = new Counts();
 	}
 
 	private LoggingEvent[] prepareCheckForGreenTest() {
@@ -75,38 +71,45 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 
 	@Test
 	public void testParseContains() {
-		Parse cell1 = parseTd("a message");
-		Parse cell2 = parseTd("rOOt");
-		Parse cell3 = parseTd("non existing message");
+        useTable(tr("a message", "rOOt", "non existing message"));
+		FitCell cell1 = cell(0);
+		FitCell cell2 = cell(1);
+		FitCell cell3 = cell(2);
 
 		when(validator.preProcess(cell1)).thenReturn("a message");
 		when(validator.preProcess(cell2)).thenReturn("rOOt");
 		when(validator.preProcess(cell3)).thenReturn("non existing message");
 
 		LogEventAnalyzer analyzer = new LogEventAnalyzer(
-				counts, validator, cell1, list);
+            validator, cell1, list);
 		analyzer.processContains(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzer(counts, validator, cell2, list);
+		analyzer = new LogEventAnalyzer(validator, cell2, list);
 		analyzer.processContains(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzer(counts, validator, cell3, list);
+		analyzer = new LogEventAnalyzer(validator, cell3, list);
 		analyzer.processContains(new HashMap<String, String>());
 
-		assertThat(cell1.text(), is(equalTo("a message (expected)a message (actual)")));
-		assertThat(cell2.text(), is(equalTo("rOOt (expected)a root message (actual)")));
-		assertThat(cell3.text(), is(equalTo("non existing message")));
+        lastFitTable.finishExecution();
 
-		assertThat(counts.right, is(2));
-		assertThat(counts.wrong, is(1));
+		assertThat(cell1.getFitValue(), containsAll("a message", "expected",
+            "a message", "actual"));
+		assertThat(cell2.getFitValue(), containsAll("rOOt", "expected",
+            "a root message", "actual"));
+		assertThat(cell3.getFitValue(), is(equalTo("non existing message")));
+
+		assertThat(lastFitTable.getCounts().right, is(2));
+		assertThat(lastFitTable.getCounts().wrong, is(1));
 	}
 
 	@Test
 	public void testParseWithParameters() {
-		Parse cell1 = parseTd("no error");
-		Parse cell2 = parseTd("root");
-		Parse cell3 = parseTd("no error 23");
-		Parse cell4 = parseTd("42 no error");
+        useTable(tr("no error", "root", "no error 23", "42 no error"));
+
+        FitCell cell1 = cell(0);
+        FitCell cell2 = cell(1);
+        FitCell cell3 = cell(2);
+        FitCell cell4 = cell(3);
 
 		when(validator.preProcess(cell1)).thenReturn("no error");
 		when(validator.preProcess(cell2)).thenReturn("root");
@@ -116,113 +119,136 @@ public final class LogEventAnalyzerTest extends FitGoodiesTestCase {
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("minlevel", "Info");
 		parameters.put("thread", "thread2");
-		LogEventAnalyzer analyzer = new LogEventAnalyzer(counts, validator, cell1, list);
+		LogEventAnalyzer analyzer = new LogEventAnalyzer(validator, cell1, list);
 		analyzer.processContains(parameters);
 
 		parameters.clear();
 		parameters.put("minlevel", "error");
-		analyzer = new LogEventAnalyzer(counts, validator, cell2, list);
+		analyzer = new LogEventAnalyzer(validator, cell2, list);
 		analyzer.processNotContains(parameters);
 
 		parameters.clear();
 		parameters.put("thread", "main");
-		analyzer = new LogEventAnalyzer(counts, validator, cell3, list);
+		analyzer = new LogEventAnalyzer(validator, cell3, list);
 		analyzer.processNotContains(parameters);
 
 		parameters.clear();
 		parameters.put("thread", "thread5");
-		analyzer = new LogEventAnalyzer(counts, validator, cell4, list);
+		analyzer = new LogEventAnalyzer(validator, cell4, list);
 		analyzer.processContains(parameters);
 
-		assertThat(cell1.text(), is(equalTo("no error (expected)no error (actual)")));
-		assertThat(cell2.text(), is(equalTo("root")));
-		assertThat(cell3.text(), is(equalTo("no error")));
-		assertThat(cell4.text(), is(equalTo("no error")));
+        lastFitTable.finishExecution();
 
-		assertThat(counts.right, is(3));
-		assertThat(counts.wrong, is(1));
+		assertThat(cell1.getFitValue(), containsAll("no error", "expected",
+            "no error" ,"actual"));
+		assertThat(cell2.getFitValue(), is(equalTo("root")));
+		assertThat(cell3.getFitValue(), is(equalTo("no error")));
+		assertThat(cell4.getFitValue(), is(equalTo("no error")));
+
+		assertThat(lastFitTable.getCounts().right, is(3));
+		assertThat(lastFitTable.getCounts().wrong, is(1));
 	}
 
 	@Test
 	public void testNotContains() {
-		Parse cell1 = parseTd("an error X");
-		Parse cell2 = parseTd("toor X");
-		Parse cell3 = parseTd("root Y");
+        useTable(tr("a error X", "toor X", "root Y"));
+		FitCell cell1 = cell(0);
+		FitCell cell2 = cell(1);
+		FitCell cell3 = cell(2);
 
 		when(validator.preProcess(cell1)).thenReturn("an error");
 		when(validator.preProcess(cell2)).thenReturn("toor");
 		when(validator.preProcess(cell3)).thenReturn("root");
 
-		LogEventAnalyzer analyzer = new LogEventAnalyzer(counts, validator, cell1, list);
+		LogEventAnalyzer analyzer = new LogEventAnalyzer(validator, cell1, list);
 		analyzer.processNotContains(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzer(counts, validator, cell2, list);
+		analyzer = new LogEventAnalyzer(validator, cell2, list);
 		analyzer.processNotContains(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzer(counts, validator, cell3, list);
+		analyzer = new LogEventAnalyzer(validator, cell3, list);
 		analyzer.processNotContains(new HashMap<String, String>());
 
-		assertThat(cell1.text(), is(equalTo("an error")));
-		assertThat(cell2.text(), is(equalTo("toor")));
-		assertThat(cell3.text(), is(equalTo("root expecteda root message actual")));
+        lastFitTable.finishExecution();
 
-		assertThat(counts.right, is(2));
-		assertThat(counts.wrong, is(1));
+        assertThat(cell1.getFitValue(), is(equalTo("an error")));
+		assertThat(cell2.getFitValue(), is(equalTo("toor")));
+		assertThat(cell3.getFitValue(), containsAll("root", "expected",
+            "a root message", "actual"));
+
+		assertThat(lastFitTable.getCounts().right, is(2));
+		assertThat(lastFitTable.getCounts().wrong, is(1));
 	}
 
 	@Test
 	public void testContainsException() {
-		Parse cell1 = parseTd("xXx");
-		Parse cell2 = parseTd("RuntiMEException");
-		Parse cell3 = parseTd("IllegalStateException");
+		useTable(tr("xXx", "RuntiMEException", "IllegalStateException"));
 
-		when(validator.preProcess(cell1)).thenReturn("xXx");
+        FitCell cell1 = cell(0);
+        FitCell cell2 = cell(1);
+        FitCell cell3 = cell(2);
+
+        when(validator.preProcess(cell1)).thenReturn("xXx");
 		when(validator.preProcess(cell2)).thenReturn("RuntiMEException");
 		when(validator.preProcess(cell3)).thenReturn("IllegalStateException");
 
 
 		LogEventAnalyzer analyzer = new LogEventAnalyzer(
-				counts, validator, cell1, list);
+            validator, cell1, list);
 		analyzer.processContainsException(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzer(counts, validator, cell2, list);
+		analyzer = new LogEventAnalyzer(validator, cell2, list);
 		analyzer.processContainsException(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzer(counts, validator, cell3, list);
+		analyzer = new LogEventAnalyzer(validator, cell3, list);
 		analyzer.processContainsException(new HashMap<String, String>());
 
-		assertThat(cell1.text(), is(equalTo("xXx (expected)java.lang.RuntimeException: xxx (actual)")));
-		assertThat(cell2.text(), is(equalTo("RuntiMEException (expected)java.lang.RuntimeException: xxx (actual)")));
-		assertThat(cell3.text(), is(equalTo("IllegalStateException")));
+        lastFitTable.finishExecution();
 
-		assertThat(counts.right, is(2));
-		assertThat(counts.wrong, is(1));
+		assertThat(cell1.getFitValue(), containsAll("xXx", "expected",
+            "java.lang.RuntimeException: xxx", "actual"));
+		assertThat(cell2.getFitValue(), containsAll("RuntiMEException", "expected",
+            "java.lang.RuntimeException: xxx", "actual"));
+		assertThat(cell3.getFitValue(), is(equalTo("IllegalStateException")));
+
+		assertThat(lastFitTable.getCounts().right, is(2));
+		assertThat(lastFitTable.getCounts().wrong, is(1));
 	}
 
 	@Test
 	public void testNotContainsException() {
-		Parse cell1 = parseTd("Error message");
-		Parse cell2 = parseTd("IllegalStateException");
-		Parse cell3 = parseTd("Exception");
+        useTable(tr("Error message", "IllegalStateException", "Exception"));
+
+        FitCell cell1 = cell(0);
+        FitCell cell2 = cell(1);
+        FitCell cell3 = cell(2);
 
 		when(validator.preProcess(cell1)).thenReturn("Error message");
 		when(validator.preProcess(cell2)).thenReturn("IllegalStateException");
 		when(validator.preProcess(cell3)).thenReturn("Exception");
 
-		LogEventAnalyzer analyzer = new LogEventAnalyzer(counts, validator, cell1, list);
+		LogEventAnalyzer analyzer = new LogEventAnalyzer(validator, cell1, list);
 		analyzer.processNotContainsException(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzer(counts, validator, cell2, list);
+		analyzer = new LogEventAnalyzer(validator, cell2, list);
 		analyzer.processNotContainsException(new HashMap<String, String>());
 
-		analyzer = new LogEventAnalyzer(counts, validator, cell3, list);
+		analyzer = new LogEventAnalyzer(validator, cell3, list);
 		analyzer.processNotContainsException(new HashMap<String, String>());
 
-		assertThat(cell1.text(), is(equalTo("Error message")));
-		assertThat(cell2.text(), is(equalTo("IllegalStateException")));
-		assertThat(cell3.text(), is(equalTo("Exception expectedjava.lang.RuntimeException: xxx actual")));
+        lastFitTable.finishExecution();
 
-		assertThat(counts.right, is(2));
-		assertThat(counts.wrong, is(1));
+		assertThat(cell1.getFitValue(), is(equalTo("Error message")));
+		assertThat(cell2.getFitValue(), is(equalTo("IllegalStateException")));
+		assertThat(cell3.getFitValue(), containsAll(
+            "Exception", "expected",
+            "java.lang.RuntimeException: xxx", "actual"));
+
+		assertThat(lastFitTable.getCounts().right, is(2));
+		assertThat(lastFitTable.getCounts().wrong, is(1));
 	}
+
+    protected FitCell cell(int index) {
+        return lastFitTable.rows().get(0).cells().get(index);
+    }
 }
