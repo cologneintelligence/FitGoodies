@@ -1,7 +1,7 @@
 FitGoodies
 ==========
 
-[![Build Status](https://travis-ci.org/cologneintelligence/FitGoodies.svg?branch=master)](https://travis-ci.org/cologneintelligence/FitGoodies) [![codecov.io](http://codecov.io/github/jochenwierum/FitGoodies/coverage.svg?branch=master)](http://codecov.io/github/jochenwierum/FitGoodies?branch=master)
+[![Build Status](https://travis-ci.org/cologneintelligence/FitGoodies.svg?branch=master)](https://travis-ci.org/cologneintelligence/FitGoodies) [![codecov.io](http://codecov.io/github/cologneintelligence/FitGoodies/coverage.svg?branch=master)](http://codecov.io/github/cologneintelligence/FitGoodies?branch=master)
 
 Goodies for Fit (Framework for Integration Tests)
 
