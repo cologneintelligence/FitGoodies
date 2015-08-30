@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,13 +21,11 @@
 
 package de.cologneintelligence.fitgoodies.date;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.ParseException;
 import java.util.Locale;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -33,40 +33,50 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 
-public class SetupFixtureTest extends FitGoodiesTestCase {
-    private SetupFixture fixture;
+public class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
+	private SetupFixture fixture;
+    private FitDateHelper helper;
+
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
+    }
 
     @Before
-    public void setUp() throws Exception {
-        fixture = new SetupFixture();
+	public void setUp() throws Exception {
+		fixture = new SetupFixture();
+        helper = DependencyManager.getOrCreate(FitDateHelper.class);
+    }
+
+	@Test
+	public void testSetup1() {
+        useTable(
+            tr("locale", "de_DE"),
+            tr("format", "hh:mm:ss"));
+
+        preparePreprocessWithConversion(String.class, "de_DE", "de_DE");
+        preparePreprocessWithConversion(String.class, "hh:mm:ss", "hh:mm:ss");
+
+        run();
+
+        assertCounts(0, 0, 0, 0);
+        assertThat(helper.getFormat(), is(equalTo("hh:mm:ss")));
+        assertThat(helper.getLocale(), is(equalTo(Locale.GERMANY)));
     }
 
     @Test
-    public void testSetup() throws ParseException {
-        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
+    public void testSetup2() {
+		useTable(tr("locale", "$1"),
+            tr("format", "$2"));
 
-        Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>locale</td><td>de_DE</td></tr>"
-                + "<tr><td>format</td><td>hh:mm:ss</td></tr>"
-                + "</table>");
 
-        fixture.doTable(table);
+        preparePreprocessWithConversion(String.class, "$1", "en_US");
+        preparePreprocessWithConversion(String.class, "$2", "MM/dd/yyyy");
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        assertThat(helper.getFormat(), is(equalTo("hh:mm:ss")));
-        assertThat(helper.getLocale(), is(equalTo(Locale.GERMANY)));
+		run();
 
-        table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>locale</td><td>en_US</td></tr>"
-                + "<tr><td>format</td><td>MM/dd/yyyy</td></tr>"
-                + "</table>");
-
-        fixture.doTable(table);
-
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        assertThat(helper.getFormat(), is(equalTo("MM/dd/yyyy")));
-        assertThat(helper.getLocale(), is(equalTo(Locale.US)));
-    }
+        assertCounts(0, 0, 0, 0);
+		assertThat(helper.getFormat(), is(equalTo("MM/dd/yyyy")));
+		assertThat(helper.getLocale(), is(equalTo(Locale.US)));
+	}
 }

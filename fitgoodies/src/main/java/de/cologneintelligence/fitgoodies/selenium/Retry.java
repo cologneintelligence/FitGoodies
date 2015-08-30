@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -21,40 +23,40 @@ package de.cologneintelligence.fitgoodies.selenium;
 import com.thoughtworks.selenium.Wait;
 
 public abstract class Retry extends Wait {
-    private boolean result;
-    private int counter;
-    private final Long timeoutInMilliseconds;
-    private final Long intervalInMilliseconds;
+	private boolean result;
+	private int counter;
+	private final Long timeoutInMilliseconds;
+	private final Long intervalInMilliseconds;
 
-    public int attemptCounter() {
-        return counter;
-    }
+	public int attemptCounter() {
+		return counter;
+	}
 
-    public Retry(final Long timeout, final Long interval) {
-        this.timeoutInMilliseconds = timeout;
-        this.intervalInMilliseconds = interval;
-    }
+	public Retry(final Long timeout, final Long interval) {
+		this.timeoutInMilliseconds = timeout;
+		this.intervalInMilliseconds = interval;
+	}
 
-    @Override
-    public boolean until() {
-        try {
-            counter++;
-            result = execute();
-        } catch (RetryException e) {
-            result = false;
-        }
-        return result;
-    }
+	@Override
+	public boolean until() {
+		try {
+			counter++;
+			result = execute();
+		} catch (RetryException e) {
+			result = false;
+		}
+		return result;
+	}
 
-    public boolean start() {
-        try {
-            wait("TimeoutError!", timeoutInMilliseconds, intervalInMilliseconds);
-            return true;
-        } catch (Wait.WaitTimedOutException e) {
-            return false;
-        }
-    }
+	public boolean start() {
+		try {
+			wait("TimeoutError!", timeoutInMilliseconds, intervalInMilliseconds);
+			return true;
+		} catch (Wait.WaitTimedOutException e) {
+			return false;
+		}
+	}
 
-    public abstract boolean execute();
+	public abstract boolean execute();
 
 }

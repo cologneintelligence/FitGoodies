@@ -4,9 +4,11 @@ pom.xml.next
 pom.xml.releaseBackup
 pom.xml.tag
 release.properties
+pom.xml.versionsBackup
 
 .settings
 .project
 .classpath
 *.iml
 .idea
+nb-configuration.xml

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -27,17 +29,17 @@ import java.util.NoSuchElementException;
 
 /**
  * Browses a directory recursively for files which match a given filter.
- *
  */
 public class RecursiveFileSelector implements Iterator<File> {
-	private final List<File> dirs = new LinkedList<File>();
+	private final List<File> dirs = new LinkedList<>();
 	private final String pattern;
 	private File[] files;
 	private int fileIndex = 0;
 
 	/**
 	 * Creates a new iterator.
-	 * @param directory directory to browse
+	 *
+	 * @param directory       directory to browse
 	 * @param filenamePattern filter to use. Must be a regular expression.
 	 */
 	public RecursiveFileSelector(final File directory, final String filenamePattern) {
@@ -90,8 +92,9 @@ public class RecursiveFileSelector implements Iterator<File> {
 
 	/**
 	 * Returns the next matching file.
+	 *
 	 * @return the next element in the iteration.
-     * @throws NoSuchElementException iteration has no more elements
+	 * @throws NoSuchElementException iteration has no more elements
 	 */
 	@Override
 	public final File next() {

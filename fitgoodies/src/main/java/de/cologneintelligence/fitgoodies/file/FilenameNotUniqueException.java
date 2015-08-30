@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -16,7 +18,6 @@
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package de.cologneintelligence.fitgoodies.file;
 
 import java.io.IOException;
@@ -24,13 +25,13 @@ import java.io.IOException;
 /**
  * This exception is thrown by {@link FileSelector#getUniqueFile()} if more than
  * one file matches the pattern.
- *
  */
 public class FilenameNotUniqueException extends IOException {
 	private static final long serialVersionUID = 6290009229751508492L;
 
 	/**
 	 * Generates the new exception.
+	 *
 	 * @param pattern the pattern which did not result in a unique match
 	 */
 	public FilenameNotUniqueException(final String pattern) {

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,70 +21,87 @@
 
 package de.cologneintelligence.fitgoodies.mail;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.text.ParseException;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 
-public final class SetupFixtureTest extends FitGoodiesTestCase {
-    @Test
-    public void testPares1() throws ParseException {
-        Parse table1 = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>host</td><td>127.0.0.1</td></tr>"
-                + "<tr><td>protocol</td><td>pop3</td></tr>"
-                + "<tr><td>username</td><td>testuser</td></tr>"
-                + "<tr><td>password</td><td>testpassword</td></tr>"
-                + "<tr><td>ssl</td><td>true</td></tr>"
-                + "<tr><td>port</td><td>123</td></tr>"
-                + "</table>");
+public final class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
 
-        SetupFixture fixture = new SetupFixture();
-        fixture.doTable(table1);
+    private SetupHelper helper;
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
-        Properties prop = helper.generateProperties();
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
+    }
 
-        assertThat(prop.getProperty("mail.store.protocol"), is(equalTo("pop3")));
-        assertThat(prop.getProperty("mail.pop3.host"), is(equalTo("127.0.0.1")));
-        assertThat(prop.getProperty("mail.pop3.port"), is(equalTo("123")));
-        assertThat(prop.getProperty("mail.pop3.ssl"), is(equalTo("true")));
-        assertThat(prop.getProperty("mail.username"), is(equalTo("testuser")));
-        assertThat(prop.getProperty("mail.password"), is(equalTo("testpassword")));
+    @Before
+    public void setUp() throws Exception {
+        helper = DependencyManager.getOrCreate(SetupHelper.class);
     }
 
     @Test
-    public void testPares2() throws ParseException {
-        Parse table1 = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>host</td><td>localhost</td></tr>"
-                + "<tr><td>protocol</td><td>imap</td></tr>"
-                + "<tr><td>username</td><td>user</td></tr>"
-                + "<tr><td>password</td><td>passwd</td></tr>"
-                + "<tr><td>inbox</td><td>INBOX</td></tr>"
-                + "</table>");
+	public void testParses1() {
+		useTable(
+            tr("host", "$host"),
+            tr("protocol", "pop3"),
+            tr("username", "$user"),
+            tr("password", "testpassword"),
+            tr("ssl", "true"),
+            tr("port", "123"));
 
-        SetupFixture fixture = new SetupFixture();
-        fixture.doTable(table1);
+        preparePreprocessWithConversion(String.class, "$host", "127.0.0.1");
+        preparePreprocessWithConversion(String.class, "pop3", "pop3");
+        preparePreprocessWithConversion(String.class, "$user", "testuser");
+        preparePreprocessWithConversion(String.class, "testpassword", "testpassword");
+        preparePreprocessWithConversion(String.class, "true", "true");
+        preparePreprocessWithConversion(String.class, "123", "123");
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
-        Properties prop = helper.generateProperties();
+		run();
 
-        assertThat(prop.getProperty("mail.inbox"), is(equalTo("INBOX")));
-        assertThat(prop.getProperty("mail.store.protocol"), is(equalTo("imap")));
-        assertThat(prop.getProperty("mail.imap.host"), is(equalTo("localhost")));
-        assertThat(prop.getProperty("mail.imap.port"), is(nullValue()));
-        assertThat(prop.getProperty("mail.imap.ssl"), is(nullValue()));
-        assertThat(prop.getProperty("mail.username"), is(equalTo("user")));
-        assertThat(prop.getProperty("mail.password"), is(equalTo("passwd")));
-    }
+        assertCounts(0, 0, 0, 0);
+		Properties prop = helper.generateProperties();
+
+		assertThat(prop.getProperty("mail.store.protocol"), is(equalTo("pop3")));
+		assertThat(prop.getProperty("mail.pop3.host"), is(equalTo("127.0.0.1")));
+		assertThat(prop.getProperty("mail.pop3.port"), is(equalTo("123")));
+		assertThat(prop.getProperty("mail.pop3.ssl"), is(equalTo("true")));
+		assertThat(prop.getProperty("mail.username"), is(equalTo("testuser")));
+		assertThat(prop.getProperty("mail.password"), is(equalTo("testpassword")));
+	}
+
+	@Test
+	public void testParses2() {
+		useTable(
+            tr("host", "localhost"),
+            tr("protocol", "imap"),
+            tr("username", "user"),
+            tr("password", "passwd"),
+            tr("inbox", "INBOX"));
+
+        preparePreprocessWithConversion(String.class, "localhost", "localhost");
+        preparePreprocessWithConversion(String.class, "imap", "imap");
+        preparePreprocessWithConversion(String.class, "user", "user");
+        preparePreprocessWithConversion(String.class, "passwd", "passwd");
+        preparePreprocessWithConversion(String.class, "INBOX", "INBOX");
+
+		run();
+
+        assertCounts(0, 0, 0, 0);
+		Properties prop = helper.generateProperties();
+
+		assertThat(prop.getProperty("mail.inbox"), is(equalTo("INBOX")));
+		assertThat(prop.getProperty("mail.store.protocol"), is(equalTo("imap")));
+		assertThat(prop.getProperty("mail.imap.host"), is(equalTo("localhost")));
+		assertThat(prop.getProperty("mail.imap.port"), is(nullValue()));
+		assertThat(prop.getProperty("mail.imap.ssl"), is(nullValue()));
+		assertThat(prop.getProperty("mail.username"), is(equalTo("user")));
+		assertThat(prop.getProperty("mail.password"), is(equalTo("passwd")));
+	}
 }

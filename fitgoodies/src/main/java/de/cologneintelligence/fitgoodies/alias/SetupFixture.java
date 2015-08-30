@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -20,67 +22,46 @@
 package de.cologneintelligence.fitgoodies.alias;
 
 import de.cologneintelligence.fitgoodies.Fixture;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
-import fit.Parse;
-import fit.TypeAdapter;
 
 /**
  * Fixture to register aliases at runtime.
- *
  */
 public class SetupFixture extends Fixture {
-    /** alias name to use. */
-    public String alias;
+	/**
+	 * alias name to use.
+	 */
+	public String alias;
 
-    /** class name to use. */
-    public String className;
+	/**
+	 * class name to use.
+	 */
+	public String className;
 
-    private TypeAdapter aliasTypeAdapter;
-    private TypeAdapter classNameTypeAdapter;
-
-    /**
-     * Default constructor.
-     */
-    public SetupFixture() {
-        try {
-            aliasTypeAdapter = TypeAdapter.on(this, this.getClass().getField("alias"));
-            classNameTypeAdapter = TypeAdapter.on(this, this.getClass().getField("className"));
-        } catch (final SecurityException e) {
-            throw new RuntimeException(e);
-        } catch (final NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Reads a row which contains two cells and registers an alias.
-     *
-     * The first cell must contain the alias, the second one must contains the
-     * fully qualified class name. Using another alias as class name is not
-     * permitted.
-     * <p>
-     *
-     * Cross references are resolved.
-     *
-     * @param row row to parse
-     */
-    @Override
-    public void doRow(final Parse row) {
-        if (row.parts.more == null) {
-            ignore(row);
+	/**
+	 * Reads a row which contains two cells and registers an alias.
+	 * <p/>
+	 * The first cell must contain the alias, the second one must contains the
+	 * fully qualified class name. Using another alias as class name is not
+	 * permitted.
+	 * <p/>
+	 * <p/>
+	 * Cross references are resolved.
+	 *
+	 * @param row row to parse
+	 */
+	@Override
+	protected void doRow(FitRow row) {
+        if (row.size() < 2) {
+            row.cells().get(0).ignore();
             return;
         }
 
-        alias = row.parts.text();
-        className = row.parts.more.text();
+		alias = validator.preProcess(row.cells().get(0));
+		className = validator.preProcess(row.cells().get(1));
 
-        final CrossReferenceHelper crossReferenceHelper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        FixtureTools.processCell(row.parts, aliasTypeAdapter, this, crossReferenceHelper);
-        FixtureTools.processCell(row.parts.more, classNameTypeAdapter, this, crossReferenceHelper);
-
-        final AliasHelper aliasHelper = DependencyManager.getOrCreate(AliasHelper.class);
-        aliasHelper.register(alias, className);
-    }
+		AliasHelper aliasHelper = DependencyManager.getOrCreate(AliasHelper.class);
+		aliasHelper.register(alias, className);
+	}
 }

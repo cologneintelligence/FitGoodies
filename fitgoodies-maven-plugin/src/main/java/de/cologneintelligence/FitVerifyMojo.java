@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2015  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -28,20 +30,20 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import java.util.Map;
 
 @Mojo(name = "verify",
-        defaultPhase = LifecyclePhase.VERIFY,
-        requiresDependencyResolution = ResolutionScope.TEST)
+		defaultPhase = LifecyclePhase.VERIFY,
+		requiresDependencyResolution = ResolutionScope.TEST)
 public class FitVerifyMojo extends AbstractMojo {
-    @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> context = getPluginContext();
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		@SuppressWarnings("unchecked")
+		Map<String, Object> context = getPluginContext();
 
-        if (!context.containsKey(FitIntegrationTestMojo.FIT_MOJO_RESULT_FAILURE)) {
-            throw new MojoFailureException("FitGoodies integration tests did not run");
-        }
+		if (!context.containsKey(FitIntegrationTestMojo.FIT_MOJO_RESULT_FAILURE)) {
+			throw new MojoFailureException("FitGoodies integration tests did not run");
+		}
 
-        if (Boolean.FALSE.equals(context.get(FitIntegrationTestMojo.FIT_MOJO_RESULT_FAILURE))) {
-            throw new MojoFailureException("One or more fit test(s) failed.");
-        }
-    }
+		if (Boolean.FALSE.equals(context.get(FitIntegrationTestMojo.FIT_MOJO_RESULT_FAILURE))) {
+			throw new MojoFailureException("One or more fit test(s) failed.");
+		}
+	}
 }

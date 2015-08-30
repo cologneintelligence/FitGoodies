@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,17 +21,14 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
+import de.cologneintelligence.fitgoodies.Counts;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import fit.Counts;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import java.io.File;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 

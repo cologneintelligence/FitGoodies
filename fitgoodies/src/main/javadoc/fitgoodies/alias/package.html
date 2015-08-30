@@ -1,42 +1,77 @@
+<!--
+  ~ Copyright (c) 2002 Cunningham & Cunningham, Inc.
+  ~ Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+  ~
+  ~ This file is part of FitGoodies.
+  ~
+  ~ FitGoodies is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ FitGoodies is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 
 <!--  $Id$ -->
 
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>Insert title here</title>
 </head>
 <body>
 
 <p>
-Aliases enable a user to type less! After defining an alias, a fixture can be
-used by specifying its alias name instead of its fully qualified class name.
+    Aliases enable a user to type less! After defining an alias, a fixture can be
+    used by specifying its alias name instead of its fully qualified class name.
 </p>
 
 <p>
-Aliases require a runner of {@link fitgoodies.runners}.
+    Aliases require a runner of {@link fitgoodies.runners}.
 </p>
 
 <p>
-Example:
+    Example:
 </p>
 
 <table border="1">
-<tr><td>fitgoodies.alias.SetupFixture</td></tr>
-<tr><td>myFixture</td><td>org.example.fixture.MyOwnFixture</td></tr>
+    <tr>
+        <td>fitgoodies.alias.SetupFixture</td>
+    </tr>
+    <tr>
+        <td>myFixture</td>
+        <td>org.example.fixture.MyOwnFixture</td>
+    </tr>
 </table>
 
 <p>Now you can use:</p>
 
 <table border="1">
-<tr><td>myFixture</td></tr>
-<tr><td>...</td><td>...</td><td>...</td></tr>
-<tr><td>...</td><td>...</td><td>...</td></tr>
+    <tr>
+        <td>myFixture</td>
+    </tr>
+    <tr>
+        <td>...</td>
+        <td>...</td>
+        <td>...</td>
+    </tr>
+    <tr>
+        <td>...</td>
+        <td>...</td>
+        <td>...</td>
+    </tr>
 </table>
 
 <p>
-	@since 1.0.0
+    @since 1.0.0
 </p>
 
 </body>

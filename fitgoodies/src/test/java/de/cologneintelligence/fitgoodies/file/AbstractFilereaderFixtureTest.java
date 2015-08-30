@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,101 +16,101 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 
-public class AbstractFilereaderFixtureTest extends FitGoodiesTestCase {
-    public static class TestFixture extends AbstractFileReaderFixture {
-        public String x;
-    }
+public class AbstractFilereaderFixtureTest extends FitGoodiesFixtureTestCase<AbstractFilereaderFixtureTest.TestFixture> {
+	public static class TestFixture extends AbstractFileReaderFixture {
+		public String x;
+	}
 
-    private FileFixtureHelper helper;
+	private FileFixtureHelper helper;
+
+    @Override
+    protected Class<TestFixture> getFixtureClass() {
+        return TestFixture.class;
+    }
 
     @Before
-    public void setUp() throws Exception {
-        helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-    }
+	public void setUp() throws Exception {
+		helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+	}
 
-    @Test
-    public void testDefaultParameters1() throws Exception {
-        helper.setEncoding("latin-1");
-        String pattern = ".*\\.bat";
-        helper.setDirectory(mockDirectory(pattern, "f.txt.bat"));
-        helper.setPattern(pattern);
+	@Test
+	public void testDefaultParameters1() throws Exception {
+		helper.setEncoding("latin-1");
+		String pattern = ".*\\.bat";
+		helper.setDirectory(mockDirectory(pattern, "f.txt.bat"));
+		helper.setPattern(pattern);
 
-        TestFixture fixture = new TestFixture();
-        Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr>"
-                + "</table>");
+		useTable(tr("x"));
 
-        fixture.doTable(table);
+		run();
 
-        assertThat(fixture.getFile().toString(), is(equalTo("f.txt.bat")));
-        assertThat(fixture.getEncoding(), is(equalTo("latin-1")));
-    }
+		assertThat(fixture.getFile().toString(), is(equalTo("f.txt.bat")));
+		assertThat(fixture.getEncoding(), is(equalTo("latin-1")));
+	}
 
-    @Test
-    public void testDefaultParameters2() throws Exception {
-        TestFixture fixture = new TestFixture();
-        Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr>"
-                + "</table>");
+	@Test
+	public void testDefaultParameters2() throws Exception {
+		useTable(tr("x"));
 
-        helper.setEncoding("utf-16");
-        String pattern = ".*";
-        helper.setDirectory(mockDirectory(pattern, "file1.txt"));
-        helper.setPattern(pattern);
+		helper.setEncoding("utf-16");
+		String pattern = ".*";
+		helper.setDirectory(mockDirectory(pattern, "file1.txt"));
+		helper.setPattern(pattern);
 
-        fixture.doTable(table);
+		run();
 
-        assertThat(fixture.getFile().toString(), is(equalTo("file1.txt")));
-        assertThat(fixture.getEncoding(), is(equalTo("utf-16")));
-    }
+		assertThat(fixture.getFile().toString(), is(equalTo("file1.txt")));
+		assertThat(fixture.getEncoding(), is(equalTo("utf-16")));
+	}
 
-    @Test
-    public void testErrors() throws Exception {
-        TestFixture fixture = new TestFixture();
-        Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr>"
-                + "</table>");
+	@Test
+	public void testErrors() throws Exception {
+		useTable(tr("x"));
 
-        fixture.doTable(table);
+		run();
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
-    }
+        assertCounts(0, 0, 0, 1);
+	}
 
-    @Test
-    public final void testCustomParameters() throws Exception {
-        TestFixture fixture = new TestFixture();
-        Parse table = new Parse("<table>"
-                + "<tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr>"
-                + "</table>");
+	@Test
+	public final void testCustomParameters() throws Exception {
+		useTable(tr("x"));
 
-        final String pattern = ".*\\.bat";
-        helper.setDirectory(mockDirectory(pattern, "f.txt.bat"));
-        fixture.setParams(new String[] {"pattern=" + pattern, "encoding=cp1252"});
-        fixture.doTable(table);
+		final String pattern = ".*\\.bat";
+		helper.setDirectory(mockDirectory(pattern, "f.txt.bat"));
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        Map<String, String> params = new HashMap<>();
+        params.put("pattern", "p1");
+        params.put("encoding", "p2");
+        fixture.setParams(params);
 
-        assertThat(fixture.getFile().toString(), is(equalTo("f.txt.bat")));
-        assertThat(fixture.getEncoding(), is(equalTo("cp1252")));
-    }
+        preparePreprocess("p1", pattern);
+        prepareNonExistingArg("pattern");
+        prepareParameterApply("encoding", "p2", "cp1252");
+
+		run();
+
+        assertCounts(0, 0, 1, 0);
+
+		assertThat(fixture.getFile().toString(), is(equalTo("f.txt.bat")));
+		assertThat(fixture.getEncoding(), is(nullValue()));
+	}
 }

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -15,276 +17,499 @@
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.cologneintelligence.fitgoodies;
+
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
+import de.cologneintelligence.fitgoodies.typehandler.TypeHandler;
+import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
+import org.junit.Test;
 
 import java.text.ParseException;
 
-import de.cologneintelligence.fitgoodies.RowFixture;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.references.processors.CrossReferenceProcessorMock;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
-
-import fit.Fixture;
-import fit.Parse;
-import org.junit.Before;
-import org.junit.Test;
-
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.*;
 
-/**
- *
- * @author jwierum
- *
- */
-public final class RowFixtureTest extends FitGoodiesTestCase {
+public final class RowFixtureTest extends FitGoodiesFixtureTestCase<RowFixtureTest.TestRowFixture> {
 
-    public static class DummyRowObject {
+	public static class BusinessObject {
+		public Integer x;
+		public String y;
+		public Integer z;
+		public Long a;
+		public Long b;
+		public Long c;
 
-        public Integer x;
-        public String y;
-        public Integer z;
+		public Integer[] arr;
 
-        public DummyRowObject(
-                final Integer xVal,
-                final String yVal,
-                final Integer zVal) {
-            x = xVal;
-            y = yVal;
-            z = zVal;
-        }
-    }
+		public BusinessObject(Integer arr[], int x) {
+			this.arr = arr;
+			this.x = x;
+		}
 
-    public static class TestRowObject {
+		public BusinessObject(int x, String y, int z) {
+			this(x, y, z, 0, 0, 0);
+		}
 
-        public String x;
-        public Integer y;
-        public Integer z;
+		public BusinessObject(int x, String y, int z, long a, long b, long c) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.a = a;
+			this.b = b;
+			this.c = c;
+		}
 
-        public TestRowObject(
-                final String xVal,
-                final Integer yVal,
-                final Integer zVal) {
-            x = xVal;
-            y = yVal;
-            z = zVal;
-        }
-    }
+		public Integer value() {
+			return z;
+		}
+	}
 
-    private static class DummyRowFixture extends RowFixture {
 
-        public boolean upCalled;
-        public boolean downCalled;
+	public static class TestRowFixture extends RowFixture {
 
-        @Override
-        public Class<?> getTargetClass() {
-            return DummyRowObject.class;
-        }
+		public Class<?> targetClass = BusinessObject.class;
+		public Object[] query;
 
-        @Override
-        public Object[] query() throws Exception {
-            return new DummyRowObject[] {
-                    new DummyRowObject(1, "x", 3),
-                    new DummyRowObject(8, "matched", 6)
-            };
-        }
+		@Override
+		public Class<?> getTargetClass() {
+			return targetClass;
+		}
 
-        @Override
-        public void setUp() {
-            upCalled = true;
-        }
+		@Override
+		public Object[] query() throws Exception {
+			if (query == null) {
+				throw new IllegalArgumentException("Expected");
+			}
+			return query;
+		}
+	}
 
-        @Override
-        public void tearDown() {
-            downCalled = true;
-        }
-    }
+	@Override
+	protected Class<TestRowFixture> getFixtureClass() {
+		return TestRowFixture.class;
+	}
 
-    private static class TestRowFixture extends RowFixture {
+	@Test
+	public void allEqualsSimple() throws Exception {
+		useTable(tr("col1", "col2", "col3"),
+				tr("v1", "v2", "v3"),
+				tr("v4", "v5", "v6"));
 
-        public boolean upCalled;
-        public boolean downCalled;
+		fixture.query = new BusinessObject[]{
+				new BusinessObject(1, "x", 3),
+				new BusinessObject(8, "matched", 6)};
 
-        @Override
-        public Class<?> getTargetClass() {
-            return TestRowObject.class;
-        }
+		String columns[] = {"x", "y", "z"};
+		expectHeaders(columns);
 
-        @Override
-        public Object[] query() throws Exception {
-            return new TestRowObject[] {
-                    new TestRowObject("x", 2, 3),
-                    new TestRowObject("x", 5, 6)
-            };
-        }
+		expectParseExpected(1, 0, 1);
+		expectParseExpected(2, 0, 8);
 
-        @Override
-        public void setUp() {
-            upCalled = true;
-        }
+		prepareGetComputed(0, columns[0], 1);
+		prepareGetComputed(1, columns[0], 8);
 
-        @Override
-        public void tearDown() {
-            downCalled = true;
-        }
-    }
+		expectValidatorProcess(columns, 1, 0, 0);
+		expectValidatorProcess(columns, 1, 1, 0);
+		expectValidatorProcess(columns, 1, 2, 0);
+		expectValidatorProcess(columns, 2, 0, 1);
+		expectValidatorProcess(columns, 2, 1, 1);
+		expectValidatorProcess(columns, 2, 2, 1);
 
-    public static final class ErrorFixture extends DummyRowFixture {
+		run();
+	}
 
-        private boolean downCalled = false;
+	@Test
+	public void exceptionInQueryIsReported() {
+		useTable(tr("col1"));
 
-        public boolean isDownCalled() {
-            return downCalled;
-        }
+		expectHeaders("header");
 
-        @Override
-        public void tearDown() {
-            downCalled = true;
-        }
-    }
+		run();
 
-    private DummyRowFixture rowFixture;
+		assertCounts(0, 0, 0, 1);
+	}
 
-    @Before
-    public void setUp() throws Exception {
-        rowFixture = new DummyRowFixture();
-    }
+	@Test
+	public void allEqualsMultiLevel() throws Exception {
+		fixture.query = new BusinessObject[]{
+				new BusinessObject(3, "x", 6, 1, 2, 3),
+				new BusinessObject(2, "y", 7, 1, 2, 3),
+				new BusinessObject(2, "y", 6, 1, 2, 3),
+				new BusinessObject(1, "x", 6, 1, 2, 3),
+				new BusinessObject(1, "x", 3, 1, 2, 3)};
 
-    @Test
-    public void testNumberCases() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
-                + "<tr><td>1</td><td>x</td><td>3</td></tr></table>");
-        rowFixture.doTable(table);
-        assertThat(rowFixture.counts.right, is(equalTo((Object) 3)));
-        assertThat(rowFixture.counts.wrong, is(equalTo((Object) 1)));
+		useTable(
+				tr("col1", "col2", "col3", "col4", "col5", "col6"),
+				tr("v1", "v2", "v3", "v4", "v5", "v6"),
+				tr("w1", "w2", "w3", "w4", "w5", "w6"),
+				tr("x1", "x2", "x3", "x4", "x5", "x6"),
+				tr("y1", "y2", "y3", "y4", "y5", "y6"),
+				tr("z1", "z2", "z3", "z4", "z5", "z6"));
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
-                + "<tr><td>1</td><td>match</td><td>3</td></tr></table>");
-        rowFixture.doTable(table);
-        assertThat(rowFixture.counts.wrong, is(equalTo((Object) 4)));
-        assertThat(rowFixture.counts.right, is(equalTo((Object) 5)));
-    }
 
-    @Test
-    public void testCrossReferencesForStringValues() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
-                + "<tr><td>8</td><td>${2}</td><td>6</td></tr></table>");
+		String columns[] = {"x", "y", "z", "a", "b", "c"};
+		expectHeaders(columns);
 
-        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        helper.getProcessors().add(new CrossReferenceProcessorMock("2"));
+		expectParseExpected(1, 0, 1);
+		expectParseExpected(1, 1, "parsed a");
+		expectParseExpected(1, 2, 100);
+		expectParseExpected(2, 0, 1);
+		expectParseExpected(2, 1, "parsed a");
+		expectParseExpected(2, 2, 101);
+		expectParseExpected(3, 0, 2);
+		expectParseExpected(3, 1, "parsed b");
+		expectParseExpected(3, 2, 200);
+		expectParseExpected(4, 0, 2);
+		expectParseExpected(4, 1, "parsed b");
+		expectParseExpected(4, 2, 201);
+		expectParseExpected(5, 0, 3);
 
-        rowFixture.doTable(table);
-        assertThat(rowFixture.counts.right, is(equalTo((Object) 3)));
+		prepareGetComputed(4, columns[0], 1);
+		prepareGetComputed(4, columns[1], "parsed a");
+		prepareGetComputed(4, columns[2], 100);
+		prepareGetComputed(3, columns[0], 1);
+		prepareGetComputed(3, columns[1], "parsed a");
+		prepareGetComputed(3, columns[2], 101);
+		prepareGetComputed(2, columns[0], 2);
+		prepareGetComputed(2, columns[1], "parsed b");
+		prepareGetComputed(2, columns[2], 200);
+		prepareGetComputed(1, columns[0], 2);
+		prepareGetComputed(1, columns[1], "parsed b");
+		prepareGetComputed(1, columns[2], 201);
+		prepareGetComputed(0, columns[0], 3);
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td></tr>"
-                + "<tr><td>8</td><td>${test}</td></tr></table>");
-        rowFixture.doTable(table);
-        assertThat(rowFixture.counts.wrong, is(equalTo((Object) 4)));
-    }
+		for (int i = 0; i < 5; ++i) {
+			for (int j = 0; j < 6; ++j) {
+				expectValidatorProcess(columns, 1 + i, j, 4 - i);
+			}
+		}
 
-    @Test
-    public void testCrossReferencesForIntegerValues() throws ParseException {
-        TestRowFixture sameValueRowFixture = new TestRowFixture();
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
-                + "<tr><td>x</td><td>${test}</td><td>3</td></tr></table>");
+		run();
+	}
 
-        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        helper.getProcessors().add(new CrossReferenceProcessorMock("test", "2"));
+	@Test
+	public void commentRowsAreIgnored() throws Exception {
+		fixture.query = new BusinessObject[]{
+				new BusinessObject(0, "v1", 0),
+				new BusinessObject(0, "v2", 0)};
 
-        sameValueRowFixture.doTable(table);
-        assertThat(sameValueRowFixture.counts.right, is(3));
-    }
+		useTable(
+				tr("col1", "col2", "col3"),
+				tr("v1", "v2", "v3"),
+				tr("w1", "w2", "w3"));
 
-    @Test
-    public void testCrossReferencesExpectedRowsCountEqualsComputedRowsCount() throws ParseException {
-        TestRowFixture sameValueRowFixture = new TestRowFixture();
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td><td>y</td><td>z</td></tr>"
-                + "<tr><td>x</td><td>${test2}</td><td>3</td></tr>"
-                + "<tr><td>x</td><td>5</td><td>6</td></tr></table>");
 
-        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        helper.getProcessors().add(new CrossReferenceProcessorMock("test2", "2"));
+		String columns[] = {"x", "", "z"};
+		expectHeaders(columns);
 
-        sameValueRowFixture.doTable(table);
-        assertThat(sameValueRowFixture.counts.right, is(6));
-    }
+		expectParseExpected(1, 0, 2);
+		expectParseExpected(1, 2, 4);
+		expectParseExpected(2, 0, 2);
+		expectParseExpected(2, 2, 3);
 
-    @Test
-    public void testUpDown() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>number</td><td>n()</td></tr>"
-                + "<tr><td>1</td></tr>1</table>");
-        rowFixture.doTable(table);
+		prepareGetComputed(0, columns[0], 2);
+		prepareGetComputed(0, columns[2], 4);
+		prepareGetComputed(1, columns[0], 2);
+		prepareGetComputed(1, columns[2], 3);
 
-        assertThat(rowFixture.upCalled, is(true));
-        assertThat(rowFixture.downCalled, is(true));
-    }
+		expectValidatorProcess(columns, 1, 0, 0);
+		expectValidatorProcessNull(1, 1);
+		expectValidatorProcess(columns, 1, 2, 0);
+		expectValidatorProcess(columns, 2, 0, 1);
+		expectValidatorProcessNull(2, 1);
+		expectValidatorProcess(columns, 2, 2, 1);
 
-    @Test
-    public void testGetParams() {
-        rowFixture.setParams(new String[] { "x=y", "a=b" });
+		run();
+	}
 
-        assertThat(rowFixture.getParam("x"), is(equalTo("y")));
-        assertThat(rowFixture.getParam("y"), is(nullValue()));
+	@Test
+	public void multipleSameLinesAreMatched() throws Exception {
+		fixture.query = new BusinessObject[]{
+				new BusinessObject(0, "v1", 0),
+				new BusinessObject(0, "v2", 0)};
 
-        assertThat(rowFixture.getParam("a", "z"), is(equalTo("b")));
-        assertThat(rowFixture.getParam("u", "z"), is(equalTo("z")));
-    }
+		useTable(
+				tr("col1", "col2", "col3"),
+				tr("v1", "v2", "v3"),
+				tr("w1", "w2", "w3"));
 
-    @Test
-    public void testUpWithErrors() throws Exception {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr></table>");
 
-        RowFixture fixture = new RowFixture() {
-            @Override
-            public Class<?> getTargetClass() {
-                return null;
-            }
+		String columns[] = {"x", "y", "z"};
+		expectHeaders(columns);
 
-            @Override
-            public Object[] query() throws Exception {
-                return null;
-            }
+		expectParseExpected(1, 0, 2);
+		expectParseExpected(1, 1, "a");
+		expectParseExpected(1, 2, 4);
+		expectParseExpected(2, 0, 2);
+		expectParseExpected(2, 1, "a");
+		expectParseExpected(2, 2, 4);
 
-            @Override
-            public void setUp() throws Exception {
-                throw new RuntimeException("x");
-            }
+		prepareGetComputed(0, columns[0], 2);
+		prepareGetComputed(0, columns[1], "a");
+		prepareGetComputed(0, columns[2], 4);
+		prepareGetComputed(1, columns[0], 2);
+		prepareGetComputed(1, columns[1], "a");
+		prepareGetComputed(1, columns[2], 4);
 
-            @Override
-            public void tearDown() throws Exception {
-                throw new RuntimeException("x");
-            }
-        };
-        fixture.doTable(table);
+		expectValidatorProcess(columns, 1, 0, 0);
+		expectValidatorProcess(columns, 1, 1, 0);
+		expectValidatorProcess(columns, 1, 2, 0);
+		expectValidatorProcess(columns, 2, 0, 1);
+		expectValidatorProcess(columns, 2, 1, 1);
+		expectValidatorProcess(columns, 2, 2, 1);
 
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
-    }
+		run();
+	}
 
-    @Test
-    public void testDownWithErrors() throws Exception {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "</table>");
+	@Test
+	public void exceptionsInGroupingIgnoreRestOfLine() throws Exception {
+		fixture.query = new BusinessObject[]{
+				new BusinessObject(0, "v1", 0),
+				new BusinessObject(0, "v2", 0)};
 
-        ErrorFixture fixture = new ErrorFixture();
-        fixture.doTable(table);
+		useTable(
+				tr("col1", "col2", "col3"),
+				tr("v1", "v2", "v3"),
+				tr("w1", "w2", "w3"));
 
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
-        assertThat(fixture.isDownCalled(), is(true));
-    }
+
+		String columns[] = {"x", "y", "z"};
+		expectHeaders(columns);
+
+		expectParseExpected(1, 0, 2);
+		expectParseExpectedWithException(1, 1);
+		expectParseExpected(2, 0, 2);
+		expectParseExpected(2, 1, "a");
+
+		prepareGetComputed(0, columns[0], 2);
+		prepareGetComputed(0, columns[1], "a");
+		prepareGetComputed(0, columns[2], 4);
+		prepareGetComputed(1, columns[0], 2);
+		prepareGetComputed(1, columns[1], "a");
+		prepareGetComputed(1, columns[2], 42);
+		prepareAppendSurplus(Integer.class, 2, "one");
+		prepareAppendSurplus(String.class, "a", "two");
+		prepareAppendSurplus(Integer.class, 42, "three");
+
+		expectValidatorProcess(columns, 2, 0, 0);
+		expectValidatorProcess(columns, 2, 1, 0);
+		expectValidatorProcess(columns, 2, 2, 0);
+
+		run();
+
+		assertCounts(0, 1, 1, 1);
+        assertThat(htmlAt(3, 0), containsString("surplus"));
+		assertThat(htmlAt(3, 1), containsString("one"));
+		assertThat(htmlAt(3, 3), containsString("three"));
+	}
+
+	@Test
+	public void surplusIsMarked() throws Exception {
+		fixture.query = new BusinessObject[]{
+				new BusinessObject(0, "v1", 0),
+				new BusinessObject(0, "v2", 0),
+				null};
+
+		useTable(tr("col1", "col2", "col3"));
+
+		String columns[] = {"x", "y"};
+		expectHeaders(columns);
+
+		prepareGetComputed(0, columns[0], 2);
+		prepareGetComputed(0, columns[1], "a");
+		prepareGetComputed(1, columns[0], 4);
+		prepareGetComputed(1, columns[1], "b");
+		prepareAppendSurplus(Integer.class, 2, "one");
+		prepareAppendSurplus(String.class, "a", "two");
+		prepareAppendSurplus(Integer.class, 4, "four");
+		prepareAppendSurplus(String.class, "b", "five");
+
+		run();
+
+		assertCounts(0, 3, 2, 0);
+        assertThat(htmlAt(1, 0), containsString("surplus"));
+		assertThat(htmlAt(1, 1), containsString("null"));
+        assertThat(htmlAt(2, 0), containsString("surplus"));
+        assertThat(htmlAt(2, 1), containsString("one"));
+		assertThat(htmlAt(2, 2), containsString("two"));
+		assertThat(htmlAt(3, 0), containsString("surplus"));
+		assertThat(htmlAt(3, 1), containsString("four"));
+		assertThat(htmlAt(3, 2), containsString("five"));
+
+		verify(valueReceiverFactory, atLeast(0)).createReceiver(isNull(), any(String.class));
+	}
+
+	@Test
+	public void arraysAreASupportedType() throws Exception {
+		fixture.query = new BusinessObject[]{
+				new BusinessObject(new Integer[]{1, 2, 3}, 4)
+		};
+
+		useTable(
+				tr("col1", "col2"),
+				tr("1, 2, 3", "4"));
+
+		String columns[] = {"arr", "x"};
+		expectHeaders(columns);
+
+		expectParseExpected(1, 0, new Integer[]{1, 2, 3});
+		prepareGetComputed(0, columns[0], new Integer[]{1, 2, 3});
+
+		expectValidatorProcess(columns, 1, 0, 0);
+		expectValidatorProcess(columns, 1, 1, 0);
+
+		run();
+	}
+
+	@Test
+	public void methodsAreSupported() throws Exception {
+		fixture.query = new BusinessObject[]{
+				new BusinessObject(new Integer[]{1, 2, 3}, 4)
+		};
+
+		useTable(
+				tr("col1()"),
+				tr("7"));
+
+		String columns[] = {"value()"};
+		expectHeaders(columns);
+
+		expectParseExpected(1, 0, 7);
+		prepareGetComputed(0, columns[0], 7);
+
+		expectValidatorProcess(columns, 1, 0, 0);
+
+		run();
+	}
+
+	@Test
+	public void missingIsMarked() throws Exception {
+		fixture.query = new BusinessObject[]{
+				new BusinessObject(0, "v1", 0)};
+
+		useTable(
+            tr("col1", "col2", "col3", "col4"),
+            tr("42", "v1", "0", "."),
+            tr("43", "v2", "0", "."),
+            tr("44", "v2", "0", "."));
+
+
+		String columns[] = {"x", "y", "z", null};
+		expectHeaders(columns);
+
+		prepareGetComputed(0, columns[0], 2);
+		prepareGetComputed(0, columns[1], "a");
+		prepareGetComputed(0, columns[2], 4);
+
+		expectMissing(1, 0, 2, "2");
+		expectMissing(1, 1, "a", "a");
+		expectMissing(1, 2, 4, "4");
+		expectMissingComment(1, 3, null);
+		expectMissing(2, 0, 2, "2");
+		expectMissing(2, 1, "b", "b");
+		expectMissing(2, 2, 8, "8");
+		expectMissingComment(2, 3, null);
+		expectMissing(3, 0, 8, "8");
+		expectMissing(3, 1, "x", "x");
+		expectMissing(3, 2, 8, "8");
+		expectMissingComment(3, 3, "y");
+
+		expectValidatorProcess(columns, 1, 0, 0);
+		expectValidatorProcess(columns, 1, 1, 0);
+		expectValidatorProcess(columns, 1, 2, 0);
+		expectValidatorProcessNull(1, 3);
+
+		run();
+
+		assertCounts(0, 2, 0, 0);
+		assertThat(htmlAt(1, 0), isEmptyString());
+		assertThat(htmlAt(1, 1), is(equalTo("42")));
+		assertThat(htmlAt(2, 0), containsString("missing"));
+		assertThat(htmlAt(2, 1), containsString("2"));
+		assertThat(htmlAt(2, 2), containsString("b"));
+		assertThat(htmlAt(2, 3), containsString("8"));
+		assertThat(htmlAt(2, 4), containsString("null"));
+		assertThat(htmlAt(3, 0), containsString("missing"));
+		assertThat(htmlAt(3, 1), containsString("8"));
+		assertThat(htmlAt(3, 2), containsString("x"));
+		assertThat(htmlAt(3, 3), containsString("8"));
+		assertThat(htmlAt(3, 4), containsString("y"));
+	}
+
+	private void prepareAppendSurplus(Class<?> clazz, Object input, String result) {
+		TypeHandler handler = prepareGetTypeHandler(clazz, null);
+		when(handler.toString(input)).thenReturn(result);
+	}
+
+	private void expectValidatorProcess(String[] columns, int expectedRow,
+	                                    int expectedColumn, int computedRow) throws Exception {
+		final ValueReceiver valueReceiver = expectValueReceiverCreation(fixture.query[computedRow], columns[expectedColumn]);
+		addValidationToExpectations(expectedRow, expectedColumn, valueReceiver);
+	}
+
+	private void expectValidatorProcessNull(int expectedRow, int expectedColumn) throws Exception {
+		addValidationToExpectations(expectedRow, expectedColumn, null);
+	}
+
+	private void addValidationToExpectations(final int expectedRow, final int expectedColumn,
+                                             final ValueReceiver valueReceiver) {
+		expectations.add(new Task() {
+			@Override
+			public void run() throws Exception {
+				verify(validator).process(cellAt(expectedRow, expectedColumn),
+                    valueReceiver, null, typeHandlerFactory);
+			}
+		});
+	}
+
+	private void prepareGetComputed(int row, String column, Object result) throws Exception {
+		ValueReceiver receiver = expectValueReceiverCreation(fixture.query[row], column);
+		when(receiver.get()).thenReturn(result);
+		when(receiver.getType()).thenReturn(result.getClass());
+	}
+
+	private void expectHeaders(String... header) {
+		for (int i = 0; i < header.length; i++) {
+			preparePreprocess(cellAt(0, i), header[i]);
+		}
+	}
+
+	private void expectParseExpected(int row, int col, Object result) throws ParseException {
+		@SuppressWarnings("RedundantStringConstructorCall")
+		String s = new String();
+
+        FitCell cell = cellAt(row, col);
+		when(validator.preProcess(cell)).thenReturn(s);
+		TypeHandler colHandler = prepareGetTypeHandler(result.getClass(), null);
+		when(colHandler.parse(argThatSame(s))).thenReturn(result);
+	}
+
+	private void expectMissing(int row, int col, Object result, String toStringResult) throws ParseException {
+		@SuppressWarnings("RedundantStringConstructorCall")
+		String s = new String();
+
+        FitCell cell = cellAt(row, col);
+        when(validator.preProcess(cell)).thenReturn(s);
+		TypeHandler colHandler = prepareGetTypeHandler(result.getClass(), null);
+		when(colHandler.parse(argThatSame(s))).thenReturn(result);
+		when(colHandler.toString(argThatSame(s))).thenReturn(toStringResult);
+	}
+
+	private void expectMissingComment(int row, int col, String toStringResult) throws ParseException {
+        FitCell cell = cellAt(row, col);
+        when(validator.preProcess(cell)).thenReturn(toStringResult);
+	}
+
+	private void expectParseExpectedWithException(int row, int col) {
+        FitCell cell = cellAt(row, col);
+        when(validator.preProcess(cell)).thenThrow(new RuntimeException("This was expected!"));
+	}
 }

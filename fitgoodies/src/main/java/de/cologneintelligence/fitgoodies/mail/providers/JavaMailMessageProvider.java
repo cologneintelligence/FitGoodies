@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,24 +16,22 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.mail.providers;
-import java.util.Properties;
+
+import de.cologneintelligence.fitgoodies.mail.JavaMailMail;
+import de.cologneintelligence.fitgoodies.mail.Mail;
 
 import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
-
-import de.cologneintelligence.fitgoodies.mail.JavaMailMail;
-import de.cologneintelligence.fitgoodies.mail.Mail;
+import java.util.Properties;
 
 
 /**
  * Implementation of MessageProvider which uses the JavaMail libraries.
- *
  */
 public class JavaMailMessageProvider implements MessageProvider {
 	private final Session session;
@@ -41,11 +41,11 @@ public class JavaMailMessageProvider implements MessageProvider {
 
 	/**
 	 * Constructs a JavaMailMessageProvider object.
-
+	 *
 	 * @param props properties which are handed to the JavaMail session.
-	 * 		This parameter <code>Properties</code> object must also provide
-	 * 		&quote;mail.username&quote;, &quote;mail.password&quote; and
-	 * 		&quote;mail.inbox&quote;.
+	 *              This parameter <code>Properties</code> object must also provide
+	 *              &quote;mail.username&quote;, &quote;mail.password&quote; and
+	 *              &quote;mail.inbox&quote;.
 	 */
 	public JavaMailMessageProvider(final Properties props) {
 
@@ -56,6 +56,7 @@ public class JavaMailMessageProvider implements MessageProvider {
 		this.folderName = props.getProperty("mail.inbox");
 	}
 
+	@Override
 	public void connect() throws MessagingException {
 		disconnect();
 		store = session.getStore();
@@ -65,6 +66,7 @@ public class JavaMailMessageProvider implements MessageProvider {
 		folder.open(Folder.READ_WRITE);
 	}
 
+	@Override
 	public void disconnect() throws MessagingException {
 		if (folder != null) {
 			folder.close(true);
@@ -74,6 +76,7 @@ public class JavaMailMessageProvider implements MessageProvider {
 		}
 	}
 
+	@Override
 	public Mail getLatestMessage()
 			throws MessagingException {
 

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,27 +16,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.mail;
 
+import javax.mail.*;
+import javax.mail.Flags.Flag;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimePart;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
-import javax.mail.Flags.Flag;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimePart;
-
 /**
  * Implementation of {@link Mail} which processes JavaMail mails.
- *
  */
 public class JavaMailMail implements Mail {
 	private final Message message;
@@ -101,9 +96,7 @@ public class JavaMailMail implements Mail {
 					return (MimeBodyPart) part;
 				}
 			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (MessagingException e) {
+		} catch (IOException | MessagingException e) {
 			throw new RuntimeException(e);
 		}
 
@@ -157,9 +150,9 @@ public class JavaMailMail implements Mail {
 			enc = "US-ASCII";
 		}
 
-		InputStream stream = part.getInputStream();
-		stream.read(content);
-		stream.close();
+		try (InputStream stream = part.getInputStream()) {
+			stream.read(content);
+		}
 
 		return new String(content, Charset.forName(enc));
 	}

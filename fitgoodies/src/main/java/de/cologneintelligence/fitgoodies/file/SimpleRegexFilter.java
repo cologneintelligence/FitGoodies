@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -24,13 +26,13 @@ import java.io.FileFilter;
 
 /**
  * Simple filter that checks, whether the filename matches a given regex.
- *
  */
 public class SimpleRegexFilter implements FileFilter {
 	private final String regex;
 
 	/**
 	 * Constructs a new filter.
+	 *
 	 * @param filter pattern to use
 	 */
 	public SimpleRegexFilter(final String filter) {
@@ -42,6 +44,7 @@ public class SimpleRegexFilter implements FileFilter {
 
 	/**
 	 * Returns the saved pattern.
+	 *
 	 * @return the used pattern
 	 */
 	public String getPattern() {

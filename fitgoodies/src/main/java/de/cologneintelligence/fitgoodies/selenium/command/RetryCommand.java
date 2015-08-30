@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,42 +21,41 @@
 package de.cologneintelligence.fitgoodies.selenium.command;
 
 import com.thoughtworks.selenium.SeleniumException;
-
 import de.cologneintelligence.fitgoodies.selenium.Retry;
 import de.cologneintelligence.fitgoodies.selenium.RetryException;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
 
 
-
 public class RetryCommand extends WrappedCommand {
-    private final SetupHelper helper;
+	private final SetupHelper helper;
 
-    public RetryCommand(final String command, final String[] args, final SetupHelper helper) {
-        super(command, args, helper.getCommandProcessor());
-        this.helper = helper;
-    }
+	public RetryCommand(final String command, final String[] args, final SetupHelper helper) {
+		super(command, args, helper.getCommandProcessor());
+		this.helper = helper;
+	}
 
-    @Override
-    public String execute() {
-        // FIXME: move the creation of Retry into a abstract factory! We do not want sleep() calls or any time
-        // dependent source in our tests
-        final Retry retry = new Retry(helper.getRetryTimeout(), helper.getRetryInterval()) {
-            private String result;
-            @Override
-            public boolean execute() {
-                try{
-                    final String seleniumCommand = command.substring(0, command.indexOf("AndRetry"));
-                    result = commandProcessor.doCommand(seleniumCommand, args);
-                } catch (final SeleniumException e) {
-                    throw new RetryException(e.getMessage() + "; " + attemptMessage(attemptCounter()));
-                }
-                return result.startsWith("OK");
-            }
-        };
-        return (retry.start() ? "OK; " : "NOK; ") + attemptMessage(retry.attemptCounter());
-    }
+	@Override
+	public String execute() {
+		// FIXME: move the creation of Retry into a abstract factory! We do not want sleep() calls or any time
+		// dependent source in our tests
+		final Retry retry = new Retry(helper.getRetryTimeout(), helper.getRetryInterval()) {
+			private String result;
 
-    private String attemptMessage(final int count) {
-        return "attempts: " + count + " times";
-    }
+			@Override
+			public boolean execute() {
+				try {
+					final String seleniumCommand = command.substring(0, command.indexOf("AndRetry"));
+					result = commandProcessor.doCommand(seleniumCommand, args);
+				} catch (final SeleniumException e) {
+					throw new RetryException(e.getMessage() + "; " + attemptMessage(attemptCounter()));
+				}
+				return result.startsWith("OK");
+			}
+		};
+		return (retry.start() ? "OK; " : "NOK; ") + attemptMessage(retry.attemptCounter());
+	}
+
+	private String attemptMessage(final int count) {
+		return "attempts: " + count + " times";
+	}
 }

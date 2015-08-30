@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,14 +21,13 @@
 package de.cologneintelligence.fitgoodies.selenium;
 
 import com.thoughtworks.selenium.SeleniumException;
-
 import de.cologneintelligence.fitgoodies.ActionFixture;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceProcessorShortcutException;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
 import de.cologneintelligence.fitgoodies.runners.RunnerHelper;
 import de.cologneintelligence.fitgoodies.selenium.command.CommandFactory;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+
+import java.util.List;
 
 /**
  * Run the selenium-IDE and record your test-case. Save the result as html and
@@ -71,83 +72,71 @@ import fit.Parse;
  * </table>
  *
  * @author kmussawisade
- *
  */
 public class SeleniumFixture extends ActionFixture {
     private int screenshotIndex = 0;
 
     @Override
-    public void doCells(final Parse cells) {
+    protected void doCells(List<FitCell> cells) {
 
-        final String command = cells.text();
+        String command = cells.get(0).getFitValue();
         try {
-            final String[] args = new String[] { getColumnOrEmptyString(cells, 1),
-                    getColumnOrEmptyString(cells, 2) };
+            String arg1 = getColumnOrEmptyString(cells, 1);
+            String arg2 = getColumnOrEmptyString(cells, 2);
+            String[] args = new String[]{arg1, arg2};
             String result = CommandFactory.createCommand(command, args,
-                    DependencyManager.getOrCreate(SetupHelper.class)).execute();
-            checkResult(cells, result);
-        } catch (final SeleniumException e) {
-            wrong(lastCell(cells), e.getMessage());
-        } catch (final Exception e) {
-            exception(lastCell(cells), e);
+                DependencyManager.getOrCreate(SetupHelper.class)).execute();
+            checkResult(last(cells), result);
+        } catch (SeleniumException e) {
+            wrong(last(cells), e.getMessage());
+        } catch (Exception e) {
+            last(cells).exception(e);
         }
     }
 
-    @Override
-    public void wrong(final Parse cell, final String message) {
-        super.wrong(cell, message);
+    public void wrong(FitCell cell, String message) {
+        cell.wrong(message);
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
         if (helper.getTakeScreenshots()) {
             takeScreenShot(cell);
         }
     }
 
-    private void addScreenshotLinkToReportPage(final Parse cell, final String fileName) {
-        cell.addToBody(" <a href=\"file:///" + fileName + "\">screenshot</a>");
+    private void addScreenshotLinkToReportPage(FitCell cell, String fileName) {
+        cell.addDisplayValueRaw(" <a href=\"file:///" + fileName + "\">screenshot</a>");
     }
 
-    private void takeScreenShot(final Parse cell) {
+    private void takeScreenShot(FitCell cell) {
         String fileName = createSnapshotFilename(screenshotIndex++);
         SetupHelper helper = DependencyManager.getOrCreate(SetupHelper.class);
-        CommandFactory.createCommand("captureEntirePageScreenshot", new String[] { fileName, "" }, helper).execute();
+        CommandFactory.createCommand("captureEntirePageScreenshot", new String[]{fileName, ""}, helper).execute();
         addScreenshotLinkToReportPage(cell, fileName);
     }
 
-    private String createSnapshotFilename(final int index) {
+    private String createSnapshotFilename(int index) {
         RunnerHelper helper = DependencyManager.getOrCreate(RunnerHelper.class);
         return helper.getResultFile() + ".screenshot" + index + ".png";
     }
 
-    private String getColumnOrEmptyString(final Parse cells, final int column) throws CrossReferenceProcessorShortcutException {
-        Parse parse = cells;
-        for (int i = 0; i < column; ++i) {
-            if (parse.more == null) {
-                return "";
-            }
-            parse = parse.more;
-        }
-
-        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        return helper.parseBody(parse.text(), null);
-    }
-
-    private void checkResult(final Parse cells, final String result) {
-        if (result.startsWith("OK")) {
-            right(lastCell(cells));
-            info(lastCell(cells), result);
+    private String getColumnOrEmptyString(List<FitCell> cells, int column) {
+        if (cells.size() <= column) {
+            return "";
         } else {
-            wrong(lastCell(cells), result);
+            return validator.preProcess(cells.get(column).getFitValue());
         }
     }
 
-    protected Parse lastCell(final Parse cells) {
-        Parse lastCell = cells;
-        int i = 0;
-        while (lastCell.more != null && i < 2) {
-            ++i;
-            lastCell = lastCell.more;
+    private void checkResult(FitCell cell, String result) {
+        if (result.startsWith("OK")) {
+            cell.right();
+            cell.info(result);
+        } else {
+            wrong(cell, result);
         }
-        return lastCell;
+    }
+
+    protected <T> T last(List<T> cells) {
+        return cells.get(cells.size() - 1);
     }
 
 }

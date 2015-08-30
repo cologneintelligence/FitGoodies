@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -26,40 +28,39 @@ import de.cologneintelligence.fitgoodies.file.readers.CSVRecordReader;
  * using a {@link de.cologneintelligence.fitgoodies.file.readers.CSVRecordReader}.
  * The fixture has two more parameters: delimiter and mask. The delimiter
  * defaults to comma, the mask defaults to the quotation mark.
- *
  */
 public class CSVFileRecordFixture extends AbstractFileRecordReaderFixture {
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
 
-        final char fieldDelimiter = getMaskedParam("delimiter", ",");
-        final char fieldMask = getMaskedParam("mask", "\"");
+		final char fieldDelimiter = getMaskedParam("delimiter", ",");
+		final char fieldMask = getMaskedParam("mask", "\"");
 
-        setRecordReader(new CSVRecordReader(
-                getFile().openBufferedReader(super.getEncoding()),
-                fieldDelimiter, fieldMask));
-    }
+		setRecordReader(new CSVRecordReader(
+				getFile().openBufferedReader(super.getEncoding()),
+				fieldDelimiter, fieldMask));
+	}
 
-    private char getMaskedParam(final String name, final String defaultValue) {
-        final String param = getParam(name, defaultValue);
+	private char getMaskedParam(final String name, final String defaultValue) {
+		final String param = getArg(name, defaultValue);
 
-        if (param.startsWith("\\")) {
-            final char masked = param.charAt(1);
-            switch (masked) {
-            case '\\':
-                return '\\';
-            case 'n':
-                return '\n';
-            case 'r':
-                return '\r';
-            case 't':
-                return '\t';
-            default:
-                return masked;
-            }
-        }
+		if (param.startsWith("\\")) {
+			final char masked = param.charAt(1);
+			switch (masked) {
+				case '\\':
+					return '\\';
+				case 'n':
+					return '\n';
+				case 'r':
+					return '\r';
+				case 't':
+					return '\t';
+				default:
+					return masked;
+			}
+		}
 
-        return param.charAt(0);
-    }
+		return param.charAt(0);
+	}
 }

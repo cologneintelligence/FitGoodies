@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,13 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.dynamic;
 
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.ScientificDouble;
+import de.cologneintelligence.fitgoodies.types.ScientificDouble;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
@@ -235,7 +236,7 @@ public class ResultSetWrapperTest extends FitGoodiesTestCase {
 		assertThat(actual, is(equalTo(expected)));
 
 		expected = new BigDecimal(25);
-		actual =  o[1].getClass().getField("age").get(o[1]);
+		actual = o[1].getClass().getField("age").get(o[1]);
 		assertThat(actual, is(equalTo(expected)));
 
 		expected = 1;

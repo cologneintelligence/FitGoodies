@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,97 +16,107 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.selenium;
 
 import com.thoughtworks.selenium.CommandProcessor;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.selenium.command.SeleniumFactory;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
-public class SetupFixtureTest extends FitGoodiesTestCase {
-    private SetupHelper helper;
-    private SeleniumFactory factory;
+public class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
+	private SetupHelper helper;
+
+    @Mock
     private CommandProcessor commandProcessor;
 
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
+    }
+
     @Before
-    public void setUp() throws Exception {
-        helper = DependencyManager.getOrCreate(SetupHelper.class);
-        factory = mock(SeleniumFactory.class);
-        commandProcessor = mock(CommandProcessor.class);
-        DependencyManager.inject(SeleniumFactory.class, factory);
+	public void setUp() throws Exception {
+		helper = DependencyManager.getOrCreate(SetupHelper.class);
 
-        when(factory.createCommandProcessor("localhost", 4444, "*firefox", "http://localhost"))
-            .thenReturn(commandProcessor);
-    }
+        SeleniumFactory factory = mock(SeleniumFactory.class);
+		DependencyManager.inject(SeleniumFactory.class, factory);
 
-    @Test
-    public void testHelperInteraction() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>serverHost</td><td>server-host</td></tr>"
-                + "<tr><td>serverPort</td><td>4444</td></tr>"
-                + "<tr><td>browserStartCommand</td><td>browser-Start-Command</td></tr>"
-                + "<tr><td>browserURL</td><td>browser-URL</td></tr>"
-                + "<tr><td>speed</td><td>400</td></tr>"
-                + "<tr><td>timeout</td><td>3000</td></tr>"
-                + "<tr><td>retryTimeout</td><td>40</td></tr>"
-                + "<tr><td>retryInterval</td><td>10</td></tr>"
-                + "<tr><td>takeScreenshots</td><td>true</td></tr>"
-                + "<tr><td>sleepBeforeScreenshot</td><td>500</td></tr>"
-                + "<tr><td>start</td><td>start config</td></tr>"
-                + "</table>"
-                );
+		when(factory.createCommandProcessor("localhost", 4444, "*firefox", "http://localhost"))
+				.thenReturn(commandProcessor);
+	}
 
-        helper.setCommandProcessor(commandProcessor);
+	@Test
+	public void testHelperInteraction() throws Exception {
+		useTable(
+				tr("serverHost", "server-host"),
+				tr("serverPort", "4444"),
+				tr("browserStartCommand", "browser-Start-Command"),
+				tr("browserURL", "browser-URL"),
+				tr("speed", "400"),
+				tr("timeout", "3000"),
+				tr("retryTimeout", "$timeout"),
+				tr("retryInterval", "10"),
+				tr("takeScreenshots", "$screenshot"),
+				tr("sleepBeforeScreenshot", "500"),
+				tr("start", "start config"));
 
-        final SetupFixture fixture = new SetupFixture();
-        fixture.doTable(table);
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        assertThat(helper.getServerHost(), is(equalTo("server-host")));
-        assertThat(helper.getServerPort(), is(equalTo((Object) 4444)));
-        assertThat(helper.getBrowserStartCommand(), is(equalTo("browser-Start-Command")));
-        assertThat(helper.getBrowserURL(), is(equalTo("browser-URL")));
-        assertThat(helper.getSpeed(), is(equalTo(Integer.valueOf(400))));
-        assertThat(helper.getTimeout(), is(equalTo((Object) 3000L)));
-        assertThat(helper.getRetryTimeout(), is(equalTo((Object) 40L)));
-        assertThat(helper.getRetryInterval(), is(equalTo((Object) 10L)));
-        assertThat(helper.getTakeScreenshots(), is(true));
-        assertThat(helper.sleepBeforeScreenshot(), is(equalTo((Object) 500L)));
-        assertThat(helper.getCommandProcessor(), not(CoreMatchers.is(nullValue())));
+        preparePreprocessWithConversion(String.class, "server-host", "server-host");
+        preparePreprocessWithConversion(String.class, "4444", "4444");
+        preparePreprocessWithConversion(String.class, "browser-Start-Command", "browser-Start-Command");
+        preparePreprocessWithConversion(String.class, "browser-URL", "browser-URL");
+        preparePreprocessWithConversion(String.class, "400", "400");
+        preparePreprocessWithConversion(String.class, "3000", "3000");
+        preparePreprocessWithConversion(String.class, "$timeout", "40");
+        preparePreprocessWithConversion(String.class, "10", "10");
+        preparePreprocessWithConversion(String.class, "$screenshot", "true");
+        preparePreprocessWithConversion(String.class, "500", "500");
+        preparePreprocessWithConversion(String.class, "start config", "start config");
 
-        verify(commandProcessor).start("start config");
-        verify(commandProcessor).doCommand("setTimeout", new String[]{"3000"});
-    }
+		helper.setCommandProcessor(commandProcessor);
 
-    @Test
-    public void testHelperInteractionStopProcessor() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>stop</td><td></td></tr>"
-                + "</table>"
-                );
+		run();
 
-        helper.setCommandProcessor(commandProcessor );
+        assertCounts(0, 0, 0, 0);
+		assertThat(helper.getServerHost(), is(equalTo("server-host")));
+		assertThat(helper.getServerPort(), is(equalTo((Object) 4444)));
+		assertThat(helper.getBrowserStartCommand(), is(equalTo("browser-Start-Command")));
+		assertThat(helper.getBrowserURL(), is(equalTo("browser-URL")));
+		assertThat(helper.getSpeed(), is(equalTo(400)));
+		assertThat(helper.getTimeout(), is(equalTo((Object) 3000L)));
+		assertThat(helper.getRetryTimeout(), is(equalTo((Object) 40L)));
+		assertThat(helper.getRetryInterval(), is(equalTo((Object) 10L)));
+		assertThat(helper.getTakeScreenshots(), is(true));
+		assertThat(helper.sleepBeforeScreenshot(), is(equalTo((Object) 500L)));
+		assertThat(helper.getCommandProcessor(), not(CoreMatchers.is(nullValue())));
 
-        final SetupFixture fixture = new SetupFixture();
-        fixture.doTable(table);
+		verify(commandProcessor).start("start config");
+		verify(commandProcessor).doCommand("setTimeout", new String[]{"3000"});
+	}
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+	@Test
+	public void testHelperInteractionStopProcessor() throws Exception {
+		useTable(tr("stop", ""));
 
-        verify(commandProcessor).stop();
-    }
+		helper.setCommandProcessor(commandProcessor);
+
+		final SetupFixture fixture = new SetupFixture();
+		run();
+
+        assertCounts(0, 0, 0, 0);
+
+		verify(commandProcessor).stop();
+	}
 
 }

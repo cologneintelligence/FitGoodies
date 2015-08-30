@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,9 +21,9 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
+import de.cologneintelligence.fitgoodies.Counts;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
-import fit.Counts;
+import de.cologneintelligence.fitgoodies.util.FitUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -29,18 +31,16 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.cologneintelligence.fitgoodies.util.FixtureTools.htmlSafeFile;
-
 /**
  * Implementation of FitResult which generates a indented HTML table.
- *
  */
 public final class FitResultTable implements FitResult {
-	private final List<FileCount> results = new LinkedList<FileCount>();
+	private final List<FileCount> results = new LinkedList<>();
 	private final FileSystemDirectoryHelper dirHelper;
 
 	/**
 	 * Generates a new Object.
+	 *
 	 * @param helper helper object to convert pathnames
 	 */
 	public FitResultTable(final FileSystemDirectoryHelper helper) {
@@ -49,9 +49,11 @@ public final class FitResultTable implements FitResult {
 
 	/**
 	 * Saves the result <code>result</code> of the file {@code file}.
-	 * @param file filename to identify the result
+	 *
+	 * @param file   filename to identify the result
 	 * @param result results
 	 */
+	@Override
 	public void put(final File file, final Counts result) {
 		FileCount fileCount = new FileCount(file, result);
 
@@ -64,6 +66,7 @@ public final class FitResultTable implements FitResult {
 
 	/**
 	 * Returns the {@code Counts} of a filename.
+	 *
 	 * @param file filename to look up
 	 * @return {@code Counts} object which represents the file result
 	 */
@@ -79,20 +82,22 @@ public final class FitResultTable implements FitResult {
 
 	/**
 	 * Returns all saved filenames.
+	 *
 	 * @return filenames of all results.
 	 */
 	public File[] getFiles() {
-		List<File> result = new ArrayList<File>();
+		List<File> result = new ArrayList<>();
 		for (FileCount fileCount : results) {
 			result.add(fileCount.getFile());
 		}
 
-        Collections.sort(result, new FitFileComparator());
-        return result.toArray(new File[result.size()]);
+		Collections.sort(result, new FitFileComparator());
+		return result.toArray(new File[result.size()]);
 	}
 
 	/**
 	 * Returns the sum of all results.
+	 *
 	 * @return sum of all results
 	 */
 	public Counts getSummary() {
@@ -107,17 +112,18 @@ public final class FitResultTable implements FitResult {
 
 	private static String color(final Counts counts) {
 		if (counts == null) {
-			return fit.Fixture.gray;
+			return FitUtils.HTML_GREY;
 		} else if (counts.exceptions > 0 || counts.wrong > 0) {
-			return fit.Fixture.red;
+			return FitUtils.HTML_RED;
 		} else {
-			return fit.Fixture.green;
+			return FitUtils.HTML_GREEN;
 		}
 	}
 
 	/**
 	 * Returns a single HTML Table row representing the results of the file
 	 * {@code file}.
+	 *
 	 * @param file filename to look up
 	 * @return HTML String with a a single Table row
 	 */
@@ -134,7 +140,7 @@ public final class FitResultTable implements FitResult {
 		indent(depth, builder);
 
 		builder.append("<a href=\"");
-		builder.append(htmlSafeFile(file));
+		builder.append(FitUtils.htmlSafeFile(file));
 		builder.append("\">");
 		builder.append(file.getName());
 		builder.append("</a>");
@@ -152,6 +158,7 @@ public final class FitResultTable implements FitResult {
 
 	/**
 	 * Returns a summary row for a whole test run.
+	 *
 	 * @param directory headline of the table
 	 * @return a single HTML row
 	 */
@@ -173,10 +180,12 @@ public final class FitResultTable implements FitResult {
 	/**
 	 * Prints out a table to {@code stream} which contains all saved
 	 * results including all summary rows.
+	 *
 	 * @param directory headline of the table
-	 * @param stream stream to write results to
+	 * @param stream    stream to write results to
 	 * @throws IOException thrown by {@code stream} in case of problems
 	 */
+	@Override
 	public void print(final File directory, final OutputStream stream) throws IOException {
 		OutputStreamWriter osw = new OutputStreamWriter(stream);
 		BufferedWriter bw = new BufferedWriter(osw);
@@ -192,12 +201,12 @@ public final class FitResultTable implements FitResult {
 			File currentDir = directory;
 
 			for (File file : files) {
-                File newDir = file.getAbsoluteFile().getParentFile();
+				File newDir = file.getAbsoluteFile().getParentFile();
 				if (!newDir.equals(currentDir) && !dirHelper.isSubDir(currentDir, newDir)) {
-                    for (File tmpDir : dirHelper.getParentDirs(dirHelper.getCommonDir(currentDir, file), newDir)) {
-                        bw.write(getSubSummaryRow(tmpDir));
-                    }
-                }
+					for (File tmpDir : dirHelper.getParentDirs(dirHelper.getCommonDir(currentDir, file), newDir)) {
+						bw.write(getSubSummaryRow(tmpDir));
+					}
+				}
 				currentDir = newDir;
 
 				bw.write(getRow(file));
@@ -220,7 +229,7 @@ public final class FitResultTable implements FitResult {
 		Counts sum = subDirSum(path);
 
 		return String.format("<tr bgcolor=\"%s\"><th style=\"text-align: left\">%s</th><td>%s</td></tr>",
-				color(sum), FixtureTools.htmlSafeFile(dirHelper.abs2rel(new File("").getAbsolutePath(), path.getAbsolutePath())), sum.toString());
+				color(sum), FitUtils.htmlSafeFile(dirHelper.abs2rel(new File("").getAbsolutePath(), path.getAbsolutePath())), sum.toString());
 	}
 
 	private Counts subDirSum(final File fullPath) throws IOException {

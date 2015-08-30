@@ -1,206 +1,228 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.cologneintelligence</groupId>
-	<artifactId>fitgoodies-bundle</artifactId>
-	<version>1.3.1-SNAPSHOT</version>
-	<name>FitGoodies bundle</name>
+<!--
+  ~ Copyright (c) 2002 Cunningham & Cunningham, Inc.
+  ~ Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+  ~
+  ~ This file is part of FitGoodies.
+  ~
+  ~ FitGoodies is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ FitGoodies is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
+  -->
 
-	<packaging>pom</packaging>
-	<description>Transistent pom which is used do install FitGoodies and its archetype</description>
-	<url>https://github.com/cologneintelligence/FitGoodies</url>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>de.cologneintelligence</groupId>
+  <artifactId>fitgoodies-bundle</artifactId>
+  <version>2.0.0-SNAPSHOT</version>
+  <name>FitGoodies bundle</name>
 
-	<prerequisites>
-		<maven>3.0</maven>
-	</prerequisites>
+  <packaging>pom</packaging>
+  <description>Transistent pom which is used do install FitGoodies and its archetype</description>
+  <url>https://github.com/cologneintelligence/FitGoodies</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.6</java.version>
-	</properties>
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
 
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>9</version>
-	</parent>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.7</java.version>
+    <selenium.version>2.47.1</selenium.version>
+  </properties>
 
-	<issueManagement>
-		<system>github</system>
-		<url>https://github.com/cologneintelligence/FitGoodies/issues</url>
-	</issueManagement>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>9</version>
+  </parent>
 
-	<scm>
-		<connection>scm:git:git://github.com/cologneintelligence/FitGoodies.git</connection>
-		<developerConnection>scm:git:git@github.com:cologneintelligence/FitGoodies.git</developerConnection>
-		<url>https://github.com/cologneintelligence/FitGoodies</url>
-	</scm>
+  <issueManagement>
+    <system>github</system>
+    <url>https://github.com/cologneintelligence/FitGoodies/issues</url>
+  </issueManagement>
 
-	<developers>
-		<developer>
-			<id>jochen_wierum</id>
-			<name>Jochen Wierum</name>
-			<email>jochen.wierum@co-in.de</email>
-			<url>http://www.jowisoftware.de</url>
-			<organization>Cologne Intelligence</organization>
-			<organizationUrl>http://www.co-in.de</organizationUrl>
-			<timezone>+1</timezone>
-			<roles>
-				<role>developer</role>
-				<role>architect</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>kia</id>
-			<name>Kiaresch Mussawisade</name>
-			<email>kiaresch.mussawisade@co-in.de</email>
-			<organization>Cologne Intelligence</organization>
-			<organizationUrl>http://www.co-in.de</organizationUrl>
-			<timezone>+1</timezone>
-			<roles>
-				<role>developer</role>
-				<role>architect</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>nerdmann</id>
-			<name>Natalie Erdmann</name>
-			<email>natalie.erdmann@co-in.de</email>
-			<organization>Cologne Intelligence</organization>
-			<organizationUrl>http://www.co-in.de</organizationUrl>
-			<timezone>+1</timezone>
-			<roles>
-				<role>developer</role>
-			</roles>
-		</developer>
-	</developers>
+  <scm>
+    <connection>scm:git:git://github.com/cologneintelligence/FitGoodies.git</connection>
+    <developerConnection>scm:git:git@github.com:cologneintelligence/FitGoodies.git</developerConnection>
+    <url>https://github.com/cologneintelligence/FitGoodies</url>
+  </scm>
 
-	<licenses>
-		<license>
-			<name>GPL</name>
-			<url>http://www.gnu.org/licenses/gpl.html</url>
-		</license>
-	</licenses>
+  <developers>
+    <developer>
+      <id>jochen_wierum</id>
+      <name>Jochen Wierum</name>
+      <email>jochen.wierum@co-in.de</email>
+      <url>http://www.jowisoftware.de</url>
+      <organization>Cologne Intelligence</organization>
+      <organizationUrl>http://www.co-in.de</organizationUrl>
+      <timezone>+1</timezone>
+      <roles>
+        <role>developer</role>
+        <role>architect</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>kia</id>
+      <name>Kiaresch Mussawisade</name>
+      <email>kiaresch.mussawisade@co-in.de</email>
+      <organization>Cologne Intelligence</organization>
+      <organizationUrl>http://www.co-in.de</organizationUrl>
+      <timezone>+1</timezone>
+      <roles>
+        <role>developer</role>
+        <role>architect</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>nerdmann</id>
+      <name>Natalie Erdmann</name>
+      <email>natalie.erdmann@co-in.de</email>
+      <organization>Cologne Intelligence</organization>
+      <organizationUrl>http://www.co-in.de</organizationUrl>
+      <timezone>+1</timezone>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
 
-	<modules>
-		<module>fitgoodies</module>
-		<module>archetype-fitgoodies-quickstart</module>
-		<module>fitgoodies-maven-plugin</module>
+  <licenses>
+    <license>
+      <name>GPL</name>
+      <url>http://www.gnu.org/licenses/gpl.html</url>
+    </license>
+  </licenses>
+
+  <modules>
+    <module>fitgoodies</module>
+    <module>fitgoodies-maven-plugin</module>
+    <module>archetype-fitgoodies-quickstart</module>
   </modules>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<configuration>
-					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<pushChanges>false</pushChanges>
-					<localCheckout>true</localCheckout>
-				</configuration>
-			</plugin>
-		</plugins>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <pushChanges>false</pushChanges>
+          <localCheckout>true</localCheckout>
+        </configuration>
+      </plugin>
+    </plugins>
 
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5.2</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-clean-plugin</artifactId>
-					<version>2.6.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>2.8.2</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-install-plugin</artifactId>
-					<version>2.5.2</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.6</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>3.4</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.18.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-plugin-plugin</artifactId>
-					<version>3.4</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.3</version>
-					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.7</version>
-					<configuration>
-						<encoding>UTF-8</encoding>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-gpg-plugin</artifactId>
-					<version>1.6</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-project-info-reports-plugin</artifactId>
-					<version>2.8</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>2.6.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.6</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.18.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>3.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.3</version>
+          <configuration>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.7</version>
+          <configuration>
+            <encoding>UTF-8</encoding>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>1.6</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>2.8</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
-	<profiles>
-		<profile>
-			<id>release-sign-artifacts</id>
-			<activation>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.1</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

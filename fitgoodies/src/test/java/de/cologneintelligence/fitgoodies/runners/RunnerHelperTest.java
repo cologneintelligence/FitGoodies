@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,10 +21,10 @@
 
 package de.cologneintelligence.fitgoodies.runners;
 
+import de.cologneintelligence.fitgoodies.Counts;
 import de.cologneintelligence.fitgoodies.file.FileSystemDirectoryHelper;
 import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Counts;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -34,63 +36,66 @@ import static org.junit.Assert.assertThat;
 
 
 public final class RunnerHelperTest extends FitGoodiesTestCase {
-    private RunnerHelper helper;
+	private RunnerHelper helper;
 
-    @Before
-    public void prepareMocks()  {
-        helper = DependencyManager.getOrCreate(RunnerHelper.class);
-    }
+	@Before
+	public void prepareMocks() {
+		helper = DependencyManager.getOrCreate(RunnerHelper.class);
+	}
 
-    @Test
-    public void testFilePath() {
-        helper.setFile(new File("/path/to/test1.html"));
-        assertThat(helper.getFile(), is(equalTo(new File("/path/to/test1.html"))));
+	@Test
+	public void testFilePath() {
+		helper.setFile(new File("/path/to/test1.html"));
+		assertThat(helper.getFile(), is(equalTo(new File("/path/to/test1.html"))));
 
-        helper.setFile(new File("/dir/file2.html"));
-        assertThat(helper.getFile(), is(equalTo(new File("/dir/file2.html"))));
-    }
+		helper.setFile(new File("/dir/file2.html"));
+		assertThat(helper.getFile(), is(equalTo(new File("/dir/file2.html"))));
+	}
 
-    @Test
-    public void testResultPath() {
-        helper.setResultFile(new File("/path/to/test1.html"));
-        assertThat(helper.getResultFile(), is(equalTo(new File("/path/to/test1.html"))));
+	@Test
+	public void testResultPath() {
+		helper.setResultFile(new File("/path/to/test1.html"));
+		assertThat(helper.getResultFile(), is(equalTo(new File("/path/to/test1.html"))));
 
-        helper.setResultFile(new File("/dir/file2.html"));
-        assertThat(helper.getResultFile(), is(equalTo(new File("/dir/file2.html"))));
-    }
+		helper.setResultFile(new File("/dir/file2.html"));
+		assertThat(helper.getResultFile(), is(equalTo(new File("/dir/file2.html"))));
+	}
 
-    @Test
-    public void testEncoding() {
-        Runner runner = new Runner() {
-            @Override
-            public Counts run(final File inputFile, final File outputFile) {
-                return null;
-            }
+	@Test
+	public void testEncoding() {
+		Runner runner = new Runner() {
+			@Override
+			public Counts run(final File inputFile, final File outputFile) {
+				return null;
+			}
 
-            @Override
-            public void setEncoding(final String encoding) { }
+			@Override
+			public void setEncoding(final String encoding) {
+			}
 
-            @Override
-            public String getEncoding() { return null; }
-        };
+			@Override
+			public String getEncoding() {
+				return null;
+			}
+		};
 
-        helper.setRunner(runner);
-        assertThat(helper.getRunner(), is(sameInstance(runner)));
-    }
+		helper.setRunner(runner);
+		assertThat(helper.getRunner(), is(sameInstance(runner)));
+	}
 
-    @Test
-    public void testHelper() {
-        FileSystemDirectoryHelper dirHelper = Mockito.mock(FileSystemDirectoryHelper.class);
-        helper.setHelper(dirHelper);
-        assertThat(helper.getHelper(), is(sameInstance(dirHelper)));
-    }
+	@Test
+	public void testHelper() {
+		FileSystemDirectoryHelper dirHelper = Mockito.mock(FileSystemDirectoryHelper.class);
+		helper.setHelper(dirHelper);
+		assertThat(helper.getHelper(), is(sameInstance(dirHelper)));
+	}
 
-    @Test
-    public void testStream() {
-        helper.setLog(System.err);
-        assertThat(helper.getLog(), is(sameInstance(System.err)));
+	@Test
+	public void testStream() {
+		helper.setLog(System.err);
+		assertThat(helper.getLog(), is(sameInstance(System.err)));
 
-        helper.setLog(System.out);
-        assertThat(helper.getLog(), is(sameInstance(System.out)));
-    }
+		helper.setLog(System.out);
+		assertThat(helper.getLog(), is(sameInstance(System.out)));
+	}
 }

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,90 +16,98 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+import org.junit.Before;
 import org.junit.Test;
-
-import java.text.ParseException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 
-public class FileFixtureTest extends FitGoodiesTestCase {
-    @Test
-    public void testErrors() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>too short</td></tr>"
-                + "<tr><td>wrong</td><td>value</td></tr></table>"
-                );
+public class FileFixtureTest extends FitGoodiesFixtureTestCase<FileFixture> {
+    private FileFixtureHelper helper;
 
-        FileFixture fixture = new FileFixture();
-        fixture.doTable(table);
+    @Override
+    protected Class<FileFixture> getFixtureClass() {
+        return FileFixture.class;
+    }
 
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 2)));
+    @Before
+    public void setUp() {
+        this.helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+    }
+
+	@Test
+	public void testErrors() {
+		useTable(
+            tr("too short"),
+            tr("wrong", "value"));
+
+        run();
+
+        assertCounts(0, 0, 0, 2);
+	}
+
+	@Test
+	public void testPattern1() {
+        useTable(tr("pattern", "$pattern"));
+
+        preparePreprocessWithConversion(String.class, "$pattern", ".*\\.txt");
+
+        run();
+
+        assertCounts(0, 0, 0, 0);
+
+		assertThat(helper.getPattern(), is(equalTo(".*\\.txt")));
     }
 
     @Test
-    public void testPattern() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>pattern</td><td>.*\\.txt</td></tr></table>");
+    public void testPattern2() {
+		useTable(tr("pattern", "testfile"));
 
-        FileFixture fixture = new FileFixture();
-        fixture.doTable(table);
+        preparePreprocessWithConversion(String.class, "testfile", "testfile");
 
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-        assertThat(helper.getPattern(), is(equalTo(".*\\.txt")));
+        run();
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>pattern</td><td>testfile</td></tr></table>"
-                );
+        assertCounts(0, 0, 0, 0);
 
-        fixture.doTable(table);
+		assertThat(helper.getPattern(), is(equalTo("testfile")));
+	}
 
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(helper.getPattern(), is(equalTo("testfile")));
-    }
+	@Test
+	public void testEncoding1() {
+        useTable(
+            tr("directory", "$dir"),
+            tr("encoding", "utf-8"));
 
-    @Test
-    public void testEncoding() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>directory</td><td>dir</td></tr>"
-                + "<tr><td>encoding</td><td>utf-8</td></tr>"
-                + "</table>");
+        preparePreprocessWithConversion(String.class, "$dir", "dir");
+        preparePreprocessWithConversion(String.class, "utf-8", "utf-8");
 
-        FileFixture fixture = new FileFixture();
-        fixture.doTable(table);
+        run();
 
-        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
+        assertCounts(0, 0, 0, 0);
         assertThat(helper.getEncoding(), is(equalTo("utf-8")));
-
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>directory</td><td>c:\\</td></tr>"
-                + "<tr><td>encoding</td><td>latin-1</td></tr>"
-                + "</table>");
-
-        fixture.doTable(table);
-
-        assertThat(fixture.counts.right, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        assertThat(helper.getEncoding(), is(equalTo("latin-1")));
     }
+
+    @Test
+    public void testEncoding2() {
+		useTable(
+				tr("directory", "c:\\"),
+				tr("encoding", "latin-1"));
+
+        preparePreprocessWithConversion(String.class, "c:\\", "c:\\");
+        preparePreprocessWithConversion(String.class, "latin-1", "latin-1");
+
+        run();
+
+        assertCounts(0, 0, 0, 0);
+		assertThat(helper.getEncoding(), is(equalTo("latin-1")));
+	}
+
 }

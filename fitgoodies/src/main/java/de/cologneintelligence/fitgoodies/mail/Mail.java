@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.mail;
 
@@ -23,12 +24,11 @@ import javax.mail.MessagingException;
 
 /**
  * Interface to access mail information.
- *
  */
 public interface Mail {
 	/**
-	 * Returns all headers of the type <code>headerName</code>. If such a header
-	 * does not exist, <code>null</code> should be returned.
+	 * Returns all headers of the type {@code headerName}. If such a header
+	 * does not exist, {@code null} should be returned.
 	 *
 	 * @param headerName header to read
 	 * @return list of header values
@@ -38,6 +38,7 @@ public interface Mail {
 
 	/**
 	 * Tests whether a mail has an HTML body.
+	 *
 	 * @return true if, and only if, the mail contains an HTML body
 	 * @throws MessagingException thrown by the underlying implementation
 	 */
@@ -45,6 +46,7 @@ public interface Mail {
 
 	/**
 	 * Tests whether a mail has an plain text body.
+	 *
 	 * @return true if, and only if, the mail contains an plain text body
 	 * @throws MessagingException thrown by the underlying implementation
 	 */
@@ -52,12 +54,14 @@ public interface Mail {
 
 	/**
 	 * Gets the HTML body.
+	 *
 	 * @return the HTML body of the mail.
 	 */
 	String getHTMLContent();
 
 	/**
 	 * Gets the plain text body.
+	 *
 	 * @return the plain text body of the mail.
 	 */
 	String getPlainContent();

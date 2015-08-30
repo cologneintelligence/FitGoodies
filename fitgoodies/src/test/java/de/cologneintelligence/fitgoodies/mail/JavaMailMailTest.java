@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -34,13 +36,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 public final class JavaMailMailTest extends FitGoodiesTestCase {
@@ -123,15 +121,15 @@ public final class JavaMailMailTest extends FitGoodiesTestCase {
 		final Multipart multipart = mock(Multipart.class);
 		final MimeBodyPart mimepart1 = mock(MimeBodyPart.class);
 
-			when(message.isMimeType("multipart/*")).thenReturn(true);
-			when(message.getContent()).thenReturn(multipart);
+		when(message.isMimeType("multipart/*")).thenReturn(true);
+		when(message.getContent()).thenReturn(multipart);
 
-			when(multipart.getCount()).thenReturn(1);
-			when(multipart.getBodyPart(0)).thenReturn(mimepart1);
+		when(multipart.getCount()).thenReturn(1);
+		when(multipart.getBodyPart(0)).thenReturn(mimepart1);
 
-			when(mimepart1.isMimeType("text/html")).thenReturn(false);
+		when(mimepart1.isMimeType("text/html")).thenReturn(false);
 
-			when(mimepart1.getDisposition()).thenReturn(Part.INLINE);
+		when(mimepart1.getDisposition()).thenReturn(Part.INLINE);
 
 		assertThat(mail.hasHTMLContent(), is(false));
 
@@ -256,20 +254,20 @@ public final class JavaMailMailTest extends FitGoodiesTestCase {
 		final byte[] CONTENTBYTES = CONTENT.getBytes("utf-16");
 		final InputStream content = new ByteArrayInputStream(CONTENTBYTES);
 
-			when(message.isMimeType("multipart/*")).thenReturn(true);
-			when(message.getContent()).thenReturn(multipart);
+		when(message.isMimeType("multipart/*")).thenReturn(true);
+		when(message.getContent()).thenReturn(multipart);
 
-			when(multipart.getCount()).thenReturn(2);
-			when(multipart.getBodyPart(0)).thenReturn(mimepart1);
-			when(multipart.getBodyPart(1)).thenReturn(mimepart2);
+		when(multipart.getCount()).thenReturn(2);
+		when(multipart.getBodyPart(0)).thenReturn(mimepart1);
+		when(multipart.getBodyPart(1)).thenReturn(mimepart2);
 
-			when(mimepart1.getDisposition()).thenReturn(Part.ATTACHMENT);
+		when(mimepart1.getDisposition()).thenReturn(Part.ATTACHMENT);
 
-			when(mimepart2.isMimeType("text/plain")).thenReturn(true);
-			when(mimepart2.getDisposition()).thenReturn(Part.INLINE);
-			when(mimepart2.getSize()).thenReturn(CONTENTBYTES.length);
-			when(mimepart2.getEncoding()).thenReturn("utf-16");
-			when(mimepart2.getInputStream()).thenReturn(content);
+		when(mimepart2.isMimeType("text/plain")).thenReturn(true);
+		when(mimepart2.getDisposition()).thenReturn(Part.INLINE);
+		when(mimepart2.getSize()).thenReturn(CONTENTBYTES.length);
+		when(mimepart2.getEncoding()).thenReturn("utf-16");
+		when(mimepart2.getInputStream()).thenReturn(content);
 
 		assertThat(mail.getPlainContent(), is(equalTo(CONTENT)));
 	}

@@ -12,147 +12,104 @@ some aliases, load Custom type adapters, and so on.</p>
 
 <p>Define aliases to type less</p>
 <table>
-	<tr>
-		<td>fitgoodies.alias.SetupFixture</td>
-	</tr>
-	<tr>
-		<td>ISBNFixture</td>
-		<td>${groupId}.ISBNFixture</td>
-	</tr>
-	<tr>
-		<td>BookFixture</td>
-		<td>${groupId}.BookFixture</td>
-	</tr>
-	<tr>
-		<td>TableFixture</td>
-		<td>de.cologneintelligence.fitgoodies.database.TableFixture</td>
-	</tr>
-	<tr>
-		<td>ActionFixture</td>
-		<td>de.cologneintelligence.fitgoodies.ActionFixture</td>
-	</tr>
-	<tr>
-		<td>FileRecords</td>
-		<td>de.cologneintelligence.fitgoodies.file.FixedLengthFileRecordFixture</td>
-	</tr>
+    <tr>
+        <td>fitgoodies.alias.SetupFixture</td>
+    </tr>
+    <tr>
+        <td>ISBNFixture</td>
+        <td>${groupId}.ISBNFixture</td>
+    </tr>
+    <tr>
+        <td>BookFixture</td>
+        <td>${groupId}.BookFixture</td>
+    </tr>
+    <tr>
+        <td>TableFixture</td>
+        <td>de.cologneintelligence.fitgoodies.database.TableFixture</td>
+    </tr>
+    <tr>
+        <td>ActionFixture</td>
+        <td>de.cologneintelligence.fitgoodies.ActionFixture</td>
+    </tr>
+    <tr>
+        <td>FileRecords</td>
+        <td>de.cologneintelligence.fitgoodies.file.FixedLengthFileRecordFixture</td>
+    </tr>
 </table>
 
 <p>Load custom TypeAdapters</p>
 <table>
-	<tr>
-		<td>fitgoodies.adapters.SetupFixture</td>
-	</tr>
-	<tr>
-		<td>load</td>
-		<td>${groupId}.ISBNTypeAdapter</td>
-	</tr>
+    <tr>
+        <td>fitgoodies.typehandler.SetupFixture</td>
+    </tr>
+    <tr>
+        <td>load</td>
+        <td>${groupId}.ISBNTypeHandler</td>
+    </tr>
 </table>
 
 <p>Initialize a database connection (we need it later)</p>
 <table>
-	<tr>
-		<td>fitgoodies.database.SetupFixture</td>
-	</tr>
-	<tr>
-		<td>provider</td>
-		<td>org.apache.derby.jdbc.EmbeddedDriver</td>
-	</tr>
-	<tr>
-		<td>connectionString</td>
-		<td>jdbc:derby:demo-output/db;create=true</td>
-	</tr>
+    <tr>
+        <td>fitgoodies.database.SetupFixture</td>
+    </tr>
+    <tr>
+        <td>provider</td>
+        <td>org.apache.derby.jdbc.EmbeddedDriver</td>
+    </tr>
+    <tr>
+        <td>connectionString</td>
+        <td>jdbc:derby:target/demo-db;create=true</td>
+    </tr>
 </table>
 
 <p>All generated files will be text files in the demo application
 folder.</p>
 <table>
-	<tr>
-		<td>fitgoodies.file.FileFixture</td>
-	</tr>
-	<tr>
-		<td>directory</td>
-		<td>demo-output/</td>
-	</tr>
-	<tr>
-		<td>pattern</td>
-		<td>.*\.txt</td>
-	</tr>
-	<tr>
-		<td>encoding</td>
-		<td>utf-8</td>
-	</tr>
+    <tr>
+        <td>fitgoodies.file.FileFixture</td>
+    </tr>
+    <tr>
+        <td>directory</td>
+        <td>target/demo-output/</td>
+    </tr>
+    <tr>
+        <td>pattern</td>
+        <td>.*\.txt</td>
+    </tr>
+    <tr>
+        <td>encoding</td>
+        <td>utf-8</td>
+    </tr>
 </table>
 
 <p>Initialize logging</p>
 <table>
-	<tr>
-		<td>fitgoodies.ActionFixture</td>
-	</tr>
-	<tr>
-		<td>start</td>
-		<td>${groupId}.LogPrepareFixture</td>
-	</tr>
-	<tr>
-		<td>press</td>
-		<td>initialize logging</td>
-	</tr>
+    <tr>
+        <td>fitgoodies.ActionFixture</td>
+    </tr>
+    <tr>
+        <td>start</td>
+        <td>${groupId}.LogPrepareFixture</td>
+    </tr>
+    <tr>
+        <td>press</td>
+        <td>initialize logging</td>
+    </tr>
 </table>
 
 <p>In addition, the logging output will be captured to be analyzed
 later</p>
 <table>
-	<tr>
-		<td>fitgoodies.log4j.SetupFixture</td>
-	</tr>
-	<tr>
-		<td>monitorRoot</td>
-		<td>stdout</td>
-	</tr>
+    <tr>
+        <td>fitgoodies.log4j.SetupFixture</td>
+    </tr>
+    <tr>
+        <td>monitorRoot</td>
+        <td>stdout</td>
+    </tr>
 </table>
 
-<p>Selenium SetupFixture</p>
-<table>
-	<tr>
-		<td>fitgoodies.selenium.SetupFixture</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>serverHost</td>
-		<td>localhost</td>
-	</tr>
-	<tr>
-		<td>serverPort</td>
-		<td>4444</td>
-	</tr>
-	<tr>
-		<td>browserStartCommand</td>
-		<td>*firefox</td>
-	</tr>
-	<tr>
-		<td>browserURL</td>
-		<td>http://www.google.com</td>
-	</tr>
-	<tr>
-		<td>speed</td>
-		<td>0</td>
-	</tr>
-	<tr>
-		<td>takeScreenshots</td>
-		<td>true</td>
-	</tr>
-	<tr>
-		<td>retryTimeout</td>
-		<td>3000</td>
-	</tr>
-	<tr>
-		<td>timeout</td>
-		<td>25000</td>
-	</tr>
-	<tr>
-		<td>start</td>
-		<td></td>
-	</tr>
-</table>
 
 </body>
 </html>

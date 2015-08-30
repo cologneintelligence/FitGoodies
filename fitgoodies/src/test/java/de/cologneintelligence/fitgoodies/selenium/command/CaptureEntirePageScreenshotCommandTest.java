@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,38 +21,37 @@
 package de.cologneintelligence.fitgoodies.selenium.command;
 
 import com.thoughtworks.selenium.CommandProcessor;
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class CaptureEntirePageScreenshotCommandTest extends FitGoodiesTestCase {
-    private CommandProcessor commandProcessor;
+	private CommandProcessor commandProcessor;
 
-    @Before
-    public void setUp() throws Exception {
-        commandProcessor = mock(CommandProcessor.class);
-    }
+	@Before
+	public void setUp() throws Exception {
+		commandProcessor = mock(CommandProcessor.class);
+	}
 
-    @Test
-    public void testDoCommand() {
-        SetupHelper helper = new SetupHelper();
+	@Test
+	public void testDoCommand() {
+		SetupHelper helper = new SetupHelper();
 
-        helper.setCommandProcessor(commandProcessor);
-        helper.setSleepBeforeScreenshotMillis(1L);
+		helper.setCommandProcessor(commandProcessor);
+		helper.setSleepBeforeScreenshotMillis(1L);
 
-        final String[] args = new String[]{"arg1", "arg2"};
-        WrappedCommand command = CommandFactory.createCommand("captureEntirePageScreenshot", args, helper);
-        when(commandProcessor.doCommand("captureEntirePageScreenshot", args)).thenReturn("OK");
+		final String[] args = new String[]{"arg1", "arg2"};
+		WrappedCommand command = CommandFactory.createCommand("captureEntirePageScreenshot", args, helper);
+		when(commandProcessor.doCommand("captureEntirePageScreenshot", args)).thenReturn("OK");
 
-        assertThat(command.execute(), is(equalTo("OK")));
-    }
+		assertThat(command.execute(), is(equalTo("OK")));
+	}
 
 }

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,49 +21,60 @@
 
 package de.cologneintelligence.fitgoodies.alias;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+import org.junit.Before;
 import org.junit.Test;
-
-import java.text.ParseException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class SetupFixtureTest extends FitGoodiesTestCase {
-    @Test
-    public void testParsing() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>asdf</td><td>java.lang.String</td></tr>"
-                + "</table>");
+public class SetupFixtureTest extends FitGoodiesFixtureTestCase<SetupFixture> {
 
-        SetupFixture fixture = new SetupFixture();
-        fixture.doTable(table);
+    private AliasHelper helper;
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        AliasHelper helper = DependencyManager.getOrCreate(AliasHelper.class);
-        assertThat(helper.getClazz("asdf"), is(equalTo("java.lang.String")));
+    @Before
+    public void setUp() {
+        helper = DependencyManager.getOrCreate(AliasHelper.class);
+    }
 
-        table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>i</td><td>java.lang.Integer</td></tr>"
-                + "</table>");
-
-        fixture.doTable(table);
-        assertThat(helper.getClazz("i"), is(equalTo("java.lang.Integer")));
+    @Override
+    protected Class<SetupFixture> getFixtureClass() {
+        return SetupFixture.class;
     }
 
     @Test
-    public void testError() throws ParseException {
-        Parse table = new Parse("<table><tr><td>ignore</td></tr>"
-                + "<tr><td>x</td></tr>"
-                + "</table>");
+	public void testParsing1() {
+        useTable(tr("asdf", "java.lang.String"));
 
-        SetupFixture fixture = new SetupFixture();
-        fixture.doTable(table);
+        preparePreprocess(cellAt(0, 0), "asdf2");
+        preparePreprocess(cellAt(0, 1), "java.lang.Long");
 
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-        assertThat(fixture.counts.ignores, is(equalTo((Object) 1)));
+        run();
+
+        assertCounts(0, 0, 0, 0);
+        assertThat(helper.getClazz("asdf2"), is(equalTo("java.lang.Long")));
     }
+
+    @Test
+    public void testParsing2() {
+		useTable(tr("i", "java.lang.Integer"));
+
+        preparePreprocess(cellAt(0, 0), "i");
+        preparePreprocess(cellAt(0, 1), "java.lang.Integer");
+
+		run();
+		assertThat(helper.getClazz("i"), is(equalTo("java.lang.Integer")));
+	}
+
+	@Test
+    public void testError() throws Exception {
+		useTable(tr("x"));
+
+		run();
+
+        assertCounts(0, 0, 1, 0);
+	}
+
 }

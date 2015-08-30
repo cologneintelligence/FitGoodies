@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -31,13 +33,13 @@ import java.io.File;
  * the last item in a directory
  */
 public class FitFileInformationComparator extends FitFilenameComparator<FileInformation> {
-    @Override
-    protected File getFile(FileInformation lhs) {
-        return lhs.getFile();
-    }
+	@Override
+	protected File getFile(FileInformation lhs) {
+		return lhs.getFile();
+	}
 
-    @Override
-    protected String getFileName(FileInformation fo) {
-        return fo.getFile().getName();
-    }
+	@Override
+	protected String getFileName(FileInformation fo) {
+		return fo.getFile().getName();
+	}
 }

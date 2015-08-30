@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -21,26 +23,26 @@ package de.cologneintelligence.fitgoodies.selenium.command;
 import de.cologneintelligence.fitgoodies.selenium.SetupHelper;
 
 public class CaptureEntirePageScreenshotCommand extends WrappedCommand {
-    private final long sleepBeforeScreenshot;
+	private final long sleepBeforeScreenshot;
 
-    public CaptureEntirePageScreenshotCommand(final String command, final String[] args,
-            final SetupHelper helper) {
-        super(command, args, helper.getCommandProcessor());
-        this.sleepBeforeScreenshot = helper.getSleepBeforeScreenshotMillis();
-    }
+	public CaptureEntirePageScreenshotCommand(final String command, final String[] args,
+	                                          final SetupHelper helper) {
+		super(command, args, helper.getCommandProcessor());
+		this.sleepBeforeScreenshot = helper.getSleepBeforeScreenshotMillis();
+	}
 
-    @Override
-    public String execute() {
-        waitBeforeTakingScreenshot();
-        return commandProcessor.doCommand("captureEntirePageScreenshot", args);
-    }
+	@Override
+	public String execute() {
+		waitBeforeTakingScreenshot();
+		return commandProcessor.doCommand("captureEntirePageScreenshot", args);
+	}
 
-    private void waitBeforeTakingScreenshot() {
-        try {
-            Thread.sleep(sleepBeforeScreenshot);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	private void waitBeforeTakingScreenshot() {
+		try {
+			Thread.sleep(sleepBeforeScreenshot);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }

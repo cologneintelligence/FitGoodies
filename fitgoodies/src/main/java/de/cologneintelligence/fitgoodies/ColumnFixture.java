@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -16,258 +18,121 @@
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package de.cologneintelligence.fitgoodies;
 
-import de.cologneintelligence.fitgoodies.adapters.TypeAdapterHelper;
-import de.cologneintelligence.fitgoodies.parsers.ParserHelper;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import de.cologneintelligence.fitgoodies.util.FixtureTools;
-import fit.Parse;
-import fit.TypeAdapter;
+import de.cologneintelligence.fitgoodies.htmlparser.FitCell;
+import de.cologneintelligence.fitgoodies.htmlparser.FitRow;
+import de.cologneintelligence.fitgoodies.valuereceivers.ValueReceiver;
 
-/**
- * In contrast to <code>fit.ColumnFixture</code>, this {@code ColumnFixture}
- * enables all fitgoodies features (for example custom type adapters,
- * custom parsers and cross references).
- *
- */
-public class ColumnFixture extends fit.ColumnFixture {
+import java.util.List;
+
+import static de.cologneintelligence.fitgoodies.util.FitUtils.saveGet;
+
+public class ColumnFixture extends Fixture {
+
 	private String[] columnParameters;
-	private String columnParameter;
+	private ValueReceiver[] columnBindings;
+
+	private boolean hasExecuted = false;
+
+	// Traversal ////////////////////////////////
+
+
+	/**
+	 * Replacement of {@code doRows(Parse)} which resolves question marks
+	 * in the first row and calls fit.ColumnFixture.doRows(Parse).
+	 * <p/>
+	 * Question marks represent method calls,
+	 * so getValue() and getValue? are equivalent.
+	 *
+     * @param rows rows to be processed
+     */
+
+	@Override
+	protected void doRows(final List<FitRow> rows) throws Exception {
+        FitRow headerRow = rows.get(0);
+        columnParameters = extractColumnParameters(headerRow);
+		bind(headerRow);
+		super.doRows(rows.subList(1, rows.size()));
+	}
+
+	@Override
+	protected void doRow(FitRow row) {
+		hasExecuted = false;
+		try {
+			reset();
+			super.doRow(row);
+			if (!hasExecuted) {
+				execute();
+			}
+		} catch (Exception e) {
+            row.exception(e);
+		}
+	}
 
 	/**
 	 * Replacement of {@code doCell} which resolves cross-references
 	 * before calling the original {@code doCell} method of fit.
 	 *
-	 *  @param cell the cell to check
-     *  @param column the selected column
-     *
-     *  @see fit.Fixture#doCell(Parse, int) fit.Fixture.doCell(Parse, int)
-     */
-    @Override
-	public void doCell(final Parse cell, final int column) {
-        TypeAdapter a = columnBindings[column];
-
-        columnParameter = null;
-        if (column < columnParameters.length) {
-        	columnParameter = columnParameters[column];
-        }
-
-        if (a == null) {
-            ignore(cell);
-        } else {
-            final CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-	        a = FixtureTools.processCell(cell, a, this, helper);
-	        if (a != null) {
-		        try {
-		            final String text = cell.text();
-		            if (text.equals("")) {
-		                check(cell, a);
-		            } else if (a.field != null) {
-		                a.set(a.parse(text));
-		            } else if (a.method != null) {
-		                check(cell, a);
-		            }
-		        } catch (final Exception e) {
-		            exception(cell, e);
-		        }
-	        }
-        }
-    }
-
-	/**
-	 * Replacement of {@code parse} which uses the extended parse features of
-	 * fitgoodies and uses fit's parse as a fallback.
-	 *
-	 *  @param text text to parse
-     *  @param type type to transform text to
-     *
-     *  @return Object of type <code>type</code> which represents {@code text}
-     *  @throws Exception if the value can't be parsed
-     *
-     *  @see fit.Fixture#parse(String, Class) {@link fit.Fixture#parse(String, Class)}
+	 * @param cell   the cell to check
+	 * @param column the selected column
+	 * @see Fixture#doCell(FitCell, int) fit.Fixture.doCell(Parse, int)
 	 */
-	@Override @SuppressWarnings("rawtypes")
-	public Object parse(final String text, final Class type) throws Exception {
-	    final ParserHelper helper = DependencyManager.getOrCreate(ParserHelper.class);
-		final Object result = FixtureTools.parse(text, type, columnParameter, helper);
+	@Override
+	protected void doCell(final FitCell cell, final int column) {
+		ValueReceiver receiver = columnBindings[column];
 
-		if (result == null) {
-			return super.parse(text, type);
+		String currentCellParameter = saveGet(column, columnParameters);
+		if (receiver != null && !cell.getFitValue().trim().isEmpty() && receiver.canSet()) {
+			setValue(cell, receiver, currentCellParameter);
 		} else {
-			return result;
+			check(cell, receiver, currentCellParameter);
 		}
 	}
 
-	@Override
-    protected void bind(final Parse heads) {
-		Parse head = heads;
-        columnBindings = new TypeAdapter[head.size()];
-        for (int i = 0; head != null; i++, head = head.more) {
-            final String name = head.text();
-            final String suffix = "()";
-            try {
-            	String parameter = null;
-            	if (i < columnParameters.length) {
-            		parameter = columnParameters[i];
-            	}
-
-                if (name.equals("")) {
-                    columnBindings[i] = null;
-                } else if (name.endsWith(suffix)) {
-                    columnBindings[i] = bindMethod(name.substring(0,
-                    		name.length() - suffix.length()), parameter);
-                } else {
-                    columnBindings[i] = bindField(name, parameter);
-                }
-            } catch (final Exception e) {
-                exception(head, e);
-            }
-        }
-    }
-
-	/**
-	 * Replacement of {@code bindMethod(String)}, which calls
-	 * {@code fit.ColumnFixture.bindMethod(String)} and
-	 * rebinds the returned {@code TypeAdapter} to a custom registered,
-	 * more specific one, if possible.
-	 *
-	 *  @param name method name to bind
-     *  @return TypeAdapter which is bound to the method
-     *  @throws Exception stops the fixture if the method
-     *  		does not exist or is not accessible
-     *  @see fit.ColumnFixture#bindMethod(String)
-     *  	{@link fit.ColumnFixture#bindMethod(String)}
-	 */
-	private TypeAdapter bindMethod(final String name, final String parameter)
-			throws Exception {
-	    final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-		TypeAdapter ta = super.bindMethod(name);
-		ta = FixtureTools.rebindTypeAdapter(ta, parameter, taHelper);
-		return ta;
+	private void setValue(FitCell cell, ValueReceiver receiver, String currentCellParameter) {
+		try {
+			String text = validator.preProcess(cell);
+			Object object = typeHandlerFactory.getHandler(receiver.getType(), currentCellParameter).parse(text);
+			receiver.set(this, object);
+		} catch (Exception e) {
+            cell.exception(e);
+		}
 	}
 
-	/**
-	 * Replacement of {@code bindField(String)}, which calls
-	 * {@code fit.ColumnFixture.bindField(String)} and rebinds the
-	 * returned {@code TypeAdapter} to a custom registered,
-	 * more specific one, if possible.
-	 *
-	 * @param name field name to bind
-	 * @return TypeAdapter which is bound to the field
-     * @throws Exception stops the fixture if the field
-     *  		does not exist or is not accessible
-     * @see fit.ColumnFixture#bindField(String)
-     *  	{@link fit.ColumnFixture#bindField(String)}
-	 */
-	private TypeAdapter bindField(final String name, final String parameter)
-			throws Exception {
-	    final TypeAdapterHelper taHelper = DependencyManager.getOrCreate(TypeAdapterHelper.class);
-		TypeAdapter ta = super.bindField(name);
-		ta = FixtureTools.rebindTypeAdapter(ta, parameter, taHelper);
-		return ta;
+	public void check(FitCell cell, ValueReceiver valueReceiver, String currentCellParameter) {
+		if (!hasExecuted) {
+			try {
+				execute();
+			} catch (Exception e) {
+                cell.exception(e);
+			}
+			hasExecuted = true;
+		}
+		super.check(cell, valueReceiver, currentCellParameter);
 	}
 
-	/**
-	 * Replacement of {@code doRows(Parse)} which resolves question marks
-	 * in the first row and calls fit.ColumnFixture.doRows(Parse).
-	 *
-	 * Question marks represent method calls,
-	 * so getValue() and getValue? are equivalent.
-	 *
-	 * @param rows rows to be processed
-	 */
-
-	@Override
-	public void doRows(final Parse rows) {
-		columnParameters = FixtureTools.extractColumnParameters(rows);
-		FixtureTools.resolveQuestionMarks(rows);
-		super.doRows(rows);
+	public void reset() throws Exception {
+		// about to process first cell of row
 	}
 
-	/**
-	 * Sets the fixture columnParameters.
-	 *
-	 * Normally, these values are generated by reading the first
-	 * line of the table. This method is primary useful for debugging.
-	 * You won't need it otherwise.
-	 *
-	 * @param parameters columnParameters to store in {@code args}
-	 */
-	public void setParams(final String[] parameters) {
-		this.args = parameters;
+	public void execute() throws Exception {
+		// about to process first method call of row
 	}
 
-	/**
-	 * Initializes the fixture arguments, call {@code setUp},
-	 * <code>fit.ActionFixture.doTable(Parse)</code> and {@code tearDown()}.
-	 *
-     * @param table the table to be processed
-	 * @see fit.Fixture#doTable(Parse) {@link fit.Fixture#doTable(Parse)}
-	 */
-    @Override
-    public void doTable(final Parse table) {
-    	FixtureTools.copyParamsToFixture(args, this,
-    	        DependencyManager.getOrCreate(CrossReferenceHelper.class),
-    	        DependencyManager.getOrCreate(TypeAdapterHelper.class));
+	// Utility //////////////////////////////////
 
-    	try {
-    		setUp();
+	protected void bind(FitRow heads) {
+		columnBindings = new ValueReceiver[heads.size()];
+        for (int i = 0; i < columnBindings.length; i++) {
+            FitCell cell = heads.cells().get(i);
+            String name = cell.getFitValue();
 
-            try {
-                super.doTable(table);
-            } catch (final Exception e) {
-                exception(table.parts.parts, e);
-            }
-
-            tearDown();
-    	} catch (final Exception e) {
-            exception(table.parts.parts, e);
-        }
-    }
-
-    /**
-     * Does nothing. Override it to initialize the fixture.
-     * The method is called before doTables.
-     * @throws Exception any kind of exception aborts the execution of this fixture
-     */
-    public void setUp() throws Exception {
-    }
-
-    /**
-     * Does nothing. Override it to tear down the fixture.
-     * The method is called after doTables.
-     *
-     * @throws Exception any kind of exception aborts the execution of this fixture
-     */
-    public void tearDown() throws Exception {
-    }
-
-    /**
-     * Looks up a given columnParameter in the fixture's argument list.
-     *
-     * @param paramName the columnParameter name to look up
-     * @return  the columnParameter value, if it could be found, {@code null} otherwise
-     * @see #getParam(String, String) {@link #getParam(String, String)}
-     * @see FixtureTools#getArg(String[], String, String, CrossReferenceHelper)
-     * 		{@link FixtureTools#getArg(String[], String, String, CrossReferenceHelper)}
-     */
-	public final String getParam(final String paramName) {
-		return getParam(paramName, null);
-	}
-
-	/**
-	 * Looks up a given columnParameter in the fixture's argument list.
-	 *
-	 * If the value does not exist, the given default value is returned.
-     * @param paramName paramName the columnParameter name to look up
-     * @param defaultValue defaultValue the value to be returned if the columnParameter is missing
-     * @return the columnParameter value, if it could be found, {@code defaultValue} otherwise
-	 */
-	public final String getParam(final String paramName, final String defaultValue) {
-		return FixtureTools.getArg(args, paramName, defaultValue,
-		        DependencyManager.getOrCreate(CrossReferenceHelper.class));
+			try {
+				columnBindings[i] = createReceiver(this, name);
+			} catch (Exception e) {
+				cell.exception(e);
+			}
+		}
 	}
 }

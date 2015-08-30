@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,24 +16,23 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.runners;
 
-import fit.Counts;
+import de.cologneintelligence.fitgoodies.Counts;
 
 import java.io.File;
 
 /**
  * Interface which is used to check a single test file.
- *
  */
 public interface Runner {
 	/**
 	 * Processes <code>inputFile</code>, write output to <code>outputFile</code>
 	 * and return the resulting counts.
-	 * @param inputFile file to process
+	 *
+	 * @param inputFile  file to process
 	 * @param outputFile file to write output to
 	 * @return resulting counts
 	 */
@@ -39,6 +40,7 @@ public interface Runner {
 
 	/**
 	 * Sets the encoding of all input/output files to <code>encoding</code>.
+	 *
 	 * @param encoding encoding to be used
 	 * @see #getEncoding()
 	 */
@@ -46,6 +48,7 @@ public interface Runner {
 
 	/**
 	 * Gets the encoding of all input/output files.
+	 *
 	 * @return encoding to be used
 	 * @see #setEncoding(String) setEncoding(String)
 	 */

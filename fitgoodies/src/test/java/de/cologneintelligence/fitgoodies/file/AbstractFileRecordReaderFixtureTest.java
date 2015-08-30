@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,137 +21,119 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.file.readers.FileRecordReader;
 import de.cologneintelligence.fitgoodies.file.readers.FileRecordReaderMock;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import org.junit.Test;
 
-import java.text.ParseException;
-
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 
 
-public class AbstractFileRecordReaderFixtureTest extends FitGoodiesTestCase {
-	private static class DummyRecordReaderFixture
-			extends AbstractFileRecordReaderFixture {
-
-		public DummyRecordReaderFixture(final FileRecordReader r) {
-			super.setRecordReader(r);
-		}
-
-		@Override public void setUp() {
+public class AbstractFileRecordReaderFixtureTest extends FitGoodiesFixtureTestCase<AbstractFileRecordReaderFixtureTest.DummyRecordReaderFixture> {
+	public static class DummyRecordReaderFixture extends AbstractFileRecordReaderFixture {
+		@Override
+		public void setUp() {
 		}
 	}
 
-	@Test
+    @Override
+    protected Class<DummyRecordReaderFixture> getFixtureClass() {
+        return DummyRecordReaderFixture.class;
+    }
+
+    @Test
 	public void testComparison() throws Exception {
-		Parse table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>x</td><td>y</td></tr>"
-				+ "<tr><td>1</td><td>2</td></tr>"
-				+ "</table>"
-				);
+		useTable(tr("x", "y"), tr("1", "2"));
 
-		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
-				new FileRecordReaderMock(new String[][] {
-						new String[]{"x", "y"},
-						new String[]{"1", "2"}
-				}));
+        fixture.setRecordReader(
+            new FileRecordReaderMock(new String[][]{
+                new String[]{"x", "y"},
+                new String[]{"1", "2"}
+            }));
 
-		fixture.doTable(table);
+		run();
 
-		assertThat(fixture.counts.ignores, is(equalTo((Object) 0)));
-		assertThat(fixture.counts.exceptions, is(equalTo((Object) 0)));
-		assertThat(fixture.counts.wrong, is(equalTo((Object) 0)));
-		assertThat(fixture.counts.right, is(equalTo((Object) 4)));
+        expectConstantValidation(0, 0, "x");
+        expectConstantValidation(0, 1, "y");
+        expectConstantValidation(1, 0, "1");
+        expectConstantValidation(1, 1, "2");
 	}
 
-	@Test
+    @Test
 	public void testComparisonWithErrors() throws Exception {
-		Parse table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>x</td><td>z</td><td>hello</td></tr>"
-				+ "<tr><td>1</td><td>u</td><td>4</td></tr>"
-				+ "</table>"
-				);
+		useTable(
+				tr("x", "z", "hello"),
+				tr("1", "u", "4"));
 
-		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
-				new FileRecordReaderMock(new String[][] {
+		fixture.setRecordReader(
+				new FileRecordReaderMock(new String[][]{
 						new String[]{"x", "z", "test"},
 						new String[]{"2", "5", "4"}
 				}));
 
-		fixture.doTable(table);
+		run();
 
-		assertThat(fixture.counts.right, is(equalTo((Object) 3)));
-		assertThat(fixture.counts.wrong, is(equalTo((Object) 3)));
+        expectConstantValidation(0, 0, "x");
+        expectConstantValidation(0, 1, "z");
+        expectConstantValidation(0, 2, "test");
+        expectConstantValidation(1, 0, "2");
+        expectConstantValidation(1, 1, "5");
+        expectConstantValidation(1, 2, "4");
 	}
 
 	@Test
 	public void testSurplusRows() throws Exception {
-		Parse table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>x</td><td>z</td><td>hello</td></tr>"
-				+ "</table>"
-				);
+		useTable(tr("x", "z", "hello"));
 
-		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
-				new FileRecordReaderMock(new String[][] {
+		fixture.setRecordReader(
+				new FileRecordReaderMock(new String[][]{
 						new String[]{"x", "z", "hello"},
 						new String[]{"2", "5", "4"},
-						new String[]{"2", "5", "4"}
+						new String[]{"2", "9", "7"}
 				}));
 
-		fixture.doTable(table);
+		run();
 
-		assertThat(fixture.counts.right, is(equalTo((Object) 3)));
-		assertThat(fixture.counts.wrong, is(equalTo((Object) 6)));
+        assertCounts(0, 2, 0, 0);
 
-		assertThat(table.parts.more.more.parts.text(), containsString("surplus"));
-		assertThat(table.parts.more.more.parts.last().text(), containsString("surplus"));
+		assertThat(htmlAt(1, 0), containsString("surplus"));
+		assertThat(htmlAt(1, 2), containsString("5"));
+		assertThat(htmlAt(2, 0), containsString("surplus"));
+		assertThat(htmlAt(2, 3), containsString("7"));
 	}
 
 	@Test
 	public void testMissingRows() throws Exception {
-		Parse table = new Parse(
-				"<table>"
-				+ "<tr><td>ignore</td></tr>"
-				+ "<tr><td>x</td><td>z</td><td>hello</td></tr>"
-				+ "<tr><td>1</td><td>2</td><td>3</td></tr>"
-				+ "<tr><td>4</td><td>5</td><td>6</td></tr>"
-				+ "</table>"
-				);
+		useTable(
+				tr("x", "z", "hello"),
+				tr("1", "2", "3"),
+				tr("4", "5", "6"));
 
-		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
-				new FileRecordReaderMock(new String[][] {
+        fixture.setRecordReader(
+				new FileRecordReaderMock(new String[][]{
 						new String[]{"x", "z", "hello"},
 				}));
 
-		fixture.doTable(table);
+		run();
 
-		assertThat(fixture.counts.right, is(equalTo((Object) 3)));
-		assertThat(fixture.counts.wrong, is(equalTo((Object) 6)));
+        assertCounts(0, 2, 0, 0);
 
-		assertThat(table.parts.more.more.parts.text(), containsString("missing"));
-		assertThat(table.parts.more.more.parts.last().text(), containsString("missing"));
+		assertThat(htmlAt(1, 0), containsString("missing"));
+		assertThat(htmlAt(2, 0), containsString("missing"));
+		assertThat(htmlAt(2, 2), containsString("5"));
 	}
 
 	@Test
-	public void testEmptyTable() throws ParseException {
-		Parse table = new Parse("<table><tr><td>ignore</td></tr></table>");
+	public void testEmptyTable() {
+		useTable();
 
-		DummyRecordReaderFixture fixture = new DummyRecordReaderFixture(
-				new FileRecordReaderMock(new String[][] {
-						new String[]{"x", "z", "hello"},
-				}));
+		fixture.setRecordReader(
+            new FileRecordReaderMock(new String[][]{
+                new String[]{"x", "z", "hello"},
+            }));
 
-		fixture.doTable(table);
-		assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
-		assertThat(table.parts.parts.text(), containsString("at least"));
+		run();
+        assertCounts(0, 1, 0, 0);
 	}
+
 }

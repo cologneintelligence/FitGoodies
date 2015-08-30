@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.file;
 
@@ -33,9 +34,9 @@ import static org.junit.Assert.assertThat;
 public class IteratorHelperTest extends FitGoodiesTestCase {
 	@Test
 	public void testIterator() {
-		ArrayList<Object> al = new ArrayList<Object>();
+		ArrayList<Object> al = new ArrayList<>();
 		Iterator<Object> iterator = al.iterator();
-		Iterable<Object> iterable = new IteratorHelper<Object>(iterator);
+		Iterable<Object> iterable = new IteratorHelper<>(iterator);
 
 		assertThat(iterable.iterator(), is(sameInstance(iterator)));
 	}

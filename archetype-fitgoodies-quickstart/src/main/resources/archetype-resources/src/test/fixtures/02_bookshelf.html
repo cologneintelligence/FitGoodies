@@ -16,78 +16,78 @@ Otherwise the result is an internal bookid. It is not allowed to
 save books with an identical ISBN</p>
 
 <table>
-	<tr>
-		<td>BookFixture</td>
-	</tr>
-	<tr>
-		<td>author</td>
-		<td>title</td>
-		<td>isbn</td>
-		<td>price</td>
-		<td>valid?</td>
-		<td>save?</td>
-	</tr>
-	<tr>
-		<td>Vincent Massol, Ted Husted</td>
-		<td>JUnit in Action</td>
-		<td>1930110995</td>
-		<td>26.37</td>
-		<td>true</td>
-		<td>${books.put(junit)}${nonEmpty()}</td>
-	</tr>
-	<tr>
-		<td>Vincent Massol, Ted Husted</td>
-		<td>JUnit in Action</td>
-		<td>1930110996</td>
-		<td>26.37</td>
-		<td>false</td>
-		<td>${empty()}</td>
-	</tr>
-	<tr>
-		<td>Steve Loughran, Erik Hatcher</td>
-		<td>Ant in Action</td>
-		<td>193239480X</td>
-		<td>31.49</td>
-		<td>true</td>
-		<td>${books.put(ant)}${nonEmpty()}</td>
-	</tr>
-		<tr>
-		<td>Steve Loughran, Erik Hatcher</td>
-		<td>Ant in Action</td>
-		<td>193239480X</td>
-		<td>31.49</td>
-		<td>true</td>
-		<td>${empty()}</td>
-	</tr>
+    <tr>
+        <td>BookFixture</td>
+    </tr>
+    <tr>
+        <td>author</td>
+        <td>title</td>
+        <td>isbn</td>
+        <td>price</td>
+        <td>valid?</td>
+        <td>save?</td>
+    </tr>
+    <tr>
+        <td>Vincent Massol, Ted Husted</td>
+        <td>JUnit in Action</td>
+        <td>1930110995</td>
+        <td>26.37</td>
+        <td>true</td>
+        <td>${books.put(junit)}${nonEmpty()}</td>
+    </tr>
+    <tr>
+        <td>Vincent Massol, Ted Husted</td>
+        <td>JUnit in Action</td>
+        <td>1930110996</td>
+        <td>26.37</td>
+        <td>false</td>
+        <td>${empty()}</td>
+    </tr>
+    <tr>
+        <td>Steve Loughran, Erik Hatcher</td>
+        <td>Ant in Action</td>
+        <td>193239480X</td>
+        <td>31.49</td>
+        <td>true</td>
+        <td>${books.put(ant)}${nonEmpty()}</td>
+    </tr>
+        <tr>
+        <td>Steve Loughran, Erik Hatcher</td>
+        <td>Ant in Action</td>
+        <td>193239480X</td>
+        <td>31.49</td>
+        <td>true</td>
+        <td>${empty()}</td>
+    </tr>
 </table>
 
 <p>The ID identifies a book in the shelf</p>
 
 <table>
-	<tr>
-		<td>BookFixture</td>
-	</tr>
-	<tr>
-		<td>lookup</td>
-		<td>lookup()</td>
-		<td>isbn?</td>
-		<td>title?</td>
-		<td>price?</td>
-	</tr>
-	<tr>
-		<td>${books.get(ant)}</td>
-		<td></td>
-		<td>193239480X</td>
-		<td>Ant in Action</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>${books.get(junit)}</td>
-		<td></td>
-		<td>1930110995</td>
-		<td>JUnit in Action</td>
-		<td></td>
-	</tr>
+    <tr>
+        <td>BookFixture</td>
+    </tr>
+    <tr>
+        <td>lookup</td>
+        <td>lookup()</td>
+        <td>isbn?</td>
+        <td>title?</td>
+        <td>price?</td>
+    </tr>
+    <tr>
+        <td>${books.get(ant)}</td>
+        <td></td>
+        <td>193239480X</td>
+        <td>Ant in Action</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>${books.get(junit)}</td>
+        <td></td>
+        <td>1930110995</td>
+        <td>JUnit in Action</td>
+        <td></td>
+    </tr>
 </table>
 
 </body>

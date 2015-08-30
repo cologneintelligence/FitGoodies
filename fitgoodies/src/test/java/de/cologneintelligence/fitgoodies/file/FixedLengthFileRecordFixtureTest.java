@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,77 +16,77 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
-import de.cologneintelligence.fitgoodies.references.CrossReferenceHelper;
-import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import org.junit.Test;
-
-import java.text.ParseException;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 
-public class FixedLengthFileRecordFixtureTest extends FitGoodiesTestCase {
-    @Test
-    public void testExtractWidth() throws ParseException {
-        FixedLengthFileRecordFixture fixture = new FixedLengthFileRecordFixture();
+public class FixedLengthFileRecordFixtureTest extends FitGoodiesFixtureTestCase<FixedLengthFileRecordFixture> {
 
-        Parse row = new Parse("<tr><td>1</td><td>7</td><td>4</td></tr>",
-                new String[]{"tr", "td"});
+	@Override
+	protected Class<FixedLengthFileRecordFixture> getFixtureClass() {
+		return FixedLengthFileRecordFixture.class;
+	}
 
-        int[] actual = fixture.extractWidth(row);
+	@Test
+	public void testExtractWidth1() {
+		useTable(tr("1", "7", "4"));
+
+		preparePreprocessWithConversion(Integer.class, "1", 1);
+		preparePreprocessWithConversion(Integer.class, "7", 7);
+		preparePreprocessWithConversion(Integer.class, "4", 4);
+
+		int[] actual = fixture.extractWidth(lastFitTable.rows().get(0));
+
+        lastFitTable.finishExecution();
+        System.out.println(lastFitTable.pretty());
 
         assertThat(actual.length, is(equalTo((Object) 3)));
-        assertThat(actual[0], is(equalTo((Object) 1)));
-        assertThat(actual[1], is(equalTo((Object) 7)));
-        assertThat(actual[2], is(equalTo((Object) 4)));
+		assertThat(actual[0], is(equalTo((Object) 1)));
+		assertThat(actual[1], is(equalTo((Object) 7)));
+		assertThat(actual[2], is(equalTo((Object) 4)));
+	}
 
-        row = new Parse("<tr><td>3</td><td>1</td><td>9</td><td>0</td></tr>",
-                new String[]{"tr", "td"});
+	@Test
+	public void testExtractWidth2() {
+		useTable(tr("3", "1", "9", "0"));
 
-        actual = fixture.extractWidth(row);
+		preparePreprocessWithConversion(Integer.class, "3", 4);
+		preparePreprocessWithConversion(Integer.class, "1", 2);
+		preparePreprocessWithConversion(Integer.class, "9", 10);
+		preparePreprocessWithConversion(Integer.class, "0", 0);
 
-        assertThat(actual.length, is(equalTo((Object) 4)));
-        assertThat(actual[0], is(equalTo((Object) 3)));
-        assertThat(actual[1], is(equalTo((Object) 1)));
-        assertThat(actual[2], is(equalTo((Object) 9)));
-        assertThat(actual[3], is(equalTo((Object) 0)));
-    }
+		int[] actual = fixture.extractWidth(lastFitTable.rows().get(0));
 
-    @Test
-    public void testExtractWidthWithCrossRefs() throws Exception {
-        FixedLengthFileRecordFixture fixture = new FixedLengthFileRecordFixture();
+		assertThat(actual.length, is(equalTo((Object) 4)));
+		assertThat(actual[0], is(equalTo((Object) 4)));
+		assertThat(actual[1], is(equalTo((Object) 2)));
+		assertThat(actual[2], is(equalTo((Object) 10)));
+		assertThat(actual[3], is(equalTo((Object) 0)));
 
-        Parse row = new Parse("<tr><td>1</td><td>${width.get(col2)}</td></tr>",
-                new String[]{"tr", "td"});
+	}
 
-        CrossReferenceHelper helper = DependencyManager.getOrCreate(CrossReferenceHelper.class);
-        helper.parseBody("${width.put(col2)}", 23);
-        int[] actual = fixture.extractWidth(row);
+	@Test
+	public void testErrors() {
+		useTable(tr("1", "error", "4"));
 
-        assertThat(actual.length, is(equalTo((Object) 2)));
-        assertThat(actual[0], is(equalTo((Object) 1)));
-        assertThat(actual[1], is(equalTo((Object) 23)));
-    }
+        preparePreprocessWithConversion(Integer.class, "1", 1);
+        preparePreprocessWithConversionError(Integer.class, "error");
+        preparePreprocessWithConversion(Integer.class, "4", 4);
 
-    @Test
-    public void testErrors() throws ParseException {
-        FixedLengthFileRecordFixture fixture = new FixedLengthFileRecordFixture();
+        int[] actual = fixture.extractWidth(lastFitTable.rows().get(0));
+        lastFitTable.finishExecution();
 
-        Parse row = new Parse("<tr><td>1</td><td>error</td><td>4</td></tr>",
-                new String[]{"tr", "td"});
+		assertThat(actual, is(nullValue()));
 
-        int[] actual = fixture.extractWidth(row);
+		assertCounts(0, 0, 0, 1);
+        assertThat(htmlAt(0, 1), containsString("class=\"fit-expected\""));
+	}
 
-        assertThat(actual, is(nullValue()));
-        assertThat(fixture.counts.exceptions, is(equalTo((Object) 1)));
-        assertThat(row.parts.more.text(), containsString("NumberFormatException"));
-    }
 }

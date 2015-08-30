@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,97 +21,103 @@
 
 package de.cologneintelligence.fitgoodies.file;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
-import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-public class XMLFileFixtureTest extends FitGoodiesTestCase {
-    private XMLFileFixture fixture;
+public class XMLFileFixtureTest extends FitGoodiesFixtureTestCase<XMLFileFixture> {
+    @Mock
+    private FileInformationWrapper wrapper;
+
+    @Override
+    protected Class<XMLFileFixture> getFixtureClass() {
+        return XMLFileFixture.class;
+    }
+
+    @Override
+    protected XMLFileFixture newInstance() throws InstantiationException, IllegalAccessException {
+        return new XMLFileFixture(wrapper);
+    }
 
     @Before
-    public void setUp() throws Exception {
-        final byte[] fileContent = ("<?xml version=\"1.0\"?>"
-                + "<root><child1><child>Content</child><child>x</child></child1>"
-                + "<sibling>Content 2</sibling>"
-                + "</root>").getBytes("utf-16");
+	public void setUp() throws Exception {
+		final byte[] fileContent = ("<?xml version=\"1.0\"?>"
+				+ "<root><child1><child>Content</child><child>x</child></child1>"
+				+ "<sibling>Content 2</sibling>"
+				+ "</root>").getBytes("utf-16");
 
-        //final FileInformation fileInfo = new FileInformation("/", "file.xml", fileContent);
+		File directory = mock(File.class, "directory");
+		File file = mock(File.class, "file");
+		FileInformation fileInformation = mock(FileInformation.class);
 
-        File directory = mock(File.class, "directory");
-        File file = mock(File.class, "file");
-        FileInformationWrapper wrapper = mock(FileInformationWrapper.class);
-        FileInformation fileInformation = mock(FileInformation.class);
+		when(directory.listFiles(argThat(is(any(FileFilter.class)))))
+				.thenReturn(new File[]{file});
+		when(wrapper.wrap(file)).thenReturn(fileInformation);
+		when(fileInformation.openInputStream()).thenReturn(new ByteArrayInputStream(fileContent));
 
-        when(directory.listFiles(argThat(is(any(FileFilter.class)))))
-                .thenReturn(new File[]{file});
-        when(wrapper.wrap(file)).thenReturn(fileInformation);
-        when(fileInformation.openInputStream()).thenReturn(new ByteArrayInputStream(fileContent));
+		FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
+		helper.setDirectory(directory);
 
-        FileFixtureHelper helper = DependencyManager.getOrCreate(FileFixtureHelper.class);
-        helper.setDirectory(directory);
+        Map<String, String> params = new HashMap<>();
+        params.put("pattern", "$pattern");
+        params.put("encoding", "utf-16");
+        fixture.setParams(params);
 
-        fixture = new XMLFileFixture(wrapper);
-        fixture.setParams(new String[] {"pattern=.*", "encoding=utf-16"});
-    }
+        expectParameterApply("pattern", "$pattern", ".*");
+        expectParameterApply("encoding", "utf-16", "utf-16");
+	}
 
-    @Test
-    public void testParsing() throws ParseException {
-        final Parse table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>/root/child1/child[1]</td><td>Content</td></tr>"
-                        + "<tr><td>/root/child1/child[2]</td><td>x</td></tr>"
-                        + "<tr><td>/root/sibling</td><td>Content 1</td></tr>"
-                        + "</table>");
+	@Test
+	public void testParsing() {
+		useTable(
+            tr("/root/child1/child[1]", "Content"),
+            tr("/root/child1/child[2]", "x"),
+            tr("/root/sibling", "Content 1"));
 
-        fixture.doTable(table);
+        expectConstantValidation(0, 1, "Content");
+        expectConstantValidation(1, 1, "x");
+        expectConstantValidation(2, 1, "Content 2");
 
-        assertCounts(fixture.counts, table, 2, 1, 0, 0);
-    }
+		run();
 
-    @Test
-    public void testParsingWithErrors() throws ParseException {
-        final Parse table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>/root/child1/child[1]</td></tr>"
-                        + "<tr><td>---</td><td>x</td></tr>"
-                        + "</table>");
+		assertCounts(0, 0, 0, 0);
+	}
 
-        fixture.doTable(table);
+	@Test
+	public void testParsingWithErrors() {
+		useTable(
+				tr("/root/child1/child[1]"),
+				tr("---", "x"));
 
-        assertCounts(fixture.counts, table, 0, 0, 0, 1);
-    }
+		run();
 
-    @Test
-    public void testParsingWithIgnores() throws ParseException {
-        final Parse table = new Parse(
-                "<table>"
-                        + "<tr><td>ignore</td></tr>"
-                        + "<tr><td>/root/child1/child[1]</td><td></td></tr>"
-                        + "<tr><td>/root/child1/child[2]</td><td></td></tr>"
-                        + "</table>");
+		assertCounts(0, 0, 0, 1);
+	}
 
-        fixture.doTable(table);
+	@Test
+	public void testParsingWithIgnores() {
+		useTable(
+				tr("/root/child1/child[1]", ""),
+				tr("/root/child1/child[2]", ""));
 
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
-        assertThat(table.parts.more.parts.more.text(), is(equalTo("Content")));
-        assertThat(table.parts.more.more.parts.more.text(), is(equalTo("x")));
-    }
+        expectConstantValidation(0, 1, "Content");
+        expectConstantValidation(1, 1, "x");
+
+		run();
+	}
 }

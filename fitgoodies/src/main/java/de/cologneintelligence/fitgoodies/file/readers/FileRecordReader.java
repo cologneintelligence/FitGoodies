@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -24,26 +26,28 @@ import java.io.IOException;
 /**
  * FileRecordReaders are used by {@link de.cologneintelligence.fitgoodies.file.AbstractFileRecordReaderFixture}
  * to process files with record sets.
- *
  */
 public interface FileRecordReader {
 	/**
 	 * Returns the next field in the record set.
+	 *
 	 * @return next field's value, or <code>null</code>, if the last column has
-	 * 		been reached.
+	 * been reached.
 	 */
 	String nextField();
 
 	/**
 	 * Reads the next row.
+	 *
 	 * @return <code>true</code> if a record set could been read,
-	 * 		<code>false</code> on end of file.
+	 * <code>false</code> on end of file.
 	 * @throws IOException when the underlying Stream reports an error
 	 */
 	boolean nextRecord() throws IOException;
 
 	/**
 	 * Closes the underlying stream.
+	 *
 	 * @throws IOException when the underlying Stream reports an error
 	 */
 	void close() throws IOException;
@@ -51,8 +55,9 @@ public interface FileRecordReader {
 	/**
 	 * Reports whether {@link #nextField()} can be called or whether no more
 	 * record set is available.
+	 *
 	 * @return <code>true</code> if {@link #nextField()} will return values,
-	 * 		<code>false</code> otherwise
+	 * <code>false</code> otherwise
 	 */
 	boolean canRead();
 }

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -14,8 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 
 package de.cologneintelligence.fitgoodies.file;
 
@@ -24,7 +25,6 @@ import java.util.NoSuchElementException;
 
 /**
  * Converts a list of {@link FileInformation}.
- *
  */
 public class FileIterator implements Iterator<FileInformation> {
 	private final FileInformation[] files;
@@ -32,6 +32,7 @@ public class FileIterator implements Iterator<FileInformation> {
 
 	/**
 	 * Creates a new iterator.
+	 *
 	 * @param fileInformation source array
 	 */
 	public FileIterator(final FileInformation[] fileInformation) {
@@ -46,14 +47,16 @@ public class FileIterator implements Iterator<FileInformation> {
 	 *
 	 * @return true if the iterator has more elements.
 	 */
+	@Override
 	public final boolean hasNext() {
 		return pos < files.length - 1;
 	}
 
 	/**
 	 * Returns the next file.
+	 *
 	 * @return the next element in the iteration.
-     * @throws NoSuchElementException iteration has no more elements
+	 * @throws NoSuchElementException iteration has no more elements
 	 */
 	@Override
 	public final FileInformation next() {

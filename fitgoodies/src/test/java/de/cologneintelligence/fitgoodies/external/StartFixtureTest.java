@@ -1,112 +1,172 @@
+/*
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
+ * This file is part of FitGoodies.
+ *
+ * FitGoodies is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FitGoodies is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.cologneintelligence.fitgoodies.external;
 
-import de.cologneintelligence.fitgoodies.test.FitGoodiesTestCase;
+import de.cologneintelligence.fitgoodies.test.FitGoodiesFixtureTestCase;
 import de.cologneintelligence.fitgoodies.util.DependencyManager;
-import fit.Parse;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import static org.mockito.Mockito.*;
 
-public class StartFixtureTest extends FitGoodiesTestCase {
-    private ProcessWrapper processWrapper;
-    private StartFixture fixture;
-    private SetupHelper setupHelper;
+public class StartFixtureTest extends FitGoodiesFixtureTestCase<StartFixture> {
+    @Mock
+	private ProcessWrapper processWrapper;
+
+	private SetupHelper setupHelper;
+
+    @Override
+    protected Class<StartFixture> getFixtureClass() {
+        return StartFixture.class;
+    }
+
+    @Override
+    protected StartFixture newInstance() throws InstantiationException, IllegalAccessException {
+		return new StartFixture(processWrapper);
+    }
 
     @Before
-    public void prepareMocks() {
-        processWrapper = mock(ProcessWrapper.class);
-        fixture = new StartFixture(processWrapper);
-        setupHelper = new SetupHelper();
-        DependencyManager.inject(SetupHelper.class, setupHelper);
-    }
+	public void prepareMocks() {
+		setupHelper = new SetupHelper();
+		DependencyManager.inject(SetupHelper.class, setupHelper);
+	}
 
-    @Test
-    public void testStartFixtureStartsCommandWithoutArgs() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr><tr><td>execute</td><td>java</td></tr></table>");
+	@Test
+	public void testStartFixtureStartsCommandWithoutArgs() throws Exception {
+		useTable(tr("execute", "java"));
 
-        fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
+        preparePreprocessWithConversion(String.class, "java", "java");
 
-        verify(processWrapper).start("java");
-    }
+		run();
+		assertCounts(0, 0, 0, 0);
 
-    @Test
-    public void testStartFixtureStartsCommandWithoutArgs2() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr><tr><td>execute</td><td>ant</td></tr></table>");
+		verify(processWrapper).start("java");
+	}
 
-        fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
+	@Test
+	public void testStartFixtureStartsCommandWithoutArgs2() throws Exception {
+		useTable(tr("execute", "prog"));
 
-        verify(processWrapper).start("ant");
-    }
+        preparePreprocessWithConversion(String.class, "prog", "ant");
 
-    @Test
-    public void testStartFixtureStartsCommandWithOneArg() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr><tr><td>execute</td><td>ant</td><td>package</td></tr></table>");
+		run();
+		assertCounts(0, 0, 0, 0);
 
-        fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
+		verify(processWrapper).start("ant");
+	}
 
-        verify(processWrapper).start("ant", "package");
-    }
+	@Test
+	public void testStartFixtureStartsCommandWithOneArg() throws Exception {
+		useTable(tr("execute", "prog", "param"));
 
-    @Test
-    public void testStartFixtureStartsCommandWithTwoArgs() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr><tr><td>execute</td><td>ant</td><td>test</td><td>package</td></tr></table>");
+        preparePreprocessWithConversion(String.class, "prog", "ant");
+        preparePreprocess("param", "package");
 
-        fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
+		run();
+		assertCounts(0, 0, 0, 0);
 
-        verify(processWrapper).start("ant", "test", "package");
-    }
+		verify(processWrapper).start("ant", "package");
+	}
 
-    @Test
-    public void testStartAndWaitFixtureStartsCommandWithoutArgs() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr><tr><td>executeAndWait</td><td>java</td></tr></table>");
+	@Test
+	public void testStartFixtureStartsCommandWithTwoArgs() throws Exception {
+		useTable(tr("execute", "ant", "test", "package"));
 
-        when(processWrapper.startAndWait("java")).thenReturn(0);
-        fixture.doTable(table);
-        assertCounts(fixture.counts, table, 1, 0, 0, 0);
-    }
+        preparePreprocessWithConversion(String.class, "ant", "ant");
+        preparePreprocess("test", "test");
+        preparePreprocess("package", "package");
 
-    @Test
-    public void testStartAndWaitFixtureStartsCommandWithoutArgs2() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr><tr><td>executeAndWait</td><td>ant</td></tr></table>");
+
+        run();
+		assertCounts(0, 0, 0, 0);
+
+		verify(processWrapper).start("ant", "test", "package");
+	}
+
+	@Test
+	public void testStartAndWaitFixtureStartsCommandWithoutArgs() throws Exception {
+        String process = "java";
+
+		useTable(tr("executeAndWait", "java2"));
+        when(processWrapper.startAndWait(process)).thenReturn(0);
+
+        preparePreprocessWithConversion(String.class, "java2", process);
+
+		run();
+
+        verify(processWrapper).startAndWait(process);
+		assertCounts(1, 0, 0, 0);
+	}
+
+	@Test
+	public void testStartAndWaitFixtureStartsCommandWithoutArgs2() throws Exception {
+		useTable(tr("executeAndWait", "ant"));
+        preparePreprocessWithConversion(String.class, "ant", "ant");
 
         when(processWrapper.startAndWait("ant")).thenReturn(1);
 
-        fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 1, 0, 0);
-    }
+		run();
 
-    @Test
-    public void testStartAndWaitFixtureStartsCommandWithOneArg() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr><tr><td>executeAndWait</td><td>ant</td><td>package</td></tr></table>");
+		assertCounts(0, 1, 0, 0);
+	}
 
-        when(processWrapper.startAndWait("ant", "package")).thenReturn(0);
-        fixture.doTable(table);
-        assertCounts(fixture.counts, table, 1, 0, 0, 0);
-    }
+	@Test
+	public void testStartAndWaitFixtureStartsCommandWithOneArg() throws Exception {
+		useTable(tr("executeAndWait", "ant", "package"));
+		when(processWrapper.startAndWait("ant", "package")).thenReturn(0);
 
-    @Test
-    public void testChangeDir() throws Exception {
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr><tr><td>changeDir</td><td>c:\\test</td></tr></table>");
+        preparePreprocessWithConversion(String.class, "ant", "ant");
+        preparePreprocess("package", "package");
 
-        fixture.doTable(table);
-        assertCounts(fixture.counts, table, 0, 0, 0, 0);
-        verify(processWrapper).changeDir("c:\\test");
-    }
+        run();
 
-    @Test
-    public void testReadDefaultSystemPropertiesFromSetupHelper() throws Exception {
-        setupHelper.addProperty("bla");
-        setupHelper.addProperty("blub");
-        final Parse table = new Parse("<table><tr><td>ignore</td></tr><tr><td>executeAndWait</td><td>ant</td><td>test-target</td></tr></table>");
+		assertCounts(1, 0, 0, 0);
+	}
 
-        when(processWrapper.startAndWait("ant", "test-target", "bla", "blubb")).thenReturn(0);
-        fixture.doTable(table);
-        assertCounts(fixture.counts, table, 1, 0, 0, 0);
-    }
+	@Test
+	public void testChangeDir() throws Exception {
+		useTable(tr("changeDir", "dir"));
+
+        preparePreprocessWithConversion(String.class, "dir", "c:\\test");
+
+		run();
+
+		assertCounts(0, 0, 0, 0);
+		verify(processWrapper).changeDir("c:\\test");
+	}
+
+	@Test
+	public void testReadDefaultSystemPropertiesFromSetupHelper() throws Exception {
+		useTable(tr("executeAndWait", "ant", "target"));
+        preparePreprocessWithConversion(String.class, "ant", "ant");
+        preparePreprocess("target", "test-target");
+
+		when(processWrapper.startAndWait("ant", "test-target", "bla", "blubb")).thenReturn(0);
+		setupHelper.addProperty("bla");
+		setupHelper.addProperty("blub");
+
+		run();
+
+		assertCounts(1, 0, 0, 0);
+	}
 
 }

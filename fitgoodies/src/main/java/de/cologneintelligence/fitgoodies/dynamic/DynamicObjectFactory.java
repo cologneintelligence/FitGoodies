@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -32,10 +34,9 @@ import java.util.HashMap;
 /**
  * Factory that allows to generate java classes on the fly.
  * The class will have a public constructor and only public variables.
- * <p>
- *
+ * <p/>
+ * <p/>
  * This class is primary written for internal use.
- *
  */
 public class DynamicObjectFactory {
 	/**
@@ -61,18 +62,19 @@ public class DynamicObjectFactory {
 			}
 		}
 
-		private final HashMap<String, Class<?>> cache = new HashMap<String, Class<?>>();
+		private final HashMap<String, Class<?>> cache = new HashMap<>();
 
 		/**
 		 * Loads the byte code of {@code javaClass}, defines a class
 		 * and resolves it. The loaded class is returned.
-		 * @param name class name
+		 *
+		 * @param name      class name
 		 * @param javaClass {@code JavaClass} object which holds the
-		 * 		dynamically generated class.
+		 *                  dynamically generated class.
 		 * @return the loaded class
 		 */
 		public final Class<?> loadJavaClass(final String name,
-				final JavaClass javaClass) {
+		                                    final JavaClass javaClass) {
 			byte[] binClass = javaClass.getBytes();
 
 			Class<?> c = defineClass(javaClass.getClassName(),
@@ -92,11 +94,11 @@ public class DynamicObjectFactory {
 	static {
 		loader = AccessController.doPrivileged(
 				new PrivilegedAction<JavaClassClassloader>() {
-			@Override
-			public JavaClassClassloader run() {
-				return new JavaClassClassloader();
-			}
-		});
+					@Override
+					public JavaClassClassloader run() {
+						return new JavaClassClassloader();
+					}
+				});
 	}
 
 	/**
@@ -104,9 +106,9 @@ public class DynamicObjectFactory {
 	 */
 	public DynamicObjectFactory() {
 		cg = new ClassGen(
-			"$DynamicGeneratedObject$" + classCount,
-			"java.lang.Object", "<generated>",
-			Constants.ACC_PUBLIC | Constants.ACC_SUPER, null);
+				"$DynamicGeneratedObject$" + classCount,
+				"java.lang.Object", "<generated>",
+				Constants.ACC_PUBLIC | Constants.ACC_SUPER, null);
 		++classCount;
 		cg.addEmptyConstructor(Constants.ACC_PUBLIC);
 	}
@@ -133,6 +135,7 @@ public class DynamicObjectFactory {
 	/**
 	 * Compiles the class and returns a class object which contains all
 	 * added fields.
+	 *
 	 * @return dynamic generated class with all added fields.
 	 */
 	public final Class<?> compile() {

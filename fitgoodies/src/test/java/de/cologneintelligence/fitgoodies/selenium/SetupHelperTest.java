@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -23,55 +25,53 @@ import de.cologneintelligence.fitgoodies.util.DependencyManager;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 
 public class SetupHelperTest extends FitGoodiesTestCase {
-    private SetupHelper helper;
+	private SetupHelper helper;
 
-    @Before
-    public void setUp() throws Exception {
-        helper = DependencyManager.getOrCreate(SetupHelper.class);
-    }
+	@Before
+	public void setUp() throws Exception {
+		helper = DependencyManager.getOrCreate(SetupHelper.class);
+	}
 
-    @Test
-    public void testDefaultValues() {
-        assertThat(helper.getServerPort(), is(equalTo((Object) 4444)));
-        assertThat(helper.getBrowserStartCommand(), is(equalTo("*firefox")));
-        assertThat(helper.getBrowserURL(), is(equalTo("http://localhost")));
-        assertThat(helper.getServerHost(), is(equalTo("localhost")));
-        assertThat(helper.getSpeed(), is(nullValue()));
-    }
+	@Test
+	public void testDefaultValues() {
+		assertThat(helper.getServerPort(), is(equalTo((Object) 4444)));
+		assertThat(helper.getBrowserStartCommand(), is(equalTo("*firefox")));
+		assertThat(helper.getBrowserURL(), is(equalTo("http://localhost")));
+		assertThat(helper.getServerHost(), is(equalTo("localhost")));
+		assertThat(helper.getSpeed(), is(nullValue()));
+	}
 
-    @Test
-    public void testGettersAndSetters() {
-        helper.setBrowserStartCommand("*chrome");
-        assertThat(helper.getBrowserStartCommand(), is(equalTo("*chrome")));
-        helper.setBrowserStartCommand("*opera");
-        assertThat(helper.getBrowserStartCommand(), is(equalTo("*opera")));
+	@Test
+	public void testGettersAndSetters() {
+		helper.setBrowserStartCommand("*chrome");
+		assertThat(helper.getBrowserStartCommand(), is(equalTo("*chrome")));
+		helper.setBrowserStartCommand("*opera");
+		assertThat(helper.getBrowserStartCommand(), is(equalTo("*opera")));
 
-        helper.setBrowserURL("http://example.org");
-        assertThat(helper.getBrowserURL(), is(equalTo("http://example.org")));
-        helper.setBrowserURL("http://example.com");
-        assertThat(helper.getBrowserURL(), is(equalTo("http://example.com")));
+		helper.setBrowserURL("http://example.org");
+		assertThat(helper.getBrowserURL(), is(equalTo("http://example.org")));
+		helper.setBrowserURL("http://example.com");
+		assertThat(helper.getBrowserURL(), is(equalTo("http://example.com")));
 
-        helper.setServerHost("127.0.0.1");
-        assertThat(helper.getServerHost(), is(equalTo("127.0.0.1")));
-        helper.setServerHost("192.168.0.1");
-        assertThat(helper.getServerHost(), is(equalTo("192.168.0.1")));
+		helper.setServerHost("127.0.0.1");
+		assertThat(helper.getServerHost(), is(equalTo("127.0.0.1")));
+		helper.setServerHost("192.168.0.1");
+		assertThat(helper.getServerHost(), is(equalTo("192.168.0.1")));
 
-        helper.setServerPort(1234);
-        assertThat(helper.getServerPort(), is(equalTo((Object) 1234)));
-        helper.setServerPort(4321);
-        assertThat(helper.getServerPort(), is(equalTo((Object) 4321)));
+		helper.setServerPort(1234);
+		assertThat(helper.getServerPort(), is(equalTo((Object) 1234)));
+		helper.setServerPort(4321);
+		assertThat(helper.getServerPort(), is(equalTo((Object) 4321)));
 
-        helper.setSpeed(123);
-        assertThat(helper.getSpeed(), is(equalTo(123)));
-        helper.setSpeed(321);
-        assertThat(helper.getSpeed(), is(equalTo(321)));
-        helper.setSpeed(null);
-        assertThat(helper.getSpeed(), is(equalTo(null)));
-    }
+		helper.setSpeed(123);
+		assertThat(helper.getSpeed(), is(equalTo(123)));
+		helper.setSpeed(321);
+		assertThat(helper.getSpeed(), is(equalTo(321)));
+		helper.setSpeed(null);
+		assertThat(helper.getSpeed(), is(equalTo(null)));
+	}
 }

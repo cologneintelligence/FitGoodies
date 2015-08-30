@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -23,117 +25,72 @@ import java.lang.reflect.Method;
 
 /**
  * With this class is it possible to invoke a given method of a given class
- * by reflection until the method returns true or a given maxtime is reached.
- *
- * <p>
+ * by reflection until the method returns true or a given maxTime is reached.
+ * <p/>
+ * <p/>
  * The method must have the signature {@code boolean method()}.
- * <p>
+ * <p/>
  *
  * @author kmussawisade
  */
-public final class WaitForResult {
+public class WaitForResult {
 	private final SystemTime systemTime;
-    private final Method method;
-    private final Object actor;
-    private final Long maxTime;
-    private boolean lastCallWasSuccessful;
-    private long sleepTime;
-    private long lastElapsedTime;
 
-    /**
-     * Initializes a new object.
-     * @param method method to execute
-     * @param actor object which owns the method
-     * @param maxTime the maximum time to wait
-     * @param systemTime SystemTime implementation to use
-     */
-    public WaitForResult(final Method method, final Object actor,
-    		final long maxTime, final SystemTime systemTime) {
-    	this.systemTime = systemTime;
-        this.method = method;
-		this.actor = actor;
-        this.maxTime = maxTime;
-    }
+	private long lastElapsedTime;
+	private boolean lastCallWasSuccessful;
 
-    /**
-     * Initializes a new object. The object will use {@link SystemTimeImpl}.
-     * @param method method to execute
-     * @param actor object which owns the method
-     * @param maxTime the maximum time to wait
-     */
-    public WaitForResult(final Method method, final Object actor, final long maxTime) {
-    	this(method, actor, maxTime, new SystemTimeImpl());
-    }
-
-    /**
-     * Invokes the method. The result can be fetched with {@link #lastCallWasSuccessful()};
-     */
-    public void invokeMethod() {
-        try {
-        	lastCallWasSuccessful = (Boolean) method.invoke(actor);
-        } catch (Exception e) {
-        	throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Invokes the method multiple times, either until it returns true, or
-     * until maxtime is over. After each invoke, the class waits
-     * {@code sleepTime} milliseconds.
-     *
-     * @see #setSleepTime(long) setSleepTime(long)
-     */
-    public void repeatInvokeWithTimeout() {
-        long invokeTime = systemTime.currentSystemTimeInMS();
-        boolean repeat;
-        do  {
-            invokeMethod();
-            lastElapsedTime = elapsedSince(invokeTime);
-            repeat = notFinished(maxTime - lastElapsedTime, lastCallWasSuccessful);
-            waitIfRequired(repeat, sleepTime);
-        } while (repeat);
-    }
-
-    private void waitIfRequired(final boolean repeat, final long sleepTime) {
-        if (repeat) {
-            systemTime.sleep(sleepTime);
-        }
-    }
-
-    private long elapsedSince(final long invokeTime) {
-        return systemTime.currentSystemTimeInMS() - invokeTime;
-    }
-
-    private boolean notFinished(final long deltaTime,
-    		final boolean isReady) {
-        return (deltaTime > 0 && !isReady);
-    }
-
-    /**
-     * Sets the sleep time between two invokes.
-     * @param sleepTime time between invokes
-     */
-    public void setSleepTime(final long sleepTime) {
-        this.sleepTime = sleepTime;
-    }
-
-    /**
-     * Returns the result of the last invoke. <p>
-     * Note: it is possible, that both, the timeout and the invoke are true.
-     * This is the case when the last invoke did return {@code true} and
-     * exceeded the timeout in the same call.
-     * @return the last result of {@link #repeatInvokeWithTimeout()}
-     * and {@link #invokeMethod()}.
-     */
-	public boolean lastCallWasSuccessful() {
-		return lastCallWasSuccessful;
+	/**
+	 * Initializes a new object.
+	 *
+	 * @param systemTime SystemTime implementation to use
+	 */
+	public WaitForResult(final SystemTime systemTime) {
+		this.systemTime = systemTime;
 	}
 
 	/**
-	 * Gets the elapsed time of the last call to {@link #repeatInvokeWithTimeout()}.
+	 * Initializes a new object. The object will use {@link SystemTime}.
+	 */
+	public WaitForResult() {
+		this(new SystemTime());
+	}
+
+	private boolean invokeMethod(Object target, Method method) {
+		try {
+			return (boolean) method.invoke(target);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Invokes the method multiple times, either until it returns true, or
+	 * until maxtime is over. After each invoke, the class waits
+	 * {@code sleepTime} milliseconds.
+	 */
+	public void wait(Object target, Method method, long maxTime, long sleepTime) {
+		long remaining = maxTime;
+
+		lastCallWasSuccessful = invokeMethod(target, method);
+		while (!lastCallWasSuccessful && remaining > 0) {
+			systemTime.sleep(sleepTime);
+			remaining -= sleepTime;
+			lastCallWasSuccessful = invokeMethod(target, method);
+		}
+
+		lastElapsedTime = maxTime - remaining;
+	}
+
+	/**
+	 * Gets the elapsed time of the last call to {@link #wait(Object, Method, long, long)}.
+	 *
 	 * @return the elapsed time in milliseconds
 	 */
 	public long getLastElapsedTime() {
 		return lastElapsedTime;
+	}
+
+	public boolean lastCallWasSuccessful() {
+		return lastCallWasSuccessful;
 	}
 }

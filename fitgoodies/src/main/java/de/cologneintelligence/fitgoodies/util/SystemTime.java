@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2009-2012  Cologne Intelligence GmbH
+ * Copyright (c) 2002 Cunningham & Cunningham, Inc.
+ * Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+ *
  * This file is part of FitGoodies.
  *
  * FitGoodies is free software: you can redistribute it and/or modify
@@ -19,20 +21,18 @@
 package de.cologneintelligence.fitgoodies.util;
 
 /**
- * Interface which provides time functions.
+ * Implementation of {@link SystemTime} which uses the real underlying system.
  *
  * @author kmussawisade
  */
-public interface SystemTime {
-	/**
-	 * Returns the current system time in milliseconds.
-	 * @return the current system time
-	 */
-    long currentSystemTimeInMS();
+public class SystemTime {
+	public void sleep(final long sleepTimeInMillis) {
+		try {
+			Thread.sleep(sleepTimeInMillis);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 
-    /**
-     * Stops the thread for <code>sleepTimeInMillis</code> milliseconds.
-     * @param sleepTimeInMillis length of sleep period
-     */
-    void sleep(long sleepTimeInMillis);
+	}
+
 }

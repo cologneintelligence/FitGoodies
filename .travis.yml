@@ -1,5 +1,8 @@
 language: java
-notifications:
-    email:
-        - jochen.wierum@co-in.de
 sudo: false
+jdk:
+  - oraclejdk7
+  - oraclejdk8
+  - openjdk7
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
