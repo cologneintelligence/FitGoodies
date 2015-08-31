@@ -30,27 +30,14 @@
   <artifactId>archetype-fitgoodies-quickstart</artifactId>
   <packaging>maven-archetype</packaging>
 
-  <name>Archetype - fitgoodies-quickstart</name>
+  <name>FitGoodies - quickstart-Archetype</name>
   <description>Archetype which generates an FitGoodies-enabled example project</description>
-  <url>https://github.com/cologneintelligence/FitGoodies</url>
-
-  <issueManagement>
-    <system>github</system>
-    <url>https://github.com/cologneintelligence/FitGoodies/issues</url>
-  </issueManagement>
 
   <scm>
     <connection>scm:git:git://github.com/cologneintelligence/FitGoodies.git</connection>
     <developerConnection>scm:git:git@github.com:cologneintelligence/FitGoodies.git</developerConnection>
     <url>https://github.com/cologneintelligence/FitGoodies</url>
   </scm>
-
-  <licenses>
-    <license>
-      <name>GPL</name>
-      <url>http://www.gnu.org/licenses/gpl.html</url>
-    </license>
-  </licenses>
 
   <properties>
     <archetype-plugin.version>2.4</archetype-plugin.version>
@@ -89,6 +76,16 @@
         <configuration>
           <escapeString>\</escapeString>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
       </plugin>
     </plugins>
 

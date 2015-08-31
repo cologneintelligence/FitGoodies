@@ -1,0 +1,91 @@
+<!--
+  ~ Copyright (c) 2002 Cunningham & Cunningham, Inc.
+  ~ Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+  ~
+  ~ This file is part of FitGoodies.
+  ~
+  ~ FitGoodies is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ FitGoodies is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>fitgoodies-bundle</artifactId>
+    <groupId>de.cologneintelligence</groupId>
+    <version>2.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>fitgoodies-selenium</artifactId>
+  <packaging>jar</packaging>
+
+  <name>FitGoodies - Selenium</name>
+  <description>Integration Test Framework extending Fit - Selenium</description>
+
+  <scm>
+    <connection>scm:git:git://github.com/cologneintelligence/FitGoodies.git</connection>
+    <developerConnection>scm:git:git@github.com:cologneintelligence/FitGoodies.git</developerConnection>
+    <url>https://github.com/cologneintelligence/FitGoodies</url>
+  </scm>
+  
+  <dependencies>
+    <dependency>
+      <groupId>de.cologneintelligence</groupId>
+      <artifactId>fitgoodies-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>de.cologneintelligence</groupId>
+      <artifactId>fitgoodies-core</artifactId>
+      <classifier>tests</classifier>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

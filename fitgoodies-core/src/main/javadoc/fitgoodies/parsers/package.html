@@ -1,0 +1,51 @@
+<!--
+  ~ Copyright (c) 2002 Cunningham & Cunningham, Inc.
+  ~ Copyright (c) 2009-2015 by Jochen Wierum & Cologne Intelligence
+  ~
+  ~ This file is part of FitGoodies.
+  ~
+  ~ FitGoodies is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ FitGoodies is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with FitGoodies.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+CTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>Insert title here</title>
+</head>
+<body>
+
+<p>
+    This package allows fit to convert Strings into Objects. Fit needs to convert your
+    HTML table into objects to be able to compare a cell value with an object's value.
+    This is done via a parse method. Fit can parse numbers and strings.
+</p>
+
+<p>
+    This package provides tools to extend the parse features. This makes it possible
+    to add parsers for custom data types. A parser must implement
+    {@link de.cologneintellicende.fitgoodies.typehandler.TypeHandler} and can be registered via java code using
+    {@link de.cologneintellicende.fitgoodies.typehandler.SetupFixture} or via HTML using
+    {@link de.cologneintellicende.fitgoodies.typehandler.TypeHandlerFactory<br/>
+    All Parsers in this namespace are registered by default.
+</p>
+
+<p>
+    @since 1.0.0
+</p>
+
+</body>
+</html>

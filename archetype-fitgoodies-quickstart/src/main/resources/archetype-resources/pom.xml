@@ -28,7 +28,25 @@
     </dependency>
     <dependency>
       <groupId>de.cologneintelligence</groupId>
-      <artifactId>fitgoodies</artifactId>
+      <artifactId>fitgoodies-core</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.cologneintelligence</groupId>
+      <artifactId>fitgoodies-db-jdbc</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.cologneintelligence</groupId>
+      <artifactId>fitgoodies-selenium</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.cologneintelligence</groupId>
+      <artifactId>fitgoodies-logging-log4j</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
