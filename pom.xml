@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.cologneintelligence</groupId>
 	<artifactId>fitgoodies-bundle</artifactId>
-	<version>1.4.0-SNAPSHOT</version>
+	<version>1.4.0</version>
 	<name>FitGoodies bundle</name>
 
 	<packaging>pom</packaging>
