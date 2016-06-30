@@ -2,14 +2,14 @@ package de.cologneintelligence;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.toolchain.Toolchain;
+import org.apache.maven.toolchain.ToolchainManager;
 import org.apache.tools.ant.util.JavaEnvUtils;
 
 import java.io.File;
@@ -31,7 +31,8 @@ import java.util.jar.Manifest;
         requiresDependencyResolution = ResolutionScope.TEST)
 public class FitIntegrationTestMojo extends AbstractMojo {
     public static final String FIT_MOJO_RESULT_FAILURE = "fit.mojo.result.failure";
-    public static final String MAIN_CLASS = "de.cologneintelligence.fitgoodies.runners.FitRunner";
+
+    private static final String MAIN_CLASS = "de.cologneintelligence.fitgoodies.runners.FitRunner";
 
     @Parameter(defaultValue = "target/fit", property = "outputDir", required = true)
     private File outputDirectory;
@@ -39,20 +40,31 @@ public class FitIntegrationTestMojo extends AbstractMojo {
     @Parameter(defaultValue = "src/test/fixtures", property = "fixturesDir", required = true)
     private File fixturesDirectory;
 
-    @Parameter(property = "limits", required = false)
+    @SuppressWarnings("MismatchedReadAndWriteOfArray")
+    @Parameter(property = "limits")
     private String[] limits = new String[0];
 
-    @Parameter(property = "additionalClasspathElements", required = false)
+    @SuppressWarnings("MismatchedReadAndWriteOfArray")
+    @Parameter(property = "additionalClasspathElements")
     private File[] additionalClasspathElements = new File[0];
 
-    @Parameter(property = "forkJvmArgs", required = false)
+    @Parameter(property = "forkJvmArgs")
     private String[] jvmArgs = new String[0];
 
-    @Parameter(defaultValue = "UTF-8", property = "project.build.sourceEncoding", required = false)
+    @Parameter(defaultValue = "UTF-8", property = "project.build.sourceEncoding")
     private String encoding;
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
+
+    @Component
+    private ToolchainManager toolchainManager;
+
+    @Parameter(defaultValue = "${session}", required = true, readonly = true)
+    private MavenSession session;
+
+    @Parameter(property = "javaExecutable")
+    private String javaExecutable;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().info("Copy static resources into output directory");
@@ -133,6 +145,7 @@ public class FitIntegrationTestMojo extends AbstractMojo {
             ProcessBuilder builder = prepareProcess(bootJar);
             startProcess(builder);
         } finally {
+            //noinspection ResultOfMethodCallIgnored
             bootJar.delete();
         }
     }
@@ -160,7 +173,7 @@ public class FitIntegrationTestMojo extends AbstractMojo {
 
     private ProcessBuilder prepareProcess(File bootJar) throws MojoExecutionException {
         try {
-            String executable = JavaEnvUtils.getJreExecutable("java");
+            String executable = findJava();
             List<String> args = createJavaArgs(executable, bootJar);
             getLog().debug("Running process: " + args.toString());
             return new ProcessBuilder(args)
@@ -168,6 +181,21 @@ public class FitIntegrationTestMojo extends AbstractMojo {
         } catch (Exception e) {
             throw new MojoExecutionException("Error while preparing java process", e);
         }
+    }
+
+    private String findJava() {
+        if (javaExecutable != null) {
+            getLog().info("'javaExecutable' parameter is set to " + javaExecutable);
+            return javaExecutable;
+        }
+
+        Toolchain tc = toolchainManager.getToolchainFromBuildContext("jdk", session);
+        if (tc != null) {
+            getLog().info("Toolchain in javadoc-plugin: " + tc);
+            return tc.findTool("java");
+        }
+
+        return JavaEnvUtils.getJreExecutable("java");
     }
 
     private List<String> createJavaArgs(String executable, File bootJar) throws URISyntaxException {
@@ -222,7 +250,7 @@ public class FitIntegrationTestMojo extends AbstractMojo {
         classPathBuilder.append(url.toString());
     }
 
-    public File writeBootJar(String classpath) throws IOException {
+    private File writeBootJar(String classpath) throws IOException {
         File bootJar = new File(outputDirectory, "boot.jar");
 
         Manifest manifest = new Manifest();
